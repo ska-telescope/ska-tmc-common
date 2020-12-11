@@ -46,6 +46,9 @@ class TangoGroupClient:
                 tango.ErrSeverity.ERR)  
 
     def remove_device(self, devices_to_remove):
+        """
+        Removes all elements in the Group.
+        """
         try:
             for device in devices_to_remove:
                 self.tango_group.remove(device)
