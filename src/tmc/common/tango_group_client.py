@@ -40,8 +40,10 @@ class TangoGroupClient:
             self.tango_group.remove(device)
 
     def send_command(self, command_name, input_arg = None):
-        self.tango_group.command_inout(command_name, input_arg)
-
+        try:
+            self.tango_group.command_inout(command_name, input_arg)
+        except DevFailed as dev_failed:
+            print("DevFailed exception is:", dev_failed)
 def main(args=None, **kwargs):
     """
     Main function of the TangoGroupClient module.
