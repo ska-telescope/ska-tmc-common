@@ -46,10 +46,11 @@ The TMC common classes are installed as a Python package in the system. The inte
 
 To use the TangoClient, the usage is as follows:
 
-`from ska.tmc.common import TangoClient
-.
-.
-.
+```python
+from ska.tmc.common import TangoClient
+.  
+.  
+.  
 my_client = TangoClient("device-FQDN")
 my_client.send_command("DeviceCommand", param)
-`
+```
