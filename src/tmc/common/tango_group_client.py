@@ -62,7 +62,7 @@ class TangoGroupClient:
 
     def delete_group(self, group_to_delete):
         try:
-            self.tango_group.delete(device)
+            self.tango_group.delete(group_to_delete)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to delete group")
             tango.Except.re_throw_exception(dev_failed,
@@ -71,7 +71,7 @@ class TangoGroupClient:
                 "TangoGroupClient.delete_group()",
                 tango.ErrSeverity.ERR)
 
-    def get_device_list(self, forward=True):
+    def device_list(self, forward=True):
         """
             :param argin: bool
             :return: The list of devices
@@ -79,16 +79,16 @@ class TangoGroupClient:
             :rtype: str
         """
         try:
-            self.device_list
+            self.tango_group.get_device_list()
         except DevFailed as dev_failed:
             self.logger.exception("Failed to get device list")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get device list",
                 str(dev_failed),
-                "TangoGroupClient.get_device_list()",
+                "TangoGroupClient.device_list()",
                 tango.ErrSeverity.ERR)  
 
-    def remove_all(self):
+    def remove_all_devices(self):
         return self.tango_group.remove_all()
 
     def send_command(self, command_name, input_arg = None):
