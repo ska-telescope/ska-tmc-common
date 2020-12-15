@@ -70,10 +70,12 @@ class TangoClient:
         as it is synchronous command execution.
         """
         try:
+            print("inside send block")
             self.deviceproxy.command_inout(command, command_data)
+            print("inside send block after command invocation")
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command + str(dev_failed)
-            self.logger.exception(dev_failed)
+            # self.logger.exception(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command,
                                          log_msg,
                                          "TangoClient.send_command",
@@ -85,10 +87,12 @@ class TangoClient:
         is on other than the TMC elements as it is asynchronous command execution.
         """
         try:
+            print("hiiiiiiiiiiiiiii::::::::::")
             self.deviceproxy.command_inout_asynch(command, command_data)
+            print("inside send block after command invocation")
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command + str(dev_failed)
-            self.logger.exception(dev_failed)
+            # self.logger.exception(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command,
                                          log_msg,
                                          "TangoClient.send_command_async",
