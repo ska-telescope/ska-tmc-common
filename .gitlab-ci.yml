@@ -58,21 +58,16 @@ build wheel for development: # Executed on non-tagged commit
     paths:
       - ./dist/
 
-# unit tests:
-#   stage: test
-#   image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
-#   before_script:
-#   - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
-#   tags:
-#     - docker-executor
-#   script:
-#     - echo $(ls -d ./dist/*.whl | grep $CI_COMMIT_SHORT_SHA)
-#     - python3 -m pip install -U $(ls -d ./dist/*.whl | grep $CI_COMMIT_SHORT_SHA)
-#     - make test
-#     - scripts/validate-metadata.sh
-#   artifacts:
-#     paths:
-#       - ./build
+unit tests:
+  stage: test
+  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+  tags:
+    - docker-executor
+  script:
+    - make unit-test
+  artifacts:
+    paths:
+      - ./build
 
 linting:
   stage: linting

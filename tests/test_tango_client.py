@@ -12,7 +12,6 @@ from mock import MagicMock
 from os.path import dirname, join
 
 # Tango imports
-from tango.test_context import DeviceTestContext
 
 # Additional import
 # from cspsubarrayleafnode import CspSubarrayLeafNode, const, release
@@ -20,9 +19,10 @@ from tango.test_context import DeviceTestContext
 
 from src.tmc.common.tango_client import TangoClient
 
+
 def test_proxy_creation():
     csp_subarray1_fqdn = 'mid_csp/elt/subarray_01'
-    a = TangoClient(csp_subarray1_fqdn)
-    b = TangoClient.get_deviceproxy()
-    print("b {} and its type {} is ::::::".format(b,type(b)))
-test_proxy_creation()
+    tango_client_obj = TangoClient(csp_subarray1_fqdn)
+    device_proxy = tango_client_obj.get_deviceproxy()
+    print("device_proxy {} and its type {} is ::::::".format(device_proxy,type(device_proxy)))
+
