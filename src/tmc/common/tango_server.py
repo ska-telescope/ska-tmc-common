@@ -42,10 +42,43 @@ class TangoServer:
         """
         pass
 
-    def set_attribute(self):
+    def set_attribute(self, value):
         """
         """
         pass
+
+    def get_property(self):
+        """
+        """
+        pass
+
+    def set_property(self, value):
+        """
+        """
+        pass
+    
+    def get_status(self):
+        """
+        """
+        return self.device.get_status()
+
+    def set_status(self, new_status):
+        """
+        Set device status.
+        """
+        self.device.set_status(new_status)
+
+    def get_state(self):
+        """
+        Get a COPY of the device state.
+        """
+        return self.device.get_state()
+
+    def set_state(self, new_state):
+        """
+        Set device state.
+        """
+        self.device.set_state(new_state)
 
 def main(args=None, **kwargs):
     """
