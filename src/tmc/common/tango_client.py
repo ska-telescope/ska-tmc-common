@@ -125,7 +125,13 @@ class TangoClient:
     def subscribe_attribute(self, attr_name, callback_method):
         try:
             event_id = self.deviceproxy.subscribe_event(attr_name, EventType.CHANGE_EVENT, callback_method, stateless=True)
-        return event_id
+            return event_id
+        except DevFailed as dev_failed:
+            self.logger.exception(dev_failed)
+            tango.Except.throw_exception("Error is subscribing event",
+                                         dev_failed,
+                                         "TangoClient.subscribe_attribute",
+                                         tango.ErrSeverity.ERR)
 
     def unsubscribe_attr(self, event_id):
         try:
