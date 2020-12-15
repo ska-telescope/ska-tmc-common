@@ -19,7 +19,8 @@ from os.path import dirname, join
 
 from src.tmc.common.tango_client import TangoClient
 
-def check_test():
+def test_dummy_function():
+    print ("Dummy test")
     assert True
 
 # def test_proxy_creation():
