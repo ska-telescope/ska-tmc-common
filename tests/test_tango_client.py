@@ -30,3 +30,8 @@ def test_dummy_function():
 #     print("device_proxy {} and its type {} is ::::::".format(device_proxy,type(device_proxy)))
 #     assert 1
 
+def test_get_fqdn():
+    csp_subarray1_fqdn = 'mid_csp/elt/subarray_01'
+    tango_client_obj = TangoClient(csp_subarray1_fqdn)
+    device_fqdn = tango_client_obj.get_device_fqdn()
+    assert device_fqdn == 'mid_csp/elt/subarray_01'

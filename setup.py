@@ -35,7 +35,7 @@ setuptools.setup(
     ],
     platforms=["OS Independent"],
     setup_requires=[] + pytest_runner,
-    install_requires=["future", "transitions"],
+    install_requires=["pytango==9.3.2", "mock", "future", "transitions"],
     tests_require=["pytest", "coverage", "pytest-json-report", "pytest-forked"],
     entry_points={
         "console_scripts": [
