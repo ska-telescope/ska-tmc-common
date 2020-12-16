@@ -130,7 +130,7 @@ def test_get_device_prox():
 def test_send_command():
     # tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
-
+    deviceproxy = Mock()
     csp_subarray1_ln_proxy_mock = Mock()
 
     proxies_to_mock = {
@@ -142,7 +142,7 @@ def test_send_command():
         device_fqdn1 = tango_client_obj.get_deviceproxy()
         print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
         tango_client_obj.send_command_async("End")
-    csp_subarray1_proxy_mock.command_inout_async.assert_called_with("End")
+    deviceproxy.command_inout_async.assert_called_with("End")
 
 # @contextlib.contextmanager
 # def fake_tango_system(device_under_test, initial_dut_properties={}, proxies_to_mock={},
