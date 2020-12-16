@@ -104,9 +104,9 @@ def test_get_fqdn():
     
     with mock.patch('tango.DeviceProxy') as patched_constructor:
         patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
-    tango_client_obj = TangoClient(device_fqdn)
-    device_fqdn = tango_client_obj.get_device_fqdn()
-    assert device_fqdn == 'ska_mid/tm_leaf_node/csp_subarray01'
+        tango_client_obj = TangoClient(device_fqdn)
+        device_fqdn = tango_client_obj.get_device_fqdn()
+        assert device_fqdn == 'ska_mid/tm_leaf_node/csp_subarray01'
 
 
 # @contextlib.contextmanager

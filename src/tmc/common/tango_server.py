@@ -60,25 +60,59 @@ class TangoServer:
     def get_status(self):
         """
         """
+        try:
+            self.device.get_status()
+        except DevFailed as dev_failed:
+            self.logger.exception("Failed to get status.")
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to get status .",
+                str(dev_failed),
+                "TangoGroupClient.get_status()",
+                tango.ErrSeverity.ERR)      
         return self.device.get_status()
 
     def set_status(self, new_status):
         """
         Set device status.
         """
-        self.device.set_status(new_status)
+        try:
+            self.device.set_status(new_status)
+        except DevFailed as dev_failed:
+            self.logger.exception("Failed to set status.")
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to set status .",
+                str(dev_failed),
+                "TangoGroupClient.set_status()",
+                tango.ErrSeverity.ERR)      
 
     def get_state(self):
         """
         Get a COPY of the device state.
         """
+        try:
+            self.device.get_state()
+        except DevFailed as dev_failed:
+            self.logger.exception("Failed to get state.")
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to get state .",
+                str(dev_failed),
+                "TangoGroupClient.get_state()",
+                tango.ErrSeverity.ERR)      
         return self.device.get_state()
 
     def set_state(self, new_state):
         """
         Set device state.
         """
-        self.device.set_state(new_state)
+        try:
+            self.device.set_state(new_state)
+        except DevFailed as dev_failed:
+            self.logger.exception("Failed to set state.")
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to set state .",
+                str(dev_failed),
+                "TangoGroupClient.set_state()",
+                tango.ErrSeverity.ERR)      
 
 def main(args=None, **kwargs):
     """
