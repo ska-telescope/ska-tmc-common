@@ -86,3 +86,23 @@ def test_get_attribute():
         print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
         result = tango_client_obj.get_attribute("xyz")
         assert result == True
+
+
+def test_send_command_tango_group():
+    #csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
+    dish_group = 'DishLeafNode_Group'
+    deviceproxy = Mock()
+    dish_group_mock = Mock()
+
+    groups_to_mock = {
+        dish_group: dish_group_mock
+    }    
+
+    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
+        tango_client_obj = TangoClient(dish_group)
+        device_fqdn1 = tango_client_obj.get_deviceproxy()
+        print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
+        tango_client_obj.send_command_async("End")
+        result = tango_client_obj.send_command_async("End")
+        assert result == True
+
