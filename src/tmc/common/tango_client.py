@@ -26,6 +26,7 @@ class TangoClient:
         self.device_fqdn = fqdn
         self.deviceproxy = None
         self.get_deviceproxy()
+        print("device proxy in init method:::", self.deviceproxy)
         # retry = 0
         # while retry < 3:
         #     try:
