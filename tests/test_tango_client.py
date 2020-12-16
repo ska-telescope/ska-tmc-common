@@ -92,25 +92,34 @@ def mock_lower_devices():
 #     print("device_proxy {} and its type {} is ::::::".format(device_proxy,type(device_proxy)))
 
 #@pytest.mark.xfail
-def test_get_fqdn(mock_lower_devices):
-    tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
-    #csp_subarray1_fqdn = 'mid_csp/elt/subarray_01'
-    tango_client_obj = TangoClient(csp_subarray1_ln_proxy_mock)
-    device_fqdn = tango_client_obj.get_device_fqdn()
-    assert device_fqdn == 'mid_csp/elt/subarray_01'
+def test_get_fqdn():
+    #tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
+    csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
 
+    proxies_to_mock = {  
+        csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
+    }
+    
+    csp_subarray1_ln_proxy_mock = Mock()
 
-@contextlib.contextmanager
-def fake_tango_system(device_under_test, initial_dut_properties={}, proxies_to_mock={},
-                      device_proxy_import_path='tango.DeviceProxy'):
-
-    with mock.patch(device_proxy_import_path) as patched_constructor:
+    with mock.patch(tango.DeviceProxy) as patched_constructor:
         patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
-        patched_module = importlib.reload(sys.modules[device_under_test.__module__])
+    tango_client_obj = TangoClient(device_fqdn)
+    device_fqdn = tango_client_obj.get_device_fqdn()
+    assert device_fqdn == 'ska_mid/tm_leaf_node/csp_subarray01'
 
-    device_under_test = getattr(patched_module, device_under_test.__name__)
 
-    device_test_context = DeviceTestContext(device_under_test, properties=initial_dut_properties)
-    device_test_context.start()
-    yield device_test_context
-    device_test_context.stop()
+# @contextlib.contextmanager
+# def fake_tango_system(device_under_test, initial_dut_properties={}, proxies_to_mock={},
+#                       device_proxy_import_path='tango.DeviceProxy'):
+
+#     with mock.patch(device_proxy_import_path) as patched_constructor:
+#         patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
+#         patched_module = importlib.reload(sys.modules[device_under_test.__module__])
+
+#     device_under_test = getattr(patched_module, device_under_test.__name__)
+
+#     device_test_context = DeviceTestContext(device_under_test, properties=initial_dut_properties)
+#     device_test_context.start()
+#     yield device_test_context
+#     device_test_context.stop()
