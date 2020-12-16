@@ -110,6 +110,23 @@ def test_get_fqdn():
         assert device_fqdn1 == 'ska_mid/tm_leaf_node/csp_subarray01'
 
 
+def test_get_device_prox():
+    csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
+
+    csp_subarray1_ln_proxy_mock = Mock()
+
+    proxies_to_mock = {
+        csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
+    }
+
+    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
+        # patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
+
+        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
+        device_fqdn1 = tango_client_obj.get_deviceproxy()
+        print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
+        assert 0
+
 def test_send_command():
     # tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
