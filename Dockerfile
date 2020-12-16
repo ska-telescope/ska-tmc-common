@@ -4,7 +4,7 @@ FROM nexus.engageska-portugal.pt/ska-docker/ska-python-runtime:9.3.2 AS runtime
 
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
 RUN ipython profile create
-
+USER root
 # TODO: move this dependency to ska-docker/docker/tango/ska-python-buildenv/requirements.txt
 RUN python3 -m pip install --user pytest-forked
 
@@ -12,4 +12,4 @@ RUN python3 -m pip install --user pytest-forked
 # The pip install will be a "user installation" so update path to access console scripts
 ENV PATH=/home/tango/.local/bin:$PATH
 RUN python3 -m pip install -e . --user
-# CMD ["SKABaseDevice"]
+USER tango

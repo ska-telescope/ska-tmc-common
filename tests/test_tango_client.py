@@ -19,6 +19,9 @@ from os.path import dirname, join
 
 from src.tmc.common.tango_client import TangoClient
 
+def test_dummy_function():
+    print ("Dummy test")
+    assert True
 
 @pytest.fixture(scope="function")
 def mock_lower_devices():
@@ -78,14 +81,21 @@ def mock_lower_devices():
         yield tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map
 
 
-def test_proxy_creation(mock_lower_devices):
-    tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
+# def test_proxy_creation(mock_lower_devices):
+#     tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
 
+#     #csp_subarray1_fqdn = 'mid_csp/elt/subarray_01'
+#     tango_client_obj = TangoClient(csp_subarray1_ln_proxy_mock)
+#     device_proxy = tango_client_obj.get_deviceproxy()
+#     print("device_proxy {} and its type {} is ::::::".format(device_proxy,type(device_proxy)))
+
+
+def test_get_fqdn(mock_lower_devices):
+    tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
     #csp_subarray1_fqdn = 'mid_csp/elt/subarray_01'
     tango_client_obj = TangoClient(csp_subarray1_ln_proxy_mock)
-    device_proxy = tango_client_obj.get_deviceproxy()
-    print("device_proxy {} and its type {} is ::::::".format(device_proxy,type(device_proxy)))
-
+    device_fqdn = tango_client_obj.get_device_fqdn()
+    assert device_fqdn == 'mid_csp/elt/subarray_01'
 
 
 @contextlib.contextmanager
