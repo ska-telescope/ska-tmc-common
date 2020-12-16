@@ -25,19 +25,20 @@ class TangoClient:
     def __init__(self, fqdn):
         self.device_fqdn = fqdn
         self.deviceproxy = None
-        retry = 0
-        while retry < 3:
-            try:
-                self.deviceproxy = DeviceProxy(self.device_fqdn)
-                break
-            except DevFailed as df:
-                # self.logger.exception(df)
-                if retry >= 2:
-                    tango.Except.re_throw_exception(df, "Retries exhausted while creating device proxy.",
-                                                    "Failed to create DeviceProxy of " + str(self.device_fqdn),
-                                                    "SubarrayNode.get_deviceproxy()", tango.ErrSeverity.ERR)
-                retry += 1
-                continue
+        self.get_deviceproxy()
+        # retry = 0
+        # while retry < 3:
+        #     try:
+        #         self.deviceproxy = DeviceProxy(self.device_fqdn)
+        #         break
+        #     except DevFailed as df:
+        #         # self.logger.exception(df)
+        #         if retry >= 2:
+        #             tango.Except.re_throw_exception(df, "Retries exhausted while creating device proxy.",
+        #                                             "Failed to create DeviceProxy of " + str(self.device_fqdn),
+        #                                             "SubarrayNode.get_deviceproxy()", tango.ErrSeverity.ERR)
+        #         retry += 1
+        #         continue
         
 
     def get_deviceproxy(self):

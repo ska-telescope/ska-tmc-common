@@ -102,7 +102,7 @@ def test_get_fqdn():
         csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
     }
     
-    with mock.patch.object(TangoClient, 'deviceproxy', return_value=Mock()) as mock_obj:
+    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
         # patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
     
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
