@@ -16,6 +16,8 @@ from os.path import dirname, join
 # Additional import
 # from cspsubarrayleafnode import CspSubarrayLeafNode, const, release
 # from ska.base.control_model import HealthState, ObsState, LoggingLevel
+from tango.test_context import DeviceTestContext
+
 
 from src.tmc.common.tango_client import TangoClient
 
