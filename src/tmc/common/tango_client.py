@@ -109,7 +109,7 @@ class TangoClient:
             self.deviceproxy.read_attribute(attribute)
             return True
         except AttributeError as attribute_error:
-            log_msg = attribute_name + "Attribute not found" + str(attribute_error)
+            log_msg = attribute+ "Attribute not found" + str(attribute_error)
             self.logger.exception(attribute_error)
             tango.Except.throw_exception(attribute + "Attribute not found",
                                          log_msg,
@@ -143,7 +143,7 @@ class TangoClient:
 
     def unsubscribe_attr(self, event_id):
         try:
-            device_proxy.unsubscribe_event(event_id)
+            self.device_proxy.unsubscribe_event(event_id)
         except DevFailed as dev_failed:
             log_message = "Failed to unsubscribe event {}.".format(dev_failed)
             self.logger.error(log_message)
