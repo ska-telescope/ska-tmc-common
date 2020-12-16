@@ -142,7 +142,7 @@ def test_send_command():
         device_fqdn1 = tango_client_obj.get_deviceproxy()
         print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
         tango_client_obj.send_command_async("End")
-    deviceproxy.command_inout_async.assert_called_with("End")
+    csp_subarray1_ln_proxy_mock.command_inout_async.assert_called_with("End")
 
 # @contextlib.contextmanager
 # def fake_tango_system(device_under_test, initial_dut_properties={}, proxies_to_mock={},
