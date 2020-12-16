@@ -71,14 +71,10 @@ unit tests:
 
 linting:
   stage: linting
-  image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
-  before_script:
-  - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
+  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
   tags:
     - docker-executor
   script:
-    - echo $(ls -d ./dist/*.whl | grep $CI_COMMIT_SHORT_SHA)
-    - python3 -m pip install -U $(ls -d ./dist/*.whl | grep $CI_COMMIT_SHORT_SHA)
     - make lint
   artifacts:
     paths:
@@ -125,7 +121,7 @@ pages:
     - docker-executor
   script:
     - cp -R build public
-    - mv public/lmcbaseclasses_htmlcov/* public
+    - mv public/skatmccommon_htmlcov/* public
   artifacts:
     paths:
       - public
