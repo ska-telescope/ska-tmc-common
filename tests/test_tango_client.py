@@ -102,10 +102,10 @@ def test_get_fqdn():
         csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
     }
     
-    with mock.patch.object('tango.DeviceProxy') as patched_constructor:
-        patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
+    with mock.patch.object(TangoClient, 'deviceproxy', return_value=Mock()) as mock_obj:
+        # patched_constructor.side_effect = lambda device_fqdn: proxies_to_mock.get(device_fqdn, Mock())
     
-        tango_client_obj = TangoClient(device_fqdn)
+        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_fqdn1 = tango_client_obj.get_device_fqdn()
         assert device_fqdn1 == 'ska_mid/tm_leaf_node/csp_subarray01'
 
