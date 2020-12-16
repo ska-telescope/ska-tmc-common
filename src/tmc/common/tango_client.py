@@ -91,6 +91,7 @@ class TangoClient:
         try:
             print("hiiiiiiiiiiiiiii::::::::::")
             self.deviceproxy.command_inout_asynch(command, command_data)
+            return True
             print("inside send block after command invocation")
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command + str(dev_failed)
@@ -106,6 +107,7 @@ class TangoClient:
         """
         try:
             self.deviceproxy.read_attribute(attribute)
+            return True
         except AttributeError as attribute_error:
             log_msg = attribute_name + "Attribute not found" + str(attribute_error)
             self.logger.exception(attribute_error)
