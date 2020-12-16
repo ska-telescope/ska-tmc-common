@@ -124,8 +124,8 @@ def test_get_device_prox():
 
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_fqdn1 = tango_client_obj.get_deviceproxy()
-        print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
-        assert 0
+        # print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
+        assert device_fqdn1 != None
 
 def test_send_command():
     # tango_context, csp_subarray1_ln_proxy_mock, csp_subarray1_proxy_mock, sdp_subarray1_ln_proxy_mock, sdp_subarray1_proxy_mock, dish_ln_proxy_mock, csp_subarray1_ln_fqdn, csp_subarray1_fqdn, sdp_subarray1_ln_fqdn, sdp_subarray1_fqdn, dish_ln_prefix, event_subscription_map, dish_pointing_state_map = mock_lower_devices
@@ -139,6 +139,8 @@ def test_send_command():
 
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
+        device_fqdn1 = tango_client_obj.get_deviceproxy()
+        print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
         tango_client_obj.send_command_async("End")
     csp_subarray1_proxy_mock.command_inout_async.assert_called_with("End")
 
