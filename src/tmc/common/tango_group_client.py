@@ -25,8 +25,7 @@ class TangoGroupClient:
     """
 
     def __init__(self, group_name):
-        self.tango_group = group_name
-        self.get_tango_group()
+        self.get_tango_group(group_name)
     
     def get_tango_group(self, group_name):
         """
