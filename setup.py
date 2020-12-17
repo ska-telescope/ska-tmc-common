@@ -41,7 +41,7 @@ setuptools.setup(
         "console_scripts": [
             "TangoClient=tmc.common.tango_client:main",
             "TangoGroupClient=tmc.common.tango_group_client:main",
-            "TangoServer=tmc.common.tango_server:main"
+            "TangoServerHelper=tmc.common.tango_server_helper:main"
         ]
     },
     keywords="tmc common ska",

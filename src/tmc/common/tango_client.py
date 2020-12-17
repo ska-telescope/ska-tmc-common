@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of the SubarrayNode project
+# This file is part of the ska-tmc-common project
 #
 #
 #
@@ -88,7 +88,6 @@ class TangoClient:
         is on other than the TMC elements as it is asynchronous command execution.
         """
         try:
-            print("hiiiiiiiiiiiiiii::::::::::")
             self.deviceproxy.command_inout_asynch(command, command_data)
             print("inside send block after command invocation")
         except DevFailed as dev_failed:

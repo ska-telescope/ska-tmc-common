@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of the SubarrayNode project
+# This file is part of the ska-tmc-common project
 #
 #
 #
@@ -16,7 +16,7 @@ from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
 from tango.server import run,attribute, command, device_property
 import logging
 
-class TangoServer:
+class TangoServerHelper:
     """
     
     """
@@ -24,17 +24,22 @@ class TangoServer:
 
     def __init__(self):
         """Private constructor of the class""" 
-        if TangoServer.__instance != None:
+        if TangoServerHelper.__instance != None:
             raise Exception("This is singletone class")
         else:
-            TangoServer.__instance = self
+            TangoServerHelper.__instance = self
         self.device = None
+        # For property access
+        # Maintain a map
+        # key of map is the string containing property name
+        # value of map is the tango.property class object (defined in Tango class)
+        self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
 
     @staticmethod
     def get_instance():
-        if TangoServer.__instance == None:
-            TangoServer()
-        return TangoServer.__instance
+        if TangoServerHelper.__instance == None:
+            TangoServerHelper()
+        return TangoServerHelper.__instance
 
     
     def get_attribute(self):
@@ -47,15 +52,13 @@ class TangoServer:
         """
         pass
 
-    def get_property(self):
-        """
-        """
-        pass
-
-    def set_property(self, value):
-        """
-        """
-        pass
+    
+    def get_property(self, prop):
+        return self.prop_map[prop]
+    
+    #TODO: Check if this way works
+    def set_property(self, prop, attr_val):
+        self.prop_map[prop].value = attr_val
     
     def get_status(self):
         """
@@ -116,12 +119,12 @@ class TangoServer:
 
 def main(args=None, **kwargs):
     """
-    Main function of the TangoServer module.
+    Main function of the TangoServerHelper module.
 
     :param args: None
     :param kwargs:
     """
-    return run((TangoServer,), args=args, **kwargs)
+    return run((TangoServerHelper,), args=args, **kwargs)
 
 
 if __name__ == '__main__':
