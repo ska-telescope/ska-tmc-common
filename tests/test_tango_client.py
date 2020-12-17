@@ -61,17 +61,17 @@ def test_send_command():
     # csp_subarray1_ln_proxy_mock = Mock()
 
     proxies_to_mock = {
-        csp_subarray1_ln_fqdn: device_proxy
+        csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
     }
 
-    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
+    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=device_proxy) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
-        device_proxy = tango_client_obj.get_deviceproxy()
-        print("Device proxy is: {} and it type is: {}".format(device_proxy, type(device_proxy)))
-        tango_client_obj.send_command_async("End")
+        # a = tango_client_obj.get_deviceproxy()
+        # print("Device proxy is: {} and it type is: {}".format(device_proxy, type(device_proxy)))
+        tango_client_obj.send_command_async('End')
         # result = tango_client_obj.send_command_async("End")
         # assert result == True
-        device_proxy.command_inout_async.assert_called_once_with("End")
+        device_proxy.command_inout_async.assert_called_once_with('End')
 
 
 def test_get_attribute():
