@@ -68,10 +68,10 @@ def test_send_command():
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_proxy = tango_client_obj.get_deviceproxy()
         print("Device proxy is: {} and it type is: {}".format(device_proxy, type(device_proxy)))
-        tango_client_obj.send_command_async("End")
-        # result = tango_client_obj.send_command_async("End")
-        # assert result == True
-        device_proxy.command_inout_async.assert_called_with("End")
+        tango_client_obj.send_command("End")
+        result = tango_client_obj.send_command_async("End")
+        assert result == True
+        #device_proxy.command_inout.assert_called_with("End")
 
 
 def test_get_attribute():
