@@ -13,7 +13,7 @@ from os.path import dirname, join
 
 #Additional imports
 from tango.test_context import DeviceTestContext
-from src.tmc.common.tango_server import TangoServerHelper
+from src.tmc.common.tango_server_helper import TangoServerHelper
 
 
 def test_get_instance():
