@@ -31,9 +31,9 @@ class TangoGroupClient:
         """
         Create Tango Group Command
         """
-        self.tango_group = tango.Group(group_name)
+        #self.tango_group = tango.Group(group_name)
 
-        return self.tango_group
+        return self.tango.Group(group_name)
 
     def add_device(self, devices_to_add):
         try:
