@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of the SubarrayNode project
+# This file is part of the ska-tmc-common project
 #
 #
 #
@@ -16,54 +16,54 @@ from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
 from tango.server import run,attribute, command, device_property
 import logging
 
-class TangoServer:
+class TangoServerHelper:
     """
-    
+    Helper class for TangoServer API
     """
     __instance = None
 
     def __init__(self):
         """Private constructor of the class""" 
-        if TangoServer.__instance != None:
+        if TangoServerHelper.__instance is not None:
             raise Exception("This is singletone class")
         else:
-            TangoServer.__instance = self
+            TangoServerHelper.__instance = self
         self.device = None
+        # For property access
+        # Maintain a map
+        # key of map is the string containing property name
+        # value of map is the tango.property class object (defined in Tango class)
+        self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
 
     @staticmethod
     def get_instance():
-        if TangoServer.__instance == None:
-            TangoServer()
-        return TangoServer.__instance
+        """
+        Returns instance of TangoServerHelper class
+        """
+        if TangoServerHelper.__instance is None:
+            TangoServerHelper()
+        return TangoServerHelper.__instance
 
+    def get_property(self, prop):
+        """
+        Returns the value of given device property
+        """
+        return self.prop_map[prop]
     
-    def get_attribute(self):
+    def set_property(self, prop, attr_val):
         """
+        Sets the value to a given device property
         """
-        pass
+        self.prop_map[prop].value = attr_val
 
-    def set_attribute(self, value):
-        """
-        """
-        pass
-
-    def get_property(self):
-        """
-        """
-        pass
-
-    def set_property(self, value):
-        """
-        """
-        pass
-    
     def get_status(self):
         """
+        Get status of Tango device server
         """
         try:
             self.device.get_status()
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to get status.")
+            # self.logger.exception("Failed to get status.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get status .",
                 str(dev_failed),
@@ -78,7 +78,7 @@ class TangoServer:
         try:
             self.device.set_status(new_status)
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to set status.")
+            #self.logger.exception("Failed to set status.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set status .",
                 str(dev_failed),
@@ -92,7 +92,7 @@ class TangoServer:
         try:
             self.device.get_state()
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to get state.")
+            #self.logger.exception("Failed to get state.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get state .",
                 str(dev_failed),
@@ -107,7 +107,7 @@ class TangoServer:
         try:
             self.device.set_state(new_state)
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to set state.")
+            # self.logger.exception("Failed to set state.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set state .",
                 str(dev_failed),
@@ -116,12 +116,12 @@ class TangoServer:
 
 def main(args=None, **kwargs):
     """
-    Main function of the TangoServer module.
+    Main function of the TangoServerHelper module.
 
     :param args: None
     :param kwargs:
     """
-    return run((TangoServer,), args=args, **kwargs)
+    return run((TangoServerHelper,), args=args, **kwargs)
 
 
 if __name__ == '__main__':
