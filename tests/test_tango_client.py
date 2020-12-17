@@ -93,7 +93,6 @@ def test_get_attribute():
 def test_send_command_tango_group():
     #csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     dish_group = 'DishLeafNode_Group'
-    deviceproxy = Mock()
     dish_group_mock = Mock()
 
     groups_to_mock = {
@@ -104,8 +103,8 @@ def test_send_command_tango_group():
         tango_client_obj = TangoGroupClient(dish_group)
         tango_group = tango_client_obj.get_tango_group()
         print("tango_group is: {} and it type is: {}".format(tango_group, type(tango_group)))
-        tango_client_obj.send_command_async("End")
-        result = tango_client_obj.send_command_async("End")
+        tango_client_obj.send_command("End")
+        result = tango_client_obj.send_command("End")
         assert result == True
 
 def test_get_tango_group():
