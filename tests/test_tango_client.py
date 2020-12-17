@@ -59,10 +59,10 @@ def test_send_command():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     device_proxy = Mock()
     # csp_subarray1_ln_proxy_mock = Mock()
-
-    proxies_to_mock = {
-        csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
-    }
+    #
+    # proxies_to_mock = {
+    #     csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
+    # }
 
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=device_proxy) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
