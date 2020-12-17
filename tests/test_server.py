@@ -30,3 +30,9 @@ def test_get_instance():
     # result = tango_server_obj.set_status("Working")
         print("device_proxy is :::::", device_proxy)
         assert 0
+
+# def test_set_status():
+#     tango_server_obj = TangoServerHelper.get_instance()
+#     result = tango_server_obj.get_property("DishLeafNodePrefix")
+#     print("result is :::::", result)
+#     assert 0
