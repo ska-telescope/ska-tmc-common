@@ -28,9 +28,7 @@ class TangoServerHelper:
             raise Exception("This is singletone class")
         else:
             TangoServerHelper.__instance = self
-        # self.device = None
-        device = self.target
-
+        self.device = None
         # For property access
         # Maintain a map
         # key of map is the string containing property name
@@ -78,7 +76,7 @@ class TangoServerHelper:
         Set device status.
         """
         try:
-            a = device.set_status(new_status)
+            a = self.device.set_status(new_status)
             return a
         except DevFailed as dev_failed:
             #self.logger.exception("Failed to set status.")
