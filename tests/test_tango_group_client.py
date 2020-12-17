@@ -56,21 +56,6 @@ def test_get_tango_group():
         assert tango_group != None
 
 
-# def test_remove_all_device():
-#     dish_group = 'DishLeafNode_Group'
-       
-#     dish_group_mock = Mock()
-
-#     groups_to_mock = {
-#         dish_group: dish_group_mock
-#     }    
-#     with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
-    
-#         tango_client_obj = TangoGroupClient(dish_group)
-#         tango_group = tango_client_obj.remove_all_device()
-#         assert tango_group == None
-
-
 def test_get_group_device_list():
     dish_group = 'DishLeafNode_Group'
        
@@ -84,6 +69,6 @@ def test_get_group_device_list():
         tango_client_obj = TangoGroupClient(dish_group)
         dish_devices = ["ska_mid/tm_leaf_node/d0001"]
         tango_client_obj.add_device(dish_devices)
-        tango_group = tango_client_obj.get_group_device_list()
+        result = tango_client_obj.get_group_device_list()
         print("tango_group is {} its type is {}".format(tango_group, type(tango_group)))
-        assert 0
+        assert result = True
