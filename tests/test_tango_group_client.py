@@ -82,7 +82,8 @@ def test_get_group_device_list():
     with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
     
         tango_client_obj = TangoGroupClient(dish_group)
-        tango_client_obj.add_device('ska_mid/tm_leaf_node/csp_subarray01')
+        dish_devices = ["ska_mid/tm_leaf_node/d0001"]
+        tango_client_obj.add_device(dish_devices)
         tango_group = tango_client_obj.get_group_device_list()
         print("tango_group is {} its type is {}".format(tango_group, type(tango_group)))
         assert 0
