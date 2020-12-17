@@ -28,13 +28,13 @@ class TangoServerHelper:
             raise Exception("This is singletone class")
         else:
             TangoServerHelper.__instance = self
-        # self.device = None
+        self.device = None
         # For property access
         # Maintain a map
         # key of map is the string containing property name
         # value of map is the tango.property class object (defined in Tango class)
         # self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
-        self.prop_map = dict("DishLeafNodePrefix", self.DishLeafNodePrefix)
+        self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
 
     @staticmethod
     def get_instance():
