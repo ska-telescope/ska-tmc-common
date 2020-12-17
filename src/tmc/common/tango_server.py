@@ -28,7 +28,7 @@ class TangoServerHelper:
             raise Exception("This is singletone class")
         else:
             TangoServerHelper.__instance = self
-        # self.device = None
+        self.device = None
         # For property access
         # Maintain a map
         # key of map is the string containing property name
