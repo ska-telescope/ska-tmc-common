@@ -71,4 +71,4 @@ def test_get_group_device_list():
         tango_client_obj.add_device(dish_devices)
         result = tango_client_obj.get_group_device_list()
         print("tango_group is {} its type is {}".format(tango_group, type(tango_group)))
-        assert result = True
+        assert result == True
