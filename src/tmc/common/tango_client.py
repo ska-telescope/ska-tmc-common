@@ -47,7 +47,7 @@ class TangoClient:
                                                         "SubarrayNode.get_deviceproxy()", tango.ErrSeverity.ERR)
                     retry += 1
                     continue
-        return self.deviceproxy
+        yield self.deviceproxy
 
     def get_device_fqdn(self):
         """

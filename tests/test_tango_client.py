@@ -57,14 +57,14 @@ def test_get_device_prox():
 
 def test_send_command():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
-    deviceproxy = Mock()
-    csp_subarray1_ln_proxy_mock = Mock()
+    device_proxy = Mock()
+    # csp_subarray1_ln_proxy_mock = Mock()
+    #
+    # proxies_to_mock = {
+    #     csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
+    # }
 
-    proxies_to_mock = {
-        csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
-    }
-
-    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
+    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=device_proxy) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_proxy = tango_client_obj.get_deviceproxy()
         print("Device proxy is: {} and it type is: {}".format(device_proxy, type(device_proxy)))
