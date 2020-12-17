@@ -21,7 +21,7 @@ from src.tmc.common.tango_server import TangoServerHelper
 
 
 def test_set_status():
-    tango_server_obj = TangoServerHelper()
+    tango_server_obj = TangoServerHelper.get_instance()
     result = tango_server_obj.set_status("Working")
     print("result is :::::", result)
     assert 0
