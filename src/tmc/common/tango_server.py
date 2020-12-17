@@ -18,13 +18,13 @@ import logging
 
 class TangoServerHelper:
     """
-    
+    Helper class for TangoServer API
     """
     __instance = None
 
     def __init__(self):
         """Private constructor of the class""" 
-        if TangoServerHelper.__instance != None:
+        if TangoServerHelper.__instance is not None:
             raise Exception("This is singletone class")
         else:
             TangoServerHelper.__instance = self
@@ -37,36 +37,33 @@ class TangoServerHelper:
 
     @staticmethod
     def get_instance():
-        if TangoServerHelper.__instance == None:
+        """
+        Returns instance of TangoServerHelper class
+        """
+        if TangoServerHelper.__instance is None:
             TangoServerHelper()
         return TangoServerHelper.__instance
 
-    
-    def get_attribute(self):
-        """
-        """
-        pass
-
-    def set_attribute(self, value):
-        """
-        """
-        pass
-
-    
     def get_property(self, prop):
+        """
+        Returns the value of given device property
+        """
         return self.prop_map[prop]
     
-    #TODO: Check if this way works
     def set_property(self, prop, attr_val):
+        """
+        Sets the value to a given device property
+        """
         self.prop_map[prop].value = attr_val
-    
+
     def get_status(self):
         """
+        Get status of Tango device server
         """
         try:
             self.device.get_status()
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to get status.")
+            # self.logger.exception("Failed to get status.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get status .",
                 str(dev_failed),
@@ -81,7 +78,7 @@ class TangoServerHelper:
         try:
             self.device.set_status(new_status)
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to set status.")
+            #self.logger.exception("Failed to set status.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set status .",
                 str(dev_failed),
@@ -95,7 +92,7 @@ class TangoServerHelper:
         try:
             self.device.get_state()
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to get state.")
+            #self.logger.exception("Failed to get state.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get state .",
                 str(dev_failed),
@@ -110,7 +107,7 @@ class TangoServerHelper:
         try:
             self.device.set_state(new_state)
         except DevFailed as dev_failed:
-            self.logger.exception("Failed to set state.")
+            # self.logger.exception("Failed to set state.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set state .",
                 str(dev_failed),
