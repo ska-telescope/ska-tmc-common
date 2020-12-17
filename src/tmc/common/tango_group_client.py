@@ -83,6 +83,7 @@ class TangoGroupClient:
         """
         try:
             self.tango_group.get_device_list()
+            return True
         except DevFailed as dev_failed:
             self.logger.exception("Failed to get group device list")
             tango.Except.re_throw_exception(dev_failed,
@@ -90,7 +91,7 @@ class TangoGroupClient:
                 str(dev_failed),
                 "TangoGroupClient.get_group_device_list()",
                 tango.ErrSeverity.ERR)  
-
+        
     def remove_all_device(self):
         return self.tango_group.remove_all()
 
