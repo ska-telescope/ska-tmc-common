@@ -26,8 +26,8 @@ def test_get_fqdn():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
-        device_fqdn1 = tango_client_obj.get_device_fqdn()
-        assert device_fqdn1 == 'ska_mid/tm_leaf_node/csp_subarray01'
+        device_fqdn = tango_client_obj.get_device_fqdn()
+        assert device_fqdn == 'ska_mid/tm_leaf_node/csp_subarray01'
 
 
 def test_get_device_prox():
@@ -40,8 +40,8 @@ def test_get_device_prox():
 
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
-        device_fqdn1 = tango_client_obj.get_deviceproxy()
-        assert device_fqdn1 != None
+        device_proxy = tango_client_obj.get_deviceproxy()
+        assert device_proxy != None
 
 def test_send_command():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
@@ -67,7 +67,6 @@ def test_get_attribute():
 
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
-        device_fqdn1 = tango_client_obj.get_deviceproxy()
-        print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
+        device_proxy = tango_client_obj.get_deviceproxy()
         result = tango_client_obj.get_attribute("xyz")
         assert result == True
