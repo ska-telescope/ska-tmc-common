@@ -25,7 +25,6 @@ def test_dummy_function():
 def test_get_fqdn():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
-    
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_fqdn1 = tango_client_obj.get_device_fqdn()
         assert device_fqdn1 == 'ska_mid/tm_leaf_node/csp_subarray01'
@@ -33,7 +32,6 @@ def test_get_fqdn():
 
 def test_get_device_prox():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
-
     csp_subarray1_ln_proxy_mock = Mock()
 
     proxies_to_mock = {
@@ -54,6 +52,7 @@ def test_send_command():
         device_proxy = tango_client_obj.get_deviceproxy()
         result = tango_client_obj.send_command_async("End")
         assert result == True
+        #TODO: Future reference
     # mock_obj.command_inout_async.assert_called_with("End", None)
 
 

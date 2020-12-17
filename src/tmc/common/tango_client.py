@@ -26,7 +26,6 @@ class TangoClient:
         self.device_fqdn = fqdn
         self.deviceproxy = None
         self.deviceproxy = self.get_deviceproxy()
-        print("device proxy in init method:::", self.deviceproxy)    
 
     def get_deviceproxy(self):
         """
@@ -61,12 +60,9 @@ class TangoClient:
         as it is synchronous command execution.
         """
         try:
-            print("inside send block")
             self.deviceproxy.command_inout(command_name, command_data)
-            print("inside send block after command invocation")
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
-            # self.logger.exception(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command_name,
                                          log_msg,
                                          "TangoClient.send_command",
@@ -82,7 +78,6 @@ class TangoClient:
             return True
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
-            # self.logger.exception(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command_name,
                                          log_msg,
                                          "TangoClient.send_command_async",
@@ -97,7 +92,6 @@ class TangoClient:
             return True
         except AttributeError as attribute_error:
             log_msg = attribute_name + "Attribute not found" + str(attribute_error)
-            # self.logger.exception(attribute_error)
             tango.Except.throw_exception(attribute + "Attribute not found",
                                          log_msg,
                                          "TangoClient.get_attribute",
@@ -111,7 +105,6 @@ class TangoClient:
             self.deviceproxy.write_attribute(attribute_name, value)
         except AttributeError as attribute_error:
             log_msg = attribute_name + "Attribute not found" + str(attribute_error)
-            # self.logger.exception(attribute_error)
             tango.Except.throw_exception(attribute + "Attribute not found",
                                          log_msg,
                                          "TangoClient.set_attribute",
@@ -125,7 +118,6 @@ class TangoClient:
             event_id = self.deviceproxy.subscribe_event(attr_name, EventType.CHANGE_EVENT, callback_method, stateless=True)
             return event_id
         except DevFailed as dev_failed:
-            # self.logger.exception(dev_failed)
             tango.Except.throw_exception("Error is subscribing event",
                                          dev_failed,
                                          "TangoClient.subscribe_attribute",
