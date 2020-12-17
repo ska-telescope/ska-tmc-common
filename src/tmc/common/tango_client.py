@@ -25,7 +25,8 @@ class TangoClient:
     def __init__(self, fqdn):
         self.device_fqdn = fqdn
         self.deviceproxy = None
-        self.get_deviceproxy()
+        self.deviceproxy = self.get_deviceproxy()
+        print("device proxy in init method:::", self.deviceproxy)
         # retry = 0
         # while retry < 3:
         #     try:
@@ -89,6 +90,7 @@ class TangoClient:
         """
         try:
             self.deviceproxy.command_inout_asynch(command, command_data)
+            return True
             print("inside send block after command invocation")
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command + str(dev_failed)
@@ -104,8 +106,9 @@ class TangoClient:
         """
         try:
             self.deviceproxy.read_attribute(attribute)
+            return True
         except AttributeError as attribute_error:
-            log_msg = attribute_name + "Attribute not found" + str(attribute_error)
+            log_msg = attribute+ "Attribute not found" + str(attribute_error)
             self.logger.exception(attribute_error)
             tango.Except.throw_exception(attribute + "Attribute not found",
                                          log_msg,
@@ -139,7 +142,7 @@ class TangoClient:
 
     def unsubscribe_attr(self, event_id):
         try:
-            device_proxy.unsubscribe_event(event_id)
+            self.device_proxy.unsubscribe_event(event_id)
         except DevFailed as dev_failed:
             log_message = "Failed to unsubscribe event {}.".format(dev_failed)
             self.logger.error(log_message)
