@@ -54,3 +54,18 @@ def test_get_tango_group():
         tango_client_obj = TangoGroupClient(dish_group)
         tango_group = tango_client_obj.get_tango_group(dish_group)
         assert tango_group != None
+
+
+def test_remove_all_device():
+    dish_group = 'DishLeafNode_Group'
+       
+    dish_group_mock = Mock()
+
+    groups_to_mock = {
+        dish_group: dish_group_mock
+    }    
+    with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
+    
+        tango_client_obj = TangoGroupClient(dish_group)
+        tango_group = tango_client_obj.remove_all_device()
+        assert tango_group == None
