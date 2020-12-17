@@ -98,11 +98,24 @@ def test_send_command_tango_group():
         dish_group: dish_group_mock
     }    
 
-    with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
-        tango_client_obj = TangoClient(dish_group)
+    with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
+        tango_client_obj = TangoGroupClient(dish_group)
         device_fqdn1 = tango_client_obj.get_deviceproxy()
         print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
         tango_client_obj.send_command_async("End")
         result = tango_client_obj.send_command_async("End")
         assert result == True
 
+def test_get_tango_group():
+    dish_group = 'DishLeafNode_Group'
+       
+    dish_group_mock = Mock()
+
+    groups_to_mock = {
+        dish_group: dish_group_mock
+    }    
+    with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
+    
+        tango_client_obj = TangoGroupClient(dish_group)
+        device_fqdn1 = tango_client_obj.get_tango_group()
+        assert device_fqdn1 == 'DishLeafNode_Group'
