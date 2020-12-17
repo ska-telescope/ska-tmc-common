@@ -70,5 +70,4 @@ def test_get_group_device_list():
         dish_devices = ["ska_mid/tm_leaf_node/d0001"]
         tango_client_obj.add_device(dish_devices)
         result = tango_client_obj.get_group_device_list()
-        print("tango_group is {} its type is {}".format(tango_group, type(tango_group)))
         assert result == True
