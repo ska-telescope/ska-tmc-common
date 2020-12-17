@@ -21,22 +21,10 @@ from src.tmc.common.tango_server import TangoServerHelper
 
 
 def test_get_instance():
-    device_proxy = Mock()
-    device = self.target
-    device.DishLeafNodePrefix = "DishLeafNodePrefix"
-    with mock.patch.object(TangoServerHelper, 'get_instance', return_value=device_proxy) as mock_obj:
+    with mock.patch.object(TangoServerHelper, 'get_instance', return_value=Mock()) as mock_obj:
         # tango_client_obj = TangoServerHelper()
-        device_proxy.device = device
-        result = device_proxy.get_property
-        print("result is ::::::::::", result)
+        device_proxy = TangoServerHelper.get_instance()
+        device_proxy.Status = "Testing status for mock device"
+        device_proxy.set_status("Testing status for mock device")
+        device_proxy.set_status.assert_called_with("Testing status for mock device")
 
-    # tango_server_obj = TangoServerHelper.get_instance()
-    # result = tango_server_obj.set_status("Working")
-        print("device_proxy is :::::", device_proxy)
-        assert 0
-
-# def test_set_status():
-#     tango_server_obj = TangoServerHelper.get_instance()
-#     result = tango_server_obj.get_property("DishLeafNodePrefix")
-#     print("result is :::::", result)
-#     assert 0

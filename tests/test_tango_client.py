@@ -11,11 +11,8 @@ from mock import Mock
 from mock import MagicMock
 from os.path import dirname, join
 
-# Tango imports
-
 # Additional import
-# from cspsubarrayleafnode import CspSubarrayLeafNode, const, release
-# from ska.base.control_model import HealthState, ObsState, LoggingLevel
+
 from tango.test_context import DeviceTestContext
 from src.tmc.common.tango_client import TangoClient
 
@@ -27,13 +24,6 @@ def test_dummy_function():
 
 def test_get_fqdn():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
-       
-    csp_subarray1_ln_proxy_mock = Mock()
-
-    proxies_to_mock = {  
-        csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
-    }
-    
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
     
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
@@ -58,20 +48,13 @@ def test_get_device_prox():
 def test_send_command():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     device_proxy = Mock()
-    # csp_subarray1_ln_proxy_mock = Mock()
-    #
-    # proxies_to_mock = {
-    #     csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock
-    # }
 
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=device_proxy) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_proxy = tango_client_obj.get_deviceproxy()
-        print("Device proxy is: {} and it type is: {}".format(device_proxy, type(device_proxy)))
-        tango_client_obj.send_command("End")
         result = tango_client_obj.send_command_async("End")
         assert result == True
-        #device_proxy.command_inout.assert_called_with("End")
+    mock_obj.command_inout_async.assert_called_with("End", None)
 
 
 def test_get_attribute():

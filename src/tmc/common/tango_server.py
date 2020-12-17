@@ -77,8 +77,7 @@ class TangoServerHelper:
         Set device status.
         """
         try:
-            a = self.device.set_status(new_status)
-            return a
+            self.device.set_status(new_status)
         except DevFailed as dev_failed:
             #self.logger.exception("Failed to set status.")
             tango.Except.re_throw_exception(dev_failed,
