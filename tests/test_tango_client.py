@@ -17,7 +17,9 @@ from os.path import dirname, join
 # from cspsubarrayleafnode import CspSubarrayLeafNode, const, release
 # from ska.base.control_model import HealthState, ObsState, LoggingLevel
 from tango.test_context import DeviceTestContext
-from src.tmc.common.tango_client import TangoClient, TangoGroupClient
+from src.tmc.common.tango_client import TangoClient
+from src.tmc.common.tango_group_client import TangoGroupClient
+
 
 
 def test_dummy_function():
