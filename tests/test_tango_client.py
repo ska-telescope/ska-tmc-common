@@ -71,7 +71,7 @@ def test_send_command():
         tango_client_obj.send_command_async("End")
         # result = tango_client_obj.send_command_async("End")
         # assert result == True
-        device_proxy.command_inout_async.assert_called_with("End")
+        device_proxy.command_inout_async.assert_called_once_with("End")
 
 
 def test_get_attribute():
