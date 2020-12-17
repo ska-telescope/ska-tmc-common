@@ -103,7 +103,7 @@ def test_send_command_tango_group():
     with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
         tango_client_obj = TangoGroupClient(dish_group)
         tango_group = tango_client_obj.get_tango_group()
-        print("Device proxy is: {} and it type is: {}".format(device_fqdn1, type(device_fqdn1)))
+        print("tango_group is: {} and it type is: {}".format(tango_group, type(tango_group)))
         tango_client_obj.send_command_async("End")
         result = tango_client_obj.send_command_async("End")
         assert result == True
