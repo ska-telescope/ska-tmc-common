@@ -33,8 +33,8 @@ class TangoServerHelper:
         # Maintain a map
         # key of map is the string containing property name
         # value of map is the tango.property class object (defined in Tango class)
-        #self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
-        self.prop_map = None
+        self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
+        #self.prop_map = None
 
     @staticmethod
     def get_instance():
