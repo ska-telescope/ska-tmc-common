@@ -36,10 +36,9 @@ class TangoGroupClient:
 
         return self.tango_group
 
-    def add_device(self, devices_to_add):
+    def add_device(self, device_to_add):
         try:
-            for device in devices_to_add:
-                self.tango_group.add(device)
+            self.tango_group.add(device_to_add)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to add device")
             tango.Except.re_throw_exception(dev_failed,
@@ -48,13 +47,12 @@ class TangoGroupClient:
                 "TangoGroupClient.add_device()",
                 tango.ErrSeverity.ERR)  
 
-    def remove_device(self, devices_to_remove):
+    def remove_device(self, device_to_remove):
         """
         Removes all elements in the Group.
         """
         try:
-            for device in devices_to_remove:
-                self.tango_group.remove(device)
+            self.tango_group.remove(device_to_remove)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to remove device")
             tango.Except.re_throw_exception(dev_failed,
