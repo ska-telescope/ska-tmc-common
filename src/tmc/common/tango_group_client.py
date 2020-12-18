@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of the SubarrayNode project
+# This file is part of the ska-tmc-common project
 #
 #
 #
@@ -21,11 +21,11 @@ LOGGER = logging.getLogger(__name__)
 
 class TangoGroupClient:
     """
-    
+    Class for TangoGroupClient API
+
     """
 
     def __init__(self, group_name):
-        self.tango_group = group_name
         self.tango_group = self.get_tango_group(group_name)
     
     def get_tango_group(self, group_name):

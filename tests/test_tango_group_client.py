@@ -16,10 +16,6 @@ from tango.test_context import DeviceTestContext
 from src.tmc.common.tango_group_client import TangoGroupClient
 
 
-def test_dummy_function():
-    print ("Dummy test")
-    assert True
-
 def test_get_tango_group():
     dish_group = 'DishLeafNode_Group'
        

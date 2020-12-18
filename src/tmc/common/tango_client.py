@@ -19,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 
 class TangoClient:
     """
-    
+    Class for TangoClient API
     """
 
     def __init__(self, fqdn):

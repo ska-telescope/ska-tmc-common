@@ -17,11 +17,6 @@ from tango.test_context import DeviceTestContext
 from src.tmc.common.tango_client import TangoClient
 
 
-
-def test_dummy_function():
-    print ("Dummy test")
-    assert True
-
 def test_get_fqdn():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     with mock.patch.object(TangoClient, 'get_deviceproxy', return_value=Mock()) as mock_obj:
