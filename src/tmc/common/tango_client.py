@@ -25,9 +25,9 @@ class TangoClient:
     def __init__(self, fqdn):
         self.device_fqdn = fqdn
         self.deviceproxy = None
-        self.deviceproxy = self.get_deviceproxy()
+        self.deviceproxy = self._get_deviceproxy()
 
-    def get_deviceproxy(self):
+    def _get_deviceproxy(self):
         """
         Returns device proxy for given FQDN.
         """
