@@ -9,7 +9,7 @@
 # DOCKER_REGISTRY_USER and PROJECT to give a final Docker tag of
 # nexus.engageska-portugal.pt/tango-example/dishmaster
 #
-DOCKER_REGISTRY_USER:=ska-docker
+DOCKER_REGISTRY_USER:=ska-telescope
 PROJECT = ska-tmc-common
 
 #

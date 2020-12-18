@@ -33,7 +33,8 @@ class TangoServerHelper:
         # Maintain a map
         # key of map is the string containing property name
         # value of map is the tango.property class object (defined in Tango class)
-        self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
+        #self.prop_map = dict("DishLeafNodePrefix", self.device.DishLeafNodePrefix)
+        self.prop_map = None
 
     @staticmethod
     def get_instance():
@@ -63,7 +64,6 @@ class TangoServerHelper:
         try:
             self.device.get_status()
         except DevFailed as dev_failed:
-            # self.logger.exception("Failed to get status.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get status .",
                 str(dev_failed),
@@ -78,7 +78,6 @@ class TangoServerHelper:
         try:
             self.device.set_status(new_status)
         except DevFailed as dev_failed:
-            #self.logger.exception("Failed to set status.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set status .",
                 str(dev_failed),
@@ -92,7 +91,6 @@ class TangoServerHelper:
         try:
             self.device.get_state()
         except DevFailed as dev_failed:
-            #self.logger.exception("Failed to get state.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get state .",
                 str(dev_failed),
@@ -107,7 +105,6 @@ class TangoServerHelper:
         try:
             self.device.set_state(new_state)
         except DevFailed as dev_failed:
-            # self.logger.exception("Failed to set state.")
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set state .",
                 str(dev_failed),

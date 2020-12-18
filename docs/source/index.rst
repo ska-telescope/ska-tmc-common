@@ -1,9 +1,9 @@
-.. LMC Base Classes documentation master file, created by
+.. ska-tmc-common documentation master file, created by
    sphinx-quickstart on Fri Jan 11 10:03:42 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to LMC Base Classes documentation!
+Welcome to ska-tmc-common documentation!
 ============================================
 
 .. toctree::

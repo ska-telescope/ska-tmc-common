@@ -39,7 +39,6 @@ class TangoClient:
                     self.deviceproxy = DeviceProxy(self.device_fqdn)
                     break
                 except DevFailed as df:
-                    # self.logger.exception(df)
                     if retry >= 2:
                         tango.Except.re_throw_exception(df, "Retries exhausted while creating device proxy.",
                                                         "Failed to create DeviceProxy of " + str(self.device_fqdn),
@@ -56,7 +55,7 @@ class TangoClient:
 
     def send_command(self, command_name, command_data = None):
         """
-        Here, as per the device proxy this function is invoking commands on respective nodes of TMC elements
+        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
         as it is synchronous command execution.
         """
         try:
@@ -68,13 +67,13 @@ class TangoClient:
                                          "TangoClient.send_command",
                                          tango.ErrSeverity.ERR)
 
-    def send_command_async(self, command_name, command_data = None):
+    def send_command_async(self, command_name, command_data = None, callback_method = None):
         """
-        Here, as per the device proxy this function is invoking commands on respective nodes. This command invocation
-        is on other than the TMC elements as it is asynchronous command execution.
+        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
+        as it is synchronous command execution.
         """
         try:
-            self.deviceproxy.command_inout_asynch(command_name, command_data)
+            self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
             return True
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)

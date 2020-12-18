@@ -95,9 +95,9 @@ class TangoGroupClient:
     def remove_all_device(self):
         return self.tango_group.remove_all()
 
-    def send_command(self, command_name, input_arg = None):
+    def send_command(self, command_name, command_data = None):
         try:
-            self.tango_group.command_inout(command_name, input_arg)
+            self.tango_group.command_inout(command_name, command_data)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to execute command .")
             tango.Except.re_throw_exception(dev_failed,
@@ -106,9 +106,9 @@ class TangoGroupClient:
                 "TangoGroupClient.send_command()",
                 tango.ErrSeverity.ERR)  
 
-    def send_command_async(self, command_name, input_arg = None):
+    def send_command_async(self, command_name, command_data = None, callback_method = None):
         try:
-            self.tango_group.command_inout_asynch(command_name, input_arg)
+            self.tango_group.command_inout_asynch(command_name, command_data, callback_method)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to execute command .")
             tango.Except.re_throw_exception(dev_failed,
