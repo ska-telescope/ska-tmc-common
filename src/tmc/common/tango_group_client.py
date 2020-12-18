@@ -95,7 +95,8 @@ class TangoGroupClient:
 
     def send_command(self, command_name, command_data = None):
         try:
-            self.tango_group.command_inout(command_name, command_data)
+            return_value = self.tango_group.command_inout(command_name, command_data)
+            return return_value
         except DevFailed as dev_failed:
             self.logger.exception("Failed to execute command .")
             tango.Except.re_throw_exception(dev_failed,
