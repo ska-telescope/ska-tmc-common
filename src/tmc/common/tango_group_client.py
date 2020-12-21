@@ -116,15 +116,3 @@ class TangoGroupClient:
                 "TangoGroupClient.send_command_async()",
                 tango.ErrSeverity.ERR)      
 
-def main(args=None, **kwargs):
-    """
-    Main function of the TangoGroupClient module.
-
-    :param args: None
-    :param kwargs:
-    """
-    return run((TangoGroupClient,), args=args, **kwargs)
-
-
-if __name__ == '__main__':
-    main()

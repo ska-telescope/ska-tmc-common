@@ -113,16 +113,3 @@ class TangoServerHelper:
                 "TangoGroupClient.set_state()",
                 tango.ErrSeverity.ERR)      
 
-def main(args=None, **kwargs):
-    """
-    Main function of the TangoServerHelper module.
-
-    :param args: None
-    :param kwargs:
-    """
-    return run((TangoServerHelper,), args=args, **kwargs)
-
-
-if __name__ == '__main__':
-    main()
-        
