@@ -46,7 +46,7 @@ def test_send_command_async():
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_proxy = tango_client_obj._get_deviceproxy()
         tango_client_obj.deviceproxy.command_inout_async.assert_called_with("End", [], 
-                                                                  any_method(with_name"gotoidle_cmd_ended_cb"))
+                                                                  any_method(with_name="gotoidle_cmd_ended_cb"))
 ]        #TODO: Future reference
     # mock_obj.command_inout_async.assert_called_with("End", None)
 
