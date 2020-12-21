@@ -7,7 +7,7 @@
 # Distributed under the terms of the BSD-3-Clause license.
 # See LICENSE.txt for more info.
 
-""" Tango Interface
+""" Tango Client Code
 
 """
 # Tango imports
@@ -21,7 +21,6 @@ class TangoClient:
     """
     Class for TangoClient API
     """
-
     def __init__(self, fqdn):
         self.device_fqdn = fqdn
         self.deviceproxy = None
@@ -73,8 +72,8 @@ class TangoClient:
         as it is synchronous command execution.
         """
         try:
-            self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
-            return True
+            return_val = self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
+            return return_val
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command_name,
@@ -122,7 +121,7 @@ class TangoClient:
                                          "TangoClient.subscribe_attribute",
                                          tango.ErrSeverity.ERR)
 
-    def unsubscribe_attr(self, event_id):
+    def unsubscribe_attribute(self, event_id):
         """
         Unsubscribes the attribute change event
         """

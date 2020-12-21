@@ -9,20 +9,11 @@ Welcome to ska-tmc-common documentation!
 .. toctree::
   :caption: Table of Contents
   :maxdepth: 2
-
-   Device:  SKA Base Device<SKABaseDevice>
-   Device:  SKA Alarm Handler<SKAAlarmHandler>
-   Device:  SKA Logger<SKALogger>
-   Device:  SKA Master<SKAMaster>
-   Device:  SKA TelState<SKATelState>
-
-   Device:  SKA ObsDevice<SKAObsDevice>
-   Device:  SKA Capability<SKACapability>
-   Device:  SKA Subarray<SKASubarray>
-
-   SKA Control Model<Control_Model>
-   SKA Commands<Commands>
-   SKA State Machine<State_Machine>
+   
+   Class:  TangoClient<CentralNode>
+   Class:  TangoGroupClient<TangoGroupClient>
+   Class:  TangoServerHelper<TangoServerHelper>
+   
 
 Indices and tables
 ==================

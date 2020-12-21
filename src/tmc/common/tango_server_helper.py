@@ -64,14 +64,13 @@ class TangoServerHelper:
         Get status of Tango device server
         """
         try:
-            self.device.get_status()
+            return self.device.get_status()
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get status .",
                 str(dev_failed),
                 "TangoGroupClient.get_status()",
                 tango.ErrSeverity.ERR)      
-        return self.device.get_status()
 
     def set_status(self, new_status):
         """
@@ -91,14 +90,13 @@ class TangoServerHelper:
         Get a COPY of the device state.
         """
         try:
-            self.device.get_state()
+            return self.device.get_state()
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get state .",
                 str(dev_failed),
                 "TangoGroupClient.get_state()",
                 tango.ErrSeverity.ERR)      
-        return self.device.get_state()
 
     def set_state(self, new_state):
         """

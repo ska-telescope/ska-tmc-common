@@ -21,13 +21,6 @@ def tango_context(request):
     request: _pytest.fixtures.SubRequest
         A request object gives access to the requesting test context.
     """
-    # TODO: package_name and class_name can be used in future
-    # fq_test_class_name = request.cls.__module__
-    # fq_test_class_name_details = fq_test_class_name.split(".")
-    # package_name = fq_test_class_name_details[1]
-    # class_name = module_name = fq_test_class_name_details[1]
-    # module = importlib.import_module("{}.{}".format(package_name, module_name))
-    # klass = getattr(module, class_name)
     module = importlib.import_module("src/tmc/common")
     klass = getattr(module, "TangoClient")
     tango_context = DeviceTestContext(klass, properties=properties)

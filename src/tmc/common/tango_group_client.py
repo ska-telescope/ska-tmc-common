@@ -7,7 +7,7 @@
 # Distributed under the terms of the BSD-3-Clause license.
 # See LICENSE.txt for more info.
 
-""" Tango Group Client
+""" Tango Group Client Code
 
 """
 # Tango imports
@@ -22,21 +22,23 @@ LOGGER = logging.getLogger(__name__)
 class TangoGroupClient:
     """
     Class for TangoGroupClient API
-
     """
-
     def __init__(self, group_name):
         self.tango_group = self.get_tango_group(group_name)
     
     def get_tango_group(self, group_name):
         """
-        Create Tango Group Command
+        Returns Tango Group 
         """
         self.tango_group = tango.Group(group_name)
 
         return self.tango_group
 
     def add_device(self, device_to_add):
+        """
+        Add device element in the Group.
+
+        """
         try:
             self.tango_group.add(device_to_add)
         except DevFailed as dev_failed:
@@ -62,6 +64,10 @@ class TangoGroupClient:
                 tango.ErrSeverity.ERR)
 
     def delete_group(self, group_to_delete):
+        """
+        Deletes the Group.
+        """
+
         try:
             self.tango_group.delete(group_to_delete)
         except DevFailed as dev_failed:
@@ -94,6 +100,10 @@ class TangoGroupClient:
         return self.tango_group.remove_all()
 
     def send_command(self, command_name, command_data = None):
+        """
+        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
+        as it is synchronous command execution.
+        """
         try:
             return_value = self.tango_group.command_inout(command_name, command_data)
             return return_value
@@ -106,8 +116,13 @@ class TangoGroupClient:
                 tango.ErrSeverity.ERR)  
 
     def send_command_async(self, command_name, command_data = None, callback_method = None):
+        """
+        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
+        as it is asynchronous command execution.
+        """
         try:
-            self.tango_group.command_inout_asynch(command_name, command_data, callback_method)
+            return_val = self.tango_group.command_inout_asynch(command_name, command_data, callback_method)
+            return return_val
         except DevFailed as dev_failed:
             self.logger.exception("Failed to execute command .")
             tango.Except.re_throw_exception(dev_failed,
