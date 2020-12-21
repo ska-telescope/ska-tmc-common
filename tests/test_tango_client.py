@@ -48,7 +48,6 @@ def test_send_command_async():
         tango_client_obj.deviceproxy.command_inout_async.assert_called_with("End", [], 
                                                                   any_method(with_name="gotoidle_cmd_ended_cb"))
 
-
 def test_get_attribute():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     deviceproxy = Mock()
@@ -63,3 +62,13 @@ def test_get_attribute():
         device_proxy = tango_client_obj._get_deviceproxy()
         result = tango_client_obj.get_attribute("DummyAttribute")
         assert result == True
+
+def any_method(with_name=None):
+    class AnyMethod():
+        def __eq__(self, other):
+            if not isinstance(other, types.MethodType):
+                return False
+
+            return other.__func__.__name__ == with_name if with_name else True
+
+    return AnyMethod()
