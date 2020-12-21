@@ -38,14 +38,14 @@ def test_get_device_proxy():
         device_proxy = tango_client_obj._get_deviceproxy()
         assert device_proxy != None
 
-def test_send_command_async():
+def test_send_command():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     device_proxy = Mock()
 
     with mock.patch.object(TangoClient, '_get_deviceproxy', return_value=device_proxy) as mock_obj:
         tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
         device_proxy = tango_client_obj._get_deviceproxy()
-        tango_client_obj.deviceproxy.command_inout_async.assert_called_with("End", [], 
+        tango_client_obj.deviceproxy.command_inout.assert_called_with("End", [], 
                                                                   any_method(with_name="gotoidle_cmd_ended_cb"))
 
 def test_get_attribute():
