@@ -74,7 +74,6 @@ class TangoClient:
         try:
             return_val = self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
             return return_val
-            return True
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command_name,
