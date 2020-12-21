@@ -121,7 +121,8 @@ pages:
     - docker-executor
   script:
     - cp -R build public
-    - mv public/skatmccommon_htmlcov/* public
+    # TODO: Setup the pages job
+    # - mv public/skatmccommon_htmlcov/* public
   artifacts:
     paths:
       - public
