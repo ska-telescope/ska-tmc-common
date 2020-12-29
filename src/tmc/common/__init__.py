@@ -12,7 +12,6 @@ ska-tmc-common
 """
 
 from . import release
-from . import const
 from .tango_client import TangoClient
 from .tango_group_client import TangoGroupClient
 from .tango_server_helper import TangoServerHelper
