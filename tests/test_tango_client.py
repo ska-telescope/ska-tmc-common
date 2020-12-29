@@ -6,11 +6,12 @@ import json
 import types
 import pytest
 import tango
-import mock
+# import mock
 from mock import Mock
 from mock import MagicMock
 from os.path import dirname, join
-
+imporrt logging
+logging.getLogger('tcpserver')
 # Additional import
 
 from tango.test_context import DeviceTestContext
@@ -20,7 +21,7 @@ from src.tmc.common.tango_client import TangoClient
 def test_get_fqdn():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     with mock.patch.object(TangoClient, '_get_deviceproxy', return_value=Mock()) as mock_obj:
-        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
+        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn, logging.getLogger('test'))
         device_fqdn = tango_client_obj.get_device_fqdn()
         assert device_fqdn == 'ska_mid/tm_leaf_node/csp_subarray01'
 
@@ -34,22 +35,22 @@ def test_get_device_proxy():
     }
 
     with mock.patch.object(TangoClient, '_get_deviceproxy', return_value=Mock()) as mock_obj:
-        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
+        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn, logging.getLogger('test'))
         device_proxy = tango_client_obj._get_deviceproxy()
         assert device_proxy != None
 
-pytest.mark.xfail(reason="Need to mock Tango DeviceProxy object")
+@pytest.mark.xfail(reason="Need to mock Tango DeviceProxy object")
 def test_send_command():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     device_proxy = Mock()
 
     with mock.patch.object(TangoClient, '_get_deviceproxy', return_value=device_proxy) as mock_obj:
-        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
+        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn, logging.getLogger('test'))
         device_proxy = tango_client_obj._get_deviceproxy()
         result = tango_client_obj.send_command("End")
         assert result == True
 
-pytest.mark.xfail(reason="Need to mock Tango DeviceProxy object")
+@pytest.mark.xfail(reason="Need to mock Tango DeviceProxy object")
 def test_get_attribute():
     csp_subarray1_ln_fqdn = 'ska_mid/tm_leaf_node/csp_subarray01'
     # deviceproxy = Mock()
@@ -60,7 +61,7 @@ def test_get_attribute():
     }
 
     with mock.patch.object(TangoClient, '_get_deviceproxy', return_value=Mock()) as mock_obj:
-        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn)
+        tango_client_obj = TangoClient(csp_subarray1_ln_fqdn, logging.getLogger('test'))
         device_proxy = tango_client_obj._get_deviceproxy()
         result = tango_client_obj.get_attribute("DummyAttribute")
         assert result == True
