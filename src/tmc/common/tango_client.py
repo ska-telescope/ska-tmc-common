@@ -15,13 +15,17 @@ import tango
 from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
 from tango.server import run,attribute, command, device_property
 import logging
-LOGGER = logging.getLogger(__name__)
 
 class TangoClient:
     """
     Class for TangoClient API
     """
-    def __init__(self, fqdn):
+    def __init__(self, fqdn, logger = None):
+        if logger == None:
+            self.logger = logging.getLogger(__name__)
+        else:
+            self.logger = logger
+
         self.device_fqdn = fqdn
         self.deviceproxy = None
         self.deviceproxy = self._get_deviceproxy()
@@ -58,8 +62,7 @@ class TangoClient:
         as it is synchronous command execution.
         """
         try:
-            self.deviceproxy.command_inout(command_name, command_data)
-            return True
+            return self.deviceproxy.command_inout(command_name, command_data)
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command_name,
@@ -68,21 +71,21 @@ class TangoClient:
                                          tango.ErrSeverity.ERR)
 
     
-    def send_command_with_return(self, command_name, command_data = None):
-        """
-        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
-        as it is synchronous command execution.
-        """
-        try:
-            return_value = self.deviceproxy.command_inout(command_name, command_data)
-            return return_value
-        except DevFailed as dev_failed:
-            self.logger.exception("Failed to execute command .")
-            tango.Except.re_throw_exception(dev_failed,
-                "Failed to execute command .",
-                str(dev_failed),
-                "TangoGroupClient.send_command_with_return()",
-                tango.ErrSeverity.ERR)  
+    # def send_command_with_return(self, command_name, command_data = None):
+    #     """
+    #     Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
+    #     as it is synchronous command execution.
+    #     """
+    #     try:
+    #         return_value = self.deviceproxy.command_inout(command_name, command_data)
+    #         return return_value
+    #     except DevFailed as dev_failed:
+    #         self.logger.exception("Failed to execute command .")
+    #         tango.Except.re_throw_exception(dev_failed,
+    #             "Failed to execute command .",
+    #             str(dev_failed),
+    #             "TangoGroupClient.send_command_with_return()",
+    #             tango.ErrSeverity.ERR)  
 
 
     def send_command_async(self, command_name, command_data = None, callback_method = None):
@@ -91,8 +94,7 @@ class TangoClient:
         as it is synchronous command execution.
         """
         try:
-            self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
-            return True
+            return self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
             tango.Except.throw_exception("Error in invoking command " + command_name,
@@ -105,8 +107,7 @@ class TangoClient:
         Here, as per the attribute name this function will read the attribute of perticular device.
         """
         try:
-            self.deviceproxy.read_attribute(attribute_name)
-            return True
+            return self.deviceproxy.read_attribute(attribute_name)
         except AttributeError as attribute_error:
             log_msg = attribute_name + "Attribute not found" + str(attribute_error)
             tango.Except.throw_exception(attribute + "Attribute not found",
@@ -132,8 +133,7 @@ class TangoClient:
         Subscribes the attribute on Change event
         """
         try:
-            event_id = self.deviceproxy.subscribe_event(attr_name, EventType.CHANGE_EVENT, callback_method, stateless=True)
-            return event_id
+            return self.deviceproxy.subscribe_event(attr_name, EventType.CHANGE_EVENT, callback_method, stateless=True)
         except DevFailed as dev_failed:
             tango.Except.throw_exception("Error is subscribing event",
                                          dev_failed,

@@ -14,21 +14,23 @@
 import tango
 from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
 from tango.server import run,attribute, command, device_property
-
 import logging
-
-LOGGER = logging.getLogger(__name__)
 
 class TangoGroupClient:
     """
     Class for TangoGroupClient API
     """
     def __init__(self, group_name):
+        if logger == None:
+            self.logger = logging.getLogger(__name__)
+        else:
+            self.logger = logger
+
         self.tango_group = self.get_tango_group(group_name)
     
     def get_tango_group(self, group_name):
         """
-        Returns Tango Group 
+        Creates a Tango Group with given name
         """
         self.tango_group = tango.Group(group_name)
 
@@ -37,7 +39,6 @@ class TangoGroupClient:
     def add_device(self, device_to_add):
         """
         Add device element in the Group.
-
         """
         try:
             self.tango_group.add(device_to_add)
@@ -67,7 +68,6 @@ class TangoGroupClient:
         """
         Deletes the Group.
         """
-
         try:
             self.tango_group.delete(group_to_delete)
         except DevFailed as dev_failed:
@@ -80,14 +80,15 @@ class TangoGroupClient:
 
     def get_group_device_list(self, forward=True):
         """
-            :param argin: bool
-            :return: The list of devices
+        Returns the list of devices
 
-            :rtype: str
+        :params: None
+
+        :return: list. The list of devices
+
         """
         try:
-            self.tango_group.get_device_list()
-            return True
+            return self.tango_group.get_device_list()
         except DevFailed as dev_failed:
             self.logger.exception("Failed to get group device list")
             tango.Except.re_throw_exception(dev_failed,
@@ -97,53 +98,75 @@ class TangoGroupClient:
                 tango.ErrSeverity.ERR)  
         
     def remove_all_device(self):
-        return self.tango_group.remove_all()
+        """
+        Removes all the deives from the group.
+        """
+
+        self.tango_group.remove_all()
 
     def send_command(self, command_name, command_data = None):
         """
-        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
-        as it is synchronous command execution.
+        Invokes command on the Tango group synchronously.
+
+        :param:
+            command_name: string. Name of the command to be invoked
+
+            command_data: (optional) Void. The arguments with the command.
+        
+        returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
+        to retrieve the reply of the command.
         """
         try:
-            self.tango_group.command_inout(command_name, command_data)
-            return True
+            return self.tango_group.command_inout(command_name, command_data)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to execute command .")
             tango.Except.re_throw_exception(dev_failed,
-                "Failed to execute command .",
+                "Failed to execute command.",
                 str(dev_failed),
                 "TangoGroupClient.send_command()",
-                tango.ErrSeverity.ERR) 
-
-    def send_command_with_return(self, command_name, command_data = None):
-        """
-        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
-        as it is synchronous command execution.
-        """
-        try:
-            return_value = self.tango_group.command_inout(command_name, command_data)
-            return return_value
-        except DevFailed as dev_failed:
-            self.logger.exception("Failed to execute command .")
-            tango.Except.re_throw_exception(dev_failed,
-                "Failed to execute command .",
-                str(dev_failed),
-                "TangoGroupClient.send_command_with_return()",
-                tango.ErrSeverity.ERR)  
+                tango.ErrSeverity.ERR)
 
     def send_command_async(self, command_name, command_data = None, callback_method = None):
         """
-        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
-        as it is asynchronous command execution.
+        Invokes command on the Tango group asynchronously.
+
+        :param:
+            command_name: string. Name of the command to be invoked
+
+            command_data: (optional) Void. The arguments with the command.
+
+            callback_method: The callback method that should be executed upon execution
+        
+        returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
+        to retrieve the reply of the command.
         """
         try:
-            self.tango_group.command_inout_asynch(command_name, command_data, callback_method)
-            return True
+            return self.tango_group.command_inout_asynch(command_name, command_data, callback_method)
         except DevFailed as dev_failed:
             self.logger.exception("Failed to execute command .")
             tango.Except.re_throw_exception(dev_failed,
-                "Failed to execute command .",
+                "Failed to execute command.",
                 str(dev_failed),
                 "TangoGroupClient.send_command_async()",
-                tango.ErrSeverity.ERR)      
+                tango.ErrSeverity.ERR)
+    
+    def get_command_reply(self, command_id, timeout = 0):
+        """
+        Retrieveds reply of the group command.
+
+        params: 
+            command_id: int. Id of the command
+
+            timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned, 
+            the API waits indefinitely.
+        """
+        try:
+            return self.tango_group.command_inout_reply(command_id, timeout)
+        except DevFailed as dev_failed:
+            self.logger.exception("Failed to execute command .")
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to retrieve response.",
+                str(dev_failed),
+                "TangoGroupClient.get_command_reply()",
+                tango.ErrSeverity.ERR)
 
