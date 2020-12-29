@@ -10,7 +10,7 @@ import tango
 from mock import Mock
 from mock import MagicMock
 from os.path import dirname, join
-imporrt logging
+import logging
 logging.getLogger('tcpserver')
 # Additional import
 
