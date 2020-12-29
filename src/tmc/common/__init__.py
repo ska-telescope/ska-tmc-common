@@ -12,9 +12,9 @@ ska-tmc-common
 """
 
 from . import release
-from .tango_client import TangoClient
-from .tango_group_client import TangoGroupClient
-from .tango_server_helper import TangoServerHelper
+from tango_client import TangoClient
+from tango_group_client import TangoGroupClient
+from tango_server_helper import TangoServerHelper
 
 __all__ = ["release", "TangoClient", "TangoGroupClient", "TangoServerHelper"]
 
