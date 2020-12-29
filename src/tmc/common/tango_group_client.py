@@ -20,7 +20,7 @@ class TangoGroupClient:
     """
     Class for TangoGroupClient API
     """
-    def __init__(self, group_name):
+    def __init__(self, group_name, logger):
         if logger == None:
             self.logger = logging.getLogger(__name__)
         else:
