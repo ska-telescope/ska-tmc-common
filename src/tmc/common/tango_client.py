@@ -21,6 +21,14 @@ class TangoClient:
     Class for TangoClient API
     """
     def __init__(self, fqdn, logger = None):
+        """
+        The class constructor.
+        :param:
+            fqdn: string. The fqdn of the device.
+
+            logger: (optional) The logger object
+        """
+
         if logger == None:
             self.logger = logging.getLogger(__name__)
         else:
@@ -58,13 +66,24 @@ class TangoClient:
 
     def send_command(self, command_name, command_data = None):
         """
-        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
-        as it is synchronous command execution.
+        This method invokes command on the device server in asynchronous mode.
+
+        :param:
+            command_name: string. Name of the command
+
+            command_data: (optional) void. Parameter with the command.
+
+        :return: The result of the command execution.
+        
+        :throws: DevFailed in case of error.
         """
         try:
+            log_msg = f"Invoking {command_name} on {self.device_fqdn} synchronously."
+            self.logger.debug(log_msg)
             return self.deviceproxy.command_inout(command_name, command_data)
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
+            self.logger.debug(log_msg)
             tango.Except.throw_exception("Error in invoking command " + command_name,
                                          log_msg,
                                          "TangoClient.send_command",
@@ -72,13 +91,27 @@ class TangoClient:
 
     def send_command_async(self, command_name, command_data = None, callback_method = None):
         """
-        Here, as per the command name and command parameters this function is invoking the commands on respective nodes of TMC elements
-        as it is synchronous command execution.
+        This method invokes command on the device server in asynchronous mode.
+
+        :param:
+            command_name: string. Name of the command
+
+            command_data: (optional) void. Parameter with the command.
+
+            callback_method: (optional) Callback function that should be executed after completion 
+            of the command execution.
+
+        :return: int. Command identifier returned by the Tango device server.
+
+        :throws: DevFailed in case of error.
         """
         try:
+            log_msg = f"Invoking {command_name} on {self.device_fqdn} asynchronously."
+            self.logger.debug(log_msg)
             return self.deviceproxy.command_inout_asynch(command_name, command_data, callback_method)
         except DevFailed as dev_failed:
             log_msg = "Error in invoking command " + command_name + str(dev_failed)
+            self.logger.debug(log_msg)
             tango.Except.throw_exception("Error in invoking command " + command_name,
                                          log_msg,
                                          "TangoClient.send_command_async",
@@ -86,12 +119,22 @@ class TangoClient:
 
     def get_attribute(self, attribute_name):
         """
-        Here, as per the attribute name this function will read the attribute of perticular device.
+        This method reads the value to the given attribute.
+
+        :param:
+            attribute_name: string. Name of the attribute
+
+        :return: Value of the attribute
+
+        :throws: AttributeError in case of error.
         """
         try:
+            log_msg = f"Reading attribute {attribute_name}."
+            self.logger.debug(log_msg)
             return self.deviceproxy.read_attribute(attribute_name)
         except AttributeError as attribute_error:
             log_msg = attribute_name + "Attribute not found" + str(attribute_error)
+            self.logger.debug(log_msg)
             tango.Except.throw_exception(attribute + "Attribute not found",
                                          log_msg,
                                          "TangoClient.get_attribute",
@@ -99,9 +142,20 @@ class TangoClient:
 
     def set_attribute(self, attribute_name, value):
         """
-        Here, as per the attribute name this function will read the attribute of perticular device.
+        This method writes the value to the given attribute.
+
+        :param:
+            attribute_name: string. Name of the attribute
+
+            value: void. Value to set
+
+        :return: None
+
+        :throws: AttributeError in case of error.
         """
         try:
+            log_msg = f"Setting attribute {attribute_name}: {value}."
+            self.logger.debug(log_msg)
             self.deviceproxy.write_attribute(attribute_name, value)
         except AttributeError as attribute_error:
             log_msg = attribute_name + "Attribute not found" + str(attribute_error)
@@ -112,11 +166,23 @@ class TangoClient:
 
     def subscribe_attribute(self, attr_name, callback_method):
         """
-        Subscribes the attribute on Change event
+        Subscribes to the change event of the given attribute.
+        :param:
+            attr_name: string. Name of the attribute to subscribe change event.
+
+            callback_method: Name of callback method.
+        
+        :return: int. event_id returned by the Tango device server.
+
+        throws:
         """
         try:
+            log_msg = f"Subscribing attribute {attribute_name}."
+            self.logger.debug(log_msg)
             return self.deviceproxy.subscribe_event(attr_name, EventType.CHANGE_EVENT, callback_method, stateless=True)
         except DevFailed as dev_failed:
+            log_msg = f"Failed to subscribe attribute {attribute_name}."
+            self.logger.debug(log_msg)
             tango.Except.throw_exception("Error is subscribing event",
                                          dev_failed,
                                          "TangoClient.subscribe_attribute",
@@ -124,10 +190,21 @@ class TangoClient:
 
     def unsubscribe_attribute(self, event_id):
         """
-        Unsubscribes the attribute change event
+        Unsubscribes to the change event of the given attribute.
+        :param:
+            event_id: int. Event id of the subscription
+        
+        :return: None.
+
+        :throws: DevFailed
         """
         try:
+            log_msg = f"Unsubscribing attribute {attribute_name}."
+            self.logger.debug(log_msg)
             self.deviceproxy.unsubscribe_event(event_id)
         except DevFailed as dev_failed:
             log_message = "Failed to unsubscribe event {}.".format(dev_failed)
             self.logger.error(log_message)
+            tango.Except.re_throw_exception(dev_failed, "Event unsubscription error",
+                "Error in unsubscribing the event."
+                "TangoClient.subscribe_attribute()")
