@@ -38,6 +38,13 @@ class TangoGroupClient:
     def add_device(self, device_to_add):
         """
         Add device element in the Group.
+
+        :param:
+            device_to_add: string. Device FQDN to add in the group
+        
+        :return: None
+
+        :throws: DevFailed in case of error.
         """
         try:
             log_msg = f"Adding in group: {device_to_add}."
@@ -53,9 +60,16 @@ class TangoGroupClient:
     def remove_device(self, device_to_remove):
         """
         Removes all elements in the Group.
+
+        :param:
+            device_to_remove: string. FQDN of the device to remove from group.
+        
+        :return: None
+
+        :throws: DevFailed in case of error.
         """
         try:
-            log_msg = f"Removing from group: {device_to_add}."
+            log_msg = f"Removing from group: {device_to_remove}."
             self.logger.debug(log_msg)
             self.tango_group.remove(device_to_remove)
         except DevFailed as dev_failed:

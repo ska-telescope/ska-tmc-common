@@ -177,11 +177,11 @@ class TangoClient:
         throws:
         """
         try:
-            log_msg = f"Subscribing attribute {attribute_name}."
+            log_msg = f"Subscribing attribute {attr_name}."
             self.logger.debug(log_msg)
             return self.deviceproxy.subscribe_event(attr_name, EventType.CHANGE_EVENT, callback_method, stateless=True)
         except DevFailed as dev_failed:
-            log_msg = f"Failed to subscribe attribute {attribute_name}."
+            log_msg = f"Failed to subscribe attribute {attr_name}."
             self.logger.debug(log_msg)
             tango.Except.throw_exception("Error is subscribing event",
                                          dev_failed,
@@ -199,7 +199,7 @@ class TangoClient:
         :throws: DevFailed
         """
         try:
-            log_msg = f"Unsubscribing attribute {attribute_name}."
+            log_msg = f"Unsubscribing attribute event {event_id}."
             self.logger.debug(log_msg)
             self.deviceproxy.unsubscribe_event(event_id)
         except DevFailed as dev_failed:
