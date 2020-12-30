@@ -11,4 +11,3 @@ if [ -d "$REPORTS_DIR" ]; then rm -rf $REPORTS_DIR; fi
 mkdir -p $REPORTS_DIR
 
 tox -e py37
-
