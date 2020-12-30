@@ -11,9 +11,8 @@ from mock import Mock
 from mock import MagicMock
 from os.path import dirname, join
 import logging
-logging.getLogger('tcpserver')
-# Additional import
 
+# Additional import
 from tango.test_context import DeviceTestContext
 from src.tmc.common.tango_client import TangoClient
 
@@ -65,13 +64,3 @@ def test_get_attribute():
         device_proxy = tango_client_obj._get_deviceproxy()
         result = tango_client_obj.get_attribute("DummyAttribute")
         assert result == True
-
-# def any_method(with_name=None):
-#     class AnyMethod():
-#         def __eq__(self, other):
-#             if not isinstance(other, types.MethodType):
-#                 return False
-
-#             return other.__func__.__name__ == with_name if with_name else True
-
-#     return AnyMethod()

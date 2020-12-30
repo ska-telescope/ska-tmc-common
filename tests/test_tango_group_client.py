@@ -22,9 +22,6 @@ def test_get_tango_group():
        
     dish_group_mock = Mock()
 
-    # groups_to_mock = {
-    #     dish_group: dish_group_mock
-    # }
     with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
         tango_client_obj = TangoGroupClient(dish_group, logging.getLogger('test'))
         tango_group = tango_client_obj.get_tango_group(dish_group)
@@ -35,10 +32,7 @@ def test_get_group_device_list():
     dish_group = 'DishLeafNode_Group'
 
     dish_group_mock = Mock()
-
-    # groups_to_mock = {
-    #     dish_group: dish_group_mock
-    # }    
+   
     with mock.patch.object(TangoGroupClient, 'get_tango_group', return_value=Mock()) as mock_obj:
     
         tango_client_obj = TangoGroupClient(dish_group, logging.getLogger('test'))
