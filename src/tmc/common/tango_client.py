@@ -167,6 +167,7 @@ class TangoClient:
     def subscribe_attribute(self, attr_name, callback_method):
         """
         Subscribes to the change event of the given attribute.
+
         :param:
             attr_name: string. Name of the attribute to subscribe change event.
 
@@ -191,6 +192,7 @@ class TangoClient:
     def unsubscribe_attribute(self, event_id):
         """
         Unsubscribes to the change event of the given attribute.
+
         :param:
             event_id: int. Event id of the subscription
         

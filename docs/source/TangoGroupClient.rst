@@ -7,6 +7,6 @@ TMC Common Tango Group Client
    :maxdepth: 2
 
 .. automodule:: tmc.common.tango_group_client
-.. autoclass:: tmc.common.TangoGroupClient
+.. autoclass:: tmc.common.tango_group_client.TangoGroupClient
    :members:
    :undoc-members:

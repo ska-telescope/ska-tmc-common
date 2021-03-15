@@ -10,7 +10,7 @@ Welcome to ska-tmc-common documentation!
   :caption: Table of Contents
   :maxdepth: 2
    
-   Class:  TangoClient<CentralNode>
+   Class:  TangoClient<TangoClient>
    Class:  TangoGroupClient<TangoGroupClient>
    Class:  TangoServerHelper<TangoServerHelper>
    
