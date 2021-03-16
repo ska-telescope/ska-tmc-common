@@ -12,8 +12,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-autodoc_mock_imports = ['PyTango', 'tango', 'tango.server', 'run', 'command',
-                        'future', 'future.utils', 'ska.logging', 'ska.logging.configuration']
+autodoc_mock_imports = ["PyTango", "tango", "tango.server", "run", "command", "numpy",
+                        "future", "future.utils", "ska.logging", "ska.logging.configuration"]
 
 import sys
 import os
