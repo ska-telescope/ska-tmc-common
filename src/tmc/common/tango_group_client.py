@@ -59,10 +59,10 @@ class TangoGroupClient:
 
     def remove_device(self, device_to_remove):
         """
-        Removes all elements in the Group.
+        Removes all elements from the Group.
 
         :param:
-            device_to_remove: string. FQDN of the device to remove from group.
+            device_to_remove: string. FQDN of the device to be removed from group.
         
         :return: None
 
@@ -96,7 +96,7 @@ class TangoGroupClient:
 
     def get_group_device_list(self, forward=True):
         """
-        Returns the list of devices
+        Returns the list of devices in the group
 
         :params: None
 
@@ -114,7 +114,7 @@ class TangoGroupClient:
         
     def remove_all_device(self):
         """
-        Removes all the deives from the group.
+        Removes all the devices from the group.
         """
         self.logger.debug("Removing all devices from the group.")
         self.tango_group.remove_all()
@@ -169,7 +169,7 @@ class TangoGroupClient:
     
     def get_command_reply(self, command_id, timeout = 0):
         """
-        Retrieveds reply of the group command.
+        Retrieves the response of the command
 
         params: 
             command_id: int. Id of the command

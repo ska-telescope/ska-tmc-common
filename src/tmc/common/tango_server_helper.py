@@ -43,18 +43,36 @@ class TangoServerHelper:
     def get_property(self, prop):
         """
         Returns the value of given device property
+
+        Params:
+            prop: Device property of which value is desired
+
+        return:
+            Value of the property
         """
         return self.prop_map[prop]
     
     def set_property(self, prop, attr_val):
         """
         Sets the value to a given device property
+
+        Params:
+            prop: The propery of which value is to be updated.
+            attr_val: New value of the property
+
+        return:
+            None
         """
         self.prop_map[prop].value = attr_val
 
     def get_status(self):
         """
         Get status of Tango device server
+
+        params: None
+
+        return:
+            (str) The device status
         """
         try:
             return self.device.get_status()
@@ -68,6 +86,12 @@ class TangoServerHelper:
     def set_status(self, new_status):
         """
         Set device status.
+
+        Param:
+            new_status:
+            (str) The new status
+
+        return: None
         """
         try:
             self.device.set_status(new_status)
@@ -80,7 +104,12 @@ class TangoServerHelper:
 
     def get_state(self):
         """
-        Get a COPY of the device state.
+        Get a copy of the device state.
+
+        Params: None
+
+        return:
+            (DevState) Current device state
         """
         try:
             return self.device.get_state()
@@ -94,6 +123,13 @@ class TangoServerHelper:
     def set_state(self, new_state):
         """
         Set device state.
+
+        Param:
+            new_state:
+            (DevState) the new device state
+
+        return:
+              None
         """
         try:
             self.device.set_state(new_state)

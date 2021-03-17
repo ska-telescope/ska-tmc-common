@@ -12,8 +12,8 @@
 """
 # Tango imports
 import tango
-from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
-from tango.server import run,attribute, command, device_property
+from tango import DevFailed, DeviceProxy, EventType
+from tango.server import attribute
 import logging
 
 class TangoClient:
@@ -60,7 +60,7 @@ class TangoClient:
 
     def get_device_fqdn(self):
         """
-        Returns device FQDN.
+        Returns the Fully Qualified Device Name (FQDN) of the Tango device server.
         """
         return self.device_fqdn
 
@@ -119,7 +119,7 @@ class TangoClient:
 
     def get_attribute(self, attribute_name):
         """
-        This method reads the value to the given attribute.
+        This method reads the value of the given attribute.
 
         :param:
             attribute_name: string. Name of the attribute
@@ -176,6 +176,7 @@ class TangoClient:
         :return: int. event_id returned by the Tango device server.
 
         throws:
+            DevFailed on failure in subscribing to an attribute
         """
         try:
             log_msg = f"Subscribing attribute {attr_name}."
