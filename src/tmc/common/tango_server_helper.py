@@ -67,7 +67,7 @@ class TangoServerHelper:
 
             value: Value of the property to be set.
         """
-        self.prop_map[prop].value = attr_val
+        self.prop_map[prop].value = value
 
     def get_status(self):
         """
