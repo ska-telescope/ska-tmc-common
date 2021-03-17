@@ -102,5 +102,23 @@ class TangoServerHelper:
                 "Failed to set state .",
                 str(dev_failed),
                 "TangoGroupClient.set_state()",
-                tango.ErrSeverity.ERR)      
+                tango.ErrSeverity.ERR) 
+    
+    def _generate_change_event(self, attr_name, value):
+        """
+        Genarates change event signal
+        """
+        self.device.push_change_event(self, attr_name, value)
+
+    def write_attr(self, attr_name, value):
+        """
+        Updates the value of device server's attribute
+        """
+        self._generate_change_event(attr_name, value)
+
+    def read_attr(self, attr_name):
+        """
+        Get the value of device server's attribute
+        """
+        return self.device.attr_map[attr_name]
 
