@@ -44,10 +44,10 @@ class TangoServerHelper:
         """
         Returns the value of given device property
 
-        Params:
+        :Params:
             prop: Device property of which value is desired
 
-        return:
+        :returns:
             Value of the property
         """
         return self.prop_map[prop]
@@ -56,11 +56,11 @@ class TangoServerHelper:
         """
         Sets the value to a given device property
 
-        Params:
+        :Params:
             prop: The propery of which value is to be updated.
             attr_val: New value of the property
 
-        return:
+        :returns:
             None
         """
         self.prop_map[prop].value = attr_val
@@ -69,9 +69,9 @@ class TangoServerHelper:
         """
         Get status of Tango device server
 
-        params: None
+        :params: None
 
-        return:
+        :returns:
             (str) The device status
         """
         try:
@@ -87,11 +87,11 @@ class TangoServerHelper:
         """
         Set device status.
 
-        Param:
+        :Param:
             new_status:
             (str) The new status
 
-        return: None
+        :returns: None
         """
         try:
             self.device.set_status(new_status)
@@ -106,9 +106,9 @@ class TangoServerHelper:
         """
         Get a copy of the device state.
 
-        Params: None
+        :Params: None
 
-        return:
+        :returns:
             (DevState) Current device state
         """
         try:
@@ -124,11 +124,11 @@ class TangoServerHelper:
         """
         Set device state.
 
-        Param:
+        :Param:
             new_state:
             (DevState) the new device state
 
-        return:
+        :returns:
               None
         """
         try:

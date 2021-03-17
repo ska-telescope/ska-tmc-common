@@ -102,6 +102,9 @@ class TangoGroupClient:
 
         :return: list. The list of devices
 
+        :throws:
+            DevFailed on failure in getting group device list.
+
         """
         try:
             return self.tango_group.get_device_list()
@@ -128,8 +131,11 @@ class TangoGroupClient:
 
             command_data: (optional) Void. The arguments with the command.
         
-        returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
+        :returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
         to retrieve the reply of the command.
+
+        :throws:
+            DevFailed on failure in executing the command.
         """
         try:
             log_msg = f"Invoking {command_name} on {self.group_name} synchronously."
@@ -153,8 +159,11 @@ class TangoGroupClient:
 
             callback_method: The callback method that should be executed upon execution
 
-        returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
+        :returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
         to retrieve the reply of the command.
+
+        :throws:
+            DevFailed on failure in executing the command.
         """
         try:
             log_msg = f"Invoking {command_name} on {self.group_name} asynchronously."
@@ -171,11 +180,17 @@ class TangoGroupClient:
         """
         Retrieves the response of the command
 
-        params: 
+        :params:
             command_id: int. Id of the command
 
             timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned, 
             the API waits indefinitely.
+
+        :returns:
+            The results of an asynchronous command
+
+        :throws:
+            DevFailed on failure in executing the command.
         """
         try:
             log_msg = f"Retrieving response for command id: {command_id}."
