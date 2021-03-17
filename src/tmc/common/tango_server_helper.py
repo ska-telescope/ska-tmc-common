@@ -43,7 +43,13 @@ class TangoServerHelper:
 
     def read_property(self, prop_name):
         """
-        Returns the value of given device property
+        Returns the value of given Tango device property
+
+        :param:
+            prop_name: String. Name of the Tango device property
+
+        :return: Value of the device property.
+
         """
         try:
             # return self.device.prop_map[prop]
@@ -59,9 +65,13 @@ class TangoServerHelper:
     def write_property(self, prop_name, value):
         """
         Sets the value to a given device property
+
+        :param: 
+            prop_name: String. Name of the Tango device property
+
+            value: Value of the property to be set.
         """
         try:
-            # self.device.prop_map[prop].value = attr_val
             devname = self.device.get_name()
             prop = {}
             prop[prop_name] = value
