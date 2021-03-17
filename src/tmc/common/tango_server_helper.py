@@ -83,7 +83,7 @@ class TangoServerHelper:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get status .",
                 str(dev_failed),
-                "TangoGroupClient.get_status()",
+                "TangoServerHelper.get_status()",
                 tango.ErrSeverity.ERR)      
 
     def set_status(self, new_status):
@@ -96,7 +96,7 @@ class TangoServerHelper:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set status .",
                 str(dev_failed),
-                "TangoGroupClient.set_status()",
+                "TangoServerHelper.set_status()",
                 tango.ErrSeverity.ERR)      
 
     def get_state(self):
@@ -109,7 +109,7 @@ class TangoServerHelper:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get state .",
                 str(dev_failed),
-                "TangoGroupClient.get_state()",
+                "TangoServerHelper.get_state()",
                 tango.ErrSeverity.ERR)      
 
     def set_state(self, new_state):
@@ -122,6 +122,6 @@ class TangoServerHelper:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set state .",
                 str(dev_failed),
-                "TangoGroupClient.set_state()",
+                "TangoServerHelper.set_state()",
                 tango.ErrSeverity.ERR)      
 
