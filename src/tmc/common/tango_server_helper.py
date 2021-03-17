@@ -12,7 +12,7 @@
 """
 # Tango imports
 import tango
-from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
+from tango import AttrWriteType, DevFailed, DeviceProxy, EventType, Database
 from tango.server import run,attribute, command, device_property
 import logging
 
@@ -29,7 +29,8 @@ class TangoServerHelper:
         else:
             TangoServerHelper.__instance = self
         self.device = None
-        self.prop_map = {}
+        # self.prop_map = {}
+        self.database = Database()
     
     @staticmethod
     def get_instance():
@@ -40,17 +41,37 @@ class TangoServerHelper:
             TangoServerHelper()
         return TangoServerHelper.__instance
 
-    def get_property(self, prop):
+    def read_property(self, prop_name):
         """
         Returns the value of given device property
         """
-        return self.prop_map[prop]
+        try:
+            # return self.device.prop_map[prop]
+            devname = self.device.get_name()
+            return self.database.get_device_property(devname, prop_name)
+        except DevFailed as dev_failed:
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to read propert .",
+                str(dev_failed),
+                "TangoServerHelper.read_property()",
+                tango.ErrSeverity.ERR)
     
-    def set_property(self, prop, attr_val):
+    def write_property(self, prop_name, value):
         """
         Sets the value to a given device property
         """
-        self.prop_map[prop].value = attr_val
+        try:
+            # self.device.prop_map[prop].value = attr_val
+            devname = self.device.get_name()
+            prop = {}
+            prop[prop_name] = value
+            self.database.put_device_property(devname, prop)        
+        except DevFailed as dev_failed:
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to write propert .",
+                str(dev_failed),
+                "TangoServerHelper.write_property()",
+                tango.ErrSeverity.ERR)  
 
     def get_status(self):
         """
