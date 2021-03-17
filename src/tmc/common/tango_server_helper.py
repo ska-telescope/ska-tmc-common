@@ -7,8 +7,10 @@
 # Distributed under the terms of the BSD-3-Clause license.
 # See LICENSE.txt for more info.
 
-""" Tango Server
-
+""" 
+This is the Tango Server Helper module of Tango Interface Layer. This module implements a class
+TangoServerHelper which helps in operations like getting and setting attributes and properties of
+the Tango device.
 """
 # Tango imports
 import tango
@@ -18,7 +20,7 @@ import logging
 
 class TangoServerHelper:
     """
-    Helper class for TangoServer API
+    This class provides APIs to help performing role of Tango device server.
     """
     __instance = None
 
@@ -35,7 +37,12 @@ class TangoServerHelper:
     @staticmethod
     def get_instance():
         """
-        Returns instance of TangoServerHelper class
+        Returns instance object of TangoServerHelper class. Creates one if the object does 
+        not exist.
+
+        :param: None.
+
+        :return: object of TangoServerHelper class
         """
         if TangoServerHelper.__instance is None:
             TangoServerHelper()
@@ -85,7 +92,13 @@ class TangoServerHelper:
 
     def get_status(self):
         """
-        Get status of Tango device server
+        Returns value of the Status attribute of the Tango device.
+
+        :param: None
+
+        :return: String. The Status value of the Tango device.
+
+        :throws: Devfailed exception in case of error.
         """
         try:
             return self.device.get_status()
@@ -98,7 +111,14 @@ class TangoServerHelper:
 
     def set_status(self, new_status):
         """
-        Set device status.
+        Sets the Status attribute of the Tango device with given value.
+
+        :param:
+            new_status: String. New value for Status attribute.
+
+        :return: None.
+
+        :throws: Devfailed exception in case of error.
         """
         try:
             self.device.set_status(new_status)
@@ -111,7 +131,13 @@ class TangoServerHelper:
 
     def get_state(self):
         """
-        Get a COPY of the device state.
+        Returns value of the State attribute of the Tango device.
+
+        :param: None
+
+        :return: String. The State value of the Tango device.
+
+        :throws: Devfailed exception in case of error.
         """
         try:
             return self.device.get_state()
@@ -124,7 +150,14 @@ class TangoServerHelper:
 
     def set_state(self, new_state):
         """
-        Set device state.
+        Sets the State attribute of the Tango device with given value.
+
+        :param:
+            new_state: DevEnum. New value for State attribute.
+
+        :return: None.
+
+        :throws: Devfailed exception in case of error.
         """
         try:
             self.device.set_state(new_state)
