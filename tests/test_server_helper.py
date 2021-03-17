@@ -29,3 +29,17 @@ def test_get_status():
         device_proxy = TangoServerHelper.get_instance()
         device_proxy.get_status()
         device_proxy.get_status.assert_called_with()
+
+
+def test_read_attribute():
+    with mock.patch.object(TangoServerHelper, 'get_instance', return_value=Mock()) as mock_obj:
+        device_proxy = TangoServerHelper.get_instance()
+        device_proxy.read_property("CentralAlarmHandler")
+        device_proxy.read_property.assert_called_with("CentralAlarmHandler")
+
+
+def test_write_attribute():
+    with mock.patch.object(TangoServerHelper, 'get_instance', return_value=Mock()) as mock_obj:
+        device_proxy = TangoServerHelper.get_instance()
+        device_proxy.write_property("skalevel", 1)
+        device_proxy.write_property.assert_called_with("skalevel", 1)
