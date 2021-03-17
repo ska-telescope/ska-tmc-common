@@ -171,6 +171,7 @@ class TangoServerHelper:
 
         :return: None.
         """
+        self.device.attr_map[attr_name] = value
         self._generate_change_event(attr_name, value)
 
     def read_attr(self, attr_name):
