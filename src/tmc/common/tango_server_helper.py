@@ -41,12 +41,12 @@ class TangoServerHelper:
             TangoServerHelper()
         return TangoServerHelper.__instance
 
-    def read_property(self, prop_name):
+    def read_property(self, property_name):
         """
         Returns the value of given Tango device property
 
         :param:
-            prop_name: String. Name of the Tango device property
+            property_name: String. Name of the Tango device property
 
         :return: Value of the device property.
 
@@ -54,7 +54,7 @@ class TangoServerHelper:
         try:
             # return self.device.prop_map[prop]
             devname = self.device.get_name()
-            return self.database.get_device_property(devname, prop_name)
+            return self.database.get_device_property(devname, property_name)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to read propert .",
@@ -62,20 +62,20 @@ class TangoServerHelper:
                 "TangoServerHelper.read_property()",
                 tango.ErrSeverity.ERR)
     
-    def write_property(self, prop_name, value):
+    def write_property(self, property_name, value):
         """
         Sets the value to a given device property
 
         :param: 
-            prop_name: String. Name of the Tango device property
+            property_name: String. Name of the Tango device property
 
             value: Value of the property to be set.
         """
         try:
             devname = self.device.get_name()
-            prop = {}
-            prop[prop_name] = value
-            self.database.put_device_property(devname, prop)        
+            property = {}
+            property[property_name] = value
+            self.database.put_device_property(devname, property)        
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to write propert .",
