@@ -68,12 +68,12 @@ class TangoClient:
         """
         This method invokes command on the device server in asynchronous mode.
 
-        :param:
+        :params:
             command_name: string. Name of the command
 
             command_data: (optional) void. Parameter with the command.
 
-        :return: The result of the command execution.
+        :returns: The result of the command execution.
         
         :throws: DevFailed in case of error.
         """
@@ -93,7 +93,7 @@ class TangoClient:
         """
         This method invokes command on the device server in asynchronous mode.
 
-        :param:
+        :params:
             command_name: string. Name of the command
 
             command_data: (optional) void. Parameter with the command.
@@ -101,7 +101,7 @@ class TangoClient:
             callback_method: (optional) Callback function that should be executed after completion 
             of the command execution.
 
-        :return: int. Command identifier returned by the Tango device server.
+        :returns: int. Command identifier returned by the Tango device server.
 
         :throws: DevFailed in case of error.
         """
@@ -124,7 +124,7 @@ class TangoClient:
         :param:
             attribute_name: string. Name of the attribute
 
-        :return: Value of the attribute
+        :returns: Value of the attribute
 
         :throws: AttributeError in case of error.
         """
@@ -144,12 +144,12 @@ class TangoClient:
         """
         This method writes the value to the given attribute.
 
-        :param:
+        :params:
             attribute_name: string. Name of the attribute
 
             value: void. Value to set
 
-        :return: None
+        :returns: None
 
         :throws: AttributeError in case of error.
         """
@@ -168,12 +168,12 @@ class TangoClient:
         """
         Subscribes to the change event of the given attribute.
 
-        :param:
+        :params:
             attr_name: string. Name of the attribute to subscribe change event.
 
             callback_method: Name of callback method.
         
-        :return: int. event_id returned by the Tango device server.
+        :returns: int. event_id returned by the Tango device server.
 
         throws:
             DevFailed on failure in subscribing to an attribute
@@ -197,7 +197,7 @@ class TangoClient:
         :param:
             event_id: int. Event id of the subscription
         
-        :return: None.
+        :returns: None.
 
         :throws: DevFailed
         """

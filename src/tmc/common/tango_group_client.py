@@ -42,9 +42,9 @@ class TangoGroupClient:
         :param:
             device_to_add: string. Device FQDN to add in the group
         
-        :return: None
+        :returns: None
 
-        :throws: DevFailed in case of error.
+        :throws: DevFailed on failure in adding the device in the group.
         """
         try:
             log_msg = f"Adding in group: {device_to_add}."
@@ -64,9 +64,9 @@ class TangoGroupClient:
         :param:
             device_to_remove: string. FQDN of the device to be removed from group.
         
-        :return: None
+        :returns: None
 
-        :throws: DevFailed in case of error.
+        :throws: DevFailed on failure in removing the device from the group.
         """
         try:
             log_msg = f"Removing from group: {device_to_remove}."
