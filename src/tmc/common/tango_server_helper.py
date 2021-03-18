@@ -75,7 +75,7 @@ class TangoServerHelper:
 
             value: Value of the property to be set
 
-        :returns:None
+        :returns: None
 
         :throws: Devfailed exception in case command failed error.
                  ValueError exception in case value error.
