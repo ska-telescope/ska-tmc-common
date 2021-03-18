@@ -92,8 +92,8 @@ publish to nexus:
     # - scripts/validate-metadata.sh
     - python3 -m pip install twine
     - twine upload --repository-url $PYPI_REPOSITORY_URL dist/*
-  # only:
-  #   - master
+  only:
+    - master
 
 release docker image:
   stage: release
