@@ -63,7 +63,7 @@ class TangoServerHelper:
             return self.database.get_device_property(device_name, property_name)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
-                "Failed to read property"
+                "Failed to read property",
                 str(dev_failed),
                 "TangoServerHelper.read_property()",
                 tango.ErrSeverity.ERR)
