@@ -14,9 +14,7 @@ the Tango device.
 """
 # Tango imports
 import tango
-from tango import AttrWriteType, DevFailed, DeviceProxy, EventType, Database
-from tango.server import run,attribute, command, device_property
-import logging
+from tango import DevFailed, Database
 
 class TangoServerHelper:
     """
@@ -77,8 +75,8 @@ class TangoServerHelper:
 
             value: Value of the property to be set
 
-        :return:None
-    
+        :returns: None
+
         :throws: Devfailed exception in case command failed error.
                  ValueError exception in case value error.
                  KeyError exception in case key error
@@ -115,7 +113,7 @@ class TangoServerHelper:
 
         :return: String. The Status value of the Tango device.
 
-        :throws: Devfailed exception in case of error.
+        :throws: DevFailed on failure in getting device status.
         """
         try:
             return self.device.get_status()
@@ -135,7 +133,7 @@ class TangoServerHelper:
 
         :return: None.
 
-        :throws: Devfailed exception in case of error.
+        :throws: DevFailed on failure in setting device status.
         """
         try:
             self.device.set_status(new_status)
@@ -152,9 +150,9 @@ class TangoServerHelper:
 
         :param: None
 
-        :return: String. The State value of the Tango device.
+        :return: (DevState). The State value of the Tango device.
 
-        :throws: Devfailed exception in case of error.
+        :throws: DevFailed on failure in getting device state.
         """
         try:
             return self.device.get_state()
@@ -170,11 +168,11 @@ class TangoServerHelper:
         Sets the State attribute of the Tango device with given value.
 
         :param:
-            new_state: DevEnum. New value for State attribute.
+            new_state: (DevState). New value for State attribute.
 
         :return: None.
 
-        :throws: Devfailed exception in case of error.
+        :throws: DevFailed on failure in setting device state.
         """
         try:
             self.device.set_state(new_state)
