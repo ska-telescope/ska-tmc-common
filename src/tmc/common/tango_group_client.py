@@ -42,8 +42,6 @@ class TangoGroupClient:
             device_to_add: string. Device FQDN to add in the group
         
         :returns: None
-
-        :throws: DevFailed on failure in adding the device in the group.
         """
         try:
             log_msg = f"Adding in group: {device_to_add}."
@@ -180,7 +178,7 @@ class TangoGroupClient:
 
         :params:
             command_id: int. It is a request identifier previously returned by one of the
-                        command_inout_asynch methods.
+            command_inout_asynch methods.
 
             timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned, 
             the API waits indefinitely.

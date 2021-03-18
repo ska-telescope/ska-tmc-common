@@ -150,7 +150,7 @@ class TangoClient:
             attribute_name: string. Name of the attribute
 
             value: The value to be set. For non SCALAR attributes, it may be any sequence of
-                   sequences.
+            sequences.
 
         :returns: None
 
