@@ -59,7 +59,7 @@ class TangoGroupClient:
 
     def remove_device(self, device_to_remove):
         """
-        Removes all elements from the Group.
+        Removes specified elements in the device_to_remove from the Group.
 
         :param:
             device_to_remove: string. FQDN of the device to be removed from group.
@@ -81,7 +81,7 @@ class TangoGroupClient:
 
     def delete_group(self, group_to_delete):
         """
-        Deletes the Group.
+        Deletes the Tango Group.
         """
         try:
             log_msg = f"Deleting group: {group_to_delete}."
@@ -131,8 +131,7 @@ class TangoGroupClient:
 
             command_data: (optional) Void. The arguments with the command.
         
-        :returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
-        to retrieve the reply of the command.
+        :returns: Sequence of tango.GroupCmdReply object.
 
         :throws:
             DevFailed on failure in executing the command.
@@ -181,13 +180,14 @@ class TangoGroupClient:
         Retrieves the response of the command
 
         :params:
-            command_id: int. Id of the command
+            command_id: int. It is a request identifier previously returned by one of the
+                        command_inout_asynch methods.
 
             timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned, 
             the API waits indefinitely.
 
         :returns:
-            The results of an asynchronous command
+            The results of an asynchronous command as tango.GroupCmdReply object.
 
         :throws:
             DevFailed on failure in executing the command.
