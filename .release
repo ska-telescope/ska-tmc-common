@@ -13,6 +13,6 @@ copyright=""""""
 release=0.1.3
 tag=0.1.3
 tag_description=Addition of new API in TangoServerHelper class
-release_notes=This release contains:<br/><ul><li>New API for read_attr, write_attr, read_property, write_property </li></ul><br/>
+release_notes=This release contains:<br/><ul><li>New API for reading anding writing the attribute and properties </li></ul><br/>
 gitlab_username=kalyanithigale
 private_token=wQ-jCxbpiGKQh6hf6N_D
