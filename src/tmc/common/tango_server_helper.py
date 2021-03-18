@@ -79,17 +79,24 @@ class TangoServerHelper:
 
         :return:None
     
-        :throws: Devfailed exception in case of error
+        :throws: KeyError
+                 ValueError 
         """
         try:
             device_name = self.device.get_name()
             property_map = {}
             property_map[property_name] = value
-            self.database.put_device_property(device_name, property_map)        
-        except DevFailed as dev_failed:
-            tango.Except.re_throw_exception(dev_failed,
+            self.database.put_device_property(device_name, property_map)    
+        except KeyError as key_error:
+            tango.Except.re_throw_exception(key_error,
                 "Failed to write property",
-                str(dev_failed),
+                str(key_error),
+                "TangoServerHelper.write_property()",
+                tango.ErrSeverity.ERR)     
+        except ValueError as val_error:
+            tango.Except.re_throw_exception(val_error,
+                "Failed to write property",
+                str(val_error),
                 "TangoServerHelper.write_property()",
                 tango.ErrSeverity.ERR)  
 
