@@ -86,7 +86,13 @@ class TangoServerHelper:
             device_name = self.device.get_name()
             property_map = {}
             property_map[property_name] = value
-            self.database.put_device_property(device_name, property_map)    
+            self.database.put_device_property(device_name, property_map)  
+        except DevFailed as dev_failed:
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to write property",
+                str(dev_failed),
+                "TangoServerHelper.write_property()",
+                tango.ErrSeverity.ERR)      
         except KeyError as key_error:
             tango.Except.re_throw_exception(key_error,
                 "Failed to write property",
