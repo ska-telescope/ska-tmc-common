@@ -31,7 +31,6 @@ class TangoServerHelper:
         else:
             TangoServerHelper.__instance = self
         self.device = None
-        # self.prop_map = {}
         self.database = Database()
     
     @staticmethod
@@ -59,7 +58,6 @@ class TangoServerHelper:
 
         """
         try:
-            # return self.device.prop_map[prop]
             devname = self.device.get_name()
             return self.database.get_device_property(devname, property_name)
         except DevFailed as dev_failed:
