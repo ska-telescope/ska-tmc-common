@@ -79,8 +79,9 @@ class TangoServerHelper:
 
         :return:None
     
-        :throws: KeyError
-                 ValueError 
+        :throws: Devfailed exception in case command failed error.
+                 ValueError exception in case value error.
+                 KeyError exception in case key error
         """
         try:
             device_name = self.device.get_name()
@@ -182,5 +183,70 @@ class TangoServerHelper:
                 "Failed to set state .",
                 str(dev_failed),
                 "TangoServerHelper.set_state()",
-                tango.ErrSeverity.ERR)      
+                tango.ErrSeverity.ERR) 
+    
+    def _generate_change_event(self, attr_name, value):
+        """
+        Generates an event of type CHANGE_EVENT on the given attribute along with the new data
 
+        :param:
+            attr_name: String. Name of the attribute on which change event is to be raised.
+
+            value: Changed values of the attribute.
+
+        :return: None.
+
+        :throws: Devfailed exception in case of error.
+        """
+        try:
+            self.device.push_change_event(self, attr_name, value)
+        except DevFailed as dev_failed:
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to push change event .",
+                str(dev_failed),
+                "TangoServerHelper._generate_change_event()",
+                tango.ErrSeverity.ERR) 
+
+    def write_attr(self, attr_name, value):
+        """
+        Updates the value of device server's attribute
+
+        :param: 
+            attr_name: String. Name of the attribute which should be updated.
+
+            value: New value of the attribute
+
+        :return: None.
+
+        :throws: ValueError exception in case of error.
+        """
+        try:
+            self.device.attr_map[attr_name] = value
+        except ValueError as val_error:
+            tango.Except.re_throw_exception(val_error,
+                "Invalid value of tango attribute .",
+                str(val_error),
+                "TangoServerHelper.write_attr()",
+                tango.ErrSeverity.ERR)
+        self._generate_change_event(attr_name, value)
+
+    def read_attr(self, attr_name):
+        """
+        Returns the value of device server's attribute
+
+        :param: 
+            attr_name: String. Name of the attribute which should be updated.
+
+        :return:
+            value: Value of the attribute
+
+        :throws: ValueEror exception in case of error.
+        """
+        try:
+            return self.device.attr_map[attr_name]
+        except ValueError as val_error:
+            tango.Except.re_throw_exception(val_error,
+                "Invalid value of tango attribute .",
+                str(val_error),
+                "TangoServerHelper.read_attr()",
+                tango.ErrSeverity.ERR)
