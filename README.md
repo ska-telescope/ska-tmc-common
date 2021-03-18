@@ -62,5 +62,6 @@ from ska.tmc.common import TangoServerHelper
 .  
 .  
 my_server = TangoServerHelper.get_instance()
+my_server.device = device
 my_server.get_state()
 ```
