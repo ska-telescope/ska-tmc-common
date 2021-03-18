@@ -128,7 +128,7 @@ class TangoGroupClient:
 
             command_data: (optional) Void. The arguments with the command.
         
-        :returns: Sequence of tango.GroupCmdReply object.
+        :returns: Sequence of tango.GroupCmdReply objects.
 
         :throws:
             DevFailed on failure in executing the command.
