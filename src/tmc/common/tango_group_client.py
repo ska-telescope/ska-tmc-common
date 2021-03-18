@@ -12,8 +12,7 @@
 """
 # Tango imports
 import tango
-from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
-from tango.server import run,attribute, command, device_property
+from tango import DevFailed
 import logging
 
 class TangoGroupClient:

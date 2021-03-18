@@ -14,9 +14,7 @@ the Tango device.
 """
 # Tango imports
 import tango
-from tango import AttrWriteType, DevFailed, DeviceProxy, EventType
-from tango.server import run,attribute, command, device_property
-import logging
+from tango import DevFailed, Database
 
 class TangoServerHelper:
     """
@@ -31,7 +29,7 @@ class TangoServerHelper:
         else:
             TangoServerHelper.__instance = self
         self.device = None
-        self.prop_map = {}
+        self.database = Database()
     
     @staticmethod
     def get_instance():
@@ -47,30 +45,65 @@ class TangoServerHelper:
             TangoServerHelper()
         return TangoServerHelper.__instance
 
-    def get_property(self, prop):
+    def read_property(self, property_name):
         """
         Returns the value of given Tango device property
 
         :param:
-            prop: String. Name of the Tango device property
+            property_name: String. Name of the Tango device property
 
-        :return: Value of the device property.
+        :return: Value of the device property
+
+        :throws: Devfailed exception in case of error
         """
-        return self.prop_map[prop]
+        try:
+            device_name = self.device.get_name()
+            return self.database.get_device_property(device_name, property_name)
+        except DevFailed as dev_failed:
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to read property",
+                str(dev_failed),
+                "TangoServerHelper.read_property()",
+                tango.ErrSeverity.ERR)
     
-    def set_property(self, prop, value):
+    def write_property(self, property_name, value):
         """
         Sets the value to a given device property
 
         :param: 
-            prop: String. Name of the Tango device property
+            property_name: String. Name of the Tango device property
 
-            value: Value of the property to be set.
+            value: Value of the property to be set
 
-        :returns:
-            None
+        :return:None
+    
+        :throws: Devfailed exception in case command failed error.
+                 ValueError exception in case value error.
+                 KeyError exception in case key error
         """
-        self.prop_map[prop].value = value
+        try:
+            device_name = self.device.get_name()
+            property_map = {}
+            property_map[property_name] = value
+            self.database.put_device_property(device_name, property_map)  
+        except DevFailed as dev_failed:
+            tango.Except.re_throw_exception(dev_failed,
+                "Failed to write property",
+                str(dev_failed),
+                "TangoServerHelper.write_property()",
+                tango.ErrSeverity.ERR)      
+        except KeyError as key_error:
+            tango.Except.re_throw_exception(key_error,
+                "Failed to write property",
+                str(key_error),
+                "TangoServerHelper.write_property()",
+                tango.ErrSeverity.ERR)     
+        except ValueError as val_error:
+            tango.Except.re_throw_exception(val_error,
+                "Failed to write property",
+                str(val_error),
+                "TangoServerHelper.write_property()",
+                tango.ErrSeverity.ERR)  
 
     def get_status(self):
         """
