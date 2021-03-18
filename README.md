@@ -54,3 +54,14 @@ from ska.tmc.common import TangoClient
 my_client = TangoClient("device-FQDN")
 my_client.send_command("DeviceCommand", param)
 ```
+To use the TangoServerHelper class, the usage is as follows:
+
+```python
+from ska.tmc.common import TangoServerHelper
+.  
+.  
+.  
+my_server = TangoServerHelper.get_instance()
+my_server.device = device
+my_server.get_state()
+```

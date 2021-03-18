@@ -66,15 +66,15 @@ class TangoClient:
 
     def send_command(self, command_name, command_data = None):
         """
-        This method invokes command on the device server in asynchronous mode.
+        This method invokes command on the device server in synchronous mode.
 
         :params:
             command_name: string. Name of the command
 
             command_data: (optional) void. Parameter with the command.
 
-        :returns: The result of the command execution.
-        
+        :returns: The result of the command. The type depends on the command. It may be None.
+
         :throws: DevFailed in case of error.
         """
         try:
@@ -124,7 +124,9 @@ class TangoClient:
         :param:
             attribute_name: string. Name of the attribute
 
-        :returns: Value of the attribute
+        :returns: Returns the DeviceAttribute object with several fields.
+                  The attribute value is present in the value field of the object.
+                  value: Normal scalar value or NumPy array of values.
 
         :throws: AttributeError in case of error.
         """
@@ -147,7 +149,8 @@ class TangoClient:
         :params:
             attribute_name: string. Name of the attribute
 
-            value: void. Value to set
+            value: The value to be set. For non SCALAR attributes, it may be any sequence of
+                   sequences.
 
         :returns: None
 
@@ -166,7 +169,7 @@ class TangoClient:
 
     def subscribe_attribute(self, attr_name, callback_method):
         """
-        Subscribes to the change event of the given attribute.
+        Subscribes to the change event on the given attribute.
 
         :params:
             attr_name: string. Name of the attribute to subscribe change event.
@@ -174,9 +177,6 @@ class TangoClient:
             callback_method: Name of callback method.
         
         :returns: int. event_id returned by the Tango device server.
-
-        throws:
-            DevFailed on failure in subscribing to an attribute
         """
         try:
             log_msg = f"Subscribing attribute {attr_name}."
@@ -192,14 +192,12 @@ class TangoClient:
 
     def unsubscribe_attribute(self, event_id):
         """
-        Unsubscribes to the change event of the given attribute.
+        Unsubscribes a client from receiving the event specified by event_id.
 
         :param:
             event_id: int. Event id of the subscription
         
         :returns: None.
-
-        :throws: DevFailed
         """
         try:
             log_msg = f"Unsubscribing attribute event {event_id}."
