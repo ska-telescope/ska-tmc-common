@@ -29,7 +29,6 @@ class TangoServerHelper:
         else:
             TangoServerHelper.__instance = self
         self.device = None
-        self.database = Database()
     
     @staticmethod
     def get_instance():
@@ -57,8 +56,9 @@ class TangoServerHelper:
         :throws: Devfailed exception in case of error
         """
         try:
+            db = Database()
             device_name = self.device.get_name()
-            return self.database.get_device_property(device_name, property_name)
+            return db.get_device_property(device_name, property_name)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to read property",
@@ -82,10 +82,11 @@ class TangoServerHelper:
                  KeyError exception in case key error
         """
         try:
+            db = Database()
             device_name = self.device.get_name()
             property_map = {}
             property_map[property_name] = value
-            self.database.put_device_property(device_name, property_map)  
+            db.put_device_property(device_name, property_map)  
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to write property",
@@ -197,7 +198,7 @@ class TangoServerHelper:
         :throws: Devfailed exception in case of error.
         """
         try:
-            self.device.push_change_event(self, attr_name, value)
+            self.device.push_change_event(attr_name, value)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to push change event .",
