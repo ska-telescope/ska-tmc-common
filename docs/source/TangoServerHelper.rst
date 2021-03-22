@@ -7,6 +7,6 @@ TMC Common Tango Server
    :maxdepth: 2
 
 .. automodule:: tmc.common.tango_server_helper
-.. autoclass:: tmc.common.TangoServerHelper
+.. autoclass:: tmc.common.tango_server_helper.TangoServerHelper
    :members:
    :undoc-members:
