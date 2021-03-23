@@ -28,8 +28,7 @@ class TangoServerHelper:
             raise Exception("This is singletone class")
         else:
             TangoServerHelper.__instance = self
-        self.device = None
-        self.database = Database()
+        self._device = None
     
     @staticmethod
     def get_instance():
@@ -45,6 +44,19 @@ class TangoServerHelper:
             TangoServerHelper()
         return TangoServerHelper.__instance
 
+    def set_tango_class(self, device):
+        """
+        Set the Tango class object as a device
+
+        :param:
+            device : Tango class object
+
+        :return: None
+        """
+        if not self._device:
+            self._device = device
+
+
     def read_property(self, property_name):
         """
         Returns the value of given Tango device property
@@ -57,8 +69,9 @@ class TangoServerHelper:
         :throws: Devfailed exception in case of error
         """
         try:
-            device_name = self.device.get_name()
-            return self.database.get_device_property(device_name, property_name)
+            db = Database()
+            device_name = self._device.get_name()
+            return db.get_device_property(device_name, property_name)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to read property",
@@ -82,16 +95,17 @@ class TangoServerHelper:
                  KeyError exception in case key error
         """
         try:
-            device_name = self.device.get_name()
+            db = Database()
+            device_name = self._device.get_name()
             property_map = {}
             property_map[property_name] = value
-            self.database.put_device_property(device_name, property_map)  
+            db.put_device_property(device_name, property_map)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to write property",
                 str(dev_failed),
                 "TangoServerHelper.write_property()",
-                tango.ErrSeverity.ERR)      
+                tango.ErrSeverity.ERR)
         except KeyError as key_error:
             tango.Except.re_throw_exception(key_error,
                 "Failed to write property",
@@ -116,7 +130,7 @@ class TangoServerHelper:
         :throws: DevFailed on failure in getting device status.
         """
         try:
-            return self.device.get_status()
+            return self._device.get_status()
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get status .",
@@ -136,7 +150,7 @@ class TangoServerHelper:
         :throws: DevFailed on failure in setting device status.
         """
         try:
-            self.device.set_status(new_status)
+            self._device.set_status(new_status)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set status .",
@@ -155,7 +169,7 @@ class TangoServerHelper:
         :throws: DevFailed on failure in getting device state.
         """
         try:
-            return self.device.get_state()
+            return self._device.get_state()
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to get state .",
@@ -175,7 +189,7 @@ class TangoServerHelper:
         :throws: DevFailed on failure in setting device state.
         """
         try:
-            self.device.set_state(new_state)
+            self._device.set_state(new_state)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to set state .",
@@ -197,7 +211,7 @@ class TangoServerHelper:
         :throws: Devfailed exception in case of error.
         """
         try:
-            self.device.push_change_event(self, attr_name, value)
+            self._device.push_change_event(attr_name, value)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to push change event .",
@@ -219,11 +233,17 @@ class TangoServerHelper:
         :throws: ValueError exception in case of error.
         """
         try:
-            self.device.attr_map[attr_name] = value
+            self._device.attr_map[attr_name] = value
         except ValueError as val_error:
             tango.Except.re_throw_exception(val_error,
                 "Invalid value of tango attribute .",
                 str(val_error),
+                "TangoServerHelper.write_attr()",
+                tango.ErrSeverity.ERR)
+        except KeyError as key_error:
+            tango.Except.re_throw_exception(key_error,
+                "Failed to write attribute",
+                str(key_error),
                 "TangoServerHelper.write_attr()",
                 tango.ErrSeverity.ERR)
         self._generate_change_event(attr_name, value)
@@ -241,10 +261,16 @@ class TangoServerHelper:
         :throws: ValueEror exception in case of error.
         """
         try:
-            return self.device.attr_map[attr_name]
+            return self._device.attr_map[attr_name]
         except ValueError as val_error:
             tango.Except.re_throw_exception(val_error,
                 "Invalid value of tango attribute .",
                 str(val_error),
+                "TangoServerHelper.read_attr()",
+                tango.ErrSeverity.ERR)
+        except KeyError as key_error:
+            tango.Except.re_throw_exception(key_error,
+                "Failed to read attribute",
+                str(key_error),
                 "TangoServerHelper.read_attr()",
                 tango.ErrSeverity.ERR)
