@@ -64,14 +64,14 @@ class TangoServerHelper:
         :param:
             property_name: String. Name of the Tango device property
 
-        :return: Value of the device property
+        :return: List of strings containing value(s) of the device property
 
         :throws: Devfailed exception in case of error
         """
         try:
             db = Database()
             device_name = self._device.get_name()
-            return db.get_device_property(device_name, property_name)
+            return db.get_device_property(device_name, property_name)[property_name]
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(dev_failed,
                 "Failed to read property",
