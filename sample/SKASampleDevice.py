@@ -3,8 +3,8 @@ Sample SKA Tango device
 """
 # -*- coding: utf-8 -*-
 #
-# This file is part of the Sample project
-#
+# This file is part of the skatmccommon project
+# This code is as a sample of design pattern of a SKA device.
 #
 #
 # Distributed under the terms of the BSD-3-Clause license.
@@ -71,13 +71,14 @@ class SKASampleDevice(SKABaseDevice):
             # Instantiate object of TangoServerHelper class
             # ------------------
             this_server = TangoServerHelper.get_instance()
-            this_server.device = device
+            # this_server.device = device
+            this_server.set_tango_class(device)
 
             ## Dictionary to maintain mapping of attributes and their values
-            this_server.device.attr_map = {}
+            this_server._device.attr_map = {}
 
-            this_server.device.attr_map["DoubleAttrib"] = 10
-            this_server.device.attr_map["StrAttrib"] = "Default value"
+            this_server._device.attr_map["DoubleAttrib"] = 10
+            this_server._device.attr_map["StrAttrib"] = "Default value"
 
             self.logger.info("Initialization successful")
             return (ResultCode.OK, "Device initialization successful.")
@@ -185,13 +186,13 @@ class PropertyAccessCommand(BaseCommand):
         log_message = f"property_value: {property_value}"
         self.logger.info(log_message)
 
-        # perform business operations
-        new_property_value = property_value + device_data.string_common_data
+        # # perform business operations
+        new_value = device_data.string_common_data + " " + argin
 
-        # write property value
-        this_tango_device.write_property("TestProperty", new_property_value)
+        # # write property value
+        this_tango_device.write_property("TestProperty", new_value)
 
-        # read property value
+        # # read property value
         property_value = this_tango_device.read_property("TestProperty")
         log_message = f"property_value: {property_value}"
         self.logger.info(log_message)
