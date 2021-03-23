@@ -71,12 +71,13 @@ class SKASampleDevice(SKABaseDevice):
             # Instantiate object of TangoServerHelper class
             # ------------------
             this_server = TangoServerHelper.get_instance()
-            # this_server.device = device
+
+            # Set tango class object as a target for TangoServerHelper class object.
+            # This is to be done only once in the code.
             this_server.set_tango_class(device)
 
             ## Dictionary to maintain mapping of attributes and their values
             this_server._device.attr_map = {}
-
             this_server._device.attr_map["DoubleAttrib"] = 10
             this_server._device.attr_map["StrAttrib"] = "Default value"
 
@@ -137,6 +138,9 @@ class SKASampleDevice(SKABaseDevice):
         device.
         """
         super().init_command_objects()
+
+        # Instantiate the class object which contains common data members or methods
+        # in the code.
         device_data = DeviceData.get_instance()
         args = (device_data, self.state_model, self.logger)
 

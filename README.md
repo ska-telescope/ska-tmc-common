@@ -42,7 +42,7 @@ The requirements for testing are:
 
 1. Clone the repository on local machine.
 2. Navigate to the root directory of the repository from terminal
-3. Run 'python3 -m pip install . --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple'
+3. Run `python3 -m pip install . --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple`
 
 ## Testing
 
