@@ -34,6 +34,12 @@ The requirements for testing are:
 
 ### Installation steps
 
+#### From Nexus
+
+```pip install --index-url https://nexus.engageska-portugal.pt/repository/pypi/simple' skatmccommon```
+
+#### From source code
+
 1. Clone the repository on local machine.
 2. Navigate to the root directory of the repository from terminal
 3. Run 'python3 -m pip install . --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple'
@@ -54,6 +60,7 @@ from ska.tmc.common import TangoClient
 my_client = TangoClient("device-FQDN")
 my_client.send_command("DeviceCommand", param)
 ```
+
 To use the TangoServerHelper class, the usage is as follows:
 
 ```python
@@ -64,4 +71,5 @@ from ska.tmc.common import TangoServerHelper
 my_server = TangoServerHelper.get_instance()
 my_server.set_tango_class(device)
 my_server.get_state()
+my_server.read_attr("MYATTR")
 ```
