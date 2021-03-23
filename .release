@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""skatmccommon"""
-version="0.1.4"
+version="0.1.5"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,10 +10,11 @@ license="""BSD-3-Clause"""
 url="""https://www.skatelescope.org"""
 copyright=""""""
 
-release=0.1.4
-tag=0.1.4
-tag_description= Enhancements in existing API for TangoServerHelper. 
-release_notes=This release contains:<br/><ul><li>Fixed bug in _generate_push_event method.
-Handled Database object creation as a part of read_property and write_property API.</li></ul><br/>
+release=0.1.5
+tag=0.1.5
+tag_description=Added sample code of SKA device and client using Tango Interface layer. 
+release_notes=This release contains:<br/><ul><li>Sample code that explains how to implement
+a Tango device using Tango interface layer.</li><li>The `read_property` method of
+TangoServerHelper class returns list of strings instead of a dictionary.</li></ul><br/>
 gitlab_username=kalyanithigale
 private_token=wQ-jCxbpiGKQh6hf6N_D
