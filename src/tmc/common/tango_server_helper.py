@@ -219,7 +219,7 @@ class TangoServerHelper:
                 "TangoServerHelper._generate_change_event()",
                 tango.ErrSeverity.ERR) 
 
-    def write_attr(self, attr_name, value, is_generate_change_event=True):
+    def write_attr(self, attr_name, value, push_change_event=True):
         """
         Updates the value of device server's attribute
 
@@ -246,7 +246,7 @@ class TangoServerHelper:
                 str(key_error),
                 "TangoServerHelper.write_attr()",
                 tango.ErrSeverity.ERR)
-        if is_generate_change_event:
+        if push_change_event:
             self._generate_change_event(attr_name, value)
 
     def read_attr(self, attr_name):
