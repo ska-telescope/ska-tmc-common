@@ -35,13 +35,13 @@ setuptools.setup(
     ],
     platforms=["OS Independent"],
     setup_requires=[] + pytest_runner,
-    install_requires=["pytango==9.3.2", "mock", "future", "transitions"],
+    install_requires=["pytango==9.3.3", "mock", "future", "transitions"],
     tests_require=["pytest", "coverage", "pytest-json-report", "pytest-forked"],
     entry_points={
         "console_scripts": [
             "TangoClient=tmc.common.tango_client:main",
             "TangoGroupClient=tmc.common.tango_group_client:main",
-            "TangoServerHelper=tmc.common.tango_server_helper:main"
+            "TangoServerHelper=tmc.common.tango_server_helper:main",
         ]
     },
     keywords="tmc common ska",
