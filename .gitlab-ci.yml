@@ -103,11 +103,11 @@ release docker image:
   script:
     - make build
     - make push
-  rules:
-    # Images only allow manual run on tags, and confirm semantic versioning of tag
-    - if: '$CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/'
-      when: manual
-      allow_failure: true
+  # rules:
+  #   # Images only allow manual run on tags, and confirm semantic versioning of tag
+  #   - if: '$CI_COMMIT_TAG && $CI_COMMIT_TAG =~ /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/'
+  #     when: manual
+  #     allow_failure: true
 
 pages:
   stage: pages
