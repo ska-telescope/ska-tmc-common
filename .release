@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""skatmccommon"""
-version="0.1.6"
+version="0.1.7"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,10 +10,9 @@ license="""BSD-3-Clause"""
 url="""https://www.skatelescope.org"""
 copyright=""""""
 
-release=0.1.6
-tag=0.1.6
-tag_description=Enhancement in the write_attr API. 
-release_notes=This release contains:<br/><ul><li>`write_attr` method of
-TangoServerHelper class receives additional boolean input string to control the push_event generation for attribute.</li></ul><br/>
+release=0.1.7
+tag=0.1.7
+tag_description=Migration to Central Artifact Repository. 
+release_notes=This release contains:<br/><ul><li>Migration to Central Artifact Repository</li></ul><br/>
 gitlab_username=kalyanithigale
 private_token=wQ-jCxbpiGKQh6hf6N_D
