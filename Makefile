@@ -14,7 +14,7 @@
 # DOCKER_REGISTRY_USER:=ska-telescope
 
 CAR_OCI_REGISTRY_HOST ?= artefact.skao.int
-CAR_OCI_REGISTRY_USERNAME ?= ska-telescope
+CAR_OCI_REGISTRY_USER ?= ska-telescope
 PROJECT = ska-tmc-common
 
 #
