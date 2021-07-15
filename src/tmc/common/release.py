@@ -6,7 +6,7 @@
 #
 """Release information for ska-tmc-common Python Package"""
 
-name = """skatmccommon"""
+name = """ska-tmc-common"""
 version = "0.1.7"
 version_info = version.split(".")
 description = """A set of common classes for TMC devices."""
