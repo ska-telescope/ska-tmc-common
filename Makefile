@@ -1,5 +1,5 @@
 #
-# Project makefile for a Tango project. You should normally only need to modify
+# Project makefile for a Common Tango classes for tmc project. You should normally only need to modify
 # PROJECT below.
 #
 
