@@ -1,15 +1,20 @@
 #
 # Project makefile for a Common Tango classes for tmc project. You should normally only need to modify
-# DOCKER_REGISTRY_USER and PROJECT below.
+# PROJECT below.
 #
+
 #
-# DOCKER_REGISTRY_HOST, DOCKER_REGISTRY_USER and PROJECT are combined to define
+# CAR_OCI_REGISTRY_HOST and PROJECT are combined to define
 # the Docker tag for this project. The definition below inherits the standard
-# value for DOCKER_REGISTRY_HOST (=rnexus.engageska-portugal.pt) and overwrites
-# DOCKER_REGISTRY_USER and PROJECT to give a final Docker tag of
-# nexus.engageska-portugal.pt/tango-example/dishmaster
+# value for CAR_OCI_REGISTRY_HOST = artefact.skao.int and overwrites
+# PROJECT to give a final Docker tag of
+# artefact.skao.int/ska-telescope/ska-tmc-common
 #
-DOCKER_REGISTRY_USER:=ska-telescope
+
+# DOCKER_REGISTRY_USER:=ska-telescope
+
+CAR_OCI_REGISTRY_HOST ?= artefact.skao.int
+CAR_OCI_REGISTRY_USER ?= ska-telescope
 PROJECT = ska-tmc-common
 
 #

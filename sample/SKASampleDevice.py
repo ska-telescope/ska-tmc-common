@@ -3,7 +3,7 @@ Sample SKA Tango device
 """
 # -*- coding: utf-8 -*-
 #
-# This file is part of the skatmccommon project
+# This file is part of the ska-tmc-common project
 # This code is as a sample of design pattern of a SKA device.
 #
 #
@@ -22,13 +22,8 @@ from ska.base.control_model import HealthState, ObsState
 
 from tmc.common.tango_server_helper import TangoServerHelper
 
-__all__ = [
-    "SKASampleDevice",
-    "main",
-    "AttributeAccess",
-    "PropertyAccess",
-    "DeviceData"
-]
+__all__ = ["SKASampleDevice", "main", "AttributeAccess", "PropertyAccess", "DeviceData"]
+
 
 class SKASampleDevice(SKABaseDevice):
     """
@@ -39,19 +34,19 @@ class SKASampleDevice(SKABaseDevice):
     # Device Properties
     # -----------------
     TestProperty = device_property(
-        dtype='str',
+        dtype="str",
     )
 
     # ----------
     # Attributes
     # ----------
     DoubleAttrib = attribute(
-        dtype='double',
+        dtype="double",
         access=AttrWriteType.READ_WRITE,
     )
 
     StrAttrib = attribute(
-        dtype='str',
+        dtype="str",
         access=AttrWriteType.READ_WRITE,
     )
 
@@ -113,7 +108,7 @@ class SKASampleDevice(SKABaseDevice):
         return handler.check_allowed()
 
     @command(
-    dtype_in='str', 
+        dtype_in="str",
     )
     @DebugIt()
     def AttributeAccess(self, argin):
@@ -125,7 +120,7 @@ class SKASampleDevice(SKABaseDevice):
         return handler.check_allowed()
 
     @command(
-    dtype_in='str', 
+        dtype_in="str",
     )
     @DebugIt()
     def PropertyAccess(self, argin):
@@ -177,6 +172,7 @@ class AttributeAccessCommand(BaseCommand):
         this_tango_device.write_attr("DoubleAttrib", double_data)
         this_tango_device.write_attr("StrAttrib", argin)
 
+
 class PropertyAccessCommand(BaseCommand):
     def check_allowed(self):
         return True
@@ -201,9 +197,10 @@ class PropertyAccessCommand(BaseCommand):
         log_message = f"property_value: {property_value}"
         self.logger.info(log_message)
 
+
 class DeviceData:
     """
-    This class contains the data common across multiple functionalities. This 
+    This class contains the data common across multiple functionalities. This
     is a singleton class.
     """
 
@@ -225,11 +222,13 @@ class DeviceData:
             DeviceData()
         return DeviceData.__instance
 
+
 # ----------
 # Run server
 # ----------
 def main(args=None, **kwargs):
     return run((SKASampleDevice,), args=args, **kwargs)
+
 
 if __name__ == "__main__":
     main()
