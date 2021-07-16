@@ -13,6 +13,8 @@ copyright=""""""
 release=0.1.7
 tag=0.1.7
 tag_description=Migration to Central Artifact Repository. 
-release_notes=This release contains:<br/><ul><li>Migration to Central Artifact Repository</li></ul><br/>
+release_notes=This release contains:<br/><ul><li>Update global environment variables to new 'CAR' format</li></ul>
+<li><ul>Update Nexus URLs to point to Central Artefact Repository</li></ul><li><ul>Remove hard-coded URLs and instead use environment variables</li></ul>
+<li><ul>Package name changed from skatmccommon to ska-tmc-common</li></ul><br/>
 gitlab_username=kalyanithigale
 private_token=wQ-jCxbpiGKQh6hf6N_D
