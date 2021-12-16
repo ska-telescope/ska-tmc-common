@@ -17,7 +17,7 @@ cache:
 stages:
   - build
   - test
-  - linting
+  - lint
   - publish
   - pages
   - release
@@ -41,8 +41,8 @@ unit tests:
     paths:
       - ./build
 
-linting:
-  stage: linting
+lint:
+  stage: lint
   image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.10
   tags:
     - docker-executor
