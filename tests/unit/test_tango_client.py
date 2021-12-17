@@ -14,7 +14,7 @@ import logging
 
 # Additional import
 from tango.test_context import DeviceTestContext
-from src.tmc.common.tango_client import TangoClient
+from src.ska_tmc_common.tango_client import TangoClient
 
 
 def test_get_fqdn():

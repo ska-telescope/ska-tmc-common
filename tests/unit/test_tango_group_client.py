@@ -14,7 +14,7 @@ import logging
 
 # Additional import
 from tango.test_context import DeviceTestContext
-from src.tmc.common.tango_group_client import TangoGroupClient
+from src.ska_tmc_common.tango_group_client import TangoGroupClient
 
 
 def test_get_tango_group():
