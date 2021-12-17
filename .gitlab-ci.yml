@@ -105,3 +105,7 @@ include:
   # https://developer.skao.int/en/latest/tools/software-package-release-procedure.html#building-and-publishing-python-packages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/build_wheel.yml'
+  # # Python packages build,lint, test and publish
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/python.gitlab-ci.yml'
+
