@@ -15,9 +15,10 @@ cache:
 # It is also specified that only the master branch will be subject of this job.
 
 stages:
+  - lint
+  - join-reports
   - build
   - test
-  - lint
   - publish
   - pages
   - scan
@@ -30,6 +31,18 @@ clean shell runner:
   script:
     # Gitlab CI badges creation
     - rm -rf build/*
+
+join_linting_reports:
+  stage: join-reports
+  tags:
+    - k8srunner
+  script:
+    - echo "This step is needed as the artifacts can't be passed in the same stage"
+    - make join-lint-reports
+  artifacts:
+    paths:
+      - build/
+    when: always
 
 unit tests:
   stage: test
