@@ -22,15 +22,8 @@ PROJECT = ska-tmc-common
 # build, 'make push' docker push procedure, etc. The other Make targets
 # ('make interactive', 'make test', etc.) are defined in this file.
 #
+include .make/*.mk
 
--include .make/python.mk
--include .make/oci.mk
--include .make/docs.mk
--include .make/release.mk
--include .make/make.mk
--include .make/help.mk
 -include PrivateRules.mak
-
-
 
 .PHONY: all test lint help
