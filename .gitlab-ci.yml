@@ -15,12 +15,11 @@ cache:
 # It is also specified that only the master branch will be subject of this job.
 
 stages:
-  - .pre
   - lint
   - build
   - test
+  - pages
   - publish
-  - .post
 
 clean shell runner:
   stage: .pre
@@ -69,19 +68,19 @@ lint:
 #       when: manual
 #       allow_failure: true
 
-# pages:
-#   stage: pages
-#   tags:
-#     - docker-executor
-#   script:
-#     - mkdir .public
-#     - cp -R build .public
-#     - mv .public public
-#   only:
-#     - master
-#   artifacts:
-#     paths:
-#       - public
+pages:
+  stage: pages
+  tags:
+    - docker-executor
+  script:
+    - mkdir .public
+    - cp -R build .public
+    - mv .public public
+  only:
+    - master
+  artifacts:
+    paths:
+      - public
 
 #include:
   # # Create Gitlab CI badges from CI metrics
