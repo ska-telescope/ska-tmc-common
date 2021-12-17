@@ -30,6 +30,7 @@ PROJECT = ska-tmc-common
 -include .make/make.mk
 -include .make/help.mk
 -include PrivateRules.mak
+-include temp/test.mk
 
 
 
