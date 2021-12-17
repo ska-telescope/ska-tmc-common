@@ -25,6 +25,7 @@ PROJECT = ska-tmc-common
 include temp/Makefile.mk
 include temp/docker.mk
 include temp/test.mk
+include .make/oci.mk
 
 
 .PHONY: all test lint help
