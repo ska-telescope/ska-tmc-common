@@ -23,13 +23,12 @@ PROJECT = ska-tmc-common
 # ('make interactive', 'make test', etc.) are defined in this file.
 #
 
-# -include .make/python.mk
+-include .make/python.mk
 # -include .make/oci.mk
 # -include .make/docs.mk
 # -include .make/release.mk
 # -include .make/make.mk
 # -include .make/help.mk
--include .make/*.mk
 
 -include PrivateRules.mak
 -include temp/test.mk
