@@ -172,11 +172,8 @@ class TangoClient:
         """
         This method writes the value to the given attribute.
 
-        :params:
-            attribute_name: string. Name of the attribute
-
-            value: The value to be set. For non SCALAR attributes, it may be any sequence of
-            sequences.
+        :param attribute_name: string. Name of the attribute
+        :param value: The value to be set. For non SCALAR attributes, it may be any sequence of sequences.
 
         :returns: None
 

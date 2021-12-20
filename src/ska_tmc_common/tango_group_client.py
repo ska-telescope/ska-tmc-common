@@ -134,10 +134,9 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group synchronously.
 
-        :param:
-            command_name: string. Name of the command to be invoked
+        :param command_name: string. Name of the command to be invoked
 
-            command_data: (optional) Void. The arguments with the command.
+        :param command_data: (optional) Void. The arguments with the command.
 
         :returns: Sequence of tango.GroupCmdReply objects.
 
@@ -165,12 +164,11 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group asynchronously.
 
-        :param:
-            command_name: string. Name of the command to be invoked
+        :param command_name: string. Name of the command to be invoked
 
-            command_data: (optional) Void. The arguments with the command.
+        :param command_data: (optional) Void. The arguments with the command.
 
-            callback_method: The callback method that should be executed upon execution
+        :param callback_method: The callback method that should be executed upon execution
 
         :returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
         to retrieve the reply of the command.
@@ -199,11 +197,11 @@ class TangoGroupClient:
         """
         Retrieves the response of the command
 
-        :params:
-            command_id: int. It is a request identifier previously returned by one of the
-            command_inout_asynch methods.
+        :params command_id: int. It is a request identifier previously returned by one of the
+            
+        :param command_inout_asynch methods.
 
-            timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned,
+        :param timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned,
             the API waits indefinitely.
 
         :returns:

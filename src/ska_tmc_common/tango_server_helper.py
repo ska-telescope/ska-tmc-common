@@ -6,11 +6,11 @@
 #
 # Distributed under the terms of the BSD-3-Clause license.
 # See LICENSE.txt for more info.
-
 """ 
-This is the Tango Server Helper module of Tango Interface Layer. This module implements a class
-TangoServerHelper which helps in operations like getting and setting attributes and properties of
-the Tango device.
+This is the Tango Server Helper module of Tango Interface Layer. 
+This module implements a class 
+TangoServerHelper which helps in operations like getting and 
+setting attributes and properties of the Tango device.
 """
 # Tango imports
 import tango
@@ -35,7 +35,7 @@ class TangoServerHelper:
     @staticmethod
     def get_instance():
         """
-        Returns instance object of TangoServerHelper class. Creates one if the object does
+        Return instance object of TangoServerHelper class. Creates one if the object does
         not exist.
 
         :param: None.
@@ -50,8 +50,7 @@ class TangoServerHelper:
         """
         Set the Tango class object as a device
 
-        :param:
-            device : Tango class object
+        :param device: Tango class object
 
         :return: None
         """
@@ -62,8 +61,7 @@ class TangoServerHelper:
         """
         Returns the value of given Tango device property
 
-        :param:
-            property_name: String. Name of the Tango device property
+        :param property_name: String. Name of the Tango device property
 
         :return: List of strings containing value(s) of the device property
 
@@ -88,10 +86,8 @@ class TangoServerHelper:
         """
         Sets the value to a given device property
 
-        :param:
-            property_name: String. Name of the Tango device property
-
-            value: Value of the property to be set
+        :param property_name: String. Name of the Tango device property
+        :param value: Value of the property to be set
 
         :returns: None
 
@@ -155,8 +151,7 @@ class TangoServerHelper:
         """
         Sets the Status attribute of the Tango device with given value.
 
-        :param:
-            new_status: String. New value for Status attribute.
+        :param new_status: String. New value for Status attribute.
 
         :return: None.
 
@@ -198,8 +193,7 @@ class TangoServerHelper:
         """
         Sets the State attribute of the Tango device with given value.
 
-        :param:
-            new_state: (DevState). New value for State attribute.
+        :param new_state: (DevState). New value for State attribute.
 
         :return: None.
 
@@ -220,10 +214,8 @@ class TangoServerHelper:
         """
         Generates an event of type CHANGE_EVENT on the given attribute along with the new data
 
-        :param:
-            attr_name: String. Name of the attribute on which change event is to be raised.
-
-            value: Changed values of the attribute.
+        :param attr_name: String. Name of the attribute on which change event is to be raised.
+        :param value: Changed values of the attribute.
 
         :return: None.
 
@@ -244,10 +236,8 @@ class TangoServerHelper:
         """
         Updates the value of device server's attribute
 
-        :param:
-            attr_name: String. Name of the attribute which should be updated.
-
-            value: New value of the attribute
+        :param attr_name: String. Name of the attribute which should be updated.
+        :param value: New value of the attribute
 
         :return: None.
 
@@ -278,8 +268,7 @@ class TangoServerHelper:
         """
         Returns the value of device server's attribute
 
-        :param:
-            attr_name: String. Name of the attribute which should be updated.
+        :param attr_name: String. Name of the attribute which should be updated.
 
         :return:
             value: Value of the attribute
