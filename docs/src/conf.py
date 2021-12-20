@@ -70,7 +70,7 @@ copyright = u'2020, NCRA India'
 #
 
 def get_release_version():
-    release_filename = os.path.join("..", "..", "src", "tmc", "common", "release.py")
+    release_filename = os.path.join("..", "..", "src", "ska_tmc_common", "release.py")
     exec(open(release_filename).read())
     return locals()["version"]
 
