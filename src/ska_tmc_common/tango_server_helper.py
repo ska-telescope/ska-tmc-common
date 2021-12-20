@@ -13,6 +13,7 @@ TangoServerHelper which helps in operations like getting and
 setting attributes and properties of the Tango device.
 """
 # Tango imports
+from logging import raiseExceptions
 import tango
 from tango import Database, DevFailed
 
@@ -25,7 +26,10 @@ class TangoServerHelper:
     __instance = None
 
     def __init__(self):
-        """Private constructor of the class"""
+        """Private constructor of the class
+        :raises
+            Exception
+        """
         if TangoServerHelper.__instance is not None:
             raise Exception("This is singletone class")
         else:
@@ -52,7 +56,8 @@ class TangoServerHelper:
         """
         Set the Tango class object as a device
 
-        :param device: Tango class object
+        :param 
+            device: Tango class object
 
         :return: None
         """
@@ -63,11 +68,14 @@ class TangoServerHelper:
         """
         Returns the value of given Tango device property
 
-        :param property_name: String. Name of the Tango device property
+        :param 
+            property_name: String. Name of the Tango device property
 
-        :return: List of strings containing value(s) of the device property
+        :return
+            List of strings containing value(s) of the device property
 
-        :throws: Devfailed exception in case of error
+        :throws
+            Devfailed exception in case of error
         """
         try:
             db = Database()
