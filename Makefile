@@ -31,7 +31,7 @@ PROJECT = ska-tmc-common
 # -include .make/help.mk
 
 -include PrivateRules.mak
--include temp/test.mk
+#-include temp/test.mk
 
 
 
