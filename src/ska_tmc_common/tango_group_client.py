@@ -198,7 +198,7 @@ class TangoGroupClient:
         Retrieves the response of the command
 
         :params command_id: int. It is a request identifier previously returned by one of the
-            
+
         :param command_inout_asynch methods.
 
         :param timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned,
