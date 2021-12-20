@@ -87,6 +87,7 @@ class TangoServerHelper:
         Sets the value to a given device property
 
         :param property_name: String. Name of the Tango device property
+
         :param value: Value of the property to be set
 
         :returns: None
@@ -237,7 +238,10 @@ class TangoServerHelper:
         Updates the value of device server's attribute
 
         :param attr_name: String. Name of the attribute which should be updated.
-        :param value: New value of the attribute
+
+        :param value: New value of the attribute.
+
+        :param push_change_event: Change event value.
 
         :return: None.
 
