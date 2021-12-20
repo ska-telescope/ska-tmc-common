@@ -14,6 +14,7 @@ setting attributes and properties of the Tango device.
 """
 # Tango imports
 from logging import raiseExceptions
+
 import tango
 from tango import Database, DevFailed
 
@@ -56,7 +57,7 @@ class TangoServerHelper:
         """
         Set the Tango class object as a device
 
-        :param 
+        :param
             device: Tango class object
 
         :return: None
@@ -68,7 +69,7 @@ class TangoServerHelper:
         """
         Returns the value of given Tango device property
 
-        :param 
+        :param
             property_name: String. Name of the Tango device property
 
         :return
