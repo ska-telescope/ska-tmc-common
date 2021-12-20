@@ -19,8 +19,8 @@ cache:
 
 stages:
   - build
-  - test
   - lint
+  - test
   - pages
   - publish
 
