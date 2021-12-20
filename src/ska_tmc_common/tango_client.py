@@ -26,9 +26,11 @@ class TangoClient:
     def __init__(self, fqdn, logger=None):
         """
         The class constructor.
-        :param fqdn: string. The fqdn of the device.
+        :param
+            fqdn: string. The fqdn of the device.
 
-        :param logger: (optional) The logger object.
+        :param
+            logger: (optional) The logger object.
         """
 
         if logger == None:
@@ -75,13 +77,17 @@ class TangoClient:
         """
         This method invokes command on the device server in synchronous mode.
 
-        :params command_name: string. Name of the command
+        :param
+            command_name: string. Name of the command
 
-        :param command_data: (optional) void. Parameter with the command.
+        :param
+            command_data: (optional) void. Parameter with the command.
 
-        :returns: The result of the command. The type depends on the command. It may be None.
+        :return
+            The result of the command. The type depends on the command. It may be None.
 
-        :throws: DevFailed in case of error.
+        :throws
+            DevFailed in case of error.
         """
         try:
             log_msg = (
@@ -107,16 +113,21 @@ class TangoClient:
         """
         This method invokes command on the device server in asynchronous mode.
 
-        :params command_name: string. Name of the command
+        :params
+            command_name: string. Name of the command
 
-        :param command_data: (optional) void. Parameter with the command.
+        :param
+            command_data: (optional) void. Parameter with the command.
 
-        :param callback_method: (optional) Callback function that should be executed after completion
+        :param
+            callback_method: (optional) Callback function that should be executed after completion
             of the command execution.
 
-        :returns: int. Command identifier returned by the Tango device server.
+        :returns
+            int. Command identifier returned by the Tango device server.
 
-        :throws: DevFailed in case of error.
+        :throws
+            DevFailed in case of error.
         """
         try:
             log_msg = f"Invoking {command_name} on {self.device_fqdn} asynchronously."
@@ -140,13 +151,16 @@ class TangoClient:
         """
         This method reads the value of the given attribute.
 
-        :param attribute_name: string. Name of the attribute
+        :param
+            attribute_name: string. Name of the attribute
 
-        :returns: Returns the DeviceAttribute object with several fields.
-                  The attribute value is present in the value field of the object.
-                  value: Normal scalar value or NumPy array of values.
+        :return
+            Returns the DeviceAttribute object with several fields.
+            The attribute value is present in the value field of the object.
+            value: Normal scalar value or NumPy array of values.
 
-        :throws: AttributeError in case of error.
+        :throws
+            AttributeError in case of error.
         """
         try:
             log_msg = f"Reading attribute {attribute_name}."
@@ -168,13 +182,18 @@ class TangoClient:
         """
         This method writes the value to the given attribute.
 
-        :param attribute_name: string. Name of the attribute
+        :param
+            attribute_name: string. Name of the attribute
 
-        :param value: The value to be set. For non SCALAR attributes, it may be any sequence of sequences.
+        :param
+            value: The value to be set. For non SCALAR attributes,
+            it may be any sequence of sequences.
 
-        :returns: None
+        :return
+            None
 
-        :throws: AttributeError in case of error.
+        :throw
+            AttributeError in case of error.
         """
         try:
             log_msg = f"Setting attribute {attribute_name}: {value}."
@@ -195,11 +214,14 @@ class TangoClient:
         """
         Subscribes to the change event on the given attribute.
 
-        :params attr_name: string. Name of the attribute to subscribe change event.
+        :params
+            attr_name: string. Name of the attribute to subscribe change event.
 
-        :param callback_method: Name of callback method.
+        :param
+            callback_method: Name of callback method.
 
-        :returns: int. event_id returned by the Tango device server.
+        :return
+            int. event_id returned by the Tango device server.
         """
         try:
             log_msg = f"Subscribing attribute {attr_name}."
@@ -224,9 +246,11 @@ class TangoClient:
         """
         Unsubscribes a client from receiving the event specified by event_id.
 
-        :param event_id: int. Event id of the subscription
+        :param
+            event_id: int. Event id of the subscription
 
-        :returns: None.
+        :return
+            None.
         """
         try:
             log_msg = f"Unsubscribing attribute event {event_id}."

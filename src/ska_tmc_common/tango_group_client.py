@@ -44,7 +44,8 @@ class TangoGroupClient:
         :param:
             device_to_add: string. Device FQDN to add in the group
 
-        :returns: None
+        :return
+            None
         """
         try:
             log_msg = f"Adding in group: {device_to_add}."
@@ -66,9 +67,11 @@ class TangoGroupClient:
         :param:
             device_to_remove: string. FQDN of the device to be removed from group.
 
-        :returns: None
+        :returns
+            None
 
-        :throws: DevFailed on failure in removing the device from the group.
+        :throws
+            DevFailed on failure in removing the device from the group.
         """
         try:
             log_msg = f"Removing from group: {device_to_remove}."
@@ -104,11 +107,13 @@ class TangoGroupClient:
         """
         Returns the list of devices in the group
 
-        :params: None
+        :params
+            None
 
-        :return: list. The list of devices
+        :return
+            list. The list of devices
 
-        :throws:
+        :throws
             DevFailed on failure in getting group device list.
 
         """
@@ -134,13 +139,16 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group synchronously.
 
-        :param command_name: string. Name of the command to be invoked
+        :param
+            command_name: string. Name of the command to be invoked
 
-        :param command_data: (optional) Void. The arguments with the command.
+        :param
+            command_data: (optional) Void. The arguments with the command.
 
-        :returns: Sequence of tango.GroupCmdReply objects.
+        :returns
+            Sequence of tango.GroupCmdReply objects.
 
-        :throws:
+        :throws
             DevFailed on failure in executing the command.
         """
         try:
@@ -164,16 +172,20 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group asynchronously.
 
-        :param command_name: string. Name of the command to be invoked
+        :param
+            command_name: string. Name of the command to be invoked
 
-        :param command_data: (optional) Void. The arguments with the command.
+        :param
+            command_data: (optional) Void. The arguments with the command.
 
-        :param callback_method: The callback method that should be executed upon execution
+        :param
+            callback_method: The callback method that should be executed upon execution
 
-        :returns: int. Request id returned by tango group. Pass this id to `get_command_reply`
-        to retrieve the reply of the command.
+        :return
+            int. Request id returned by tango group. Pass this id
+            to `get_command_reply` to retrieve the reply of the command.
 
-        :throws:
+        :throws
             DevFailed on failure in executing the command.
         """
         try:
@@ -197,12 +209,15 @@ class TangoGroupClient:
         """
         Retrieves the response of the command
 
-        :params command_id: int. It is a request identifier previously returned by one of the
+        :params
+            command_id: int. It is a request identifier previously returned by one of the
 
-        :param command_inout_asynch methods.
+        :param
+            command_inout_asynch methods.
 
-        :param timeout: (optional) int. Timeout in milliseconds. If no timeout is mentioned,
-            the API waits indefinitely.
+        :param
+            timeout: (optional) int. Timeout in milliseconds.
+            If no timeout is mentioned, the API waits indefinitely.
 
         :returns:
             The results of an asynchronous command as tango.GroupCmdReply object.

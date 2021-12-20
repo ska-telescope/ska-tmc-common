@@ -35,12 +35,14 @@ class TangoServerHelper:
     @staticmethod
     def get_instance():
         """
-        Return instance object of TangoServerHelper class. Creates one if the object does
+        Return instance object of TangoServerHelper class.
+        Creates one if the object does
         not exist.
 
         :param: None.
 
-        :return: object of TangoServerHelper class
+        return:
+            object of TangoServerHelper class
         """
         if TangoServerHelper.__instance is None:
             TangoServerHelper()
