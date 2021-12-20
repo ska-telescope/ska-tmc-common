@@ -26,10 +26,9 @@ class TangoClient:
     def __init__(self, fqdn, logger=None):
         """
         The class constructor.
-        :param:
-            fqdn: string. The fqdn of the device.
+        :param fqdn: string. The fqdn of the device.
 
-            logger: (optional) The logger object
+        :param logger: (optional) The logger object.
         """
 
         if logger == None:
@@ -76,10 +75,9 @@ class TangoClient:
         """
         This method invokes command on the device server in synchronous mode.
 
-        :params:
-            command_name: string. Name of the command
+        :params command_name: string. Name of the command
 
-            command_data: (optional) void. Parameter with the command.
+        :param command_data: (optional) void. Parameter with the command.
 
         :returns: The result of the command. The type depends on the command. It may be None.
 
@@ -109,12 +107,11 @@ class TangoClient:
         """
         This method invokes command on the device server in asynchronous mode.
 
-        :params:
-            command_name: string. Name of the command
+        :params command_name: string. Name of the command
 
-            command_data: (optional) void. Parameter with the command.
+        :param command_data: (optional) void. Parameter with the command.
 
-            callback_method: (optional) Callback function that should be executed after completion
+        :param callback_method: (optional) Callback function that should be executed after completion
             of the command execution.
 
         :returns: int. Command identifier returned by the Tango device server.
@@ -143,8 +140,7 @@ class TangoClient:
         """
         This method reads the value of the given attribute.
 
-        :param:
-            attribute_name: string. Name of the attribute
+        :param attribute_name: string. Name of the attribute
 
         :returns: Returns the DeviceAttribute object with several fields.
                   The attribute value is present in the value field of the object.
@@ -173,6 +169,7 @@ class TangoClient:
         This method writes the value to the given attribute.
 
         :param attribute_name: string. Name of the attribute
+
         :param value: The value to be set. For non SCALAR attributes, it may be any sequence of sequences.
 
         :returns: None
@@ -198,10 +195,9 @@ class TangoClient:
         """
         Subscribes to the change event on the given attribute.
 
-        :params:
-            attr_name: string. Name of the attribute to subscribe change event.
+        :params attr_name: string. Name of the attribute to subscribe change event.
 
-            callback_method: Name of callback method.
+        :param callback_method: Name of callback method.
 
         :returns: int. event_id returned by the Tango device server.
         """
@@ -228,8 +224,7 @@ class TangoClient:
         """
         Unsubscribes a client from receiving the event specified by event_id.
 
-        :param:
-            event_id: int. Event id of the subscription
+        :param event_id: int. Event id of the subscription
 
         :returns: None.
         """
