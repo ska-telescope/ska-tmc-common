@@ -6,6 +6,7 @@ A module defining a list of fixture functions that are shared across all the ska
 tests.
 """
 import importlib
+
 import mock
 import pytest
 from tango import DeviceProxy
