@@ -1,26 +1,21 @@
-"""
-A module defining a list of fixtures that are shared across all ska.base tests.
-"""
-"""
-A module defining a list of fixture functions that are shared across all the skabase
-tests.
-"""
 import importlib
 
 import mock
 import pytest
-from tango import DeviceProxy
 from tango.test_context import DeviceTestContext
+
+"""
+A module defining a list of fixtures that are shared across all ska.base tests.
+"""
 
 
 @pytest.fixture(scope="class")
 def tango_context(request):
-    """Creates and returns a TANGO DeviceTestContext object.
+    """Creates and Yields a TANGO DeviceTestContext object.
 
-    Parameters
-    ----------
-    request: _pytest.fixtures.SubRequest
-        A request object gives access to the requesting test context.
+    :param request: _pytest.fixtures.SubRequest.
+
+    A request object gives access to the requesting test context.
     """
     module = importlib.import_module("src/tmc/common")
     klass = getattr(module, "TangoClient")
