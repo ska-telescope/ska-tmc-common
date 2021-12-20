@@ -23,7 +23,7 @@ class TangoGroupClient:
     """
 
     def __init__(self, group_name, logger):
-        if logger == None:
+        if logger is None:
             self.logger = logging.getLogger(__name__)
         else:
             self.logger = logger
@@ -33,6 +33,13 @@ class TangoGroupClient:
     def get_tango_group(self, group_name):
         """
         Creates a Tango Group with given name
+
+        :param
+            group_name: Tango group
+
+        :return
+            None
+
         """
         self.tango_group = tango.Group(group_name)
         return self.tango_group
@@ -41,8 +48,7 @@ class TangoGroupClient:
         """
         Add device element in the Group.
 
-        :param:
-            device_to_add: string. Device FQDN to add in the group
+        :param device_to_add: string. Device FQDN to add in the group
 
         :return
             None
@@ -64,10 +70,9 @@ class TangoGroupClient:
         """
         Removes specified elements in the device_to_remove from the Group.
 
-        :param:
-            device_to_remove: string. FQDN of the device to be removed from group.
+        :param device_to_remove: string. FQDN of the device to be removed from group.
 
-        :returns
+        :return
             None
 
         :throws
@@ -89,6 +94,8 @@ class TangoGroupClient:
     def delete_group(self, group_to_delete):
         """
         Deletes the Tango Group.
+        :param group_to_delete: Tango group to delete.
+
         """
         try:
             log_msg = f"Deleting group: {group_to_delete}."
@@ -107,8 +114,7 @@ class TangoGroupClient:
         """
         Returns the list of devices in the group
 
-        :params
-            None
+        :param forward: Value
 
         :return
             list. The list of devices
@@ -145,7 +151,7 @@ class TangoGroupClient:
         :param
             command_data: (optional) Void. The arguments with the command.
 
-        :returns
+        :return
             Sequence of tango.GroupCmdReply objects.
 
         :throws
@@ -172,14 +178,11 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group asynchronously.
 
-        :param
-            command_name: string. Name of the command to be invoked
+        :param command_name: string. Name of the command to be invoked
 
-        :param
-            command_data: (optional) Void. The arguments with the command.
+        :param command_data: (optional) Void. The arguments with the command.
 
-        :param
-            callback_method: The callback method that should be executed upon execution
+        :param callback_method: The callback method that should be executed upon execution
 
         :return
             int. Request id returned by tango group. Pass this id
@@ -209,20 +212,18 @@ class TangoGroupClient:
         """
         Retrieves the response of the command
 
-        :params
-            command_id: int. It is a request identifier previously returned by one of the
+        :param command_id: int. It is a request identifier previously returned by one of the
 
-        :param
-            command_inout_asynch methods.
+        :param command_inout_asynch methods.
 
         :param
             timeout: (optional) int. Timeout in milliseconds.
             If no timeout is mentioned, the API waits indefinitely.
 
-        :returns:
+        :return
             The results of an asynchronous command as tango.GroupCmdReply object.
 
-        :throws:
+        :throws
             DevFailed on failure in executing the command.
         """
         try:
