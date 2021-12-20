@@ -25,4 +25,4 @@ PROJECT = ska-tmc-common
 
 -include .make/*.mk
 
--include PrivateRules.make
+-include PrivateRules.mak
