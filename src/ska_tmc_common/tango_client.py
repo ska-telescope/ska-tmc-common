@@ -120,7 +120,7 @@ class TangoClient:
         """
         This method invokes command on the device server in asynchronous mode.
 
-        :params
+        :param
             command_name: string. Name of the command
 
         :param
@@ -231,7 +231,7 @@ class TangoClient:
         """
         Subscribes to the change event on the given attribute.
 
-        :params
+        :param
             attr_name: string. Name of the attribute to subscribe change event.
 
         :param
