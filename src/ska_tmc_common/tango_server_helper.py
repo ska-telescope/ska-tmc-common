@@ -13,8 +13,6 @@ TangoServerHelper which helps in operations like getting and
 setting attributes and properties of the Tango device.
 """
 # Tango imports
-from logging import raiseExceptions
-
 import tango
 from tango import Database, DevFailed
 
@@ -221,9 +219,13 @@ class TangoServerHelper:
 
     def _generate_change_event(self, attr_name, value):
         """
-        Generates an event of type CHANGE_EVENT on the given attribute along with the new data
+        Generates an event of type CHANGE_EVENT on
+        the given attribute along with the new data
 
-        :param attr_name: String. Name of the attribute on which change event is to be raised.
+        :param attr_name: String.
+
+        Name of the attribute on which change event is to be raised.
+
         :param value: Changed values of the attribute.
 
         :return: None.
@@ -245,7 +247,9 @@ class TangoServerHelper:
         """
         Updates the value of device server's attribute
 
-        :param attr_name: String. Name of the attribute which should be updated.
+        :param attr_name: String.
+
+        Name of the attribute which should be updated.
 
         :param value: New value of the attribute.
 
@@ -280,7 +284,8 @@ class TangoServerHelper:
         """
         Returns the value of device server's attribute
 
-        :param attr_name: String. Name of the attribute which should be updated.
+        :param attr_name: String.
+                         Name of the attribute which should be updated.
 
         :return:
             value: Value of the attribute

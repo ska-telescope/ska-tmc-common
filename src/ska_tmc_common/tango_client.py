@@ -120,11 +120,18 @@ class TangoClient:
             command_data: (optional) void. Parameter with the command.
 
         :param
-            callback_method: (optional) Callback function that should be executed after completion
+            callback_method: (optional) Callback function
+
+            that should be executed after completion
+
             of the command execution.
 
         :returns
-            int. Command identifier returned by the Tango device server.
+            int.
+
+            Command identifier returned by
+
+            the Tango device server.
 
         :throws
             DevFailed in case of error.

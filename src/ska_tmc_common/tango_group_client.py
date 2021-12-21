@@ -70,7 +70,9 @@ class TangoGroupClient:
         """
         Removes specified elements in the device_to_remove from the Group.
 
-        :param device_to_remove: string. FQDN of the device to be removed from group.
+        :param device_to_remove: string.
+
+        FQDN of the device to be removed from group.
 
         :return
             None
@@ -178,9 +180,13 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group asynchronously.
 
-        :param command_name: string. Name of the command to be invoked
+        :param command_name: string.
 
-        :param command_data: (optional) Void. The arguments with the command.
+        Name of the command to be invoked
+
+        :param command_data: (optional) Void.
+
+        The arguments with the command.
 
         :param callback_method: The callback method that should be executed upon execution
 
@@ -212,7 +218,9 @@ class TangoGroupClient:
         """
         Retrieves the response of the command
 
-        :param command_id: int. It is a request identifier previously returned by one of the
+        :param command_id: int.
+
+        It is a request identifier previously returned by one of the
 
         :param command_inout_asynch methods.
 
@@ -221,7 +229,9 @@ class TangoGroupClient:
             If no timeout is mentioned, the API waits indefinitely.
 
         :return
-            The results of an asynchronous command as tango.GroupCmdReply object.
+            The results of an asynchronous command as tango.
+
+            GroupCmdReply object.
 
         :throws
             DevFailed on failure in executing the command.
