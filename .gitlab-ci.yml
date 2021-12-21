@@ -18,10 +18,9 @@ cache:
 # It is also specified that only the master branch will be subject of this job.
 
 stages:
-  - test
   - lint
   - build
-  - pages
+  - test
   - publish
 
 clean shell runner:
@@ -32,35 +31,16 @@ clean shell runner:
     # Gitlab CI badges creation
     - rm -rf build/*
 
-
-
-# pages:
-#   stage: pages
-#   tags:
-#     - docker-executor
-#   script:
-#     - mkdir .public
-#     - cp -R build .public
-#     - mv .public public
-#   only:
-#     - master
-#   artifacts:
-#     paths:
-#       - public
-
-#include:
-  # # Create Gitlab CI badges from CI metrics
-  # # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
-  # - project: 'ska-telescope/templates-repository'
-  #   file: 'gitlab-ci/includes/post_step.yml'
-  # # Publish Python packages
-  # # https://developer.skao.int/en/latest/tools/software-package-release-procedure.html#building-and-publishing-python-packages
-  # - project: 'ska-telescope/templates-repository'
-  #   file: 'gitlab-ci/includes/build_wheel.yml'
 include:
+  # # Python packages build,lint, test and publish
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/python.gitlab-ci.yml'
+
+  # # Docs pages
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
+
+  # Create Gitlab CI badges from CI metrics
+  # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'

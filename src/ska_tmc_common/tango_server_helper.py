@@ -57,8 +57,7 @@ class TangoServerHelper:
         """
         Set the Tango class object as a device
 
-        :param
-            device: Tango class object
+        :param device: Tango class object
 
         :return: None
         """
@@ -68,9 +67,7 @@ class TangoServerHelper:
     def read_property(self, property_name):
         """
         Returns the value of given Tango device property
-
-        :param
-            property_name: String. Name of the Tango device property
+        :param property_name: String. Name of the Tango device property
 
         :return
             List of strings containing value(s) of the device property
