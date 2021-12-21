@@ -6,10 +6,10 @@
 #
 # Distributed under the terms of the BSD-3-Clause license.
 # See LICENSE.txt for more info.
-""" 
-This is the Tango Server Helper module of Tango Interface Layer. 
-This module implements a class 
-TangoServerHelper which helps in operations like getting and 
+"""
+This is the Tango Server Helper module of Tango Interface Layer.
+This module implements a class
+TangoServerHelper which helps in operations like getting and
 setting attributes and properties of the Tango device.
 """
 # Tango imports
@@ -26,8 +26,7 @@ class TangoServerHelper:
 
     def __init__(self):
         """Private constructor of the class
-        :raises
-            Exception
+        :raises Exception
         """
         if TangoServerHelper.__instance is not None:
             raise Exception("This is singletone class")

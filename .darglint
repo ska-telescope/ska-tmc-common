@@ -1,3 +1,0 @@
-# temporary added this file to disable pylint warnings
-[darglint]
-ignore=DAR101, DAR201, DAR301, DAR401

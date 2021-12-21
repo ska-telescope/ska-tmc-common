@@ -26,8 +26,9 @@ class TangoClient:
     def __init__(self, fqdn, logger=None):
         """
         The class constructor.
-        :param
-            fqdn: string. The fqdn of the device.
+        :param fqdn: string.
+
+        The fqdn of the device.
 
         :param
             logger: (optional) The logger object.
