@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.7"
+version="0.1.8"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,8 +10,8 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.7
-tag=0.1.7
+release=0.1.8
+tag=0.1.8
 tag_description=Migration to Central Artifact Repository. 
 release_notes=This release contains:<br/><ul><li>Update global environment variables to new 'CAR' format</li></ul>
 <li><ul>Update Nexus URLs to point to Central Artefact Repository</li></ul><li><ul>Remove hard-coded URLs and instead use environment variables</li></ul>
