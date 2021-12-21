@@ -21,6 +21,7 @@ stages:
   - lint
   - build
   - test
+  - pages
   - publish
 
 clean shell runner:
