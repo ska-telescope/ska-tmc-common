@@ -19,6 +19,7 @@ def tango_context(request):
     """
     module = importlib.import_module("src/tmc/common")
     klass = getattr(module, "TangoClient")
+    properties = request
     tango_context = DeviceTestContext(klass, properties=properties)
     tango_context.start()
     klass.get_name = mock.Mock(side_effect=tango_context.get_device_access)

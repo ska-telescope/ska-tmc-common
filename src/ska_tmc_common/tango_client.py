@@ -33,7 +33,7 @@ class TangoClient:
             logger: (optional) The logger object.
         """
 
-        if logger == None:
+        if logger is None:
             self.logger = logging.getLogger(__name__)
         else:
             self.logger = logger
@@ -69,7 +69,9 @@ class TangoClient:
 
     def get_device_fqdn(self):
         """
-        Returns the Fully Qualified Device Name (FQDN) of the Tango device server.
+        Returns the Fully Qualified Device Name
+
+        (FQDN) of the Tango device server.
         """
         return self.device_fqdn
 
@@ -84,7 +86,11 @@ class TangoClient:
             command_data: (optional) void. Parameter with the command.
 
         :return
-            The result of the command. The type depends on the command. It may be None.
+            The result of the command.
+
+            The type depends on the command.
+
+            It may be None.
 
         :throws
             DevFailed in case of error.
@@ -137,7 +143,10 @@ class TangoClient:
             DevFailed in case of error.
         """
         try:
-            log_msg = f"Invoking {command_name} on {self.device_fqdn} asynchronously."
+            log_msg = (
+                f"Invoking {command_name}on{self.device_fqdn}asynchronously"
+            )
+
             self.logger.debug(log_msg)
             return self.deviceproxy.command_inout_asynch(
                 command_name, command_data, callback_method

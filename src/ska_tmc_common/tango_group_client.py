@@ -188,7 +188,9 @@ class TangoGroupClient:
 
         The arguments with the command.
 
-        :param callback_method: The callback method that should be executed upon execution
+        :param callback_method: The callback method that
+
+        should be executed upon execution
 
         :return
             int. Request id returned by tango group. Pass this id
