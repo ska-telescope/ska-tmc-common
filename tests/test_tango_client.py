@@ -23,10 +23,7 @@ def test_get_fqdn():
 
 def test_get_device_proxy():
     csp_subarray1_ln_fqdn = "ska_mid/tm_leaf_node/csp_subarray01"
-    # csp_subarray1_ln_proxy_mock = Mock()
-
-    # proxies_to_mock = {csp_subarray1_ln_fqdn: csp_subarray1_ln_proxy_mock}
-
+   
     with mock.patch.object(
         TangoClient, "_get_deviceproxy", return_value=Mock()
     ):
