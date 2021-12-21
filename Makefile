@@ -17,6 +17,14 @@ CAR_OCI_REGISTRY_HOST ?= artefact.skao.int
 CAR_OCI_REGISTRY_USER ?= ska-telescope
 PROJECT = ska-tmc-common
 
+
+#DAR101 Missing parameter(s) in Docstring: - fqdn
+#DAR201 Missing "Returns" in Docstring: - return
+#DAR301 Missing "Yields" in Docstring: - yield
+#DAR401 Missing exception(s) in Raises section: -r Exception
+PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR301,DAR401,W503 --max-line-length=180
+
+
 #
 # include makefile to pick up the standard Make targets, e.g., 'make build'
 # build, 'make push' docker push procedure, etc. The other Make targets
