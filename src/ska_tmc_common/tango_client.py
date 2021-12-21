@@ -87,11 +87,7 @@ class TangoClient:
             command_data: (optional) void. Parameter with the command.
 
         :return
-            The result of the command.
-
-            The type depends on the command.
-
-            It may be None.
+            Returns the command Result.
 
         :throws
             DevFailed in case of error.
