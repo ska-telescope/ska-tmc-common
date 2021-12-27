@@ -4,6 +4,7 @@ import threading
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
+
 def dev_state_2_str(value):
     if value == DevState.ON:
         return "DevState.ON"
