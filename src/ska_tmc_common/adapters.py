@@ -22,6 +22,7 @@ class AdapterFactory:
         :param dev_name: device name
         :type str
         """
+
         for adapter in self._adapters:
             if adapter.dev_name == dev_name:
                 return adapter
@@ -65,3 +66,45 @@ class BaseAdapter:
 
     def StandBy(self):
         self.proxy.TelescopeStandBy()
+
+
+class SubArrayAdapter(BaseAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        super().__init__(dev_name, proxy)
+
+    def AssignResources(self, argin):
+        return self._proxy.AssignResources(argin)
+
+    def ReleaseAllResources(self):
+        return self._proxy.ReleaseAllResources()
+
+    def ReleaseResources(self, argin):
+        return self._proxy.ReleaseResources(argin)
+
+
+class MCCSAdapter(BaseAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        super().__init__(dev_name, proxy)
+
+    def AssignResources(self, argin):
+        return self._proxy.AssignResources(argin)
+
+    def ReleaseResources(self, argin):
+        return self._proxy.ReleaseResources(argin)
+
+
+class DishAdapter(BaseAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        super().__init__(dev_name, proxy)
+
+    def SetStandbyFPMode(self):
+        self._proxy.SetStandbyFPMode()
+
+    def SetOperateMode(self):
+        self._proxy.SetOperateMode()
+
+    def SetStandbyLPMode(self):
+        self._proxy.SetStandbyLPMode()
+
+    def SetStowMode(self):
+        self._proxy.SetStowMode()

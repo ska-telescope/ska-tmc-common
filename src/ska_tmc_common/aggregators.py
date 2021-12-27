@@ -1,5 +1,5 @@
-from ska_tango_base.control_model import HealthState
-from tango import DevState
+# from ska_tango_base.control_model import HealthState
+# from tango import DevState
 
 
 class Aggregator:

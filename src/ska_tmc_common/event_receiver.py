@@ -3,7 +3,6 @@ from concurrent import futures
 from time import sleep
 
 import tango
-
 from dev_factory import DevFactory
 
 
