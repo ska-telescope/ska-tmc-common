@@ -1,7 +1,3 @@
-# from ska_tango_base.control_model import HealthState
-# from tango import DevState
-
-
 class Aggregator:
     def __init__(self, cm, logger) -> None:
         self._component_manager = cm

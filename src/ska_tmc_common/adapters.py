@@ -20,6 +20,7 @@ class AdapterFactory:
         or create new adapter as per the device type and add to adpter list
 
         :param dev_name: device name
+
         :type str
         """
 
