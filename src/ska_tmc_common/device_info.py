@@ -101,3 +101,41 @@ class DeviceInfo:
             "exception": str(self.exception),
         }
         return result
+
+
+class SubArrayDeviceInfo(DeviceInfo):
+    def __init__(self, dev_name, _unresponsive=False):
+        super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
+        self.id = -1
+        self.resources = []
+        self.obsState = ObsState.EMPTY
+
+    def from_dev_info(self, subarrayDevInfo):
+        super().from_dev_info(subarrayDevInfo)
+        if isinstance(subarrayDevInfo, SubArrayDeviceInfo):
+            self.id = subarrayDevInfo.id
+            self.resources = subarrayDevInfo.resources
+            self.obsState = subarrayDevInfo.obsState
+
+    def __eq__(self, other):
+        if isinstance(other, SubArrayDeviceInfo) or isinstance(
+            other, DeviceInfo
+        ):
+            return self.dev_name == other.dev_name
+        else:
+            return False
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        super_dict = super().to_dict()
+        result = []
+        if self.resources is not None:
+            for res in self.resources:
+                result.append(res)
+            super_dict["resources"] = result
+        super_dict["resources"] = result
+        super_dict["id"] = self.id
+        super_dict["obsState"] = str(ObsState(self.obsState))
+        return super_dict

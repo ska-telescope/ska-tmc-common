@@ -5,9 +5,9 @@ from time import sleep
 
 import numpy as np
 import tango
-from dev_factory import DevFactory
 
-from device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.dev_factory import DevFactory
+from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 
 
 class MonitoringLoop:

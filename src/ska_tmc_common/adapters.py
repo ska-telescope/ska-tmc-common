@@ -1,6 +1,6 @@
 import enum
 
-from dev_factory import DevFactory
+from ska_tmc_common.dev_factory import DevFactory
 
 
 class AdapterType(enum.IntEnum):
