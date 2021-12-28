@@ -3,10 +3,10 @@ This module specifies the operational state ("opState") model for SKA LMC Tango 
 
 It consists of:
 
-* an underlying state machine: :py:class:`._OpStateMachine`
-* an :py:class:`.OpStateModel` that maps state machine state to device
+* an underlying state machine: ._OpStateMachine
+* an `.OpStateModel` that maps state machine state to device
   "op state". This "op state" is currently represented as a
-  :py:class:`tango.DevState` enum value, and reported using the tango
+  `tango.DevState` enum value, and reported using the tango
   device's special ``state()`` method.
 """
 from ska_tango_base.base import OpStateModel
@@ -138,7 +138,7 @@ class TMCOpStateModel(OpStateModel):
     This class implements the state model for device operational state ("opState").
 
     The model supports the following states, represented as values of
-    the :py:class:`tango.DevState` enum.
+    the `tango.DevState` enum.
 
     * **INIT**: the device is initialising.
     * **ON**: the device is monitoring its telescope component and the

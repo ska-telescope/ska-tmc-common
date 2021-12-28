@@ -4,15 +4,46 @@ This module provided a reference implementation of a BaseComponentManager.
 It is provided for explanatory purposes, and to support testing of this
 package.
 """
+import json
 import threading
-import time
 
 from ska_tango_base.base import BaseComponentManager
-from ska_tango_base.control_model import ObsState
-from tango import DevState
+from ska_tango_base.control_model import HealthState
 
+# from ska_tmc_common.device_info import DeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
+
+# import time
+
+
+# from ska_tango_base.control_model import ObsState
+# from tango import DevState
+
+
+class TmcComponent:
+    def __init__(self, logger):
+        self.logger = logger
+        # _health_state is never changing. Setter not implemented
+        self._health_state = HealthState.OK
+        self._update_device_callback = None
+        self.lock = threading.Lock()
+
+    def get_device(self, dev_name):
+        raise NotImplementedError("This class must be inherited!")
+
+    def update_device(self, devInfo):
+        raise NotImplementedError("This class must be inherited!")
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        raise NotImplementedError("This class must be inherited!")
+
+    def _invoke_device_callback(self, devInfo):
+        if self._update_device_callback is not None:
+            self._update_device_callback(devInfo)
 
 
 class TmcComponentManager(BaseComponentManager):
@@ -27,12 +58,13 @@ class TmcComponentManager(BaseComponentManager):
     * Fetching the latest SCM indicator values of the components periodically
       and trigger various aggregation logic
 
-    * Receiving the change events from the component 
+    * Receiving the change events from the component
     """
 
     def __init__(
         self,
         op_state_model,
+        _component=TmcComponent(),
         logger=None,
         _monitoring_loop=True,
         _event_receiver=True,
@@ -147,25 +179,25 @@ class TmcComponentManager(BaseComponentManager):
     #     """
     #     return self._component.devices
 
-    @property
-    def checked_devices(self):
-        """
-        Return the list of the checked monitored devices
+    # @property
+    # def checked_devices(self):
+    #     """
+    #     Return the list of the checked monitored devices
 
-        :return: list of the checked monitored devices
-        """
-        result = []
-        for dev in self.component.devices:
-            if dev.unresponsive:
-                result.append(dev)
-                continue
-            if dev.ping > 0:
-                result.append(dev)
-                continue
-            if dev.last_event_arrived is not None:
-                result.append(dev)
-                continue
-        return result
+    #     :return: list of the checked monitored devices
+    #     """
+    #     result = []
+    #     for dev in self.component.devices:
+    #         if dev.unresponsive:
+    #             result.append(dev)
+    #             continue
+    #         if dev.ping > 0:
+    #             result.append(dev)
+    #             continue
+    #         if dev.last_event_arrived is not None:
+    #             result.append(dev)
+    #             continue
+    #     return result
 
     # @property
     # def command_in_progress(self):
@@ -190,72 +222,72 @@ class TmcComponentManager(BaseComponentManager):
         """
         return self.component.get_device(dev_name)
 
-    def add_dishes(self, dln_prefix, num_dishes):
-        """
-        Add dishes to the monitoring loop
+    # def add_dishes(self, dln_prefix, num_dishes):
+    #     """
+    #     Add dishes to the monitoring loop
 
-        :param dln_prefix: prefix of the dish
-        :type dln_prefix: str
-        :param num_dishes: number of dishes
-        :type num_dishes: int
-        """
-        result = []
-        for dish in range(1, (num_dishes + 1)):
-            self.add_device(dln_prefix + f"000{dish}")
-            result.append(dln_prefix + f"000{dish}")
-        return result
+    #     :param dln_prefix: prefix of the dish
+    #     :type dln_prefix: str
+    #     :param num_dishes: number of dishes
+    #     :type num_dishes: int
+    #     """
+    #     result = []
+    #     for dish in range(1, (num_dishes + 1)):
+    #         self.add_device(dln_prefix + f"000{dish}")
+    #         result.append(dln_prefix + f"000{dish}")
+    #     return result
 
-    def add_multiple_devices(self, device_list):
-        """
-        Add multiple devices to the monitoring loop
+    # def add_multiple_devices(self, device_list):
+    #     """
+    #     Add multiple devices to the monitoring loop
 
-        :param device_list: list of device names
-        :type list: list[str]
-        """
-        result = []
-        for dev_name in device_list:
-            self.add_device(dev_name)
-            result.append(dev_name)
-        return result
+    #     :param device_list: list of device names
+    #     :type list: list[str]
+    #     """
+    #     result = []
+    #     for dev_name in device_list:
+    #         self.add_device(dev_name)
+    #         result.append(dev_name)
+    #     return result
 
-    def add_device(self, dev_name):
-        """
-        Add device to the monitoring loop
+    # def add_device(self, dev_name):
+    #     """
+    #     Add device to the monitoring loop
 
-        :param dev_name: device name
-        :type dev_name: str
-        """
-        if dev_name is None:
-            return
+    #     :param dev_name: device name
+    #     :type dev_name: str
+    #     """
+    #     if dev_name is None:
+    #         return
 
-        if "subarray" in dev_name.lower():
-            devInfo = SubArrayDeviceInfo(dev_name, False)
-        else:
-            devInfo = DeviceInfo(dev_name, False)
+    #     # if "subarray" in dev_name.lower():
+    #     #     devInfo = SubArrayDeviceInfo(dev_name, False)
+    #     # else:
+    #     #     devInfo = DeviceInfo(dev_name, False)
 
-        self.component.update_device(devInfo)
+    #     self.component.update_device(devInfo)
 
-    def update_input_parameter(self):
-        with self.lock:
-            self.input_parameter.update(self)
+    # def update_input_parameter(self):
+    #     with self.lock:
+    #         self.input_parameter.update(self)
 
-    def device_failed(self, device_info, exception):
-        """
-        Set a device to failed and call the relative callback if available
+    # def device_failed(self, device_info, exception):
+    #     """
+    #     Set a device to failed and call the relative callback if available
 
-        :param device_info: a device info
-        :type device_info: DeviceInfo
-        :param exception: an exception
-        :type: Exception
-        """
-        with self.lock:
-            self.component.update_device_exception(device_info, exception)
+    #     :param device_info: a device info
+    #     :type device_info: DeviceInfo
+    #     :param exception: an exception
+    #     :type: Exception
+    #     """
+    #     with self.lock:
+    #         self.component.update_device_exception(device_info, exception)
 
-    def update_event_failure(self, dev_name):
-        with self.lock:
-            devInfo = self.component.get_device(dev_name)
-            devInfo.last_event_arrived = time.time()
-            devInfo.update_unresponsive(False)
+    # def update_event_failure(self, dev_name):
+    #     with self.lock:
+    #         devInfo = self.component.get_device(dev_name)
+    #         devInfo.last_event_arrived = time.time()
+    #         devInfo.update_unresponsive(False)
 
     def update_device_info(self, device_info):
         """
