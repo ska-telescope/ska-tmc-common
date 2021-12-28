@@ -1,8 +1,13 @@
 import pytest
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.subarray import SKASubarray
-from ska_tmc_common.adapters import BaseAdapter, SubArrayAdapter
-from ska_tmc_common.adapters import AdapterFactory, AdapterType
+
+from ska_tmc_common.adapters import (
+    AdapterFactory,
+    AdapterType,
+    BaseAdapter,
+    SubArrayAdapter,
+)
 
 
 @pytest.fixture(scope="module")
@@ -27,6 +32,7 @@ def test_get_or_create_base_adapter(tango_context_multitest):
         "test/device/2", AdapterType.BASE
     )
     assert isinstance(base_adapter, BaseAdapter)
+
 
 def test_get_or_create_subarray_adapter(tango_context_multitest):
     factory = AdapterFactory()

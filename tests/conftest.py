@@ -3,6 +3,7 @@ import logging
 
 import mock
 import pytest
+import tango
 from tango.test_context import DeviceTestContext, MultiDeviceTestContext
 
 from ska_tmc_common.dev_factory import DevFactory
@@ -10,6 +11,15 @@ from ska_tmc_common.dev_factory import DevFactory
 """
 A module defining a list of fixtures that are shared across all ska.base tests.
 """
+
+
+def pytest_sessionstart(session):
+    """
+    Pytest hook; prints info about tango version.
+    :param session: a pytest Session object
+    :type session: :py:class:`pytest.Session`
+    """
+    print(tango.utils.info())
 
 
 @pytest.fixture(scope="class")
