@@ -15,7 +15,6 @@ from ska_tango_base.control_model import HealthState
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
 
-
 # from ska_tango_base.control_model import ObsState
 # from tango import DevState
 
