@@ -6,6 +6,7 @@ package.
 """
 import json
 import threading
+import time
 
 from ska_tango_base.base import BaseComponentManager
 from ska_tango_base.control_model import HealthState
@@ -13,8 +14,6 @@ from ska_tango_base.control_model import HealthState
 # from ska_tmc_common.device_info import DeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
-
-# import time
 
 
 # from ska_tango_base.control_model import ObsState
@@ -26,8 +25,8 @@ class TmcComponent:
         self.logger = logger
         # _health_state is never changing. Setter not implemented
         self._health_state = HealthState.OK
-        self._update_device_callback = None
-        self.lock = threading.Lock()
+        # self._update_device_callback = None
+        # self.lock = threading.Lock()
 
     def get_device(self, dev_name):
         raise NotImplementedError("This class must be inherited!")
@@ -41,9 +40,9 @@ class TmcComponent:
     def to_dict(self):
         raise NotImplementedError("This class must be inherited!")
 
-    def _invoke_device_callback(self, devInfo):
-        if self._update_device_callback is not None:
-            self._update_device_callback(devInfo)
+    # def _invoke_device_callback(self, devInfo):
+    #     if self._update_device_callback is not None:
+    #         self._update_device_callback(devInfo)
 
 
 class TmcComponentManager(BaseComponentManager):
@@ -64,7 +63,7 @@ class TmcComponentManager(BaseComponentManager):
     def __init__(
         self,
         op_state_model,
-        _component=TmcComponent(),
+        _component=None,
         logger=None,
         _monitoring_loop=True,
         _event_receiver=True,
@@ -85,7 +84,7 @@ class TmcComponentManager(BaseComponentManager):
         """
         self.logger = logger
         self.lock = threading.Lock()
-        # self._component = _component or Component(logger)
+        self.component = _component or TmcComponent(logger)
 
         self._monitoring_loop = None
         if _monitoring_loop:
@@ -283,11 +282,11 @@ class TmcComponentManager(BaseComponentManager):
     #     with self.lock:
     #         self.component.update_device_exception(device_info, exception)
 
-    # def update_event_failure(self, dev_name):
-    #     with self.lock:
-    #         devInfo = self.component.get_device(dev_name)
-    #         devInfo.last_event_arrived = time.time()
-    #         devInfo.update_unresponsive(False)
+    def update_event_failure(self, dev_name):
+        with self.lock:
+            devInfo = self.component.get_device(dev_name)
+            devInfo.last_event_arrived = time.time()
+            devInfo.update_unresponsive(False)
 
     def update_device_info(self, device_info):
         """

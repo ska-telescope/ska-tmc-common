@@ -7,6 +7,7 @@ class AdapterType(enum.IntEnum):
     BASE = 0
     SUBARRAY = 1
     DISH = 2
+    MCCS = 3
 
 
 class AdapterFactory:
