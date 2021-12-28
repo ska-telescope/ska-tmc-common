@@ -27,7 +27,7 @@ class TmcComponentManager(BaseComponentManager):
     * Fetching the latest SCM indicator values of the components periodically
       and trigger various aggregation logic
 
-    * Receiving the change events from the component 
+    * Receiving the change events from the component
     """
 
     def __init__(
