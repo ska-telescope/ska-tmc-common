@@ -19,9 +19,7 @@ def devices_to_load():
         },
         {
             "class": SKABaseDevice,
-            "devices": [
-                {"name": "test/device/2"},
-            ],
+            "devices": [{"name": "test/device/2"}, {"name": "test/device/3"}],
         },
     )
 
@@ -40,3 +38,11 @@ def test_get_or_create_subarray_adapter(tango_context_multitest):
         "test/device/1", AdapterType.SUBARRAY
     )
     assert isinstance(subarray_adapter, SubArrayAdapter)
+
+
+def test_get_or_create_dish_adapter(tango_context_multitest):
+    factory = AdapterFactory()
+    dish_adapter = factory.get_or_create_adapter(
+        "test/device/1", AdapterType.DISH
+    )
+    assert isinstance(dish_adapter, BaseAdapter)
