@@ -10,7 +10,10 @@ from ska_tmc_common.dev_factory import DevFactory
 class EventReceiver:
     """
     The EventReceiver class has the responsibility to receive events
-    from the sub devices managed by the central node.
+    from the sub devices managed by a TMC node. It subscribes to State,
+    healthState and obsState attribute. TO subscribe any additional attribute,
+    the class should be inherited, override the `subscribe_events` method
+    and implement appropriate event handler methods.
 
     The ComponentManager uses the handle events methods
     for the attribute of interest.

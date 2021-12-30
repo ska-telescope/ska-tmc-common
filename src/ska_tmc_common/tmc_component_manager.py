@@ -12,8 +12,6 @@ from ska_tango_base.base import BaseComponentManager
 from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
-
-# from ska_tmc_common.device_info import DeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
 
@@ -27,11 +25,15 @@ class TmcComponent:
         # _health_state is never changing. Setter not implemented
         self._health_state = HealthState.OK
         self._devices = []
+        self._unresponsive = False
 
     def get_device(self, dev_name):
         raise NotImplementedError("This class must be inherited!")
 
     def update_device(self, devInfo):
+        raise NotImplementedError("This class must be inherited!")
+
+    def update_device_exception(self, device_info, exception):
         raise NotImplementedError("This class must be inherited!")
 
     def to_json(self):
@@ -145,17 +147,17 @@ class TmcComponentManager(BaseComponentManager):
         """
         return self.component.get_device(dev_name)
 
-    # def device_failed(self, device_info, exception):
-    #     """
-    #     Set a device to failed and call the relative callback if available
+    def device_failed(self, device_info, exception):
+        """
+        Set a device to failed and call the relative callback if available
 
-    #     :param device_info: a device info
-    #     :type device_info: DeviceInfo
-    #     :param exception: an exception
-    #     :type: Exception
-    #     """
-    #     with self.lock:
-    #         self.component.update_device_exception(device_info, exception)
+        :param device_info: a device info
+        :type device_info: DeviceInfo
+        :param exception: an exception
+        :type: Exception
+        """
+        with self.lock:
+            self.component.update_device_exception(device_info, exception)
 
     def update_event_failure(self, dev_name):
         with self.lock:
@@ -174,41 +176,35 @@ class TmcComponentManager(BaseComponentManager):
         with self.lock:
             self.component.update_device(device_info)
 
-    # def update_device_health_state(self, dev_name, health_state):
-    #     """
-    #     Update a monitored device health state
-    #     aggregate the health states available
+    def update_device_health_state(self, dev_name, health_state):
+        """
+        Update a monitored device health state
+        aggregate the health states available
 
-    #     :param dev_name: name of the device
-    #     :type dev_name: str
-    #     :param health_state: health state of the device
-    #     :type health_state: HealthState
-    #     """
-    #     with self.lock:
-    #         devInfo = self.component.get_device(dev_name)
-    #         devInfo.healthState = health_state
-    #         devInfo.last_event_arrived = time.time()
-    #         devInfo.update_unresponsive(False)
+        :param dev_name: name of the device
+        :type dev_name: str
+        :param health_state: health state of the device
+        :type health_state: HealthState
+        """
+        with self.lock:
+            devInfo = self.component.get_device(dev_name)
+            devInfo.healthState = health_state
+            devInfo.last_event_arrived = time.time()
+            devInfo.update_unresponsive(False)
 
-    #     self._aggregate_health_state()
+    def update_device_state(self, dev_name, state):
+        """
+        Update a monitored device state,
+        aggregate the states available
+        and call the relative callbacks if available
 
-    # def update_device_state(self, dev_name, state):
-    #     """
-    #     Update a monitored device state,
-    #     aggregate the states available
-    #     and call the relative callbacks if available
-
-    #     :param dev_name: name of the device
-    #     :type dev_name: str
-    #     :param state: state of the device
-    #     :type state: DevState
-    #     """
-    #     with self.lock:
-    #         devInfo = self.component.get_device(dev_name)
-    #         devInfo.state = state
-    #         devInfo.last_event_arrived = time.time()
-    #         devInfo.update_unresponsive(False)
-
-    #     self._aggregate_state()
-    #     if isinstance(self.input_parameter, InputParameterMid):
-    #         self._update_imaging()
+        :param dev_name: name of the device
+        :type dev_name: str
+        :param state: state of the device
+        :type state: DevState
+        """
+        with self.lock:
+            devInfo = self.component.get_device(dev_name)
+            devInfo.state = state
+            devInfo.last_event_arrived = time.time()
+            devInfo.update_unresponsive(False)
