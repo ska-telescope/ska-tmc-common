@@ -13,7 +13,7 @@ from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 class MonitoringLoop:
     """
     The MonitoringLoop class has the responsibility to monitor
-    the sub devices managed by the central node.
+    the sub devices.
 
     It is an infinite loop which ping, get the state, the obsState,
     the healthState and device information of the monitored SKA devices
