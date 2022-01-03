@@ -63,7 +63,7 @@ def tango_context(request):
 @pytest.fixture(scope="module")
 def tango_context_multitest(devices_to_load, request):
     true_context = request.config.getoption("--true-context")
-    logging.info("true context: %s", true_context)
+    # logging.info("true context: %s", true_context)
     if not true_context:
         with MultiDeviceTestContext(devices_to_load, process=False) as context:
             DevFactory._test_context = context

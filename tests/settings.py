@@ -1,11 +1,12 @@
 import logging
 import time
 
+import pytest
+
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
-
-# import pytest
-
+from tests.helpers.helper_state_device import HelperStateDevice
+from tests.helpers.helper_tmc_device import DummyTmcDevice
 
 logger = logging.getLogger(__name__)
 
@@ -15,24 +16,21 @@ TIMEOUT = 10
 DishLeafNodePrefix = "ska_mid/tm_leaf_node/d"
 NumDishes = 10
 
-# DEVICE_LIST_MID = [
-#     "ska_mid/tm_leaf_node/csp_master",
-#     "mid_csp/elt/master",
-#     "ska_mid/tm_leaf_node/sdp_master",
-#     "mid_sdp/elt/master",
-#     "ska_mid/tm_subarray_node/1",
-#     "ska_mid/tm_leaf_node/csp_subarray01",
-#     "ska_mid/tm_leaf_node/sdp_subarray01",
-#     "ska_mid/tm_leaf_node/d0001",
-#     "mid_d0001/elt/master",
-# ]
+DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
 
-# DEVICE_LIST_LOW = [
-#     "ska_low/tm_leaf_node/mccs_master",
-#     "low-mccs/control/control",
-#     "ska_low/tm_subarray_node/1",
-#     "ska_low/tm_leaf_node/mccs_subarray01",
-# ]
+
+@pytest.fixture(scope="module")
+def devices_to_load():
+    return (
+        {
+            "class": DummyTmcDevice,
+            "devices": [{"name": "dummy/tmc/device"}],
+        },
+        {
+            "class": HelperStateDevice,
+            "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
+        },
+    )
 
 
 def count_faulty_devices(cm):

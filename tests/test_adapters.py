@@ -2,10 +2,12 @@ import pytest
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.subarray import SKASubarray
 
+# from tests.settings import devices_to_load
 from ska_tmc_common.adapters import (
     AdapterFactory,
     AdapterType,
     BaseAdapter,
+    DishAdapter,
     SubArrayAdapter,
 )
 
@@ -15,11 +17,11 @@ def devices_to_load():
     return (
         {
             "class": SKASubarray,
-            "devices": [{"name": "test/device/1"}],
+            "devices": [{"name": "test/subarray/1"}],
         },
         {
             "class": SKABaseDevice,
-            "devices": [{"name": "test/device/2"}, {"name": "test/device/3"}],
+            "devices": [{"name": "test/base/1"}, {"name": "test/dish/1"}],
         },
     )
 
@@ -27,7 +29,7 @@ def devices_to_load():
 def test_get_or_create_base_adapter(tango_context_multitest):
     factory = AdapterFactory()
     base_adapter = factory.get_or_create_adapter(
-        "test/device/2", AdapterType.BASE
+        "test/base/1", AdapterType.BASE
     )
     assert isinstance(base_adapter, BaseAdapter)
 
@@ -35,7 +37,7 @@ def test_get_or_create_base_adapter(tango_context_multitest):
 def test_get_or_create_subarray_adapter(tango_context_multitest):
     factory = AdapterFactory()
     subarray_adapter = factory.get_or_create_adapter(
-        "test/device/1", AdapterType.SUBARRAY
+        "test/subarray/1", AdapterType.SUBARRAY
     )
     assert isinstance(subarray_adapter, SubArrayAdapter)
 
@@ -43,6 +45,6 @@ def test_get_or_create_subarray_adapter(tango_context_multitest):
 def test_get_or_create_dish_adapter(tango_context_multitest):
     factory = AdapterFactory()
     dish_adapter = factory.get_or_create_adapter(
-        "test/device/1", AdapterType.DISH
+        "test/dish/1", AdapterType.DISH
     )
-    assert isinstance(dish_adapter, BaseAdapter)
+    assert isinstance(dish_adapter, DishAdapter)
