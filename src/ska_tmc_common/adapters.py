@@ -74,6 +74,9 @@ class BaseAdapter:
     def StandBy(self):
         self.proxy.TelescopeStandBy()
 
+    def Reset(self):
+        self.proxy.Reset()
+
 
 class SubArrayAdapter(BaseAdapter):
     def __init__(self, dev_name, proxy) -> None:
@@ -87,6 +90,27 @@ class SubArrayAdapter(BaseAdapter):
 
     def ReleaseResources(self, argin):
         return self._proxy.ReleaseResources(argin)
+
+    def Configure(self, argin):
+        return self._proxy.Configure(argin)
+
+    def Scan(self, argin):
+        return self._proxy.Scan(argin)
+
+    def EndScan(self):
+        return self._proxy.EndScan()
+
+    def End(self):
+        return self._proxy.End()
+
+    def Abort(self):
+        return self._proxy.Abort()
+
+    def Restart(self):
+        return self._proxy.Restart()
+
+    def ObsReset(self):
+        return self._proxy.ObsReset()
 
 
 class MCCSAdapter(BaseAdapter):
@@ -117,6 +141,12 @@ class DishAdapter(BaseAdapter):
         self._proxy.SetStowMode()
 
 
-class SdpSubArrayAdapter(BaseAdapter):
+class SdpSubArrayAdapter(SubArrayAdapter):
     def __init__(self, dev_name, proxy) -> None:
         super().__init__(dev_name, proxy)
+
+    def On(self):
+        self._proxy.On()
+
+    def Off(self):
+        self._proxy.Off()
