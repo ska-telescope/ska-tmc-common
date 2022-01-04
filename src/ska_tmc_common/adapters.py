@@ -115,7 +115,8 @@ class DishAdapter(BaseAdapter):
 
     def SetStowMode(self):
         self._proxy.SetStowMode()
-        
+
+
 class SdpSubArrayAdapter(BaseAdapter):
     def __init__(self, dev_name, proxy) -> None:
         super().__init__(dev_name, proxy)
