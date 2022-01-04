@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.10"
+version="0.1.11"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,10 +10,10 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.10
-tag=0.1.10
-tag_description=Improved test coverage 
-release_notes=This release contains:<br/><ul><li>Improved test coverage</li><li>Implemented TMCCommand class</li></ul>
+release=0.1.11
+tag=0.1.11
+tag_description=Implemention of SdpSubarrayAdapter class.
+release_notes=This release contains:<br/><ul><li>Implemented SdpSubarrayAdapter Class</li><li>Updated SubarrayAdapter class to include observational commands</li></ul>
 <li></ul><br/>This is a beta version meant for internal testing.
 gitlab_username=kalyanithigale
 private_token=wQ-jCxbpiGKQh6hf6N_D
