@@ -8,6 +8,7 @@ class AdapterType(enum.IntEnum):
     SUBARRAY = 1
     DISH = 2
     MCCS = 3
+    SDPSUBARRAY = 4
 
 
 class AdapterFactory:
@@ -36,6 +37,10 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.SUBARRAY:
             new_adapter = SubArrayAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.SDPSUBARRAY:
+            new_adapter = SdpSubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         else:
@@ -110,3 +115,7 @@ class DishAdapter(BaseAdapter):
 
     def SetStowMode(self):
         self._proxy.SetStowMode()
+        
+class SdpSubArrayAdapter(BaseAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        super().__init__(dev_name, proxy)
