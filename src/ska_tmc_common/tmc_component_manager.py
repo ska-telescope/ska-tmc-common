@@ -106,11 +106,11 @@ class TmcComponentManager(BaseComponentManager):
 
         super().__init__(op_state_model, *args, **kwargs)
 
-        if _monitoring_loop:
-            self._monitoring_loop.start()
+        # if _monitoring_loop:
+        #     self._monitoring_loop.start()
 
-        if _event_receiver:
-            self._event_receiver.start()
+        # if _event_receiver:
+        #     self._event_receiver.start()
 
     def reset(self):
         pass
