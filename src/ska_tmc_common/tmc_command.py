@@ -1,11 +1,5 @@
 from ska_tango_base.commands import BaseCommand, ResultCode
 
-# from tango import DevState
-
-
-# from ska_tmc_common.adapters import AdapterFactory, AdapterType
-# from ska_tmc_centralnode.model.input import InputParameterMid
-
 
 class CommandNotAllowed(Exception):
     """Raised when a command is not allowed."""
@@ -29,36 +23,12 @@ class TMCCommand(BaseCommand):
 
     def check_allowed(self):
         raise NotImplementedError("This class must be inherited!")
-        # component_manager = self.target
-
-        # if isinstance(component_manager.input_parameter, InputParameterMid):
-        #     result = self.check_allowed_mid()
-        # else:
-        #     result = self.check_allowed_low()
-
-        # return result
 
     def init_adapters(self):
         raise NotImplementedError("This class must be inherited!")
-        # component_manager = self.target
-
-        # if isinstance(component_manager.input_parameter, InputParameterMid):
-        #     result, message = self.init_adapters_mid()
-        # else:
-        #     result, message = self.init_adapters_low()
-
-        # return result, message
 
     def do(self, argin=None):
         raise NotImplementedError("This class must be inherited!")
-        # component_manager = self.target
-
-        # if isinstance(component_manager.input_parameter, InputParameterMid):
-        #     result = self.do_mid(argin)
-        # else:
-        #     result = self.do_low(argin)
-
-        # return result
 
     def check_allowed_mid(self):
         raise NotImplementedError("This class must be inherited!")

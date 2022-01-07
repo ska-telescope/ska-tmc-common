@@ -25,7 +25,6 @@ class TmcComponent:
         # _health_state is never changing. Setter not implemented
         self._health_state = HealthState.OK
         self._devices = []
-        # self._unresponsive = False
 
     def get_device(self, dev_name):
         raise NotImplementedError("This class must be inherited!")

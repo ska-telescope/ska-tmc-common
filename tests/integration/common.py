@@ -3,8 +3,6 @@ import time
 
 import pytest
 
-# from tests.helpers.helper_state_device import HelperStateDevice
-# from tests.helpers.helper_subarray_device import HelperSubArrayDevice
 from tests.settings import SLEEP_TIME, TIMEOUT, logger
 
 pytest.event_arrived = False
