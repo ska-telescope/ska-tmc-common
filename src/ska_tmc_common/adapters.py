@@ -9,6 +9,7 @@ class AdapterType(enum.IntEnum):
     DISH = 2
     MCCS = 3
     SDPSUBARRAY = 4
+    CSPSUBARRAY = 5
 
 
 class AdapterFactory:
@@ -41,6 +42,10 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.SDPSUBARRAY:
             new_adapter = SdpSubArrayAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.CSPSUBARRAY:
+            new_adapter = CspSubarrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         else:
@@ -140,6 +145,24 @@ class DishAdapter(BaseAdapter):
     def SetStowMode(self):
         self._proxy.SetStowMode()
 
+    def Configure(self, argin):
+        self._proxy.Configure(argin)
+
+    def Track(self, argin):
+        self._proxy.Track(argin)
+
+    def StopTrack(self):
+        self._proxy.StopTrack()
+
+    def Restart(self):
+        self._proxy.Restart()
+
+    def Abort(self):
+        self._proxy.Abort()
+
+    def ObsReset(self):
+        self._proxy.ObsReset()
+
 
 class SdpSubArrayAdapter(SubArrayAdapter):
     def __init__(self, dev_name, proxy) -> None:
@@ -150,3 +173,11 @@ class SdpSubArrayAdapter(SubArrayAdapter):
 
     def Off(self):
         self._proxy.Off()
+
+
+class CspSubarrayAdapter(SubArrayAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        super().__init__(dev_name, proxy)
+
+    def End(self):
+        return self._proxy.GoToIdle()
