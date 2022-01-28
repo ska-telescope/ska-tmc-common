@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.12"
+version="0.1.13"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,10 +10,11 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.12
-tag=0.1.12
+release=0.1.13
+tag=0.1.13
 tag_description=Implemention of SdpSubarrayAdapter class.
-release_notes=This release contains:<br/><ul><li>Fixed bug in TMC Component Manager.</li></ul>
-<li></ul><br/>This is a beta version meant for internal testing.
+release_notes=This release contains:<br/><ul>
+<li>Implementation of more common classes:CommandExecutor, InputParameter, CspSubarrayAdapter</li></ul>
+<li></ul>
 gitlab_username=apurvapatkar
 private_token=glpat-zZU-MsMSe1oQ8xb_kRxG
