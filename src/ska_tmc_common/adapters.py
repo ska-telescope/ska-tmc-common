@@ -10,7 +10,7 @@ class AdapterType(enum.IntEnum):
     MCCS = 3
     SDPSUBARRAY = 4
     CSPSUBARRAY = 5
-    SDPMASTER = 6
+    MASTER = 6
 
 
 class AdapterFactory:
@@ -49,8 +49,8 @@ class AdapterFactory:
             new_adapter = CspSubarrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
-        elif adapter_type == AdapterType.SDPMASTER:
-            new_adapter = SdpMasterAdapter(
+        elif adapter_type == AdapterType.MASTER:
+            new_adapter = MasterAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         else:
@@ -188,7 +188,7 @@ class CspSubarrayAdapter(SubArrayAdapter):
         return self._proxy.GoToIdle()
 
 
-class SdpMasterAdapter(BaseAdapter):
+class MasterAdapter(BaseAdapter):
     def __init__(self, dev_name, proxy) -> None:
         super().__init__(dev_name, proxy)
 
