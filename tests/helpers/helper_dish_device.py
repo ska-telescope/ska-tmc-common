@@ -1,10 +1,22 @@
+from enum import IntEnum, unique
+
 from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
-from tango import DevState
-from tango.server import command
+from tango import AttrWriteType, DevState
+from tango.server import attribute, command
+
+
+@unique
+class PointingState(IntEnum):
+    NONE = 0
+    READY = 1
+    SLEW = 2
+    TRACK = 3
+    SCAN = 4
+    UNKNOWN = 5
 
 
 class EmptyComponentManager(BaseComponentManager):
@@ -13,8 +25,8 @@ class EmptyComponentManager(BaseComponentManager):
         super().__init__(op_state_model, *args, **kwargs)
 
 
-class HelperStateDevice(SKABaseDevice):
-    """A generic device for triggering state changes with a command"""
+class HelperDishDevice(SKABaseDevice):
+    """A device exposing commands and attributes of the Dish device."""
 
     def init_device(self):
         super().init_device()
@@ -24,9 +36,16 @@ class HelperStateDevice(SKABaseDevice):
         def do(self):
             super().do()
             device = self.target
+            device._pointing_state = PointingState.NONE
             device.set_change_event("State", True, False)
             device.set_change_event("healthState", True, False)
+            device.set_change_event("pointingState", True, False)
             return (ResultCode.OK, "")
+
+    pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
+
+    def read_pointingState(self):
+        return self._pointing_state
 
     def create_component_manager(self):
         self.op_state_model = OpStateModel(
@@ -56,7 +75,7 @@ class HelperStateDevice(SKABaseDevice):
 
     @command(
         dtype_in=int,
-        doc_in="state to assign",
+        doc_in="health state to assign",
     )
     def SetDirectHealthState(self, argin):
         """
@@ -67,6 +86,20 @@ class HelperStateDevice(SKABaseDevice):
         if self._health_state != value:
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
+
+    @command(
+        dtype_in=int,
+        doc_in="pointing state to assign",
+    )
+    def SetDirectPointingState(self, argin):
+        """
+        Trigger a PointingState change
+        """
+        # import debugpy; debugpy.debug_this_thread()
+        value = PointingState(argin)
+        if self._pointing_state != value:
+            self._pointing_state = PointingState(argin)
+            self.push_change_event("pointingState", self._pointing_state)
 
     def is_TelescopeOn_allowed(self):
         return True
@@ -135,28 +168,4 @@ class HelperStateDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetStowMode(self):
-        return [[ResultCode.OK], [""]]
-
-    def is_TelescopeStandBy_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def TelescopeStandBy(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-        return [[ResultCode.OK], [""]]
-
-    def is_Disable_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Disable(self):
-        if self.dev_state() != DevState.DISABLE:
-            self.set_state(DevState.DISABLE)
         return [[ResultCode.OK], [""]]

@@ -22,6 +22,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
         :param resources: resources to be assign
         """
+        self.logger.info("Resources: %s", resources)
+        self._assigned_resources = ["0001"]
         return (ResultCode.OK, "")
 
     def release(self, resources):
@@ -30,6 +32,12 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
         :param resources: resources to be released
         """
+        return (ResultCode.OK, "")
+
+    def release_all(self):
+        """Release all resources."""
+        self._assigned_resources = []
+
         return (ResultCode.OK, "")
 
     def configure(self, configuration):
@@ -97,12 +105,20 @@ class HelperSubArrayDevice(SKASubarray):
             super().do()
             device = self.target
             device._command_in_progress = ""
+            device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]}}'
             device.set_change_event("State", True, False)
             device.set_change_event("obsState", True, False)
             device.set_change_event("commandInProgress", True, False)
+            device.set_change_event("healthState", True, False)
+            device.set_change_event("receiveAddresses", True, False)
             return (ResultCode.OK, "")
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    def read_receiveAddresses(self):
+        return self._receive_addresses
 
     def read_commandInProgress(self):
         return self._command_in_progress
@@ -145,6 +161,36 @@ class HelperSubArrayDevice(SKASubarray):
         if self.dev_state() != argin:
             self.set_state(argin)
             self.push_change_event("State", self.dev_state())
+
+    @command(
+        dtype_in=int,
+        doc_in="state to assign",
+    )
+    def SetDirectHealthState(self, argin):
+        """
+        Trigger a HealthState change
+        """
+        # import debugpy; debugpy.debug_this_thread()
+        # # pylint: disable=E0203
+        value = HealthState(argin)
+        if self._health_state != value:
+            self._health_state = HealthState(argin)
+            self.push_change_event("healthState", self._health_state)
+
+    @command(
+        dtype_in="DevString",
+        doc_in="command in progress",
+    )
+    def SetDirectCommandInProgress(self, argin):
+        """
+        Trigger a CommandInProgress change
+        """
+        # import debugpy; debugpy.debug_this_thread()
+        if self._command_in_progress != argin:
+            self._command_in_progress = argin
+            self.push_change_event(
+                "commandInProgress", self._command_in_progress
+            )
 
     def is_On_allowed(self):
         return True
@@ -200,8 +246,6 @@ class HelperSubArrayDevice(SKASubarray):
     def AssignResources(self, argin):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
-            print("AssignResource completed....")
-            print("ObsState value is....", self._obs_state)
             self.push_change_event("obsState", self._obs_state)
         return [[ResultCode.OK], [""]]
 

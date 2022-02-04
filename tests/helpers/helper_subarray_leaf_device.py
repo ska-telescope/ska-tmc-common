@@ -1,10 +1,11 @@
-from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
+
+from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
 class EmptyComponentManager(BaseComponentManager):
@@ -13,8 +14,8 @@ class EmptyComponentManager(BaseComponentManager):
         super().__init__(op_state_model, *args, **kwargs)
 
 
-class HelperStateDevice(SKABaseDevice):
-    """A generic device for triggering state changes with a command"""
+class HelperSubarrayLeafDevice(SKABaseDevice):
+    """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
     def init_device(self):
         super().init_device()
@@ -29,7 +30,7 @@ class HelperStateDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        self.op_state_model = OpStateModel(
+        self.op_state_model = TMCOpStateModel(
             logger=self.logger, callback=super()._update_state
         )
         cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
@@ -90,73 +91,4 @@ class HelperStateDevice(SKABaseDevice):
     def TelescopeOff(self):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
-        return [[ResultCode.OK], [""]]
-
-    def is_SetStandbyFPMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStandbyFPMode(self):
-        # import debugpy; debugpy.debug_this_thread()
-        return [[ResultCode.OK], [""]]
-
-    def is_SetStandbyLPMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStandbyLPMode(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-        return [[ResultCode.OK], [""]]
-
-    def is_SetOperateMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetOperateMode(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-        return [[ResultCode.OK], [""]]
-
-    def is_SetStowMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStowMode(self):
-        return [[ResultCode.OK], [""]]
-
-    def is_TelescopeStandBy_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def TelescopeStandBy(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-        return [[ResultCode.OK], [""]]
-
-    def is_Disable_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Disable(self):
-        if self.dev_state() != DevState.DISABLE:
-            self.set_state(DevState.DISABLE)
         return [[ResultCode.OK], [""]]
