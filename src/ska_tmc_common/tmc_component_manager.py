@@ -211,7 +211,7 @@ class TmcComponentManager(BaseComponentManager):
 
 class TmcLeafNodeComponentManager(BaseComponentManager):
     """
-    A component manager for The TMC node component.
+    A component manager for The TMC Leaf Node component.
 
     It supports:
 

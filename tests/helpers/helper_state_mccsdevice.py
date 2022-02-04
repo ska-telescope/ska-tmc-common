@@ -31,8 +31,6 @@ class HelperMCCSStateDevice(SKABaseDevice):
             device.set_change_event("healthState", True, False)
             return (ResultCode.OK, "")
 
-        # ----------
-
     assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     def read_assignedResources(self):
