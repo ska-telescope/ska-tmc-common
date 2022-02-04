@@ -2,8 +2,15 @@
 name = "ska-tmc-common"
 version = "0.1.14"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
-authors = ["shraddhabajare", "adityadangeska"]
+authors = ["Team NCRA"]
 license = "BSD-3-Clause"
+
+packages = [
+    { include = "ska_tmc_common", from = "src" },
+]
+include = [
+    { path = 'tests'}
+]
 
 [[tool.poetry.source]]
 name = 'ska-nexus'
