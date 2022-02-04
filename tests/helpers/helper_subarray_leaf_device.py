@@ -92,3 +92,153 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
+
+    def is_AssignResources_allowed(self):
+        """
+        Check if command `AssignResources` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format consists of receptorIDList.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def AssignResources(self, argin):
+        return [[ResultCode.OK], [""]]
+
+    def is_ReleaseResources_allowed(self):
+        """
+        Check if command `ReleaseResources` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseResources(self):
+        return [[ResultCode.OK], [""]]
+
+    def is_Configure_allowed(self):
+        """
+        Check if command `Configure` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Configure(self, argin):
+        return [[ResultCode.OK], [""]]
+
+    def is_Scan_allowed(self):
+        """
+        Check if command `Scan` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Scan(self, argin):
+        return [[ResultCode.OK], [""]]
+
+    def is_EndScan_allowed(self):
+        """
+        Check if command `EndScan` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def EndScan(self):
+        return [[ResultCode.OK], [""]]
+
+    def is_End_allowed(self):
+        """
+        Check if command `End` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def End(self):
+        return [[ResultCode.OK], [""]]
+
+    def is_ObsReset_allowed(self):
+        """
+        Check if command `ObsReset` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ObsReset(self):
+        return [[ResultCode.OK], [""]]
+
+    def is_Abort_allowed(self):
+        """
+        Check if command `Abort` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Abort(self):
+        return [[ResultCode.OK], [""]]
+
+    def is_Restart_allowed(self):
+        """
+        Check if command `Restart` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Restart(self):
+        return [[ResultCode.OK], [""]]

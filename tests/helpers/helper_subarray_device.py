@@ -94,7 +94,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
 
 class HelperSubArrayDevice(SKASubarray):
-    """A generic device for triggering state changes with a command"""
+    """A generic subarray device for triggering state changes with a command.
+    It can be used as helper device for element subarray node"""
 
     def init_device(self):
         super().init_device()
