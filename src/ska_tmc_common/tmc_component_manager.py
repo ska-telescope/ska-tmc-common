@@ -330,3 +330,16 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
             self._device.state = state
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
+
+    def update_device_obs_state(self, obs_state):
+        """
+        Update a monitored device obs state,
+        and call the relative callbacks if available
+
+        :param obs_state: obs state of the device
+        :type obs_state: ObsState
+        """
+        with self.lock:
+            self._device.obsState = obs_state
+            self._device.last_event_arrived = time.time()
+            self._device.update_unresponsive(False)
