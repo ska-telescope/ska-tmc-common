@@ -53,6 +53,7 @@ def create_cm(p_monitoring_loop=True, p_event_receiver=True):
     start_time = time.time()
     return cm, start_time
 
+
 def set_devices_state(devices, state, devFactory, cm, expected_elapsed_time):
     for device in devices:
         proxy = devFactory.get_device(device)

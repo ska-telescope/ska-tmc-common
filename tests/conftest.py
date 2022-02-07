@@ -1,8 +1,6 @@
 # pylint: disable=unused-argument
-import importlib
 import logging
 
-import mock
 import pytest
 import tango
 from tango.test_context import MultiDeviceTestContext
