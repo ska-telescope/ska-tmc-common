@@ -26,7 +26,7 @@ def devices_to_load():
     )
 
 
-def test_get_or_create_base_adapter(tango_context_multitest):
+def test_get_or_create_base_adapter(tango_context):
     factory = AdapterFactory()
     base_adapter = factory.get_or_create_adapter(
         "test/base/1", AdapterType.BASE
@@ -34,7 +34,7 @@ def test_get_or_create_base_adapter(tango_context_multitest):
     assert isinstance(base_adapter, BaseAdapter)
 
 
-def test_get_or_create_subarray_adapter(tango_context_multitest):
+def test_get_or_create_subarray_adapter(tango_context):
     factory = AdapterFactory()
     subarray_adapter = factory.get_or_create_adapter(
         "test/subarray/1", AdapterType.SUBARRAY
@@ -42,7 +42,7 @@ def test_get_or_create_subarray_adapter(tango_context_multitest):
     assert isinstance(subarray_adapter, SubArrayAdapter)
 
 
-def test_get_or_create_dish_adapter(tango_context_multitest):
+def test_get_or_create_dish_adapter(tango_context):
     factory = AdapterFactory()
     dish_adapter = factory.get_or_create_adapter(
         "test/dish/1", AdapterType.DISH
