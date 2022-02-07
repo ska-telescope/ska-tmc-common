@@ -1,8 +1,8 @@
 import logging
 
 from ska_tmc_common.op_state_model import TMCOpStateModel
+from ska_tmc_common.test_helpers.helper_tmc_device import DummyComponent
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
-from tests.helpers.helper_tmc_device import DummyComponent
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.15"
+version="0.1.16"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,11 +10,10 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.15
-tag=0.1.15
-tag_description=Implemention of component manager class for tmc leaf nodes and Helper classes for test cases.
+release=0.1.16
+tag=0.1.16
+tag_description=Moved Helper classes for test cases to src folder.
 release_notes=This release contains:<br/><ul>
-<li>Implemention of component manager class for tmc leaf nodes and Helper classes for test cases.</li></ul>
-<li></ul>
+<li>Moved Helper classes for test cases to src folder</li></ul>
 gitlab_username=shraddhabajare
 private_token=glpat--tXtKuTKDqPub4FsJ2Ka
