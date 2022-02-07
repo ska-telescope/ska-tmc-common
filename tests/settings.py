@@ -4,9 +4,9 @@ import time
 import pytest
 
 from ska_tmc_common.op_state_model import TMCOpStateModel
+from ska_tmc_common.test_helpers.helper_state_device import HelperStateDevice
+from ska_tmc_common.test_helpers.helper_tmc_device import DummyTmcDevice
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
-from tests.helpers.helper_state_device import HelperStateDevice
-from tests.helpers.helper_tmc_device import DummyTmcDevice
 
 logger = logging.getLogger(__name__)
 
