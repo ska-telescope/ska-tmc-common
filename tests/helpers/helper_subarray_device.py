@@ -269,6 +269,25 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
         return [[ResultCode.OK], [""]]
 
+    def is_ReleaseAllResources_allowed(self):
+        """
+        Check if command `ReleaseAllResources` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseAllResources(self):
+        if self._obs_state != ObsState.EMPTY:
+            self._obs_state = ObsState.EMPTY
+            self.push_change_event("obsState", self._obs_state)
+        return [[ResultCode.OK], [""]]
+
     def is_Configure_allowed(self):
         """
         Check if command `Configure` is allowed in the current device state.
