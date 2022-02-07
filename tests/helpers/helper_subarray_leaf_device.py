@@ -1,10 +1,11 @@
-from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
+
+from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
 class EmptyComponentManager(BaseComponentManager):
@@ -13,9 +14,8 @@ class EmptyComponentManager(BaseComponentManager):
         super().__init__(op_state_model, *args, **kwargs)
 
 
-class HelperStateDevice(SKABaseDevice):
-    """A generic device for triggering state changes with a command.
-    It can be used as helper device for TMC Master leaf nodes and element Master nodes"""
+class HelperSubarrayLeafDevice(SKABaseDevice):
+    """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
     def init_device(self):
         super().init_device()
@@ -30,7 +30,7 @@ class HelperStateDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        self.op_state_model = OpStateModel(
+        self.op_state_model = TMCOpStateModel(
             logger=self.logger, callback=super()._update_state
         )
         cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
@@ -93,107 +93,152 @@ class HelperStateDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
 
-    def is_SetStandbyFPMode_allowed(self):
+    def is_AssignResources_allowed(self):
+        """
+        Check if command `AssignResources` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format consists of receptorIDList.",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetStandbyFPMode(self):
-        # import debugpy; debugpy.debug_this_thread()
+    def AssignResources(self, argin):
         return [[ResultCode.OK], [""]]
 
-    def is_SetStandbyLPMode_allowed(self):
+    def is_ReleaseResources_allowed(self):
+        """
+        Check if command `ReleaseResources` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetStandbyLPMode(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
+    def ReleaseResources(self):
         return [[ResultCode.OK], [""]]
 
-    def is_SetOperateMode_allowed(self):
+    def is_Configure_allowed(self):
+        """
+        Check if command `Configure` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format.",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetOperateMode(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
+    def Configure(self, argin):
         return [[ResultCode.OK], [""]]
 
-    def is_SetStowMode_allowed(self):
+    def is_Scan_allowed(self):
+        """
+        Check if command `Scan` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format.",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetStowMode(self):
+    def Scan(self, argin):
         return [[ResultCode.OK], [""]]
 
-    def is_TelescopeStandBy_allowed(self):
+    def is_EndScan_allowed(self):
+        """
+        Check if command `EndScan` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TelescopeStandBy(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
+    def EndScan(self):
         return [[ResultCode.OK], [""]]
 
-    def is_Disable_allowed(self):
+    def is_End_allowed(self):
+        """
+        Check if command `End` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Disable(self):
-        if self.dev_state() != DevState.DISABLE:
-            self.set_state(DevState.DISABLE)
+    def End(self):
         return [[ResultCode.OK], [""]]
 
-    def is_On_allowed(self):
+    def is_ObsReset_allowed(self):
+        """
+        Check if command `ObsReset` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def On(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
+    def ObsReset(self):
         return [[ResultCode.OK], [""]]
 
-    def is_Off_allowed(self):
+    def is_Abort_allowed(self):
+        """
+        Check if command `Abort` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Off(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
+    def Abort(self):
         return [[ResultCode.OK], [""]]
 
-    def is_StandBy_allowed(self):
+    def is_Restart_allowed(self):
+        """
+        Check if command `Restart` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def StandBy(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
+    def Restart(self):
         return [[ResultCode.OK], [""]]

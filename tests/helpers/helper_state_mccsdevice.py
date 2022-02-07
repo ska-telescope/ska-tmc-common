@@ -1,10 +1,12 @@
+import json
+
 from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
-from tango import DevState
-from tango.server import command
+from tango import AttrWriteType, DevState
+from tango.server import attribute, command
 
 
 class EmptyComponentManager(BaseComponentManager):
@@ -13,9 +15,8 @@ class EmptyComponentManager(BaseComponentManager):
         super().__init__(op_state_model, *args, **kwargs)
 
 
-class HelperStateDevice(SKABaseDevice):
-    """A generic device for triggering state changes with a command.
-    It can be used as helper device for TMC Master leaf nodes and element Master nodes"""
+class HelperMCCSStateDevice(SKABaseDevice):
+    """A generic device for triggering state changes with a command"""
 
     def init_device(self):
         super().init_device()
@@ -25,9 +26,15 @@ class HelperStateDevice(SKABaseDevice):
         def do(self):
             super().do()
             device = self.target
+            device._assigned_resources = "{ }"
             device.set_change_event("State", True, False)
             device.set_change_event("healthState", True, False)
             return (ResultCode.OK, "")
+
+    assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    def read_assignedResources(self):
+        return self._assigned_resources
 
     def create_component_manager(self):
         self.op_state_model = OpStateModel(
@@ -93,51 +100,6 @@ class HelperStateDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
 
-    def is_SetStandbyFPMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStandbyFPMode(self):
-        # import debugpy; debugpy.debug_this_thread()
-        return [[ResultCode.OK], [""]]
-
-    def is_SetStandbyLPMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStandbyLPMode(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-        return [[ResultCode.OK], [""]]
-
-    def is_SetOperateMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetOperateMode(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-        return [[ResultCode.OK], [""]]
-
-    def is_SetStowMode_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStowMode(self):
-        return [[ResultCode.OK], [""]]
-
     def is_TelescopeStandBy_allowed(self):
         return True
 
@@ -150,50 +112,40 @@ class HelperStateDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
         return [[ResultCode.OK], [""]]
 
-    def is_Disable_allowed(self):
+    def is_AssignResources_allowed(self):
         return True
 
     @command(
+        dtype_in="DevString",
+        doc_in="JSON-encoded string with the resources to add to subarray",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Disable(self):
-        if self.dev_state() != DevState.DISABLE:
-            self.set_state(DevState.DISABLE)
+    def AssignResources(self, argin):
+        tmpDict = {
+            "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
+            "subarray_beam_ids": [1],
+            "station_ids": [[1, 2]],
+            "channel_blocks": [3],
+        }
+        self._assigned_resources = json.dumps(tmpDict)
         return [[ResultCode.OK], [""]]
 
-    def is_On_allowed(self):
+    def is_ReleaseResources_allowed(self):
         return True
 
     @command(
+        dtype_in="DevString",
+        doc_in="JSON-encoded string with the resources to remove from the subarray",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def On(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-        return [[ResultCode.OK], [""]]
-
-    def is_Off_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Off(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-        return [[ResultCode.OK], [""]]
-
-    def is_StandBy_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def StandBy(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
+    def ReleaseResources(self, argin):
+        tmpDict = {
+            "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
+            "subarray_beam_ids": [],
+            "station_ids": [],
+            "channel_blocks": [],
+        }
+        self._assigned_resources = json.dumps(tmpDict)
         return [[ResultCode.OK], [""]]

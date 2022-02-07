@@ -207,3 +207,139 @@ class TmcComponentManager(BaseComponentManager):
             devInfo.state = state
             devInfo.last_event_arrived = time.time()
             devInfo.update_unresponsive(False)
+
+
+class TmcLeafNodeComponentManager(BaseComponentManager):
+    """
+    A component manager for The TMC Leaf Node component.
+
+    It supports:
+
+    * Monitoring its component, e.g. detect that it has been turned off
+      or on
+
+    * Fetching the latest SCM indicator values of the components periodically
+      and trigger various aggregation logic
+
+    * Receiving the change events from the component
+    """
+
+    def __init__(
+        self,
+        op_state_model,
+        logger=None,
+        _monitoring_loop=False,
+        _event_receiver=False,
+        max_workers=5,
+        proxy_timeout=500,
+        sleep_time=1,
+        *args,
+        **kwargs,
+    ):
+        """
+        Initialise a new ComponentManager instance.
+
+        :param op_state_model: the op state model used by this component
+            manager
+        :param logger: a logger for this component manager
+        :param _component: allows setting of the component to be
+            managed; for testing purposes only
+        """
+        self.logger = logger
+        self.lock = threading.Lock()
+        self._device = None  # It should be an object of DeviceInfo class
+
+        self._monitoring_loop = None
+        if _monitoring_loop:
+            self._monitoring_loop = MonitoringLoop(
+                self,
+                logger,
+                max_workers=max_workers,
+                proxy_timeout=proxy_timeout,
+                sleep_time=sleep_time,
+            )
+
+        self._event_receiver = None
+        if _event_receiver:
+            self._event_receiver = EventReceiver(
+                self,
+                logger,
+                proxy_timeout=proxy_timeout,
+                sleep_time=sleep_time,
+            )
+
+        super().__init__(op_state_model, *args, **kwargs)
+
+    def reset(self):
+        pass
+
+    def stop(self):
+        if self._event_receiver:
+            self._event_receiver.stop()
+        if self._monitoring_loop:
+            self._monitoring_loop.stop()
+
+    def get_device(self):
+        """
+        Return the device info our of the monitoring loop with name dev_name
+
+        :param None:
+        :return: a device info
+        :rtype: DeviceInfo
+        """
+        return self._device
+
+    def device_failed(self, exception):
+        """
+        Set a device to failed and call the relative callback if available
+
+        :param exception: an exception
+        :type: Exception
+        """
+        with self.lock:
+            self._device.exception = exception
+
+    def update_event_failure(self):
+        with self.lock:
+            self._device.last_event_arrived = time.time()
+            self._device.update_unresponsive(False)
+
+    def update_device_health_state(self, health_state):
+        """
+        Update a monitored device health state
+        aggregate the health states available
+
+        :param health_state: health state of the device
+        :type health_state: HealthState
+        """
+        with self.lock:
+            self._device.healthState = health_state
+            self._device.last_event_arrived = time.time()
+            self._device.update_unresponsive(False)
+
+    def update_device_state(self, state):
+        """
+        Update a monitored device state,
+        aggregate the states available
+        and call the relative callbacks if available
+
+        :param state: state of the device
+        :type state: DevState
+        """
+        with self.lock:
+            self._device.state = state
+            self._device.last_event_arrived = time.time()
+            self._device.update_unresponsive(False)
+
+    def update_device_obs_state(self, obs_state):
+        """
+        Update a monitored device obs state,
+        and call the relative callbacks if available
+
+        :param obs_state: obs state of the device
+        :type obs_state: ObsState
+        """
+        with self.lock:
+            self._device.obsState = obs_state
+            self._device.last_event_arrived = time.time()
+            self._device.update_unresponsive(False)
