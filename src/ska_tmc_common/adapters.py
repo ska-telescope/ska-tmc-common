@@ -8,7 +8,7 @@ class AdapterType(enum.IntEnum):
     SUBARRAY = 1
     DISH = 2
     MCCS = 3
-    CSPSUBARRAY = 5
+    CSPSUBARRAY = 4
 
 
 class AdapterFactory:

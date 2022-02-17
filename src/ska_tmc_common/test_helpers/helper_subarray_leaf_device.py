@@ -103,7 +103,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def AssignResources(self, argin):
-        print("AssignResource completed....")
+        self.logger("AssignResource completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Configure_allowed(self):
@@ -116,7 +116,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin):
-        print("Configure completed....")
+        self.logger("Configure completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Scan_allowed(self):
@@ -129,7 +129,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self, argin):
-        print("Scan completed....")
+        self.logger("Scan completed....")
         return [[ResultCode.OK], [""]]
 
     def is_EndScan_allowed(self):
@@ -140,7 +140,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def EndScan(self):
-        print("EndScan completed....")
+        self.logger("EndScan completed....")
         return [[ResultCode.OK], [""]]
 
     def is_End_allowed(self):
@@ -151,7 +151,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def End(self):
-        print("End completed....")
+        self.logger("End completed....")
         return [[ResultCode.OK], [""]]
 
     def is_GoToIdle_allowed(self):
@@ -162,7 +162,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def GoToIdle(self):
-        print("GoToIdle completed....")
+        self.logger("GoToIdle completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Abort_allowed(self):
@@ -173,7 +173,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self):
-        print("Abort completed....")
+        self.logger("Abort completed....")
         return [[ResultCode.OK], [""]]
 
     def is_ObsReset_allowed(self):
@@ -184,7 +184,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self):
-        print("ObsReset completed....")
+        self.logger("ObsReset completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Restart_allowed(self):
@@ -195,11 +195,11 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self):
-        print("Restart completed....")
+        self.logger("Restart completed....")
         return [[ResultCode.OK], [""]]
 
     def is_ReleaseAllResources_allowed(self):
-        print("In is_ReleaseAllResources_allowed ....... ")
+        self.logger("In is_ReleaseAllResources_allowed ....... ")
         return True
 
     @command(
@@ -207,5 +207,5 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseAllResources(self):
-        print("ReleaseAllResources completed....")
+        self.logger("ReleaseAllResources completed....")
         return [[ResultCode.OK], [""]]
