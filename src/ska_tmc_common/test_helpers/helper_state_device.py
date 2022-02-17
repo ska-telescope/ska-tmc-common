@@ -69,26 +69,26 @@ class HelperStateDevice(SKABaseDevice):
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
 
-    def is_TelescopeOn_allowed(self):
+    def is_On_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TelescopeOn(self):
+    def On(self):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
         return [[ResultCode.OK], [""]]
 
-    def is_TelescopeOff_allowed(self):
+    def is_Off_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TelescopeOff(self):
+    def Off(self):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
@@ -138,14 +138,14 @@ class HelperStateDevice(SKABaseDevice):
     def SetStowMode(self):
         return [[ResultCode.OK], [""]]
 
-    def is_TelescopeStandBy_allowed(self):
+    def is_StandBy_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TelescopeStandBy(self):
+    def StandBy(self):
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
         return [[ResultCode.OK], [""]]
@@ -160,40 +160,4 @@ class HelperStateDevice(SKABaseDevice):
     def Disable(self):
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-        return [[ResultCode.OK], [""]]
-
-    def is_On_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def On(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-        return [[ResultCode.OK], [""]]
-
-    def is_Off_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Off(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-        return [[ResultCode.OK], [""]]
-
-    def is_StandBy_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def StandBy(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
         return [[ResultCode.OK], [""]]
