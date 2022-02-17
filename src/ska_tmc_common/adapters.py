@@ -161,6 +161,7 @@ class DishAdapter(BaseAdapter):
     def ObsReset(self):
         self._proxy.ObsReset()
 
+
 class CspSubarrayAdapter(SubArrayAdapter):
     def __init__(self, dev_name, proxy) -> None:
         super().__init__(dev_name, proxy)
