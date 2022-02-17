@@ -8,9 +8,7 @@ class AdapterType(enum.IntEnum):
     SUBARRAY = 1
     DISH = 2
     MCCS = 3
-    SDPSUBARRAY = 4
-    CSPSUBARRAY = 5
-    MASTER = 6
+    CSPSUBARRAY = 4
 
 
 class AdapterFactory:
@@ -41,16 +39,8 @@ class AdapterFactory:
             new_adapter = SubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
-        elif adapter_type == AdapterType.SDPSUBARRAY:
-            new_adapter = SdpSubArrayAdapter(
-                dev_name, self._dev_factory.get_device(dev_name)
-            )
         elif adapter_type == AdapterType.CSPSUBARRAY:
             new_adapter = CspSubarrayAdapter(
-                dev_name, self._dev_factory.get_device(dev_name)
-            )
-        elif adapter_type == AdapterType.MASTER:
-            new_adapter = MasterAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         else:
@@ -76,16 +66,19 @@ class BaseAdapter:
         return self._dev_name
 
     def On(self):
-        self.proxy.TelescopeOn()
+        self.proxy.On()
 
     def Off(self):
-        self.proxy.TelescopeOff()
+        self.proxy.Off()
 
-    def StandBy(self):
-        self.proxy.TelescopeStandBy()
+    def Standby(self):
+        self.proxy.Standby()
 
     def Reset(self):
         self.proxy.Reset()
+
+    def Disable(self):
+        self.proxy.Disable()
 
 
 class SubArrayAdapter(BaseAdapter):
@@ -169,37 +162,9 @@ class DishAdapter(BaseAdapter):
         self._proxy.ObsReset()
 
 
-class SdpSubArrayAdapter(SubArrayAdapter):
-    def __init__(self, dev_name, proxy) -> None:
-        super().__init__(dev_name, proxy)
-
-    def On(self):
-        self._proxy.On()
-
-    def Off(self):
-        self._proxy.Off()
-
-
 class CspSubarrayAdapter(SubArrayAdapter):
     def __init__(self, dev_name, proxy) -> None:
         super().__init__(dev_name, proxy)
 
     def End(self):
         return self._proxy.GoToIdle()
-
-
-class MasterAdapter(BaseAdapter):
-    def __init__(self, dev_name, proxy) -> None:
-        super().__init__(dev_name, proxy)
-
-    def On(self):
-        self._proxy.On()
-
-    def Off(self):
-        self._proxy.Off()
-
-    def Standby(self):
-        self._proxy.Standby()
-
-    def Disable(self):
-        self._proxy.Disable()

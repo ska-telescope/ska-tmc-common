@@ -6,9 +6,7 @@ from ska_tmc_common.adapters import (
     BaseAdapter,
     CspSubarrayAdapter,
     DishAdapter,
-    MasterAdapter,
     MCCSAdapter,
-    SdpSubArrayAdapter,
     SubArrayAdapter,
 )
 
@@ -34,12 +32,9 @@ class HelperAdapterFactory(AdapterFactory):
             new_adapter = SubArrayAdapter(dev_name, proxy)
         elif adapter_type == AdapterType.MCCS:
             new_adapter = MCCSAdapter(dev_name, proxy)
-        elif adapter_type == AdapterType.SDPSUBARRAY:
-            new_adapter = SdpSubArrayAdapter(dev_name, proxy)
         elif adapter_type == AdapterType.CSPSUBARRAY:
             new_adapter = CspSubarrayAdapter(dev_name, proxy)
-        elif adapter_type == AdapterType.MASTER:
-            new_adapter = MasterAdapter(dev_name, proxy)
+
         else:
             new_adapter = BaseAdapter(dev_name, proxy)
 

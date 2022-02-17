@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.16"
+version="0.1.17"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,10 +10,9 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.16
-tag=0.1.16
-tag_description=Moved Helper classes for test cases to src folder.
-release_notes=This release contains:<br/><ul>
-<li>Moved Helper classes for test cases to src folder</li></ul>
-gitlab_username=shraddhabajare
-private_token=glpat--tXtKuTKDqPub4FsJ2Ka
+release=0.1.17
+tag=0.1.17
+tag_description=Command executor class now calls the command object instead of calling `do` method of the command object. This enables the state transition of the devices via base classes.Renamed TelescopeOn, TelescopeOff, TelescopeStandby commands to On, Off and Standby.
+release_notes=This release contains:<br/><ul><li>Command executor class now calls the command object instead of calling `do` method of the command object. This enables the state transition of the devices via base classes. </li>Renamed TelescopeOn, TelescopeOff, TelescopeStandby commands to On, Off and Standby</ul>
+gitlab_username=apurvapatkar
+private_token=glpat-yW1msXLWYt2N7stshPrV

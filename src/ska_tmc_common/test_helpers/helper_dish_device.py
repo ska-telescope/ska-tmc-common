@@ -101,26 +101,26 @@ class HelperDishDevice(SKABaseDevice):
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
 
-    def is_TelescopeOn_allowed(self):
+    def is_On_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TelescopeOn(self):
+    def On(self):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
         return [[ResultCode.OK], [""]]
 
-    def is_TelescopeOff_allowed(self):
+    def is_Off_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TelescopeOff(self):
+    def Off(self):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
@@ -168,4 +168,72 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetStowMode(self):
+        return [[ResultCode.OK], [""]]
+
+    def is_Configure_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("str"),
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Configure(self, argin):
+        self.logger.info("Configure Completed...")
+        return [[ResultCode.OK], [""]]
+
+    def is_Track_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("str"),
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Track(self, argin):
+        self.logger.info("Track Completed...")
+        return [[ResultCode.OK], [""]]
+
+    def is_StopTrack_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def StopTrack(self):
+        self.logger.info("StopTrack Completed...")
+        return [[ResultCode.OK], [""]]
+
+    def is_Abort_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Abort(self):
+        self.logger.info("Abort Completed...")
+        return [[ResultCode.OK], [""]]
+
+    def is_ObsReset_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ObsReset(self):
+        self.logger.info("ObsReset Completed...")
+        return [[ResultCode.OK], [""]]
+
+    def is_Restart_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Restart(self):
+        self.logger.info("Restart Completed...")
         return [[ResultCode.OK], [""]]
