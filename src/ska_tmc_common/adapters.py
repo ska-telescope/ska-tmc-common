@@ -78,7 +78,7 @@ class BaseAdapter:
         self.proxy.Reset()
 
     def Disable(self):
-        self._proxy.Disable()
+        self.proxy.Disable()
 
 
 class SubArrayAdapter(BaseAdapter):
