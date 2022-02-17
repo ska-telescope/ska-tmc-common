@@ -12,7 +12,7 @@ copyright=""""""
 
 release=0.1.17
 tag=0.1.17
-tag_description=Called command object from command Executor thread.
-release_notes=This release contains:<br/><ul><li>Called command object instead of do() method from command Executor thread</li></ul>
+tag_description=Called command object from command Executor thread. Renamed TelescopeOn, TelescopeOff, TelescopeStandby commands to On, Off and Standby.
+release_notes=This release contains:<br/><ul><li>Called command object instead of do() method from command Executor thread</li>Renamed TelescopeOn, TelescopeOff, TelescopeStandby commands to On, Off and Standby</ul>
 gitlab_username=apurvapatkar
 private_token=glpat-yW1msXLWYt2N7stshPrV

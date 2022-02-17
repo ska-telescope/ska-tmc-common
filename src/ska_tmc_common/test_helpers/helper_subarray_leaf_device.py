@@ -93,25 +93,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
 
-    def is_Standby_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Standby(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-        return [[ResultCode.OK], [""]]
-
     def is_AssignResources_allowed(self):
-        """
-        Check if command `AssignResources` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
@@ -121,67 +103,36 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def AssignResources(self, argin):
-        return [[ResultCode.OK], [""]]
-
-    def is_ReleaseResources_allowed(self):
-        """
-        Check if command `ReleaseResources` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ReleaseResources(self):
+        print("AssignResource completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Configure_allowed(self):
-        """
-        Check if command `Configure` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
         dtype_in=("str"),
-        doc_in="The input string in JSON format.",
+        doc_in="The input string in JSON format",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin):
+        print("Configure completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Scan_allowed(self):
-        """
-        Check if command `Scan` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
         dtype_in=("str"),
-        doc_in="The input string in JSON format.",
+        doc_in="The input string in JSON format",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self, argin):
+        print("Scan completed....")
         return [[ResultCode.OK], [""]]
 
     def is_EndScan_allowed(self):
-        """
-        Check if command `EndScan` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
@@ -189,15 +140,10 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def EndScan(self):
+        print("EndScan completed....")
         return [[ResultCode.OK], [""]]
 
     def is_End_allowed(self):
-        """
-        Check if command `End` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
@@ -205,31 +151,21 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def End(self):
+        print("End completed....")
         return [[ResultCode.OK], [""]]
 
-    def is_ObsReset_allowed(self):
-        """
-        Check if command `ObsReset` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
+    def is_GoToIdle_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ObsReset(self):
+    def GoToIdle(self):
+        print("GoToIdle completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Abort_allowed(self):
-        """
-        Check if command `Abort` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
@@ -237,15 +173,21 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self):
+        print("Abort completed....")
+        return [[ResultCode.OK], [""]]
+
+    def is_ObsReset_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ObsReset(self):
+        print("ObsReset completed....")
         return [[ResultCode.OK], [""]]
 
     def is_Restart_allowed(self):
-        """
-        Check if command `Restart` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
         return True
 
     @command(
@@ -253,4 +195,17 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self):
+        print("Restart completed....")
+        return [[ResultCode.OK], [""]]
+
+    def is_ReleaseAllResources_allowed(self):
+        print("In is_ReleaseAllResources_allowed ....... ")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseAllResources(self):
+        print("ReleaseAllResources completed....")
         return [[ResultCode.OK], [""]]
