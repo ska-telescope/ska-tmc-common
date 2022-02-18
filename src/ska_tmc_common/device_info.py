@@ -3,7 +3,7 @@ import threading
 
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
-
+from ska_tmc_common.enum import PointingState
 
 def dev_state_2_str(value):
     if value == DevState.ON:
@@ -138,4 +138,58 @@ class SubArrayDeviceInfo(DeviceInfo):
         super_dict["resources"] = result
         super_dict["id"] = self.id
         super_dict["obsState"] = str(ObsState(self.obsState))
+        return super_dict
+
+class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
+    def __init__(self, dev_name, _unresponsive=False):
+        super().__init__(dev_name, _unresponsive)
+        self.receiveAddresses = ""
+
+    def from_dev_info(self, sdpSubarrayDeviceInfo):
+        super().from_dev_info(sdpSubarrayDeviceInfo)
+        if isinstance(sdpSubarrayDeviceInfo, SdpSubarrayDeviceInfo):
+            self.receiveAddresses = sdpSubarrayDeviceInfo.receiveAddresses
+
+    def __eq__(self, other):
+        if isinstance(other, SdpSubarrayDeviceInfo) or isinstance(
+            other, DeviceInfo
+        ):
+            return self.dev_name == other.dev_name
+        else:
+            return False
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        super_dict = super().to_dict()
+        super_dict["receiveAddresses"] = self.receiveAddresses
+        return super_dict
+
+
+class DishDeviceInfo(DeviceInfo):
+    def __init__(self, dev_name, _unresponsive=False):
+        super().__init__(dev_name, _unresponsive)
+        self.id = -1
+        self.pointingState = PointingState.NONE
+
+    def from_dev_info(self, dishDeviceInfo):
+        super().from_dev_info(dishDeviceInfo)
+        if isinstance(dishDeviceInfo, DishDeviceInfo):
+            self.id = dishDeviceInfo.id
+            self.pointingState = dishDeviceInfo.pointingState
+
+    def __eq__(self, other):
+        if isinstance(other, DishDeviceInfo) or isinstance(other, DeviceInfo):
+            return self.dev_name == other.dev_name
+        else:
+            return False
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        super_dict = super().to_dict()
+        super_dict["id"] = self.id
+        super_dict["pointingState"] = str(PointingState(self.pointingState))
         return super_dict

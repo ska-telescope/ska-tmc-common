@@ -7,17 +7,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
-
-
-@unique
-class PointingState(IntEnum):
-    NONE = 0
-    READY = 1
-    SLEW = 2
-    TRACK = 3
-    SCAN = 4
-    UNKNOWN = 5
-
+from ska_tmc_common.enum import PointingState
 
 class EmptyComponentManager(BaseComponentManager):
     def __init__(self, op_state_model, logger=None, *args, **kwargs):
