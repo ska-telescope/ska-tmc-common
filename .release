@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.17"
+version="0.1.18"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,9 +10,9 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.17
-tag=0.1.17
-tag_description=Command executor class now calls the command object instead of calling `do` method of the command object. This enables the state transition of the devices via base classes.Renamed TelescopeOn, TelescopeOff, TelescopeStandby commands to On, Off and Standby.
-release_notes=This release contains:<br/><ul><li>Command executor class now calls the command object instead of calling `do` method of the command object. This enables the state transition of the devices via base classes. </li>Renamed TelescopeOn, TelescopeOff, TelescopeStandby commands to On, Off and Standby</ul>
+release=0.1.18
+tag=0.1.18
+tag_description= Added Standby command in the TMCLeafNodeHelper class
+release_notes=This release contains:<br/><ul><li>Added Standby command in the TMCLeafNodeHelper class</ul>
 gitlab_username=apurvapatkar
 private_token=glpat-yW1msXLWYt2N7stshPrV
