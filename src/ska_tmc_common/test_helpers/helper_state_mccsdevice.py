@@ -100,14 +100,14 @@ class HelperMCCSStateDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
         return [[ResultCode.OK], [""]]
 
-    def is_StandBy_allowed(self):
+    def is_Standby_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def StandBy(self):
+    def Standby(self):
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
         return [[ResultCode.OK], [""]]

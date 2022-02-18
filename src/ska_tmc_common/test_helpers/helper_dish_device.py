@@ -128,6 +128,18 @@ class HelperDishDevice(SKABaseDevice):
     def is_SetStandbyFPMode_allowed(self):
         return True
 
+    def is_Standby_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Standby(self):
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+        return [[ResultCode.OK], [""]]
+
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
