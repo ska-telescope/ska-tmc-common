@@ -1,5 +1,3 @@
-from enum import IntEnum, unique
-
 from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
@@ -8,15 +6,7 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
 
-
-@unique
-class PointingState(IntEnum):
-    NONE = 0
-    READY = 1
-    SLEW = 2
-    TRACK = 3
-    SCAN = 4
-    UNKNOWN = 5
+from ska_tmc_common.enum import PointingState
 
 
 class EmptyComponentManager(BaseComponentManager):
@@ -127,6 +117,18 @@ class HelperDishDevice(SKABaseDevice):
 
     def is_SetStandbyFPMode_allowed(self):
         return True
+
+    def is_Standby_allowed(self):
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Standby(self):
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+        return [[ResultCode.OK], [""]]
 
     @command(
         dtype_out="DevVarLongStringArray",
