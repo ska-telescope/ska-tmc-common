@@ -1,5 +1,3 @@
-from enum import IntEnum, unique
-
 from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
@@ -7,7 +5,9 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
+
 from ska_tmc_common.enum import PointingState
+
 
 class EmptyComponentManager(BaseComponentManager):
     def __init__(self, op_state_model, logger=None, *args, **kwargs):

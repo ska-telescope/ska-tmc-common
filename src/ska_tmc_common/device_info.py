@@ -3,7 +3,9 @@ import threading
 
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
+
 from ska_tmc_common.enum import PointingState
+
 
 def dev_state_2_str(value):
     if value == DevState.ON:
@@ -139,6 +141,7 @@ class SubArrayDeviceInfo(DeviceInfo):
         super_dict["id"] = self.id
         super_dict["obsState"] = str(ObsState(self.obsState))
         return super_dict
+
 
 class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
     def __init__(self, dev_name, _unresponsive=False):
