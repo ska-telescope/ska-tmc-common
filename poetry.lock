@@ -647,7 +647,7 @@ reference = 'ska-nexus'
 
 [[package]]
 name = "ska-tango-base"
-version = "0.11.3+5e1f0fee"
+version = "0.13.0"
 description = "A set of generic base devices for SKA Telescope."
 category = "main"
 optional = false
