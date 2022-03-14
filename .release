@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.18"
+version="0.1.19"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,9 +10,9 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.18
-tag=0.1.18
-tag_description= Added Standby command in the TMCLeafNodeHelper class
-release_notes=This release contains:<br/><ul><li>Added Standby command in the TMCLeafNodeHelper class</ul>
-gitlab_username=apurvapatkar
-private_token=glpat-yW1msXLWYt2N7stshPrV
+release=0.1.19
+tag=0.1.19
+tag_description= Test version for lmc base classes v0.13.0
+release_notes=This release contains:<br/><ul><li>Test version for lmc base classes v0.13.0 class</ul>
+gitlab_username=shraddhabajare
+private_token=glpat-o77pYV2H1hu31KQ-CzdB

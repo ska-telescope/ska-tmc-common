@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.1.18"
+version = "0.1.19"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team NCRA"]
 license = "BSD-3-Clause"
@@ -22,7 +22,7 @@ marshmallow = "^3.14.1"
 fire = "^0.4.0"
 black = "^21.12b0"
 ska-ser-logging = "^0.4.1"
-ska-tango-base = "^0.11.3"
+ska-tango-base = "0.13.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
