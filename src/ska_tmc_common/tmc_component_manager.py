@@ -62,6 +62,8 @@ class TmcComponentManager(BaseComponentManager):
         op_state_model,
         _component=None,
         logger=None,
+        component_state_callback=None,
+        communication_state_callback=None,
         _monitoring_loop=True,
         _event_receiver=True,
         max_workers=5,
@@ -103,7 +105,13 @@ class TmcComponentManager(BaseComponentManager):
                 sleep_time=sleep_time,
             )
 
-        super().__init__(op_state_model, *args, **kwargs)
+        super().__init__(
+            op_state_model,
+            component_state_callback=None,
+            communication_state_callback=None,
+            *args,
+            **kwargs,
+        )
 
         # if _monitoring_loop:
         #     self._monitoring_loop.start()
@@ -228,6 +236,8 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
         self,
         op_state_model,
         logger=None,
+        component_state_callback=None,
+        communication_state_callback=None,
         _monitoring_loop=False,
         _event_receiver=False,
         max_workers=5,
@@ -268,7 +278,13 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
                 sleep_time=sleep_time,
             )
 
-        super().__init__(op_state_model, *args, **kwargs)
+        super().__init__(
+            op_state_model,
+            component_state_callback=None,
+            communication_state_callback=None,
+            *args,
+            **kwargs,
+        )
 
     def reset(self):
         pass

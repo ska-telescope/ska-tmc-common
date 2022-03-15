@@ -1,9 +1,6 @@
 from ska_tango_base.base import SKABaseDevice
-from ska_tango_base.commands import ResponseCommand, ResultCode
+from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
-
-# from tango import DevState
-from tango.server import command
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.op_state_model import TMCOpStateModel
@@ -110,21 +107,23 @@ class DummyTmcDevice(SKABaseDevice):
         )
         return cm
 
-    class SetDataCommand(ResponseCommand):
-        def __init__(self, target):
-            self._component_manager = target.component_manager
 
-        def do(self, value):
-            self._component_manager.sample_data = value
-            return [[ResultCode.OK], ""]
+# This class is not getting utilised currently
+# class SetDataCommand(ResponseCommand):
+#     def __init__(self, target):
+#         self._component_manager = target.component_manager
 
-    def is_SetData_allowed(self):
-        return True
+#     def do(self, value):
+#         self._component_manager.sample_data = value
+#         return [[ResultCode.OK], ""]
 
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetData(self, value):
-        handler = self.get_command_object("SetData")
-        handler()
+# def is_SetData_allowed(self):
+#     return True
+
+# @command(
+#     dtype_out="DevVarLongStringArray",
+#     doc_out="(ReturnType, 'informational message')",
+# )
+# def SetData(self, value):
+#     handler = self.get_command_object("SetData")
+#     handler()

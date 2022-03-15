@@ -1,13 +1,13 @@
-from ska_tango_base.commands import BaseCommand, ResultCode
+from ska_tango_base.commands import ResultCode, _BaseCommand
 
 
 class CommandNotAllowed(Exception):
     """Raised when a command is not allowed."""
 
 
-class TMCCommand(BaseCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(target, args, logger, kwargs)
+class TMCCommand(_BaseCommand):
+    def __init__(self, logger):
+        super().__init__(logger)
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -48,9 +48,9 @@ class TMCCommand(BaseCommand):
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcLeafNodeCommand(BaseCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(target, *args, logger=logger, **kwargs)
+class TmcLeafNodeCommand(_BaseCommand):
+    def __init__(self, logger=None):
+        super().__init__(logger)
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
