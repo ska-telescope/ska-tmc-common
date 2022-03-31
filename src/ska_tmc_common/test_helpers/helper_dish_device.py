@@ -27,7 +27,6 @@ class HelperDishDevice(SKABaseDevice):
         def do(self):
             super().do()
             device = self.target
-            # device._pointing_state = PointingState.NONE
             device.set_change_event("State", True, False)
             device.set_change_event("healthState", True, False)
             device.set_change_event("pointingState", True, False)
