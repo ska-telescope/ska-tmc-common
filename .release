@@ -14,5 +14,3 @@ release=0.1.20
 tag=0.1.20
 tag_description= Updated python package version to the latest
 release_notes=This release contains:<br/><ul><li>Updated python package version to the latest</ul>
-gitlab_username=akshaysonawane
-private_token=glpat-yW1msXLWYt2N7stshPrV
