@@ -21,12 +21,12 @@ class HelperDishDevice(SKABaseDevice):
     def init_device(self):
         super().init_device()
         self._health_state = HealthState.OK
+        self._pointing_state = PointingState.NONE
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
             device = self.target
-            device._pointing_state = PointingState.NONE
             device.set_change_event("State", True, False)
             device.set_change_event("healthState", True, False)
             device.set_change_event("pointingState", True, False)

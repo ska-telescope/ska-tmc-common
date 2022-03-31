@@ -100,12 +100,12 @@ class HelperSubArrayDevice(SKASubarray):
     def init_device(self):
         super().init_device()
         self._health_state = HealthState.OK
+        self._command_in_progress = ""
 
     class InitCommand(SKASubarray.InitCommand):
         def do(self):
             super().do()
             device = self.target
-            device._command_in_progress = ""
             device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]}}'
             device.set_change_event("State", True, False)
             device.set_change_event("obsState", True, False)
