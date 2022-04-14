@@ -4,7 +4,7 @@ import threading
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
-from ska_tmc_common.enum import PointingState
+from ska_tmc_common.enum import DishMode, PointingState
 
 
 def dev_state_2_str(value):
@@ -175,12 +175,20 @@ class DishDeviceInfo(DeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.id = -1
         self.pointingState = PointingState.NONE
+        self.dishMode = DishMode.UNKNOWN
+        self.rxCapturingData = 0
+        self.achievedPointing = []
+        self.desiredPointing = []
 
     def from_dev_info(self, dishDeviceInfo):
         super().from_dev_info(dishDeviceInfo)
         if isinstance(dishDeviceInfo, DishDeviceInfo):
             self.id = dishDeviceInfo.id
             self.pointingState = dishDeviceInfo.pointingState
+            self.dishMode = dishDeviceInfo.dishMode
+            self.rxCapturingData = dishDeviceInfo.rxCapturingData
+            self.achievedPointing = dishDeviceInfo.achievedPointing
+            self.desiredPointing = dishDeviceInfo.desiredPointing
 
     def __eq__(self, other):
         if isinstance(other, DishDeviceInfo) or isinstance(other, DeviceInfo):
@@ -195,4 +203,8 @@ class DishDeviceInfo(DeviceInfo):
         super_dict = super().to_dict()
         super_dict["id"] = self.id
         super_dict["pointingState"] = str(PointingState(self.pointingState))
+        super_dict["dishMode"] = str(DishMode(self.dishMode))
+        super_dict["rxCapturingData"] = self.rxCapturingData
+        super_dict["achievedPointing"] = self.achievedPointing
+        super_dict["desiredPointing"] = self.desiredPointing
         return super_dict
