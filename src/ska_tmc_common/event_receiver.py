@@ -54,15 +54,15 @@ class EventReceiver:
             with futures.ThreadPoolExecutor(
                 max_workers=self._max_workers
             ) as executor:
-                for devInfo in self._component_manager.devices:
-                    if devInfo.last_event_arrived is None:
-                        executor.submit(self.subscribe_events, devInfo)
+                for dev_info in self._component_manager.devices:
+                    if dev_info.last_event_arrived is None:
+                        executor.submit(self.subscribe_events, dev_info)
             sleep(self._sleep_time)
 
-    def subscribe_events(self, devInfo):
+    def subscribe_events(self, dev_info):
         try:
             # import debugpy; debugpy.debug_this_thread()
-            proxy = self._dev_factory.get_device(devInfo.dev_name)
+            proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.subscribe_event(
                 "healthState",
                 tango.EventType.CHANGE_EVENT,
@@ -75,7 +75,7 @@ class EventReceiver:
                 self.handle_state_event,
                 stateless=True,
             )
-            if "subarray" in devInfo.dev_name:
+            if "subarray" in dev_info.dev_name:
                 proxy.subscribe_event(
                     "ObsState",
                     tango.EventType.CHANGE_EVENT,
