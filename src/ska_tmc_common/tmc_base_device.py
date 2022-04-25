@@ -17,7 +17,7 @@ class TMCBaseDevice(SKABaseDevice):
     commandInProgress = attribute(
         dtype="DevString",
         access=AttrWriteType.READ,
-        doc="commandInProgress attribute of Subarray Node.",
+        doc="commandInProgress attribute.",
     )
 
     commandExecuted = attribute(
@@ -29,7 +29,7 @@ class TMCBaseDevice(SKABaseDevice):
     lastDeviceInfoChanged = attribute(
         dtype="DevString",
         access=AttrWriteType.READ,
-        doc="Json String representing the last device changed in the internal model.",
+        doc="Json String representing the last device information changed in the internal model.",
     )
 
     lastCommandExecuted = attribute(
@@ -52,14 +52,6 @@ class TMCBaseDevice(SKABaseDevice):
     # -----------------
     # Device Properties
     # -----------------
-
-    MaxWorkerMonitoringLoop = device_property(
-        dtype="DevUShort", default_value=5
-    )
-
-    ProxyTimeoutMonitoringLoop = device_property(
-        dtype="DevUShort", default_value=500
-    )
 
     SleepTime = device_property(dtype="DevFloat", default_value=1)
 
@@ -125,7 +117,6 @@ class TMCBaseDevice(SKABaseDevice):
         if not issubclass(TMCBaseDevice, self.__class__):
             internal_model = self.component_manager.component.to_json()
             if "SubarrayNode" in str(self.__class__):
-                print(internal_model)
                 sn_internal_model = self.read_device_internalModel(
                     json.loads(internal_model)
                 )
