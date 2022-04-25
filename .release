@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.21"
+version="0.1.22"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,7 +10,7 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.21
-tag=0.1.21
-tag_description= Introduce required additional variables in DishDeviceInfo class
-release_notes=This release contains:<br/><ul><li>Introduced required additional variables in DishDeviceInfo class</li><li>Updated variable names to follow python naming standards</li></ul></br>
+release=0.1.22
+tag=0.1.22
+tag_description= Implement tmc common class for common attributes and device properties.
+release_notes=This release contains:<br/><ul><li>Implemention of tmc common class for common attributes and device properties.</li></ul></br>
