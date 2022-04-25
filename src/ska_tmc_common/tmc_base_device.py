@@ -61,16 +61,16 @@ class TMCBaseDevice(SKABaseDevice):
     def lastCommandExecuted(self):
         """Return the lastCommandExecuted attribute as list of string."""
         if not issubclass(TMCBaseDevice, self.__class__):
-            for command_executed in reversed(
-                self.component_manager.command_executor.command_executed
-            ):
-                single_res = "{0} {1} {2} {3}".format(
-                    str(command_executed["Id"]),
-                    str(command_executed["Command"]),
-                    str(command_executed["ResultCode"]),
-                    str(command_executed["Message"]),
-                )
-                return single_res
+            command_executed = (
+                self.component_manager.command_executor.command_executed[-1]
+            )
+            single_res = "{0} {1} {2} {3}".format(
+                str(command_executed["Id"]),
+                str(command_executed["Command"]),
+                str(command_executed["ResultCode"]),
+                str(command_executed["Message"]),
+            )
+            return single_res
 
     @attribute(
         dtype="DevString",
