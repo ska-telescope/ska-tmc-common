@@ -12,5 +12,3 @@ copyright=""""""
 
 release=0.1.22
 tag=0.1.22
-tag_description= Implement tmc common class for common attributes and device properties.
-release_notes=This release contains:<br/><ul><li>Implemention of tmc common class for common attributes and device properties.</li></ul></br>
