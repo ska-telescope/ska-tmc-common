@@ -86,12 +86,12 @@ class TMCBaseDevice(SKABaseDevice):
                 del dev["dev_name"]
                 result[dev_name] = dev
             if "CentralNode" in str(self.__class__):
-                result = self.read_CN_transformedInternalModel(
+                result = self.read_device_transformedInternalModel(
                     result, json_model
                 )
                 return json.dumps(result)
             elif "SubarrayNode" in str(self.__class__):
-                result = self.read_SN_transformedInternalModel(
+                result = self.read_device_transformedInternalModel(
                     result, json_model
                 )
                 return json.dumps(result)
