@@ -23,6 +23,7 @@ stages:
   - test
   - pages
   - publish
+  - scan
   
   
 include:
