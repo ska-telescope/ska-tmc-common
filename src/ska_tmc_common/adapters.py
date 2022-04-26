@@ -43,6 +43,10 @@ class AdapterFactory:
             new_adapter = CspSubarrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
+        elif adapter_type == AdapterType.MCCS:
+            new_adapter = MCCSAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
         else:
             new_adapter = BaseAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
