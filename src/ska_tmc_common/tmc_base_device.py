@@ -75,32 +75,24 @@ class TMCBaseDevice(SKABaseDevice):
         doc="Json String representing the entire internal model transformed for better reading.",
     )
     def transformedInternalModel(self):
+        return self.read_device_transformedInternalModel()
+
+    def read_device_transformedInternalModel(self):
         json_model = json.loads(self.component_manager.component.to_json())
         result = {}
         for dev in json_model["devices"]:
             dev_name = dev["dev_name"]
             del dev["dev_name"]
             result[dev_name] = dev
-        if "CentralNode" in str(self.__class__):
-            result = self.read_device_transformedInternalModel(
-                result, json_model
-            )
-            return json.dumps(result)
-        elif "SubarrayNode" in str(self.__class__):
-            result = self.read_device_transformedInternalModel(
-                result, json_model
-            )
-            return json.dumps(result)
+
+        return result, json_model
 
     @attribute(
         dtype="DevString",
         doc="Json String representing the entire internal model.",
     )
     def internalModel(self):
-        internal_model = self.component_manager.component.to_json()
-        if "SubarrayNode" in str(self.__class__):
-            sn_internal_model = self.read_device_internalModel(
-                json.loads(internal_model)
-            )
-            return json.dumps(sn_internal_model)
-        return internal_model
+        return self.read_device_internalModel()
+
+    def read_device_internalModel(self):
+        return self.component_manager.component.to_json()
