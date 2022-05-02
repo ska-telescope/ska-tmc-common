@@ -61,55 +61,50 @@ class MonitoringLoop:
                 try:
                     while not self._priority_devices.empty():
                         dev_name = self._priority_devices.get(block=False)
-                        devInfo = self._component_manager.get_device(dev_name)
-                        executor.submit(self.device_task, devInfo)
-                        not_read_devices_twice.append(devInfo)
+                        dev_info = self._component_manager.get_device(dev_name)
+                        executor.submit(self.device_task, dev_info)
+                        not_read_devices_twice.append(dev_info)
                 except Empty:
                     pass
 
-                for devInfo in self._component_manager.devices:
-                    if devInfo not in not_read_devices_twice:
-                        executor.submit(self.device_task, devInfo)
+                for dev_info in self._component_manager.devices:
+                    if dev_info not in not_read_devices_twice:
+                        executor.submit(self.device_task, dev_info)
 
             sleep(self._sleep_time)
 
-    def device_task(self, devInfo):
+    def device_task(self, dev_info):
         with tango.EnsureOmniThread():
             try:
                 # import debugpy; debugpy.debug_this_thread()
-                proxy = self._dev_factory.get_device(devInfo.dev_name)
+                proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.set_timeout_millis(self._proxy_timeout)
-                newDevInfo = None
-                if "subarray" in devInfo.dev_name.lower():
-                    newDevInfo = SubArrayDeviceInfo(devInfo.dev_name)
-                    newDevInfo.from_dev_info(devInfo)
-                    assignedRes = proxy.assignedResources
-                    if assignedRes is not None:
-                        newDevInfo.resources = np.asarray(
+                new_dev_info = None
+                if "subarray" in dev_info.dev_name.lower():
+                    new_dev_info = SubArrayDeviceInfo(dev_info.dev_name)
+                    new_dev_info.from_dev_info(dev_info)
+                    assigned_res = proxy.assignedResources
+                    if assigned_res is not None:
+                        new_dev_info.resources = np.asarray(
                             proxy.assignedResources
                         )
                     else:
-                        newDevInfo.resources = []
-                    # self._logger.info(
-                    #     "%s assignedResources: %s",
-                    #     devInfo.dev_name,
-                    #     newDevInfo.resources,
-                    # )
-                    newDevInfo.obsState = proxy.obsState
-                    for s in devInfo.dev_name:
+                        new_dev_info.resources = []
+                    new_dev_info.obs_state = proxy.obsState
+                    for s in dev_info.dev_name:
                         if s.isdigit():
-                            newDevInfo.id = int(s)
+                            new_dev_info.id = int(s)
                 else:
-                    newDevInfo = DeviceInfo(devInfo.dev_name)
-                    newDevInfo.from_dev_info(devInfo)
+                    new_dev_info = DeviceInfo(dev_info.dev_name)
+                    new_dev_info.from_dev_info(dev_info)
 
-                newDevInfo.ping = proxy.ping()
-                newDevInfo.state = proxy.State()
-                newDevInfo.healthState = proxy.HealthState
-                newDevInfo.dev_info = proxy.info()
-                self._component_manager.update_device_info(newDevInfo)
+                new_dev_info.ping = proxy.ping()
+                new_dev_info.state = proxy.State()
+                new_dev_info.health_state = proxy.HealthState
+                new_dev_info.dev_info = proxy.info()
+                self._component_manager.update_device_info(new_dev_info)
             except Exception as e:
                 self._logger.error(
-                    "Device not working %s: %s", devInfo.dev_name, e
+                    "Device not working %s: %s", dev_info.dev_name, e
                 )
-                self._component_manager.device_failed(devInfo, e)
+                self._component_manager.device_failed(dev_info, e)

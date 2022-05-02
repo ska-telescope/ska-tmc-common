@@ -49,13 +49,13 @@ class DeviceInfo:
         self._unresponsive = _unresponsive
         self.lock = threading.Lock()
 
-    def from_dev_info(self, devInfo):
-        self.dev_name = devInfo.dev_name
-        self.state = devInfo.state
-        self.health_state = devInfo.health_state
-        self.ping = devInfo.ping
-        self.last_event_arrived = devInfo.last_event_arrived
-        self.lock = devInfo.lock
+    def from_dev_info(self, dev_info):
+        self.dev_name = dev_info.dev_name
+        self.state = dev_info.state
+        self.health_state = dev_info.health_state
+        self.ping = dev_info.ping
+        self.last_event_arrived = dev_info.last_event_arrived
+        self.lock = dev_info.lock
 
     def update_unresponsive(self, value, exception=None):
         """
@@ -109,12 +109,12 @@ class SubArrayDeviceInfo(DeviceInfo):
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
-    def from_dev_info(self, subarrayDevInfo):
-        super().from_dev_info(subarrayDevInfo)
-        if isinstance(subarrayDevInfo, SubArrayDeviceInfo):
-            self.id = subarrayDevInfo.id
-            self.resources = subarrayDevInfo.resources
-            self.obs_state = subarrayDevInfo.obs_state
+    def from_dev_info(self, subarray_device_info):
+        super().from_dev_info(subarray_device_info)
+        if isinstance(subarray_device_info, SubArrayDeviceInfo):
+            self.id = subarray_device_info.id
+            self.resources = subarray_device_info.resources
+            self.obs_state = subarray_device_info.obs_state
 
     def __eq__(self, other):
         if isinstance(other, SubArrayDeviceInfo) or isinstance(
@@ -145,10 +145,10 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
 
-    def from_dev_info(self, sdpSubarrayDeviceInfo):
-        super().from_dev_info(sdpSubarrayDeviceInfo)
-        if isinstance(sdpSubarrayDeviceInfo, SdpSubarrayDeviceInfo):
-            self.receive_addresses = sdpSubarrayDeviceInfo.receive_addresses
+    def from_dev_info(self, sdp_subarray_device_info):
+        super().from_dev_info(sdp_subarray_device_info)
+        if isinstance(sdp_subarray_device_info, SdpSubarrayDeviceInfo):
+            self.receive_addresses = sdp_subarray_device_info.receive_addresses
 
     def __eq__(self, other):
         if isinstance(other, SdpSubarrayDeviceInfo) or isinstance(
@@ -177,15 +177,15 @@ class DishDeviceInfo(DeviceInfo):
         self.achieved_pointing = []
         self.desired_pointing = []
 
-    def from_dev_info(self, dishDeviceInfo):
-        super().from_dev_info(dishDeviceInfo)
-        if isinstance(dishDeviceInfo, DishDeviceInfo):
-            self.id = dishDeviceInfo.id
-            self.pointing_state = dishDeviceInfo.pointing_state
-            self.dish_mode = dishDeviceInfo.dish_mode
-            self.rx_capturing_data = dishDeviceInfo.rx_capturing_data
-            self.achieved_pointing = dishDeviceInfo.achieved_pointing
-            self.desired_pointing = dishDeviceInfo.desired_pointing
+    def from_dev_info(self, dish_device_info):
+        super().from_dev_info(dish_device_info)
+        if isinstance(dish_device_info, DishDeviceInfo):
+            self.id = dish_device_info.id
+            self.pointing_state = dish_device_info.pointing_state
+            self.dish_mode = dish_device_info.dish_mode
+            self.rx_capturing_data = dish_device_info.rx_capturing_data
+            self.achieved_pointing = dish_device_info.achieved_pointing
+            self.desired_pointing = dish_device_info.desired_pointing
 
     def __eq__(self, other):
         if isinstance(other, DishDeviceInfo) or isinstance(other, DeviceInfo):
