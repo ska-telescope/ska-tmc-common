@@ -82,20 +82,9 @@ class TMCBaseDevice(SKABaseDevice):
         This method consists of basic  read implementation of transformedInternalModel and
         must be overloaded to add additional values to result dictionary.
         Returns json string with device data.
-    
+
         Sample Output:
-            {'mccs':
-                {
-                'state': 'DevState.UNKNOWN',
-                'healthState': 'HealthState.UNKNOWN',
-                'ping': '-1',
-                'last_event_arrived': 'None',
-                'unresponsive': 'False',
-                'exception': 'None',
-                'id': -1,
-                'pointingState': 'PointingState.NONE'
-                }
-            }
+        {'mccs':{'state':'DevState.UNKNOWN','healthState':'HealthState.UNKNOWN','ping':'-1','last_event_arrived':'None','unresponsive':'False','exception':'None','id':-1,'pointingState':'PointingState.NONE'}}
 
         """
         json_model = json.loads(self.component_manager.component.to_json())
@@ -124,27 +113,11 @@ class TMCBaseDevice(SKABaseDevice):
 
     def internalModel_read(self):
         """
-        This method consists of basic  read implementation of InternalModel and
-        must be overloaded to add additional attribute values to internal model.
-        Returns json string representing internal model with basic attributes only.
+            This method consists of basic  read implementation of InternalModel and
+            must be overloaded to add additional attribute values to internal model.
+            Returns json string representing internal model with basic attributes only.
 
-    Sample Output:
-        {
-            "subarray_health_state": "HealthState.UNKNOWN",
-            "devices":
-            [
-                {
-                "dev_name": "mccs",
-                "state": "DevState.UNKNOWN",
-                "healthState": "HealthState.UNKNOWN",
-                 "ping": "-1",
-                 "last_event_arrived": "None",
-                 "unresponsive": "False",
-                 "exception": "None",
-                  "id": -1,
-                  "pointingState": "PointingState.NONE"
-                  }
-            ]
-        }
+        Sample Output:
+        {"subarray_health_state":"HealthState.UNKNOWN","devices":[{"dev_name":"mccs","state":"DevState.UNKNOWN","healthState":"HealthState.UNKNOWN","ping":"-1","last_event_arrived":"None","unresponsive":"False","exception":"None","id":-1,"pointingState":"PointingState.NONE"}]}
         """
         return self.component_manager.component.to_json()
