@@ -35,8 +35,8 @@ def devices_to_load():
 
 def count_faulty_devices(cm):
     result = 0
-    for devInfo in cm.checked_devices:
-        if devInfo.unresponsive:
+    for dev_info in cm.checked_devices:
+        if dev_info.unresponsive:
             result += 1
     return result
 

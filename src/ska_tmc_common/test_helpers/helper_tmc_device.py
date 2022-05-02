@@ -25,22 +25,22 @@ class DummyComponent(TmcComponent):
         :return: the monitored device info
         :rtype: DeviceInfo
         """
-        for devInfo in self._devices:
-            if devInfo.dev_name == dev_name:
-                return devInfo
+        for dev_info in self._devices:
+            if dev_info.dev_name == dev_name:
+                return dev_info
         return None
 
-    def update_device(self, devInfo):
+    def update_device(self, dev_info):
         """
         Update (or add if missing) Device Information into the list of the component.
 
-        :param devInfo: a DeviceInfo object
+        :param dev_info: a DeviceInfo object
         """
-        if devInfo not in self._devices:
-            self._devices.append(devInfo)
+        if dev_info not in self._devices:
+            self._devices.append(dev_info)
         else:
-            index = self._devices.index(devInfo)
-            self._devices[index] = devInfo
+            index = self._devices.index(dev_info)
+            self._devices[index] = dev_info
 
 
 class DummyComponentManager(TmcComponentManager):
@@ -67,11 +67,11 @@ class DummyComponentManager(TmcComponentManager):
             return
 
         if "subarray" in dev_name.lower():
-            devInfo = SubArrayDeviceInfo(dev_name, False)
+            dev_info = SubArrayDeviceInfo(dev_name, False)
         else:
-            devInfo = DeviceInfo(dev_name, False)
+            dev_info = DeviceInfo(dev_name, False)
 
-        self.component.update_device(devInfo)
+        self.component.update_device(dev_info)
 
     @property
     def sample_data(self):

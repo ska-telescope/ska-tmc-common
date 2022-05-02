@@ -29,7 +29,7 @@ class TmcComponent:
     def get_device(self, dev_name):
         raise NotImplementedError("This class must be inherited!")
 
-    def update_device(self, devInfo):
+    def update_device(self, dev_info):
         raise NotImplementedError("This class must be inherited!")
 
     def update_device_exception(self, device_info, exception):
@@ -129,11 +129,11 @@ class TmcComponentManager(BaseComponentManager):
             return
 
         if "subarray" in dev_name.lower():
-            devInfo = SubArrayDeviceInfo(dev_name, False)
+            dev_info = SubArrayDeviceInfo(dev_name, False)
         else:
-            devInfo = DeviceInfo(dev_name, False)
+            dev_info = DeviceInfo(dev_name, False)
 
-        self.component.update_device(devInfo)
+        self.component.update_device(dev_info)
 
     def get_device(self, dev_name):
         """
@@ -160,9 +160,9 @@ class TmcComponentManager(BaseComponentManager):
 
     def update_event_failure(self, dev_name):
         with self.lock:
-            devInfo = self.component.get_device(dev_name)
-            devInfo.last_event_arrived = time.time()
-            devInfo.update_unresponsive(False)
+            dev_info = self.component.get_device(dev_name)
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
 
     def update_device_info(self, device_info):
         """
@@ -186,10 +186,10 @@ class TmcComponentManager(BaseComponentManager):
         :type health_state: HealthState
         """
         with self.lock:
-            devInfo = self.component.get_device(dev_name)
-            devInfo.health_state = health_state
-            devInfo.last_event_arrived = time.time()
-            devInfo.update_unresponsive(False)
+            dev_info = self.component.get_device(dev_name)
+            dev_info.health_state = health_state
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
 
     def update_device_state(self, dev_name, state):
         """
@@ -203,10 +203,10 @@ class TmcComponentManager(BaseComponentManager):
         :type state: DevState
         """
         with self.lock:
-            devInfo = self.component.get_device(dev_name)
-            devInfo.state = state
-            devInfo.last_event_arrived = time.time()
-            devInfo.update_unresponsive(False)
+            dev_info = self.component.get_device(dev_name)
+            dev_info.state = state
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
 
 
 class TmcLeafNodeComponentManager(BaseComponentManager):
