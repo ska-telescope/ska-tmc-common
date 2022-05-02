@@ -95,7 +95,7 @@ class MonitoringLoop:
                     #     devInfo.dev_name,
                     #     newDevInfo.resources,
                     # )
-                    newDevInfo.obsState = proxy.obsState
+                    newDevInfo.obs_state = proxy.obsState
                     for s in devInfo.dev_name:
                         if s.isdigit():
                             newDevInfo.id = int(s)
@@ -105,7 +105,7 @@ class MonitoringLoop:
 
                 newDevInfo.ping = proxy.ping()
                 newDevInfo.state = proxy.State()
-                newDevInfo.healthState = proxy.HealthState
+                newDevInfo.health_state = proxy.HealthState
                 newDevInfo.dev_info = proxy.info()
                 self._component_manager.update_device_info(newDevInfo)
             except Exception as e:

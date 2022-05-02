@@ -187,7 +187,7 @@ class TmcComponentManager(BaseComponentManager):
         """
         with self.lock:
             devInfo = self.component.get_device(dev_name)
-            devInfo.healthState = health_state
+            devInfo.health_state = health_state
             devInfo.last_event_arrived = time.time()
             devInfo.update_unresponsive(False)
 
@@ -313,7 +313,7 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
         :type health_state: HealthState
         """
         with self.lock:
-            self._device.healthState = health_state
+            self._device.health_state = health_state
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
@@ -340,6 +340,6 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
         :type obs_state: ObsState
         """
         with self.lock:
-            self._device.obsState = obs_state
+            self._device.obs_state = obs_state
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
