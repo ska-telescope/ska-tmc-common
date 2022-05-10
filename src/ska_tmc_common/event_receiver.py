@@ -75,7 +75,9 @@ class EventReceiver:
                 self.handle_state_event,
                 stateless=True,
             )
-            if "subarray" in dev_info.dev_name:
+            if ("subarray" in dev_info.dev_name) and (
+                "leaf" not in dev_info.dev_name
+            ):
                 proxy.subscribe_event(
                     "ObsState",
                     tango.EventType.CHANGE_EVENT,
