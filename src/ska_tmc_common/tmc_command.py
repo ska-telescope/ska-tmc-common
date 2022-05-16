@@ -1,4 +1,5 @@
 from ska_tango_base.commands import BaseCommand, ResultCode
+from operator import methodcaller
 
 
 class CommandNotAllowed(Exception):
@@ -62,6 +63,37 @@ class TmcLeafNodeCommand(BaseCommand):
         message = f"Error in creating adapter for {dev_name}: {e}"
         self.logger.error(message)
         return ResultCode.FAILED, message
+
+    def call_adapter_method(self, leaf_node: str, adapter, command_name: str):
+        self.logger.info(
+            f"Invoking {command_name} command on: {adapter.dev_name}"
+        )
+        try:
+            self.logger.debug(
+                "Invoking %s command on %s %s: ",
+                command_name,
+                leaf_node,
+                adapter.dev_name,
+            )
+            func = methodcaller(command_name)
+            func(adapter)
+
+        except Exception as e:
+            self.logger.exception("Command invocation failed: %s", e)
+            return self.generate_command_result(
+                ResultCode.FAILED,
+                f"The invocation of the {command_name} command is failed on "
+                f"{leaf_node} Device {adapter.dev_name}.\n"
+                f"Reason: Error in calling the {command_name} command on "
+                f"{leaf_node}.\n"
+                "The command has NOT been executed.\n"
+                "This device will continue with normal operation.",
+            )
+        self.logger.info(
+            f"{command_name} command successfully invoked on: "
+            f"{adapter.dev_name}"
+        )
+        return (ResultCode.OK, "")
 
     def check_allowed(self):
         raise NotImplementedError("This class must be inherited!")
