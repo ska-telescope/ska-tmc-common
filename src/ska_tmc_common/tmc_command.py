@@ -65,28 +65,35 @@ class TmcLeafNodeCommand(BaseCommand):
         self.logger.error(message)
         return ResultCode.FAILED, message
 
-    def call_adapter_method(self, leaf_node: str, adapter, command_name: str):
+    def call_adapter_method(self, device, adapter, command_name, **kwargs):
+        argin = None
+        for _, value in kwargs:
+            argin = value
+
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"
         )
         try:
             self.logger.debug(
-                "Invoking %s command on %s %s: ",
+                "Invoking %s command on %s: ",
                 command_name,
-                leaf_node,
                 adapter.dev_name,
             )
-            func = methodcaller(command_name)
-            func(adapter)
+            if argin:
+                func = methodcaller(command_name, argin)
+                func(adapter)
+            else:
+                func = methodcaller(command_name)
+                func(adapter)
 
         except Exception as e:
             self.logger.exception("Command invocation failed: %s", e)
             return self.generate_command_result(
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
-                f"{leaf_node} Device {adapter.dev_name}.\n"
+                f"{device} device {adapter.dev_name}.\n"
                 f"Reason: Error in calling the {command_name} command on "
-                f"{leaf_node}.\n"
+                f"{device}.\n"
                 "The command has NOT been executed.\n"
                 "This device will continue with normal operation.",
             )
