@@ -74,11 +74,6 @@ class TmcLeafNodeCommand(BaseCommand):
             f"Invoking {command_name} command on: {adapter.dev_name}"
         )
         try:
-            self.logger.debug(
-                "Invoking %s command on %s: ",
-                command_name,
-                adapter.dev_name,
-            )
             if argin:
                 func = methodcaller(command_name, argin)
                 func(adapter)
@@ -92,14 +87,12 @@ class TmcLeafNodeCommand(BaseCommand):
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 f"{device} device {adapter.dev_name}.\n"
-                f"Reason: Error in calling the {command_name} command on "
-                f"{device}.\n"
+                f"Reason: Error in calling the {command_name} command on {device}.\n"
                 "The command has NOT been executed.\n"
                 "This device will continue with normal operation.",
             )
         self.logger.info(
-            f"{command_name} command successfully invoked on: "
-            f"{adapter.dev_name}"
+            f"{command_name} command successfully invoked on:{adapter.dev_name}"
         )
         return (ResultCode.OK, "")
 
