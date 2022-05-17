@@ -221,3 +221,17 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
     def ReleaseAllResources(self):
         self.logger.info("ReleaseAllResources completed....")
         return [[ResultCode.OK], [""]]
+
+    def is_ReleaseResources_allowed(self):
+        self.logger.info("In is_ReleaseResources_allowed ....... ")
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format consists of receptorIDList.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseResources(self, argin):
+        self.logger.info("ReleaseResources completed....")
+        return [[ResultCode.OK], [""]]
