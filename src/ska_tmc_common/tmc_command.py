@@ -1,5 +1,6 @@
-from ska_tango_base.commands import BaseCommand, ResultCode
 from operator import methodcaller
+
+from ska_tango_base.commands import BaseCommand, ResultCode
 
 
 class CommandNotAllowed(Exception):
