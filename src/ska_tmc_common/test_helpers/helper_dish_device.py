@@ -148,6 +148,9 @@ class HelperDishDevice(SKABaseDevice):
     def SetStandbyLPMode(self):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
+        if self._pointing_state != PointingState.NONE:
+            self._pointing_state = PointingState.NONE
+            self.push_change_event("pointingState", self._pointing_state)
         return [[ResultCode.OK], [""]]
 
     def is_SetOperateMode_allowed(self):
@@ -160,6 +163,9 @@ class HelperDishDevice(SKABaseDevice):
     def SetOperateMode(self):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
+        if self._pointing_state != PointingState.READY:
+            self._pointing_state = PointingState.READY
+            self.push_change_event("pointingState", self._pointing_state)
         return [[ResultCode.OK], [""]]
 
     def is_SetStowMode_allowed(self):
