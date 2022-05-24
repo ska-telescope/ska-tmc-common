@@ -72,7 +72,9 @@ class HelperCspMasterDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in = [str,],
+        dtype_in=[
+            str,
+        ],
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -85,7 +87,9 @@ class HelperCspMasterDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in = [str,],
+        dtype_in=[
+            str,
+        ],
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -98,7 +102,9 @@ class HelperCspMasterDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in = [str,],
+        dtype_in=[
+            str,
+        ],
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )

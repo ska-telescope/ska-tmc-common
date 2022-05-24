@@ -4,11 +4,11 @@ from ska_tmc_common.adapters import (
     AdapterFactory,
     AdapterType,
     BaseAdapter,
+    CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
     SubArrayAdapter,
-    CspMasterAdapter
 )
 
 

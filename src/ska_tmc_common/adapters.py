@@ -93,7 +93,7 @@ class BaseAdapter:
 class CspMasterAdapter(BaseAdapter):
     def __init__(self, dev_name, proxy) -> None:
         super().__init__(dev_name, proxy)
-    
+
     def On(self, argin):
         self._proxy.On(argin)
 
