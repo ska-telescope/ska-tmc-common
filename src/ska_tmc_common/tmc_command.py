@@ -65,9 +65,8 @@ class TmcLeafNodeCommand(BaseCommand):
         self.logger.error(message)
         return ResultCode.FAILED, message
 
-    def call_adapter_method(self, device, adapter, command_name, **kwargs):
-        argin = None
-        for _, value in kwargs:
+    def call_adapter_method(self, device, adapter, command_name, *args):
+        for value in args:
             argin = value
 
         self.logger.info(

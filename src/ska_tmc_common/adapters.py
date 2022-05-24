@@ -9,6 +9,7 @@ class AdapterType(enum.IntEnum):
     DISH = 2
     MCCS = 3
     CSPSUBARRAY = 4
+    CSPMASTER = 5
 
 
 class AdapterFactory:
@@ -47,6 +48,10 @@ class AdapterFactory:
             new_adapter = MCCSAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
+        elif adapter_type == AdapterType.CSPMASTER:
+            new_adapter = CspMasterAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
         else:
             new_adapter = BaseAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
@@ -83,6 +88,20 @@ class BaseAdapter:
 
     def Disable(self):
         self.proxy.Disable()
+
+
+class CspMasterAdapter(BaseAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        super().__init__(dev_name, proxy)
+    
+    def On(self, argin):
+        self._proxy.On(argin)
+
+    def Standby(self, argin):
+        self._proxy.Standby(argin)
+
+    def Off(self, argin):
+        self._proxy.Off(argin)
 
 
 class SubArrayAdapter(BaseAdapter):
