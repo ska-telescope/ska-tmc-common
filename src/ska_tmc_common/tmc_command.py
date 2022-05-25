@@ -66,6 +66,7 @@ class TmcLeafNodeCommand(BaseCommand):
         return ResultCode.FAILED, message
 
     def call_adapter_method(self, device, adapter, command_name, *args):
+        argin = None
         for value in args:
             argin = value
 
@@ -73,7 +74,7 @@ class TmcLeafNodeCommand(BaseCommand):
             f"Invoking {command_name} command on: {adapter.dev_name}"
         )
         try:
-            if argin:
+            if argin is not None:
                 func = methodcaller(command_name, argin)
                 func(adapter)
             else:
