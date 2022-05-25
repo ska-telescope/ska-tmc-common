@@ -4,6 +4,7 @@ from ska_tmc_common.adapters import (
     AdapterFactory,
     AdapterType,
     BaseAdapter,
+    CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
@@ -34,7 +35,8 @@ class HelperAdapterFactory(AdapterFactory):
             new_adapter = MCCSAdapter(dev_name, proxy)
         elif adapter_type == AdapterType.CSPSUBARRAY:
             new_adapter = CspSubarrayAdapter(dev_name, proxy)
-
+        elif adapter_type == AdapterType.CSPMASTER:
+            new_adapter = CspMasterAdapter(dev_name, proxy)
         else:
             new_adapter = BaseAdapter(dev_name, proxy)
 
