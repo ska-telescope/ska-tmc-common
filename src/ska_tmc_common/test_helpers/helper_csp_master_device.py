@@ -67,7 +67,7 @@ class HelperCspMasterDevice(SKABaseDevice):
 
     @command(
         dtype_in="DevVarStringArray",
-        doc_in="Input argument",
+        doc_in="Input argument as an empty list",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -81,7 +81,7 @@ class HelperCspMasterDevice(SKABaseDevice):
 
     @command(
         dtype_in="DevVarStringArray",
-        doc_in="Input argument",
+        doc_in="Input argument as an empty list",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -95,7 +95,7 @@ class HelperCspMasterDevice(SKABaseDevice):
 
     @command(
         dtype_in="DevVarStringArray",
-        doc_in="Input argument",
+        doc_in="Input argument as an empty list",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
