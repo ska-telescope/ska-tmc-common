@@ -35,12 +35,6 @@ class HelperCspMasterDevice(SKABaseDevice):
         cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
         return cm
 
-    def always_executed_hook(self):
-        pass
-
-    def delete_device(self):
-        pass
-
     @command(
         dtype_in="DevState",
         doc_in="state to assign",
@@ -72,9 +66,8 @@ class HelperCspMasterDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in=[
-            str,
-        ],
+        dtype_in="DevVarStringArray",
+        doc_in="Input argument",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -87,9 +80,8 @@ class HelperCspMasterDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in=[
-            str,
-        ],
+        dtype_in="DevVarStringArray",
+        doc_in="Input argument",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -102,9 +94,8 @@ class HelperCspMasterDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in=[
-            str,
-        ],
+        dtype_in="DevVarStringArray",
+        doc_in="Input argument",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
