@@ -1,5 +1,5 @@
 from ska_tango_base.base import SKABaseDevice
-from ska_tango_base.commands import ResponseCommand, ResultCode
+from ska_tango_base.commands import ResultCode, SlowCommand
 from ska_tango_base.control_model import HealthState
 
 # from tango import DevState
@@ -110,7 +110,7 @@ class DummyTmcDevice(SKABaseDevice):
         )
         return cm
 
-    class SetDataCommand(ResponseCommand):
+    class SetDataCommand(SlowCommand):
         def __init__(self, target):
             self._component_manager = target.component_manager
 

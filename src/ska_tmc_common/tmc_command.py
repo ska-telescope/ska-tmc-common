@@ -1,15 +1,16 @@
 from operator import methodcaller
 
-from ska_tango_base.commands import BaseCommand, ResultCode
+from ska_tango_base.commands import ResultCode, SlowCommand, _BaseCommand
 
 
 class CommandNotAllowed(Exception):
     """Raised when a command is not allowed."""
 
 
-class TMCCommand(BaseCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(target, args, logger, kwargs)
+class TMCCommand(SlowCommand):
+    def __init__(self, component_manager, *args, logger=None, **kwargs):
+        self.component_manager = component_manager
+        super().__init__(logger)
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -50,7 +51,7 @@ class TMCCommand(BaseCommand):
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcLeafNodeCommand(BaseCommand):
+class TmcLeafNodeCommand(_BaseCommand):
     def __init__(self, target, *args, logger=None, **kwargs):
         super().__init__(target, *args, logger=logger, **kwargs)
 
