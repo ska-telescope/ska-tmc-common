@@ -1,18 +1,21 @@
 import json
+from typing import Optional
 
 from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
-from ska_tango_base.base.component_manager import BaseComponentManager
+from ska_tango_base.base.component_manager import TaskExecutorComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
 
 
-class EmptyComponentManager(BaseComponentManager):
-    def __init__(self, op_state_model, logger=None, *args, **kwargs):
+class EmptyComponentManager(TaskExecutorComponentManager):
+    def __init__(
+        self, *args, logger=None, max_workers: Optional[int] = None, **kwargs
+    ):
         self.logger = logger
-        super().__init__(op_state_model, *args, **kwargs)
+        super().__init__(*args, max_workers=max_workers, **kwargs)
 
 
 class HelperMCCSStateDevice(SKABaseDevice):
@@ -25,7 +28,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            device = self.target
+            device = self._device
             device._assigned_resources = "{ }"
             device.set_change_event("State", True, False)
             device.set_change_event("healthState", True, False)
