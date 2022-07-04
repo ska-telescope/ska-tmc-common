@@ -345,8 +345,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         if self._monitoring_loop:
             self._monitoring_loop.stop()
 
-    # Shouldn't there be a add_device method as well?
-    # Or some other way to set self._device attribute?
     def get_device(self):
         """
         Return the device info our of the monitoring loop with name dev_name

@@ -102,7 +102,7 @@ def test_get_device_leafnode():
     assert dummy_device_info.dev_name == "dummy/monitored/device"
 
 
-def test_update_device_health_state():
+def test_update_device_health_state_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
@@ -113,7 +113,7 @@ def test_update_device_health_state():
     assert dummy_device_info.health_state == HealthState.OK
 
 
-def test_update_device_state():
+def test_update_device_state_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
@@ -124,7 +124,7 @@ def test_update_device_state():
     assert dummy_device_info.state == DevState.ON
 
 
-def test_update_device_obs_state():
+def test_update_device_obs_state_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = SubArrayDeviceInfo("dummy/subarray/device")
     cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
