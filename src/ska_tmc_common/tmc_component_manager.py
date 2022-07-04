@@ -266,6 +266,20 @@ class TmcComponentManager(TaskExecutorComponentManager):
             "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
         )
 
+    def check_if_command_is_allowed(self):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state
+        to perform this command
+
+        :return: True if command is allowed
+
+        :rtype: boolean
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method check_if_command_is_allowed must be implemented in a subclass!"
+        )
+
 
 class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
     """
@@ -285,7 +299,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
         op_state_model,
-        device,
         logger=None,
         _monitoring_loop=False,
         _event_receiver=False,
@@ -309,7 +322,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         self.logger = logger
         self.op_state_model = op_state_model
         self.lock = threading.Lock()
-        self._device = device  # It should be an object of DeviceInfo class
+        self._device = None  # It should be an object of DeviceInfo class
 
         self._monitoring_loop = None
         if _monitoring_loop:

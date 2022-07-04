@@ -94,10 +94,20 @@ def test_release_resources():
         cm.release_resources()
 
 
+def test_check_if_command_is_allowed():
+    op_state_model = TMCOpStateModel(logger)
+    dummy_component = DummyComponent(logger)
+    cm = TmcComponentManager(op_state_model, dummy_component, logger)
+    # raise NotImplementedError
+    with pytest.raises(NotImplementedError):
+        cm.check_if_command_is_allowed()
+
+
 def test_get_device_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
+    cm = TmcLeafNodeComponentManager(op_state_model, logger)
+    cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.dev_name == "dummy/monitored/device"
 
@@ -105,7 +115,8 @@ def test_get_device_leafnode():
 def test_update_device_health_state_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
+    cm = TmcLeafNodeComponentManager(op_state_model, logger)
+    cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.health_state == HealthState.UNKNOWN
 
@@ -116,7 +127,8 @@ def test_update_device_health_state_leafnode():
 def test_update_device_state_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
+    cm = TmcLeafNodeComponentManager(op_state_model, logger)
+    cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.state == DevState.UNKNOWN
 
@@ -127,7 +139,8 @@ def test_update_device_state_leafnode():
 def test_update_device_obs_state_leafnode():
     op_state_model = TMCOpStateModel(logger)
     dummy_device = SubArrayDeviceInfo("dummy/subarray/device")
-    cm = TmcLeafNodeComponentManager(op_state_model, dummy_device, logger)
+    cm = TmcLeafNodeComponentManager(op_state_model, logger)
+    cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.obs_state == ObsState.EMPTY
 

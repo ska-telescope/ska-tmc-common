@@ -52,8 +52,8 @@ class TMCCommand(SlowCommand):
 
 
 class TmcLeafNodeCommand(SlowCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        self.target = target
+    def __init__(self, component_manager, *args, logger=None, **kwargs):
+        self.component_manager = component_manager
         super().__init__(*args, logger=logger, **kwargs)
 
     def generate_command_result(self, result_code, message):
@@ -68,6 +68,7 @@ class TmcLeafNodeCommand(SlowCommand):
         return ResultCode.FAILED, message
 
     def call_adapter_method(self, device, adapter, command_name, *args):
+        argin = None
         for value in args:
             argin = value
 
@@ -75,7 +76,7 @@ class TmcLeafNodeCommand(SlowCommand):
             f"Invoking {command_name} command on: {adapter.dev_name}"
         )
         try:
-            if argin:
+            if argin is not None:
                 func = methodcaller(command_name, argin)
                 func(adapter)
             else:
