@@ -14,7 +14,7 @@ class EmptyComponentManager(TaskExecutorComponentManager):
         self, *args, logger=None, max_workers: Optional[int] = None, **kwargs
     ):
         self.logger = logger
-        super().__init__(*args, max_workers=max_workers, **kwargs)
+        super().__init__(max_workers=max_workers, *args, **kwargs)
 
 
 class HelperStateDevice(SKABaseDevice):
