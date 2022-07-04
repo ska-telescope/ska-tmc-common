@@ -7,15 +7,13 @@ from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
 
-from ska_tmc_common.op_state_model import TMCOpStateModel
-
 
 class EmptyComponentManager(TaskExecutorComponentManager):
     def __init__(
-        self, *args, logger=None, max_workers: Optional[int] = None, **kwargs
+        self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
     ):
         self.logger = logger
-        super().__init__(*args, max_workers=max_workers, **kwargs)
+        super().__init__(max_workers=max_workers, *args, **kwargs)
 
 
 class HelperSubarrayLeafDevice(SKABaseDevice):
@@ -28,16 +26,12 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            device = self._device
-            device.set_change_event("State", True, False)
-            device.set_change_event("healthState", True, False)
+            self._device.set_change_event("State", True, False)
+            self._device.set_change_event("healthState", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        self.op_state_model = TMCOpStateModel(
-            logger=self.logger, callback=super()._update_state
-        )
-        cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
+        cm = EmptyComponentManager(logger=self.logger)
         return cm
 
     def always_executed_hook(self):

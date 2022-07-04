@@ -1,7 +1,6 @@
 import json
 from typing import Optional
 
-from ska_tango_base.base import OpStateModel
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import TaskExecutorComponentManager
 from ska_tango_base.commands import ResultCode
@@ -12,10 +11,10 @@ from tango.server import attribute, command
 
 class EmptyComponentManager(TaskExecutorComponentManager):
     def __init__(
-        self, *args, logger=None, max_workers: Optional[int] = None, **kwargs
+        self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
     ):
         self.logger = logger
-        super().__init__(*args, max_workers=max_workers, **kwargs)
+        super().__init__(max_workers=max_workers, *args, **kwargs)
 
 
 class HelperMCCSStateDevice(SKABaseDevice):
@@ -40,10 +39,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
         return self._assigned_resources
 
     def create_component_manager(self):
-        self.op_state_model = OpStateModel(
-            logger=self.logger, callback=super()._update_state
-        )
-        cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
+        cm = EmptyComponentManager(logger=self.logger)
         return cm
 
     def always_executed_hook(self):
