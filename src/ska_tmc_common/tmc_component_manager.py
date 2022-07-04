@@ -8,10 +8,7 @@ import json
 import threading
 import time
 
-from ska_tango_base.base import (
-    BaseComponentManager,
-    TaskExecutorComponentManager,
-)
+from ska_tango_base.base import TaskExecutorComponentManager
 from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
@@ -270,7 +267,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         )
 
 
-class TmcLeafNodeComponentManager(BaseComponentManager):
+class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
     """
     A component manager for The TMC Leaf Node component.
 
@@ -288,9 +285,12 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
     def __init__(
         self,
         op_state_model,
+        device,
         logger=None,
         _monitoring_loop=False,
         _event_receiver=False,
+        communication_state_changed_callback=None,
+        component_state_changed_callback=None,
         max_workers=5,
         proxy_timeout=500,
         sleep_time=1,
@@ -307,8 +307,9 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
             managed; for testing purposes only
         """
         self.logger = logger
+        self.op_state_model = op_state_model
         self.lock = threading.Lock()
-        self._device = None  # It should be an object of DeviceInfo class
+        self._device = device  # It should be an object of DeviceInfo class
 
         self._monitoring_loop = None
         if _monitoring_loop:
@@ -329,7 +330,11 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
                 sleep_time=sleep_time,
             )
 
-        super().__init__(op_state_model, *args, **kwargs)
+        super().__init__(
+            max_workers,
+            communication_state_changed_callback,
+            component_state_changed_callback,
+        )
 
     def reset(self):
         pass
@@ -340,6 +345,8 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
         if self._monitoring_loop:
             self._monitoring_loop.stop()
 
+    # Shouldn't there be a add_device method as well?
+    # Or some other way to set self._device attribute?
     def get_device(self):
         """
         Return the device info our of the monitoring loop with name dev_name

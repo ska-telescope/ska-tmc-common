@@ -51,7 +51,9 @@ class TMCCommand(SlowCommand):
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcLeafNodeCommand(_BaseCommand):
+class TmcLeafNodeCommand(
+    _BaseCommand
+):  # This should be inheriting from SlowCommand right?
     def __init__(self, target, *args, logger=None, **kwargs):
         super().__init__(target, *args, logger=logger, **kwargs)
 
