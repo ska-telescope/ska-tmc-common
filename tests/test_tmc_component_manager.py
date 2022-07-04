@@ -86,3 +86,12 @@ def test_release_resources():
     # raise NotImplementedError
     with pytest.raises(NotImplementedError):
         cm.release_resources()
+
+
+def test_check_if_command_is_allowed():
+    op_state_model = TMCOpStateModel(logger)
+    dummy_component = DummyComponent(logger)
+    cm = TmcComponentManager(op_state_model, dummy_component, logger)
+    # raise NotImplementedError
+    with pytest.raises(NotImplementedError):
+        cm.check_if_command_is_allowed()

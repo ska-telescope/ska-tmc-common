@@ -269,6 +269,20 @@ class TmcComponentManager(TaskExecutorComponentManager):
             "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
         )
 
+    def check_if_command_is_allowed(self):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state
+        to perform this command
+
+        :return: True if command is allowed
+
+        :rtype: boolean
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method check_if_command_is_allowed must be implemented in a subclass!"
+        )
+
 
 class TmcLeafNodeComponentManager(BaseComponentManager):
     """
