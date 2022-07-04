@@ -1,6 +1,4 @@
 import pytest
-
-# from ska_tango_base.base import op_state_model
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common.op_state_model import TMCOpStateModel
