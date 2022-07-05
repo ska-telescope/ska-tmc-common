@@ -14,6 +14,7 @@ from ska_tango_base.control_model import HealthState
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
+from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
 class TmcComponent:
@@ -56,7 +57,6 @@ class TmcComponentManager(TaskExecutorComponentManager):
 
     def __init__(
         self,
-        op_state_model,
         _component=None,
         logger=None,
         _monitoring_loop=True,
@@ -72,8 +72,6 @@ class TmcComponentManager(TaskExecutorComponentManager):
         """
         Initialise a new ComponentManager instance.
 
-        :param op_state_model: the op state model used by this component
-            manager
         :param logger: a logger for this component manager
         :param _component: allows setting of the component to be
             managed; for testing purposes only
@@ -81,7 +79,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self.logger = logger
         self.lock = threading.Lock()
         self.component = _component or TmcComponent(logger)
-        self.op_state_model = op_state_model
+        self.op_state_model = TMCOpStateModel
         self.devices = []
 
         self._monitoring_loop = None
@@ -298,7 +296,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
 
     def __init__(
         self,
-        op_state_model,
         logger=None,
         _monitoring_loop=False,
         _event_receiver=False,
@@ -320,7 +317,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
             managed; for testing purposes only
         """
         self.logger = logger
-        self.op_state_model = op_state_model
+        self.op_state_model = TMCOpStateModel
         self.lock = threading.Lock()
         self._device = None  # It should be an object of DeviceInfo class
 

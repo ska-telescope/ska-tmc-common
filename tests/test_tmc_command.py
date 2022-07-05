@@ -1,7 +1,6 @@
 import pytest
 from ska_tango_base.commands import ResultCode
 
-from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.tmc_command import TMCCommand
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
 from tests.settings import logger
@@ -21,10 +20,7 @@ class DummyCommand(TMCCommand):
 
 @pytest.fixture
 def command_object():
-
-    op_state_model = TMCOpStateModel(logger)
     cm = TmcComponentManager(
-        op_state_model,
         logger=logger,
         _monitoring_loop=False,
         _event_receiver=False,
