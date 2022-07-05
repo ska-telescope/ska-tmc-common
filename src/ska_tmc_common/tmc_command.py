@@ -1,4 +1,6 @@
+import logging
 from operator import methodcaller
+from typing import Optional
 
 from ska_tango_base.commands import ResultCode, SlowCommand, _BaseCommand
 
@@ -52,8 +54,8 @@ class TMCCommand(SlowCommand):
 
 
 class TmcLeafNodeCommand(_BaseCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(target, *args, logger=logger, **kwargs)
+    def __init__(self, logger: Optional[logging.Logger] = None):
+        super().__init__(logger)
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
