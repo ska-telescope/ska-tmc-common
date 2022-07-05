@@ -8,15 +8,16 @@ import json
 import threading
 import time
 
-from ska_tango_base.base import BaseComponentManager
+from ska_tango_base.base import (
+    BaseComponentManager,
+    TaskExecutorComponentManager,
+)
 from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
-
-# from ska_tango_base.control_model import ObsState
-# from tango import DevState
+from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
 class TmcComponent:
@@ -42,7 +43,7 @@ class TmcComponent:
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcComponentManager(BaseComponentManager):
+class TmcComponentManager(TaskExecutorComponentManager):
     """
     A component manager for The TMC node component.
 
@@ -59,11 +60,12 @@ class TmcComponentManager(BaseComponentManager):
 
     def __init__(
         self,
-        op_state_model,
         _component=None,
         logger=None,
         _monitoring_loop=True,
         _event_receiver=True,
+        communication_state_changed_callback=None,
+        component_state_changed_callback=None,
         max_workers=5,
         proxy_timeout=500,
         sleep_time=1,
@@ -73,8 +75,6 @@ class TmcComponentManager(BaseComponentManager):
         """
         Initialise a new ComponentManager instance.
 
-        :param op_state_model: the op state model used by this component
-            manager
         :param logger: a logger for this component manager
         :param _component: allows setting of the component to be
             managed; for testing purposes only
@@ -82,6 +82,7 @@ class TmcComponentManager(BaseComponentManager):
         self.logger = logger
         self.lock = threading.Lock()
         self.component = _component or TmcComponent(logger)
+        self.op_state_model = TMCOpStateModel
         self.devices = []
 
         self._monitoring_loop = None
@@ -103,13 +104,11 @@ class TmcComponentManager(BaseComponentManager):
                 sleep_time=sleep_time,
             )
 
-        super().__init__(op_state_model, *args, **kwargs)
-
-        # if _monitoring_loop:
-        #     self._monitoring_loop.start()
-
-        # if _event_receiver:
-        #     self._event_receiver.start()
+        super().__init__(
+            max_workers,
+            communication_state_changed_callback,
+            component_state_changed_callback,
+        )
 
     def reset(self):
         pass
@@ -207,6 +206,80 @@ class TmcComponentManager(BaseComponentManager):
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
+
+    def telescope_on(self, task_callback=None):
+        """
+        Turn on the Telescope.
+
+        :param task_callback: Update task state, defaults to None
+
+        :return: a TaskStatus and message
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method telescope_on must be implemented in a subclass!"
+        )
+
+    def telescope_off(self, task_callback=None):
+        """
+        Turn off the Telescope.
+
+        :param task_callback: Update task state, defaults to None
+
+        :return: a TaskStatus and message
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method telescope_off must be implemented in a subclass!"
+        )
+
+    def telescope_standby(self, task_callback=None):
+        """
+        Turn off the Telescope.
+
+        :param task_callback: Update task state, defaults to None
+
+        :return: a TaskStatus and message
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method telescope_standby must be implemented in a subclass!"
+        )
+
+    def assign_resources(self, task_callback=None):
+        """
+        Turn off the Telescope.
+
+        :param task_callback: Update task state, defaults to None
+
+        :return: a TaskStatus and message
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method assign_resources must be implemented in a subclass!"
+        )
+
+    def release_resources(self, task_callback=None):
+        """
+        Turn off the Telescope.
+
+        :param task_callback: Update task state, defaults to None
+
+        :return: a TaskStatus and message
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
+        )
+
+    def check_if_command_is_allowed(self):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state
+        to perform this command
+
+        :return: True if command is allowed
+
+        :rtype: boolean
+        """
+        raise NotImplementedError(
+            "TmcComponentManager is abstract; method check_if_command_is_allowed must be implemented in a subclass!"
+        )
 
 
 class TmcLeafNodeComponentManager(BaseComponentManager):

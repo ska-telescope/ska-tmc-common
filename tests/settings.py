@@ -3,7 +3,6 @@ import time
 
 import pytest
 
-from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.test_helpers.helper_state_device import HelperStateDevice
 from ska_tmc_common.test_helpers.helper_tmc_device import DummyTmcDevice
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
@@ -42,9 +41,7 @@ def count_faulty_devices(cm):
 
 
 def create_cm(p_monitoring_loop=True, p_event_receiver=True):
-    op_state_model = TMCOpStateModel(logger)
     cm = TmcComponentManager(
-        op_state_model,
         logger=logger,
         _monitoring_loop=p_monitoring_loop,
         _event_receiver=p_event_receiver,

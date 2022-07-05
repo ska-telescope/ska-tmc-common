@@ -1,12 +1,11 @@
 from ska_tango_base.base import SKABaseDevice
-from ska_tango_base.commands import ResponseCommand, ResultCode
+from ska_tango_base.commands import ResultCode, SlowCommand
 from ska_tango_base.control_model import HealthState
 
 # from tango import DevState
 from tango.server import command
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
-from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.tmc_component_manager import (
     TmcComponent,
     TmcComponentManager,
@@ -44,15 +43,12 @@ class DummyComponent(TmcComponent):
 
 
 class DummyComponentManager(TmcComponentManager):
-    def __init__(
-        self, op_state_model, logger=None, component=None, *args, **kwargs
-    ):
-        super().__init__(op_state_model, component, logger, *args, **kwargs)
+    def __init__(self, _component=None, logger=None, *args, **kwargs):
+        super().__init__(_component, logger, *args, **kwargs)
         self.logger = logger
         self._sample_data = "Default value"
 
     def set_data(self, value):
-        # self.logger.info("New value: %s", value)
         self._sample_data = value
         return (ResultCode.OK, "")
 
@@ -95,22 +91,15 @@ class DummyTmcDevice(SKABaseDevice):
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            device = self.target
-            device.set_change_event("State", True, False)
-            device.set_change_event("healthState", True, False)
+            self._device.set_change_event("State", True, False)
+            self._device.set_change_event("healthState", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        self.op_state_model = TMCOpStateModel(
-            logger=self.logger, callback=super()._update_state
-        )
-
-        cm = DummyComponentManager(
-            self.op_state_model, self.obs_state_model, self.logger
-        )
+        cm = DummyComponentManager(self.logger)
         return cm
 
-    class SetDataCommand(ResponseCommand):
+    class SetDataCommand(SlowCommand):
         def __init__(self, target):
             self._component_manager = target.component_manager
 

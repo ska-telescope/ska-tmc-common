@@ -1,15 +1,18 @@
+import logging
 from operator import methodcaller
+from typing import Optional
 
-from ska_tango_base.commands import BaseCommand, ResultCode
+from ska_tango_base.commands import ResultCode, SlowCommand, _BaseCommand
 
 
 class CommandNotAllowed(Exception):
     """Raised when a command is not allowed."""
 
 
-class TMCCommand(BaseCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(target, args, logger, kwargs)
+class TMCCommand(SlowCommand):
+    def __init__(self, component_manager, *args, logger=None, **kwargs):
+        self.component_manager = component_manager
+        super().__init__(logger)
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -50,9 +53,9 @@ class TMCCommand(BaseCommand):
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcLeafNodeCommand(BaseCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(target, *args, logger=logger, **kwargs)
+class TmcLeafNodeCommand(_BaseCommand):
+    def __init__(self, logger: Optional[logging.Logger] = None):
+        super().__init__(logger)
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -66,6 +69,7 @@ class TmcLeafNodeCommand(BaseCommand):
         return ResultCode.FAILED, message
 
     def call_adapter_method(self, device, adapter, command_name, *args):
+        argin = None
         for value in args:
             argin = value
 
@@ -73,7 +77,7 @@ class TmcLeafNodeCommand(BaseCommand):
             f"Invoking {command_name} command on: {adapter.dev_name}"
         )
         try:
-            if argin:
+            if argin is not None:
                 func = methodcaller(command_name, argin)
                 func(adapter)
             else:

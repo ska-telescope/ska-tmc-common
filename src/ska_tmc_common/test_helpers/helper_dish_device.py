@@ -1,6 +1,7 @@
-from ska_tango_base.base import OpStateModel
+from typing import Optional
+
 from ska_tango_base.base.base_device import SKABaseDevice
-from ska_tango_base.base.component_manager import BaseComponentManager
+from ska_tango_base.base.component_manager import TaskExecutorComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
@@ -9,10 +10,12 @@ from tango.server import attribute, command
 from ska_tmc_common.enum import PointingState
 
 
-class EmptyComponentManager(BaseComponentManager):
-    def __init__(self, op_state_model, logger=None, *args, **kwargs):
+class EmptyComponentManager(TaskExecutorComponentManager):
+    def __init__(
+        self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
+    ):
         self.logger = logger
-        super().__init__(op_state_model, *args, **kwargs)
+        super().__init__(max_workers=max_workers, *args, **kwargs)
 
 
 class HelperDishDevice(SKABaseDevice):
@@ -26,10 +29,9 @@ class HelperDishDevice(SKABaseDevice):
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            device = self.target
-            device.set_change_event("State", True, False)
-            device.set_change_event("healthState", True, False)
-            device.set_change_event("pointingState", True, False)
+            self._device.set_change_event("State", True, False)
+            self._device.set_change_event("healthState", True, False)
+            self._device.set_change_event("pointingState", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
@@ -38,10 +40,7 @@ class HelperDishDevice(SKABaseDevice):
         return self._pointing_state
 
     def create_component_manager(self):
-        self.op_state_model = OpStateModel(
-            logger=self.logger, callback=super()._update_state
-        )
-        cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
+        cm = EmptyComponentManager(logger=self.logger)
         return cm
 
     def always_executed_hook(self):
