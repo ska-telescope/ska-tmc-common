@@ -49,7 +49,6 @@ class DummyComponentManager(TmcComponentManager):
         self._sample_data = "Default value"
 
     def set_data(self, value):
-        # self.logger.info("New value: %s", value)
         self._sample_data = value
         return (ResultCode.OK, "")
 
@@ -97,7 +96,7 @@ class DummyTmcDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        cm = DummyComponentManager(self.obs_state_model, self.logger)
+        cm = DummyComponentManager(self.logger)
         return cm
 
     class SetDataCommand(SlowCommand):
