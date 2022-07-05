@@ -27,9 +27,8 @@ class HelperStateDevice(SKABaseDevice):
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            device = self._device
-            device.set_change_event("State", True, False)
-            device.set_change_event("healthState", True, False)
+            self._device.set_change_event("State", True, False)
+            self._device.set_change_event("healthState", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self):

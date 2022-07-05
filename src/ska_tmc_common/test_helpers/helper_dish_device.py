@@ -29,10 +29,9 @@ class HelperDishDevice(SKABaseDevice):
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            device = self._device
-            device.set_change_event("State", True, False)
-            device.set_change_event("healthState", True, False)
-            device.set_change_event("pointingState", True, False)
+            self._device.set_change_event("State", True, False)
+            self._device.set_change_event("healthState", True, False)
+            self._device.set_change_event("pointingState", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
