@@ -17,7 +17,7 @@ from ska_tango_base.control_model import HealthState
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.monitoring_loop import MonitoringLoop
-from ska_tmc_common.op_state_model import OpStateModel
+from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
 class TmcComponent:
@@ -82,7 +82,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self.logger = logger
         self.lock = threading.Lock()
         self.component = _component or TmcComponent(logger)
-        self.op_state_model = OpStateModel
+        self.op_state_model = TMCOpStateModel
         self.devices = []
 
         self._monitoring_loop = None
