@@ -8,15 +8,12 @@ import json
 import threading
 import time
 
-from ska_tango_base.base import (
-    BaseComponentManager,
-    TaskExecutorComponentManager,
-)
+from ska_tango_base.base import TaskExecutorComponentManager
 from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
-from ska_tmc_common.monitoring_loop import MonitoringLoop
+from ska_tmc_common.liveliness_probe import LivelinessProbe
 from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
@@ -62,7 +59,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self,
         _component=None,
         logger=None,
-        _monitoring_loop=True,
+        _liveliness_probe=True,
         _event_receiver=True,
         communication_state_changed_callback=None,
         component_state_changed_callback=None,
@@ -85,9 +82,9 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel
         self.devices = []
 
-        self._monitoring_loop = None
-        if _monitoring_loop:
-            self._monitoring_loop = MonitoringLoop(
+        self._liveliness_probe = None
+        if _liveliness_probe:
+            self._liveliness_probe = LivelinessProbe(
                 self,
                 logger,
                 max_workers=max_workers,
@@ -114,7 +111,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         pass
 
     def stop(self):
-        self._monitoring_loop.stop()
+        self._liveliness_probe.stop()
         self._event_receiver.stop()
 
     def add_device(self, dev_name):
@@ -282,7 +279,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         )
 
 
-class TmcLeafNodeComponentManager(BaseComponentManager):
+class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
     """
     A component manager for The TMC Leaf Node component.
 
@@ -299,10 +296,11 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
 
     def __init__(
         self,
-        op_state_model,
         logger=None,
-        _monitoring_loop=False,
+        _liveliness_probe=False,
         _event_receiver=False,
+        communication_state_changed_callback=None,
+        component_state_changed_callback=None,
         max_workers=5,
         proxy_timeout=500,
         sleep_time=1,
@@ -312,19 +310,16 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
         """
         Initialise a new ComponentManager instance.
 
-        :param op_state_model: the op state model used by this component
-            manager
         :param logger: a logger for this component manager
-        :param _component: allows setting of the component to be
-            managed; for testing purposes only
         """
         self.logger = logger
+        self.op_state_model = TMCOpStateModel
         self.lock = threading.Lock()
         self._device = None  # It should be an object of DeviceInfo class
 
-        self._monitoring_loop = None
-        if _monitoring_loop:
-            self._monitoring_loop = MonitoringLoop(
+        self._liveliness_probe = None
+        if _liveliness_probe:
+            self._liveliness_probe = LivelinessProbe(
                 self,
                 logger,
                 max_workers=max_workers,
@@ -341,7 +336,11 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
                 sleep_time=sleep_time,
             )
 
-        super().__init__(op_state_model, *args, **kwargs)
+        super().__init__(
+            max_workers,
+            communication_state_changed_callback,
+            component_state_changed_callback,
+        )
 
     def reset(self):
         pass
@@ -349,8 +348,8 @@ class TmcLeafNodeComponentManager(BaseComponentManager):
     def stop(self):
         if self._event_receiver:
             self._event_receiver.stop()
-        if self._monitoring_loop:
-            self._monitoring_loop.stop()
+        if self._liveliness_probe:
+            self._liveliness_probe.stop()
 
     def get_device(self):
         """

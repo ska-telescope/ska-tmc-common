@@ -40,10 +40,10 @@ def count_faulty_devices(cm):
     return result
 
 
-def create_cm(p_monitoring_loop=True, p_event_receiver=True):
+def create_cm(p_liveliness_probe=True, p_event_receiver=True):
     cm = TmcComponentManager(
         logger=logger,
-        _monitoring_loop=p_monitoring_loop,
+        _liveliness_probe=p_liveliness_probe,
         _event_receiver=p_event_receiver,
     )
 

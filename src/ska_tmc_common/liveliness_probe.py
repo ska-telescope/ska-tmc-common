@@ -3,20 +3,23 @@ from concurrent import futures
 from queue import Empty, Queue
 from time import sleep
 
-import numpy as np
 import tango
 
 from ska_tmc_common.dev_factory import DevFactory
-from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.device_info import (
+    DeviceInfo,
+    DishDeviceInfo,
+    SdpSubarrayDeviceInfo,
+    SubArrayDeviceInfo,
+)
 
 
-class MonitoringLoop:
+class LivelinessProbe:
     """
-    The MonitoringLoop class has the responsibility to monitor
+    The LivelinessProbe class has the responsibility to monitor
     the sub devices.
 
-    It is an infinite loop which ping, get the state, the obsState,
-    the healthState and device information of the monitored SKA devices
+    It is an infinite loop which pings the monitored SKA devices.
 
     TBD: what about scalability? what if we have 1000 devices?
 
@@ -80,28 +83,24 @@ class MonitoringLoop:
                 proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.set_timeout_millis(self._proxy_timeout)
                 new_dev_info = None
-                if "subarray" in dev_info.dev_name.lower():
+                if (
+                    "subarray" in dev_info.dev_name.lower()
+                    or "low-mccs" in dev_info.dev_name.lower()
+                    or "mid-csp" in dev_info.dev_name.lower()
+                ):
                     new_dev_info = SubArrayDeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
-                    assigned_res = proxy.assignedResources
-                    if assigned_res is not None:
-                        new_dev_info.resources = np.asarray(
-                            proxy.assignedResources
-                        )
-                    else:
-                        new_dev_info.resources = []
-                    new_dev_info.obs_state = proxy.obsState
-                    for s in dev_info.dev_name:
-                        if s.isdigit():
-                            new_dev_info.id = int(s)
+                elif "mid-d" in dev_info.dev_name.lower():
+                    new_dev_info = DishDeviceInfo(dev_info.dev_name)
+                    new_dev_info.from_dev_info(dev_info)
+                elif "mid-sdp" in dev_info.dev_name.lower():
+                    new_dev_info = SdpSubarrayDeviceInfo(dev_info.dev_name)
+                    new_dev_info.from_dev_info(dev_info)
                 else:
                     new_dev_info = DeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
 
                 new_dev_info.ping = proxy.ping()
-                new_dev_info.state = proxy.State()
-                new_dev_info.health_state = proxy.HealthState
-                new_dev_info.dev_info = proxy.info()
                 self._component_manager.update_device_info(new_dev_info)
             except Exception as e:
                 self._logger.error(

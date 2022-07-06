@@ -1,9 +1,15 @@
 import logging
 
 import pytest
+from ska_tango_base.control_model import HealthState, ObsState
+from tango import DevState
 
+from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.test_helpers.helper_tmc_device import DummyComponent
-from ska_tmc_common.tmc_component_manager import TmcComponentManager
+from ska_tmc_common.tmc_component_manager import (
+    TmcComponentManager,
+    TmcLeafNodeComponentManager,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -85,3 +91,44 @@ def test_check_if_command_is_allowed():
     # raise NotImplementedError
     with pytest.raises(NotImplementedError):
         cm.check_if_command_is_allowed()
+
+
+def test_get_device_leafnode():
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    dummy_device_info = cm.get_device()
+    assert dummy_device_info.dev_name == "dummy/monitored/device"
+
+
+def test_update_device_health_state_leafnode():
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    dummy_device_info = cm.get_device()
+    assert dummy_device_info.health_state == HealthState.UNKNOWN
+
+    cm.update_device_health_state(HealthState.OK)
+    assert dummy_device_info.health_state == HealthState.OK
+
+
+def test_update_device_state_leafnode():
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    dummy_device_info = cm.get_device()
+    assert dummy_device_info.state == DevState.UNKNOWN
+
+    cm.update_device_state(DevState.ON)
+    assert dummy_device_info.state == DevState.ON
+
+
+def test_update_device_obs_state_leafnode():
+    dummy_device = SubArrayDeviceInfo("dummy/subarray/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    dummy_device_info = cm.get_device()
+    assert dummy_device_info.obs_state == ObsState.EMPTY
+
+    cm.update_device_obs_state(ObsState.IDLE)
+    assert dummy_device_info.obs_state == ObsState.IDLE
