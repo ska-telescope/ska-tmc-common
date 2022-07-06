@@ -1,6 +1,4 @@
-import logging
 from operator import methodcaller
-from typing import Optional
 
 from ska_tango_base.commands import ResultCode, SlowCommand
 
