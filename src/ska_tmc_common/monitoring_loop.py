@@ -6,7 +6,12 @@ from time import sleep
 import tango
 
 from ska_tmc_common.dev_factory import DevFactory
-from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.device_info import (
+    DeviceInfo,
+    DishDeviceInfo,
+    SdpSubarrayDeviceInfo,
+    SubArrayDeviceInfo,
+)
 
 
 class MonitoringLoop:
@@ -79,15 +84,24 @@ class MonitoringLoop:
                 proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.set_timeout_millis(self._proxy_timeout)
                 new_dev_info = None
-                if "subarray" in dev_info.dev_name.lower():
+                if (
+                    "subarray" in dev_info.dev_name.lower()
+                    or "low-mccs" in dev_info.dev_name.lower()
+                    or "mid-csp" in dev_info.dev_name.lower()
+                ):
                     new_dev_info = SubArrayDeviceInfo(dev_info.dev_name)
+                    new_dev_info.from_dev_info(dev_info)
+                elif "mid-d" in dev_info.dev_name.lower():
+                    new_dev_info = DishDeviceInfo(dev_info.dev_name)
+                    new_dev_info.from_dev_info(dev_info)
+                elif "mid-sdp" in dev_info.dev_name.lower():
+                    new_dev_info = SdpSubarrayDeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
                 else:
                     new_dev_info = DeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
 
                 new_dev_info.ping = proxy.ping()
-                # new_dev_info.dev_info = proxy.info()
                 self._component_manager.update_device_info(new_dev_info)
             except Exception as e:
                 self._logger.error(
