@@ -35,7 +35,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
     assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     def read_assignedResources(self):
-        return self._assigned_resources
+        return self._device._assigned_resources
 
     def create_component_manager(self):
         cm = EmptyComponentManager(logger=self.logger)
