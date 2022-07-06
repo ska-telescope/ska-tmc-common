@@ -69,9 +69,9 @@ class TmcLeafNodeCommand(SlowCommand):
 
     def call_adapter_method(self, device, adapter, command_name, *args):
         if adapter is None:
-            self.adapter_error_message_result(
+            return self.adapter_error_message_result(
                 device,
-                "Adapter not Present, failed to invoke command",
+                "Adapter is None",
             )
 
         argin = None
