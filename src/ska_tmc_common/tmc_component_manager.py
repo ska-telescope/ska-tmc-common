@@ -13,7 +13,7 @@ from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
-from ska_tmc_common.monitoring_loop import MonitoringLoop
+from ska_tmc_common.liveliness_probe import LivelinessProbe
 from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
@@ -59,7 +59,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self,
         _component=None,
         logger=None,
-        _monitoring_loop=True,
+        _liveliness_probe=True,
         _event_receiver=True,
         communication_state_changed_callback=None,
         component_state_changed_callback=None,
@@ -82,9 +82,9 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel
         self.devices = []
 
-        self._monitoring_loop = None
-        if _monitoring_loop:
-            self._monitoring_loop = MonitoringLoop(
+        self._liveliness_probe = None
+        if _liveliness_probe:
+            self._liveliness_probe = LivelinessProbe(
                 self,
                 logger,
                 max_workers=max_workers,
@@ -111,7 +111,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         pass
 
     def stop(self):
-        self._monitoring_loop.stop()
+        self._liveliness_probe.stop()
         self._event_receiver.stop()
 
     def add_device(self, dev_name):
@@ -297,7 +297,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
         logger=None,
-        _monitoring_loop=False,
+        _liveliness_probe=False,
         _event_receiver=False,
         communication_state_changed_callback=None,
         component_state_changed_callback=None,
@@ -310,20 +310,16 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         """
         Initialise a new ComponentManager instance.
 
-        :param op_state_model: the op state model used by this component
-            manager
         :param logger: a logger for this component manager
-        :param _component: allows setting of the component to be
-            managed; for testing purposes only
         """
         self.logger = logger
         self.op_state_model = TMCOpStateModel
         self.lock = threading.Lock()
         self._device = None  # It should be an object of DeviceInfo class
 
-        self._monitoring_loop = None
-        if _monitoring_loop:
-            self._monitoring_loop = MonitoringLoop(
+        self._liveliness_probe = None
+        if _liveliness_probe:
+            self._liveliness_probe = LivelinessProbe(
                 self,
                 logger,
                 max_workers=max_workers,
@@ -352,8 +348,8 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
     def stop(self):
         if self._event_receiver:
             self._event_receiver.stop()
-        if self._monitoring_loop:
-            self._monitoring_loop.stop()
+        if self._liveliness_probe:
+            self._liveliness_probe.stop()
 
     def get_device(self):
         """

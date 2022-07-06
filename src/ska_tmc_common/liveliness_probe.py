@@ -14,13 +14,12 @@ from ska_tmc_common.device_info import (
 )
 
 
-class MonitoringLoop:
+class LivelinessProbe:
     """
-    The MonitoringLoop class has the responsibility to monitor
+    The LivelinessProbe class has the responsibility to monitor
     the sub devices.
 
-    It is an infinite loop which ping, get the state, the obsState,
-    the healthState and device information of the monitored SKA devices
+    It is an infinite loop which pings the monitored SKA devices.
 
     TBD: what about scalability? what if we have 1000 devices?
 

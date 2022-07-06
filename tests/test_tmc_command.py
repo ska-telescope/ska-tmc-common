@@ -22,7 +22,7 @@ class DummyCommand(TMCCommand):
 def command_object():
     cm = TmcComponentManager(
         logger=logger,
-        _monitoring_loop=False,
+        _liveliness_probe=False,
         _event_receiver=False,
     )
     dummy_command = DummyCommand(cm, logger=logger)
