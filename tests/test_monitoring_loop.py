@@ -3,7 +3,6 @@ import logging
 from ska_tmc_common.monitoring_loop import MonitoringLoop
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
 
-
 logger = logging.getLogger(__name__)
 
 
