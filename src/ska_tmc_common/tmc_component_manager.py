@@ -57,12 +57,13 @@ class TmcComponentManager(TaskExecutorComponentManager):
 
     def __init__(
         self,
+        _input_parameter,
         _component=None,
         logger=None,
         _liveliness_probe=True,
         _event_receiver=True,
-        communication_state_changed_callback=None,
-        component_state_changed_callback=None,
+        communication_state_callback=None,
+        component_state_callback=None,
         max_workers=5,
         proxy_timeout=500,
         sleep_time=1,
@@ -79,8 +80,8 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self.logger = logger
         self.lock = threading.Lock()
         self.component = _component or TmcComponent(logger)
-        self.op_state_model = TMCOpStateModel
-        self.devices = []
+        self.op_state_model = TMCOpStateModel(logger, callback=None)
+        self._devices = []
 
         self._liveliness_probe = None
         if _liveliness_probe:
@@ -103,9 +104,11 @@ class TmcComponentManager(TaskExecutorComponentManager):
 
         super().__init__(
             max_workers,
-            communication_state_changed_callback,
-            component_state_changed_callback,
+            communication_state_callback,
+            component_state_callback,
         )
+
+        self._input_parameter = _input_parameter
 
     def reset(self):
         pass
@@ -264,7 +267,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
             "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
         )
 
-    def check_if_command_is_allowed(self):
+    def is_command_allowed(self, command_name=None):
         """
         Checks whether this command is allowed
         It checks that the device is in a state
