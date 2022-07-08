@@ -29,10 +29,12 @@ class HelperCspMasterDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        self.op_state_model = OpStateModel(
-            logger=self.logger, callback=super()._update_state
+        cm = EmptyComponentManager(
+            logger=self.logger,
+            max_workers=None,
+            communication_state_callback=None,
+            component_state_callback=None,
         )
-        cm = EmptyComponentManager(self.op_state_model, logger=self.logger)
         return cm
 
     @command(
