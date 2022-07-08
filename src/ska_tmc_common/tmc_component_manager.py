@@ -58,8 +58,8 @@ class TmcComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
         _input_parameter,
-        _component=None,
         logger=None,
+        _component=None,
         _liveliness_probe=True,
         _event_receiver=True,
         communication_state_callback=None,
