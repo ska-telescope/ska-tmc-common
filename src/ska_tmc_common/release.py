@@ -7,7 +7,7 @@
 """Release information for ska-tmc-common Python Package"""
 
 name = """ska-tmc-common"""
-version = "0.1.30"
+version = "0.1.31"
 version_info = version.split(".")
 description = """A set of common classes for TMC devices."""
 author = "SKA India NCRA"
