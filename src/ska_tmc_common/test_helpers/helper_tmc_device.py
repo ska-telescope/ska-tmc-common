@@ -97,7 +97,7 @@ class DummyTmcDevice(SKABaseDevice):
 
     def create_component_manager(self):
         cm = DummyComponentManager(
-            self.logger,
+            logger=self.logger,
             max_workers=None,
             communication_state_callback=None,
             component_state_callback=None,

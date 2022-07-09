@@ -79,7 +79,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         """
         self.logger = logger
         self.lock = threading.Lock()
-        self.component = _component or TmcComponent(logger)
+        self._component = _component or TmcComponent(logger)
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self._devices = []
 
@@ -132,7 +132,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         else:
             dev_info = DeviceInfo(dev_name, False)
 
-        self.component.update_device(dev_info)
+        self._component.update_device(dev_info)
 
     def get_device(self, dev_name):
         """
@@ -143,7 +143,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :return: a device info
         :rtype: DeviceInfo
         """
-        return self.component.get_device(dev_name)
+        return self._component.get_device(dev_name)
 
     def device_failed(self, device_info, exception):
         """
@@ -155,11 +155,11 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :type: Exception
         """
         with self.lock:
-            self.component.update_device_exception(device_info, exception)
+            self._component.update_device_exception(device_info, exception)
 
     def update_event_failure(self, dev_name):
         with self.lock:
-            dev_info = self.component.get_device(dev_name)
+            dev_info = self._component.get_device(dev_name)
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
@@ -172,7 +172,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :type device_info: DeviceInfo
         """
         with self.lock:
-            self.component.update_device(device_info)
+            self._component.update_device(device_info)
 
     def update_device_health_state(self, dev_name, health_state):
         """
@@ -202,7 +202,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :type state: DevState
         """
         with self.lock:
-            dev_info = self.component.get_device(dev_name)
+            dev_info = self._component.get_device(dev_name)
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
