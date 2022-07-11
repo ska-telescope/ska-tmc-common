@@ -84,6 +84,8 @@ class BaseLivelinessProbe:
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
+    """A LivelinessProbe class for monitoring multiple devices"""
+
     def __init__(
         self,
         component_manager,
@@ -98,6 +100,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def add_device(self, dev_name):
+        """A method to add device in the Queue for monitoring"""
         self._monitoring_devices.put(dev_name)
 
     def run(self):
@@ -124,6 +127,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
 
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
+    """A LivelinessProbe class for monitoring a single device"""
+
     def __init__(
         self,
         component_manager,
@@ -139,11 +144,14 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         while not self._stop:
             with futures.ThreadPoolExecutor(max_workers=1) as executor:
                 try:
-                    while not self._monitoring_device.empty():
-                        dev_info = self._component_manager.get_device()
-                        proxy = self._dev_factory.get_device(dev_info.dev_name)
-                        executor.submit(self.device_task, dev_info, proxy)
-                except Empty:
-                    pass
+                    dev_info = self._component_manager.get_device()
+                    proxy = self._dev_factory.get_device(dev_info.dev_name)
+                    executor.submit(self.device_task, dev_info, proxy)
+                except Exception as e:
+                    self._logger.error(
+                        "Error in submitting the task for %s: %s",
+                        dev_info.dev_name,
+                        e,
+                    )
 
             sleep(self._sleep_time)
