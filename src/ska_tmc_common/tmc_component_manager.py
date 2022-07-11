@@ -13,7 +13,10 @@ from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.event_receiver import EventReceiver
-from ska_tmc_common.liveliness_probe import LivelinessProbe
+from ska_tmc_common.liveliness_probe import (
+    MultiDeviceLivelinessProbe,
+    SingleDeviceLivelinessProbe,
+)
 from ska_tmc_common.op_state_model import TMCOpStateModel
 
 
@@ -85,9 +88,9 @@ class TmcComponentManager(TaskExecutorComponentManager):
 
         self._liveliness_probe = None
         if _liveliness_probe:
-            self._liveliness_probe = LivelinessProbe(
+            self._liveliness_probe = MultiDeviceLivelinessProbe(
                 self,
-                logger,
+                logger=logger,
                 max_workers=max_workers,
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
@@ -97,7 +100,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         if _event_receiver:
             self._event_receiver = EventReceiver(
                 self,
-                logger,
+                logger=logger,
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
             )
@@ -322,10 +325,10 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
 
         self._liveliness_probe = None
         if _liveliness_probe:
-            self._liveliness_probe = LivelinessProbe(
+            self._liveliness_probe = SingleDeviceLivelinessProbe(
                 self,
-                logger,
-                max_workers=max_workers,
+                self._device,
+                logger=logger,
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
             )
@@ -334,7 +337,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         if _event_receiver:
             self._event_receiver = EventReceiver(
                 self,
-                logger,
+                logger=logger,
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
             )
@@ -373,6 +376,17 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         """
         with self.lock:
             self._device.exception = exception
+
+    def update_device_info(self, device_info):
+        """
+        Update a device with the correct monitoring information
+        and call the relative callback if available
+
+        :param device_info: a device info
+        :type device_info: DeviceInfo
+        """
+        with self.lock:
+            self._device.ping = device_info.ping
 
     def update_event_failure(self):
         with self.lock:
