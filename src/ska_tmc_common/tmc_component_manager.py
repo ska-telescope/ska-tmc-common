@@ -57,12 +57,13 @@ class TmcComponentManager(TaskExecutorComponentManager):
 
     def __init__(
         self,
-        _component=None,
+        _input_parameter,
         logger=None,
+        _component=None,
         _liveliness_probe=True,
         _event_receiver=True,
-        communication_state_changed_callback=None,
-        component_state_changed_callback=None,
+        communication_state_callback=None,
+        component_state_callback=None,
         max_workers=5,
         proxy_timeout=500,
         sleep_time=1,
@@ -78,9 +79,9 @@ class TmcComponentManager(TaskExecutorComponentManager):
         """
         self.logger = logger
         self.lock = threading.Lock()
-        self.component = _component or TmcComponent(logger)
-        self.op_state_model = TMCOpStateModel
-        self.devices = []
+        self._component = _component or TmcComponent(logger)
+        self.op_state_model = TMCOpStateModel(logger, callback=None)
+        self._devices = []
 
         self._liveliness_probe = None
         if _liveliness_probe:
@@ -103,9 +104,11 @@ class TmcComponentManager(TaskExecutorComponentManager):
 
         super().__init__(
             max_workers,
-            communication_state_changed_callback,
-            component_state_changed_callback,
+            communication_state_callback,
+            component_state_callback,
         )
+
+        self._input_parameter = _input_parameter
 
     def reset(self):
         pass
@@ -129,7 +132,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         else:
             dev_info = DeviceInfo(dev_name, False)
 
-        self.component.update_device(dev_info)
+        self._component.update_device(dev_info)
 
     def get_device(self, dev_name):
         """
@@ -140,7 +143,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :return: a device info
         :rtype: DeviceInfo
         """
-        return self.component.get_device(dev_name)
+        return self._component.get_device(dev_name)
 
     def device_failed(self, device_info, exception):
         """
@@ -152,11 +155,11 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :type: Exception
         """
         with self.lock:
-            self.component.update_device_exception(device_info, exception)
+            self._component.update_device_exception(device_info, exception)
 
     def update_event_failure(self, dev_name):
         with self.lock:
-            dev_info = self.component.get_device(dev_name)
+            dev_info = self._component.get_device(dev_name)
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
@@ -169,7 +172,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :type device_info: DeviceInfo
         """
         with self.lock:
-            self.component.update_device(device_info)
+            self._component.update_device(device_info)
 
     def update_device_health_state(self, dev_name, health_state):
         """
@@ -199,7 +202,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :type state: DevState
         """
         with self.lock:
-            dev_info = self.component.get_device(dev_name)
+            dev_info = self._component.get_device(dev_name)
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
@@ -264,7 +267,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
             "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
         )
 
-    def check_if_command_is_allowed(self):
+    def is_command_allowed(self, command_name=None):
         """
         Checks whether this command is allowed
         It checks that the device is in a state

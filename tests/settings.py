@@ -3,6 +3,7 @@ import time
 
 import pytest
 
+from ska_tmc_common.input import InputParameter
 from ska_tmc_common.test_helpers.helper_state_device import HelperStateDevice
 from ska_tmc_common.test_helpers.helper_tmc_device import DummyTmcDevice
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
@@ -40,8 +41,13 @@ def count_faulty_devices(cm):
     return result
 
 
-def create_cm(p_liveliness_probe=True, p_event_receiver=True):
+def create_cm(
+    _input_parameter=InputParameter(None),
+    p_liveliness_probe=True,
+    p_event_receiver=True,
+):
     cm = TmcComponentManager(
+        _input_parameter=_input_parameter,
         logger=logger,
         _liveliness_probe=p_liveliness_probe,
         _event_receiver=p_event_receiver,

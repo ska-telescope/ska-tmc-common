@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.1.30"
+version="0.1.32"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,5 +10,5 @@ license="""BSD-3-Clause"""
 url="""https://www.skaobservatory.org/"""
 copyright=""""""
 
-release=0.1.30
-tag=0.1.30
+release=0.1.32
+tag=0.1.32

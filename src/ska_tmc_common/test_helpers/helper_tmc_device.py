@@ -96,7 +96,12 @@ class DummyTmcDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        cm = DummyComponentManager(self.logger)
+        cm = DummyComponentManager(
+            logger=self.logger,
+            max_workers=None,
+            communication_state_callback=None,
+            component_state_callback=None,
+        )
         return cm
 
     class SetDataCommand(SlowCommand):

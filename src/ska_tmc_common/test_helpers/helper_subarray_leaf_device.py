@@ -31,7 +31,12 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
-        cm = EmptyComponentManager(logger=self.logger)
+        cm = EmptyComponentManager(
+            logger=self.logger,
+            max_workers=None,
+            communication_state_callback=None,
+            component_state_callback=None,
+        )
         return cm
 
     def always_executed_hook(self):
