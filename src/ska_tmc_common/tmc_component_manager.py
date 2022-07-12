@@ -177,6 +177,19 @@ class TmcComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self._component.update_device(device_info)
 
+    def update_ping_info(self, ping, dev_name):
+        """
+        Update a device with correct ping information.
+
+        :param dev_name: name of the device
+        :type dev_name: str
+        :param ping: device response time
+        :type ping: int
+        """
+        with self.lock:
+            dev_info = self._component.get_device(dev_name)
+            dev_info.ping = ping
+
     def update_device_health_state(self, dev_name, health_state):
         """
         Update a monitored device health state
@@ -377,16 +390,17 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self._device.exception = exception
 
-    def update_device_info(self, device_info):
+    def update_ping_info(self, ping, dev_name):
         """
-        Update a device with the correct monitoring information
-        and call the relative callback if available
+        Update a device with the correct ping information.
 
-        :param device_info: a device info
-        :type device_info: DeviceInfo
+        :param dev_name: name of the device
+        :type dev_name: str
+        :param ping: device response time
+        :type ping: int
         """
         with self.lock:
-            self._device.ping = device_info.ping
+            self._device.ping = ping
 
     def update_event_failure(self):
         with self.lock:
