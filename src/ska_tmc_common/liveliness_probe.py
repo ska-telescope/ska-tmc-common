@@ -55,15 +55,18 @@ class BaseLivelinessProbe:
                 proxy.set_timeout_millis(self._proxy_timeout)
                 new_dev_info = None
                 if (
-                    "low-mccs" in dev_info.dev_name.lower()
-                    or "mid-csp" in dev_info.dev_name.lower()
+                    "mid-csp/subarray" in dev_info.dev_name.lower()
+                    or "ska_mid/tm_subarray_node/" in dev_info.dev_name.lower()
                 ):
                     new_dev_info = SubArrayDeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
-                elif "mid-d" in dev_info.dev_name.lower():
+                elif (
+                    "mid_d" in dev_info.dev_name.lower()
+                    and "/elt/master" in dev_info.dev_name.lower()
+                ):
                     new_dev_info = DishDeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
-                elif "mid-sdp" in dev_info.dev_name.lower():
+                elif "mid_sdp/elt/subarray" in dev_info.dev_name.lower():
                     new_dev_info = SdpSubarrayDeviceInfo(dev_info.dev_name)
                     new_dev_info.from_dev_info(dev_info)
                 else:
