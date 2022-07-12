@@ -390,6 +390,17 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self._device.exception = exception
 
+    def update_device_info(self, device_info):
+        """
+        Update a device with correct monitoring information
+        and call the relative callback if available
+
+        :param device_info: a device info
+        :type device_info: DeviceInfo
+        """
+        with self.lock:
+            self._device = device_info
+
     def update_ping_info(self, ping, dev_name):
         """
         Update a device with the correct ping information.
