@@ -121,7 +121,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
 
                 for dev_info in self._component_manager.devices:
                     if dev_info not in not_read_devices_twice:
-                        executor.submit(self.device_task, dev_info)
+                        proxy = self._dev_factory.get_device(dev_info.dev_name)
+                        executor.submit(self.device_task, dev_info, proxy)
 
             sleep(self._sleep_time)
 
