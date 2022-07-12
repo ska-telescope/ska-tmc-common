@@ -16,13 +16,11 @@ from ska_tmc_common.device_info import (
 
 class BaseLivelinessProbe:
     """
-    The LivelinessProbe class has the responsibility to monitor
-    the sub devices.
+    The BaseLivelinessProbe class has the responsibility to monitor the sub devices.
 
-    It is an infinite loop which pings the monitored SKA devices.
+    It is inherited for basic liveliness probe functionality.
 
     TBD: what about scalability? what if we have 1000 devices?
-
     """
 
     def __init__(
@@ -47,7 +45,6 @@ class BaseLivelinessProbe:
 
     def stop(self):
         self._stop = True
-        # self._thread.join()
 
     def run(self):
         raise NotImplementedError("This method must be inherited")
@@ -55,7 +52,6 @@ class BaseLivelinessProbe:
     def device_task(self, dev_info, proxy):
         with tango.EnsureOmniThread():
             try:
-                # import debugpy; debugpy.debug_this_thread()
                 proxy.set_timeout_millis(self._proxy_timeout)
                 new_dev_info = None
                 if (
@@ -84,7 +80,7 @@ class BaseLivelinessProbe:
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
-    """A LivelinessProbe class for monitoring multiple devices"""
+    """A class for monitoring multiple devices"""
 
     def __init__(
         self,
@@ -116,19 +112,23 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                         proxy = self._dev_factory.get_device(dev_info.dev_name)
                         executor.submit(self.device_task, dev_info, proxy)
                         not_read_devices_twice.append(dev_info)
+
+                    for dev_info in self._component_manager.devices:
+                        if dev_info not in not_read_devices_twice:
+                            proxy = self._dev_factory.get_device(
+                                dev_info.dev_name
+                            )
+                            executor.submit(self.device_task, dev_info, proxy)
                 except Empty:
                     pass
-
-                for dev_info in self._component_manager.devices:
-                    if dev_info not in not_read_devices_twice:
-                        proxy = self._dev_factory.get_device(dev_info.dev_name)
-                        executor.submit(self.device_task, dev_info, proxy)
+                except Exception as e:
+                    self._logger.warning("Exception occured: %s", e)
 
             sleep(self._sleep_time)
 
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
-    """A LivelinessProbe class for monitoring a single device"""
+    """A class for monitoring a single device"""
 
     def __init__(
         self,
@@ -145,7 +145,7 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         while not self._stop:
             with futures.ThreadPoolExecutor(max_workers=1) as executor:
                 try:
-                    dev_info = self._component_manager.get_device()
+                    dev_info = self._monitoring_device
                     proxy = self._dev_factory.get_device(dev_info.dev_name)
                     executor.submit(self.device_task, dev_info, proxy)
                 except Exception as e:
