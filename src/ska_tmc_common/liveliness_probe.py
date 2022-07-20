@@ -47,10 +47,9 @@ class BaseLivelinessProbe:
         with tango.EnsureOmniThread():
             try:
                 proxy.set_timeout_millis(self._proxy_timeout)
-                new_dev_info = type(dev_info)(dev_info.dev_name)
-                new_dev_info.ping = proxy.ping()
+                Ping = proxy.ping()
                 self._component_manager.update_ping_info(
-                    new_dev_info.ping, new_dev_info.dev_name
+                    Ping, dev_info.dev_name
                 )
             except Exception as e:
                 self._logger.error(

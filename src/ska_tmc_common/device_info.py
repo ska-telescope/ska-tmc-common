@@ -43,7 +43,7 @@ class DeviceInfo:
         self.dev_name = dev_name
         self.state = DevState.UNKNOWN
         self.health_state = HealthState.UNKNOWN
-        self.ping = -1
+        self._ping = -1
         self.last_event_arrived = None
         self.exception = None
         self._unresponsive = _unresponsive
@@ -69,6 +69,24 @@ class DeviceInfo:
             self.state = DevState.UNKNOWN
             self.health_state = HealthState.UNKNOWN
             self.ping = -1
+
+    @property
+    def ping(self) -> int:
+        """Return the ping value for current device
+
+        :return: ping value for device
+        :rtype: int
+        """
+        return self._ping
+
+    @ping.setter
+    def ping(self, value: int) -> None:
+        """Updates the ping value for current device
+
+        :param value: updated ping value for device
+        :type value: int
+        """
+        self._ping = value
 
     @property
     def unresponsive(self):

@@ -83,18 +83,12 @@ class TmcComponentManager(TaskExecutorComponentManager):
         self.logger = logger
         self.lock = threading.Lock()
         self._component = _component or TmcComponent(logger)
+        self.liveliness_probe = _liveliness_probe
+        self.max_workers = max_workers
+        self.proxy_timeout = proxy_timeout
+        self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self._devices = []
-
-        self._liveliness_probe = None
-        if _liveliness_probe:
-            self._liveliness_probe = MultiDeviceLivelinessProbe(
-                self,
-                logger=logger,
-                max_workers=max_workers,
-                proxy_timeout=proxy_timeout,
-                sleep_time=sleep_time,
-            )
 
         self._event_receiver = None
         if _event_receiver:
@@ -117,7 +111,6 @@ class TmcComponentManager(TaskExecutorComponentManager):
         pass
 
     def stop(self):
-        self._liveliness_probe.stop()
         self._event_receiver.stop()
 
     def add_device(self, dev_name):
@@ -159,6 +152,27 @@ class TmcComponentManager(TaskExecutorComponentManager):
         """
         with self.lock:
             self._component.update_device_exception(device_info, exception)
+
+    def start_liveliness_probe(self) -> None:
+        """Starts Liveliness Probe for the given device.
+
+        :param dev_info: Object of either DeviceInfo or one of its child class
+        """
+        if self.liveliness_probe:
+            self.liveliness_probe_object = MultiDeviceLivelinessProbe(
+                self,
+                logger=self.logger,
+                max_workers=self.max_workers,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.liveliness_probe_object.start()
+        else:
+            self.logger.warning("Liveliness Probe is not running")
+
+    def stop_liveliness_probe(self) -> None:
+        """Stops the Liveliness Probe"""
+        self.liveliness_probe_object.stop()
 
     def update_event_failure(self, dev_name):
         with self.lock:
@@ -317,7 +331,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         self,
         logger=None,
         _liveliness_probe=False,
-        _event_receiver=False,
         communication_state_changed_callback=None,
         component_state_changed_callback=None,
         max_workers=5,
@@ -333,27 +346,11 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         """
         self.logger = logger
         self.op_state_model = TMCOpStateModel
+        self.liveliness_probe = _liveliness_probe
+        self.proxy_timeout = proxy_timeout
+        self.sleep_time = sleep_time
         self.lock = threading.Lock()
         self._device = None  # It should be an object of DeviceInfo class
-
-        self._liveliness_probe = None
-        if _liveliness_probe:
-            self._liveliness_probe = SingleDeviceLivelinessProbe(
-                self,
-                self._device,
-                logger=logger,
-                proxy_timeout=proxy_timeout,
-                sleep_time=sleep_time,
-            )
-
-        self._event_receiver = None
-        if _event_receiver:
-            self._event_receiver = EventReceiver(
-                self,
-                logger=logger,
-                proxy_timeout=proxy_timeout,
-                sleep_time=sleep_time,
-            )
 
         super().__init__(
             max_workers,
@@ -363,12 +360,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
 
     def reset(self):
         pass
-
-    def stop(self):
-        if self._event_receiver:
-            self._event_receiver.stop()
-        if self._liveliness_probe:
-            self._liveliness_probe.stop()
 
     def get_device(self):
         """
@@ -390,6 +381,27 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self._device.exception = exception
 
+    def start_liveliness_probe(self, dev_info) -> None:
+        """Starts Liveliness Probe for the given device.
+
+        :param dev_info: Object of either DeviceInfo or one of its child class
+        """
+        if self.liveliness_probe:
+            self.liveliness_probe_object = SingleDeviceLivelinessProbe(
+                self,
+                dev_info,
+                logger=self.logger,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.liveliness_probe_object.start()
+        else:
+            self.logger.warning("Liveliness Probe is not running")
+
+    def stop_liveliness_probe(self) -> None:
+        """Stops the Liveliness Probe"""
+        self.liveliness_probe_object.stop()
+
     def update_device_info(self, device_info):
         """
         Update a device with correct monitoring information
@@ -401,7 +413,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self._device = device_info
 
-    def update_ping_info(self, ping, dev_name):
+    def update_ping_info(self, ping: int, dev_name: str) -> None:
         """
         Update a device with the correct ping information.
 
