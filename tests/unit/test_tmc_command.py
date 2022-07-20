@@ -1,3 +1,6 @@
+import logging
+from typing import Optional
+
 import pytest
 from ska_tango_base.commands import ResultCode
 
@@ -8,8 +11,10 @@ from tests.settings import logger
 
 
 class DummyCommand(TMCCommand):
-    def __init__(self, target, *args, logger=None, **kwargs):
-        super().__init__(self, target, args, logger, kwargs)
+    def __init__(
+        self, target, logger: Optional[logging.Logger] = None,*args, **kwargs
+    ):
+        # super().__init__(self, target, args, logger, kwargs)
         self.condition = True
 
     def set_condition(self, value):
@@ -44,7 +49,6 @@ def test_check_allowed(command_object, value, result):
 
 
 def test_generate_command_result(command_object):
-    print(logger)
     result = command_object.generate_command_result(
         ResultCode.OK, "Test Message"
     )

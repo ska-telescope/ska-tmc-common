@@ -1,16 +1,20 @@
+import logging
 from operator import methodcaller
+from typing import Optional
 
-from ska_tango_base.commands import ResultCode, SlowCommand
-
-
-class CommandNotAllowed(Exception):
-    """Raised when a command is not allowed."""
+from ska_tango_base.commands import ResultCode
 
 
-class TMCCommand(SlowCommand):
-    def __init__(self, component_manager, *args, logger=None, **kwargs):
+class BaseTMCCommand:
+    def __init__(
+        self,
+        component_manager,
+        logger: Optional[logging.Logger] = None,
+        *args,
+        **kwargs,
+    ):
         self.component_manager = component_manager
-        super().__init__(logger)
+        self.logger = logger
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -23,12 +27,11 @@ class TMCCommand(SlowCommand):
         self.logger.error(message)
         return ResultCode.FAILED, message
 
-    def check_allowed(self):
-        raise NotImplementedError("This class must be inherited!")
-
     def init_adapters(self):
         raise NotImplementedError("This class must be inherited!")
 
+
+class TMCCommand(BaseTMCCommand):
     def do(self, argin=None):
         raise NotImplementedError("This class must be inherited!")
 
@@ -51,22 +54,7 @@ class TMCCommand(SlowCommand):
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcLeafNodeCommand(SlowCommand):
-    def __init__(self, component_manager, *args, logger=None, **kwargs):
-        self.component_manager = component_manager
-        super().__init__(*args, logger=logger, **kwargs)
-
-    def generate_command_result(self, result_code, message):
-        if result_code == ResultCode.FAILED:
-            self.logger.error(message)
-        self.logger.info(message)
-        return (result_code, message)
-
-    def adapter_error_message_result(self, dev_name, e):
-        message = f"Error in creating adapter for {dev_name}: {e}"
-        self.logger.error(message)
-        return ResultCode.FAILED, message
-
+class TmcLeafNodeCommand(BaseTMCCommand):
     def call_adapter_method(self, device, adapter, command_name, *args):
         if adapter is None:
             return self.adapter_error_message_result(
@@ -103,12 +91,6 @@ class TmcLeafNodeCommand(SlowCommand):
             f"{command_name} command successfully invoked on:{adapter.dev_name}"
         )
         return (ResultCode.OK, "")
-
-    def check_allowed(self):
-        raise NotImplementedError("This class must be inherited!")
-
-    def init_adapter(self):
-        raise NotImplementedError("This class must be inherited!")
 
     def do(self, argin=None):
         raise NotImplementedError("This class must be inherited!")
