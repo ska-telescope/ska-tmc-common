@@ -19,7 +19,7 @@ class BaseTMCCommand:
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
             self.logger.error(message)
-        self.logger.info(message)
+        # self.logger.info(message)
         return (result_code, message)
 
     def adapter_error_message_result(self, dev_name, e):

@@ -12,7 +12,7 @@ from tests.settings import logger
 
 class DummyCommand(TMCCommand):
     def __init__(
-        self, target, logger: Optional[logging.Logger] = None,*args, **kwargs
+        self, target, logger: Optional[logging.Logger] = None, *args, **kwargs
     ):
         # super().__init__(self, target, args, logger, kwargs)
         self.condition = True
