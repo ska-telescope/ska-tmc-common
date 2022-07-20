@@ -308,7 +308,7 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :rtype: boolean
         """
         raise NotImplementedError(
-            "TmcComponentManager is abstract; method check_if_command_is_allowed must be implemented in a subclass!"
+            "is_command_allowed is abstract; method must be implemented in a subclass!"
         )
 
 
@@ -469,3 +469,16 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
             self._device.obs_state = obs_state
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
+
+    def is_command_allowed(self, command_name=None):
+        """
+        Checks whether this command is allowed
+        It checks if the device is in a state to perform this command.
+
+        :return: True if command is allowed
+
+        :rtype: bool
+        """
+        raise NotImplementedError(
+            "is_command_allowed is abstract; method must be implemented in a subclass!"
+        )
