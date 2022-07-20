@@ -19,7 +19,7 @@ class BaseTMCCommand:
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
             self.logger.error(message)
-        # self.logger.info(message)
+        self.logger.info(message)
         return (result_code, message)
 
     def adapter_error_message_result(self, dev_name, e):
@@ -30,17 +30,11 @@ class BaseTMCCommand:
     def init_adapters(self):
         raise NotImplementedError("This class must be inherited!")
 
-
-class TMCCommand(BaseTMCCommand):
     def do(self, argin=None):
         raise NotImplementedError("This class must be inherited!")
 
-    def check_allowed_mid(self):
-        raise NotImplementedError("This class must be inherited!")
 
-    def check_allowed_low(self):
-        raise NotImplementedError("This class must be inherited!")
-
+class TMCCommand(BaseTMCCommand):
     def init_adapters_mid(self):
         raise NotImplementedError("This class must be inherited!")
 
@@ -91,6 +85,3 @@ class TmcLeafNodeCommand(BaseTMCCommand):
             f"{command_name} command successfully invoked on:{adapter.dev_name}"
         )
         return (ResultCode.OK, "")
-
-    def do(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")

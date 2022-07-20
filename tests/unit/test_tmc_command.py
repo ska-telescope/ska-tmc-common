@@ -1,6 +1,3 @@
-import logging
-from typing import Optional
-
 import pytest
 from ska_tango_base.commands import ResultCode
 
@@ -11,10 +8,8 @@ from tests.settings import logger
 
 
 class DummyCommand(TMCCommand):
-    def __init__(
-        self, target, logger: Optional[logging.Logger] = None, *args, **kwargs
-    ):
-        # super().__init__(self, target, args, logger, kwargs)
+    def __init__(self, component_manager, logger, *args, **kwargs):
+        super().__init__(component_manager, logger)
         self.condition = True
 
     def set_condition(self, value):
@@ -34,7 +29,7 @@ def command_object():
         communication_state_callback=None,
         component_state_callback=None,
     )
-    dummy_command = DummyCommand(cm, logger=logger)
+    dummy_command = DummyCommand(cm, logger)
     return dummy_command
 
 
