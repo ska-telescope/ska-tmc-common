@@ -43,9 +43,10 @@ class BaseLivelinessProbe:
     def run(self):
         raise NotImplementedError("This method must be inherited")
 
-    def device_task(self, dev_info, proxy):
+    def device_task(self, dev_info):
         with tango.EnsureOmniThread():
             try:
+                proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.set_timeout_millis(self._proxy_timeout)
                 self._component_manager.update_ping_info(
                     proxy.ping(), dev_info.dev_name
@@ -93,10 +94,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
 
                     for dev_info in self._component_manager._devices:
                         if dev_info not in not_read_devices_twice:
-                            proxy = self._dev_factory.get_device(
-                                dev_info.dev_name
-                            )
-                            executor.submit(self.device_task, dev_info, proxy)
+                            executor.submit(self.device_task, dev_info)
                 except Empty:
                     pass
                 except Exception as e:
