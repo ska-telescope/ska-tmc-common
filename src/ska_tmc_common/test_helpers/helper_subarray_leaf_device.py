@@ -1,21 +1,14 @@
 import time
-from typing import Optional
 
 from ska_tango_base.base.base_device import SKABaseDevice
-from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
 
-
-class EmptyComponentManager(BaseComponentManager):
-    def __init__(
-        self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
-    ):
-        super().__init__(
-            logger=logger, max_workers=max_workers, *args, **kwargs
-        )
+from ska_tmc_common.test_helpers.helper_csp_master_device import (
+    EmptyComponentManager,
+)
 
 
 class HelperSubarrayLeafDevice(SKABaseDevice):
