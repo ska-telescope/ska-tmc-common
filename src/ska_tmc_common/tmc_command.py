@@ -32,7 +32,6 @@ class BaseTMCCommand:
 
 
 class TMCCommand(BaseTMCCommand):
-
     def init_adapters(self):
         raise NotImplementedError("This class must be inherited!")
 
