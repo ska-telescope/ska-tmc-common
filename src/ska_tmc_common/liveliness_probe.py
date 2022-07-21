@@ -88,8 +88,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     while not self._monitoring_devices.empty():
                         dev_name = self._monitoring_devices.get(block=False)
                         dev_info = self._component_manager.get_device(dev_name)
-                        proxy = self._dev_factory.get_device(dev_info.dev_name)
-                        executor.submit(self.device_task, dev_info, proxy)
+                        executor.submit(self.device_task, dev_info)
                         not_read_devices_twice.append(dev_info)
 
                     for dev_info in self._component_manager._devices:
@@ -117,11 +116,10 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
 
     def run(self):
         dev_info = self._component_manager.get_device()
-        proxy = self._dev_factory.get_device(dev_info.dev_name)
         while not self._stop:
             with futures.ThreadPoolExecutor(max_workers=1) as executor:
                 try:
-                    executor.submit(self.device_task, dev_info, proxy)
+                    executor.submit(self.device_task, dev_info)
                 except Exception as e:
                     self._logger.error(
                         "Error in submitting the task for %s: %s",
