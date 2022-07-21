@@ -1,6 +1,7 @@
 import pytest
 from ska_tango_base.commands import ResultCode
 
+from ska_tmc_common.enum import LP
 from ska_tmc_common.tmc_command import TMCCommand
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
 from src.ska_tmc_common.input import InputParameter
@@ -24,7 +25,7 @@ def command_object():
     cm = TmcComponentManager(
         _input_parameter=InputParameter(None),
         logger=logger,
-        _liveliness_probe=False,
+        _liveliness_probe=LP.OFF,
         _event_receiver=False,
     )
     dummy_command = DummyCommand(cm, logger)

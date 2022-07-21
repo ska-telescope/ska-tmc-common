@@ -12,6 +12,7 @@ from ska_tango_base.base import TaskExecutorComponentManager
 from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.enum import LP
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
@@ -28,26 +29,26 @@ class TmcComponent:
         self._devices = []
 
     def get_device(self, dev_name):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def update_device(self, dev_info):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def update_device_exception(self, device_info, exception):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def to_json(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
 
 class BaseTmcComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
         logger=None,
-        _liveliness_probe=False,
+        _liveliness_probe=LP.OFF,
         _event_receiver=False,
         communication_state_callback=None,
         component_state_callback=None,
@@ -61,19 +62,19 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             max_workers, communication_state_callback, component_state_callback
         )
         self.logger = logger
-        self.liveliness_probe = _liveliness_probe
-        self.event_reciever = _event_receiver
+        self.event_receiver = _event_receiver
         self.max_workers = max_workers
         self.proxy_timeout = proxy_timeout
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
+        self.start_liveliness_probe(_liveliness_probe)
+        self.start_event_receiver()
 
     def is_command_allowed(self, command_name=None):
         """
         Checks whether this command is allowed
-        It checks that the device is in a state
-        to perform this command
+        It checks that the device is in a state to perform this command
 
         :return: True if command is allowed
 
@@ -82,6 +83,52 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         raise NotImplementedError(
             "is_command_allowed is abstract; method must be implemented in a subclass!"
         )
+
+    def start_liveliness_probe(self, lp: LP) -> None:
+        """Starts Liveliness Probe for the given device.
+
+        :param lp: enum of class LP
+        """
+        if lp.value == SingleDeviceLivelinessProbe:
+            self.liveliness_probe_object = SingleDeviceLivelinessProbe(
+                self,
+                logger=self.logger,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.liveliness_probe_object.start()
+
+        elif lp.value == MultiDeviceLivelinessProbe:
+            self.liveliness_probe_object = MultiDeviceLivelinessProbe(
+                self,
+                logger=self.logger,
+                max_workers=self.max_workers,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.liveliness_probe_object.start()
+
+        else:
+            self.logger.warning("Liveliness Probe is not running")
+
+    def stop_liveliness_probe(self):
+        """Stops the liveliness probe"""
+        self.liveliness_probe_object.stop()
+
+    def start_event_receiver(self):
+        """Starts the Event Receiver for given device"""
+        if self.event_receiver:
+            self.event_receiver_object = EventReceiver(
+                self,
+                logger=self.logger,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.event_receiver_object.start()
+
+    def stop_event_receiver(self):
+        """Stops the Event Receiver"""
+        self.event_receiver_object.stop()
 
 
 class TmcComponentManager(BaseTmcComponentManager):
@@ -104,7 +151,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         _input_parameter,
         logger=None,
         _component=None,
-        _liveliness_probe=True,
+        _liveliness_probe=LP.MULTI_DEVICE,
         _event_receiver=True,
         communication_state_callback=None,
         component_state_callback=None,
@@ -121,6 +168,8 @@ class TmcComponentManager(BaseTmcComponentManager):
         :param _component: allows setting of the component to be
             managed; for testing purposes only
         """
+        self._component = _component or TmcComponent(logger)
+        self._devices = []
         super().__init__(
             logger,
             _liveliness_probe,
@@ -133,25 +182,11 @@ class TmcComponentManager(BaseTmcComponentManager):
             args,
             kwargs,
         )
-        self._component = _component or TmcComponent(logger)
-        self._devices = []
-
-        self._event_receiver = None
-        if _event_receiver:
-            self._event_receiver = EventReceiver(
-                self,
-                logger=logger,
-                proxy_timeout=proxy_timeout,
-                sleep_time=sleep_time,
-            )
 
         self._input_parameter = _input_parameter
 
     def reset(self):
         pass
-
-    def stop(self):
-        self._event_receiver.stop()
 
     def add_device(self, dev_name):
         """
@@ -192,27 +227,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._component.update_device_exception(device_info, exception)
-
-    def start_liveliness_probe(self) -> None:
-        """Starts Liveliness Probe for the given device.
-
-        :param dev_info: Object of either DeviceInfo or one of its child class
-        """
-        if self.liveliness_probe:
-            self.liveliness_probe_object = MultiDeviceLivelinessProbe(
-                self,
-                logger=self.logger,
-                max_workers=self.max_workers,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
-            self.liveliness_probe_object.start()
-        else:
-            self.logger.warning("Liveliness Probe is not running")
-
-    def stop_liveliness_probe(self) -> None:
-        """Stops the Liveliness Probe"""
-        self.liveliness_probe_object.stop()
 
     def update_event_failure(self, dev_name):
         with self.lock:
@@ -277,66 +291,6 @@ class TmcComponentManager(BaseTmcComponentManager):
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
-    def telescope_on(self, task_callback=None):
-        """
-        Turn on the Telescope.
-
-        :param task_callback: Update task state, defaults to None
-
-        :return: a TaskStatus and message
-        """
-        raise NotImplementedError(
-            "TmcComponentManager is abstract; method telescope_on must be implemented in a subclass!"
-        )
-
-    def telescope_off(self, task_callback=None):
-        """
-        Turn off the Telescope.
-
-        :param task_callback: Update task state, defaults to None
-
-        :return: a TaskStatus and message
-        """
-        raise NotImplementedError(
-            "TmcComponentManager is abstract; method telescope_off must be implemented in a subclass!"
-        )
-
-    def telescope_standby(self, task_callback=None):
-        """
-        Turn off the Telescope.
-
-        :param task_callback: Update task state, defaults to None
-
-        :return: a TaskStatus and message
-        """
-        raise NotImplementedError(
-            "TmcComponentManager is abstract; method telescope_standby must be implemented in a subclass!"
-        )
-
-    def assign_resources(self, task_callback=None):
-        """
-        Turn off the Telescope.
-
-        :param task_callback: Update task state, defaults to None
-
-        :return: a TaskStatus and message
-        """
-        raise NotImplementedError(
-            "TmcComponentManager is abstract; method assign_resources must be implemented in a subclass!"
-        )
-
-    def release_resources(self, task_callback=None):
-        """
-        Turn off the Telescope.
-
-        :param task_callback: Update task state, defaults to None
-
-        :return: a TaskStatus and message
-        """
-        raise NotImplementedError(
-            "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
-        )
-
 
 class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     """
@@ -356,10 +310,10 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def __init__(
         self,
         logger=None,
-        _liveliness_probe=False,
+        _liveliness_probe=LP.OFF,
         _event_receiver=False,
-        communication_state_changed_callback=None,
-        component_state_changed_callback=None,
+        communication_state_callback=None,
+        component_state_callback=None,
         max_workers=5,
         proxy_timeout=500,
         sleep_time=1,
@@ -371,19 +325,19 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
         :param logger: a logger for this component manager
         """
+        self._device = None  # It should be an object of DeviceInfo class
         super().__init__(
             logger,
             _liveliness_probe,
             _event_receiver,
-            communication_state_changed_callback,
-            component_state_changed_callback,
+            communication_state_callback,
+            component_state_callback,
             max_workers,
             proxy_timeout,
             sleep_time,
             args,
             kwargs,
         )
-        self._device = None  # It should be an object of DeviceInfo class
 
     def reset(self):
         pass
@@ -407,26 +361,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._device.exception = exception
-
-    def start_liveliness_probe(self) -> None:
-        """Starts Liveliness Probe for the given device.
-
-        :param dev_info: Object of either DeviceInfo or one of its child class
-        """
-        if self.liveliness_probe:
-            self.liveliness_probe_object = SingleDeviceLivelinessProbe(
-                self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
-            self.liveliness_probe_object.start()
-        else:
-            self.logger.warning("Liveliness Probe is not running")
-
-    def stop_liveliness_probe(self) -> None:
-        """Stops the Liveliness Probe"""
-        self.liveliness_probe_object.stop()
 
     def update_device_info(self, device_info):
         """

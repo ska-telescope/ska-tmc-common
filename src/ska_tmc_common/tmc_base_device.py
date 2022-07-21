@@ -20,55 +20,10 @@ class TMCBaseDevice(SKABaseDevice):
 
     @attribute(
         dtype="DevString",
-        doc="commandInProgress attribute of TMC Nodes .",
-    )
-    def commandInProgress(self):
-        if not issubclass(TMCBaseDevice, self.__class__):
-            return self.component_manager.command_executor.command_in_progress
-
-    @attribute(
-        dtype=(("DevString",),),
-        max_dim_x=4,
-        max_dim_y=1000,
-    )
-    def commandExecuted(self):
-        """Return the commandExecuted attribute."""
-        result = []
-        for command_executed in reversed(
-            self.component_manager.command_executor.command_executed
-        ):
-            single_res = [
-                str(command_executed["Id"]),
-                str(command_executed["Command"]),
-                str(command_executed["ResultCode"]),
-                str(command_executed["Message"]),
-            ]
-            result.append(single_res)
-        return result
-
-    @attribute(
-        dtype="DevString",
         doc="Json String representing the last device info changed in the internal model.",
     )
     def lastDeviceInfoChanged(self):
         return self.last_device_info_changed
-
-    @attribute(
-        dtype="DevString",
-        doc="Last command executed as string: uniqueid, command name, .result and message",
-    )
-    def lastCommandExecuted(self):
-        """Return the lastCommandExecuted attribute as list of string."""
-        command_executed = (
-            self.component_manager.command_executor.command_executed[-1]
-        )
-        single_res = "{0} {1} {2} {3}".format(
-            str(command_executed["Id"]),
-            str(command_executed["Command"]),
-            str(command_executed["ResultCode"]),
-            str(command_executed["Message"]),
-        )
-        return single_res
 
     @attribute(
         dtype="DevString",
