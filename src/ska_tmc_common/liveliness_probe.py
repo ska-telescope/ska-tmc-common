@@ -47,9 +47,8 @@ class BaseLivelinessProbe:
         with tango.EnsureOmniThread():
             try:
                 proxy.set_timeout_millis(self._proxy_timeout)
-                Ping = proxy.ping()
                 self._component_manager.update_ping_info(
-                    Ping, dev_info.dev_name
+                    proxy.ping(), dev_info.dev_name
                 )
             except Exception as e:
                 self._logger.error(
@@ -117,16 +116,13 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         sleep_time=1,
     ):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
-        # We can either do this, or make component_manager an instance variable
-        # and use it on line 128. Which way should we go?
-        self._monitoring_device = component_manager.get_device()
 
     def run(self):
+        dev_info = self._component_manager.get_device()
+        proxy = self._dev_factory.get_device(dev_info.dev_name)
         while not self._stop:
             with futures.ThreadPoolExecutor(max_workers=1) as executor:
                 try:
-                    dev_info = self._monitoring_device
-                    proxy = self._dev_factory.get_device(dev_info.dev_name)
                     executor.submit(self.device_task, dev_info, proxy)
                 except Exception as e:
                     self._logger.error(

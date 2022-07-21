@@ -80,6 +80,11 @@ class TmcComponentManager(TaskExecutorComponentManager):
         :param _component: allows setting of the component to be
             managed; for testing purposes only
         """
+        super().__init__(
+            max_workers,
+            communication_state_callback,
+            component_state_callback,
+        )
         self.logger = logger
         self.lock = threading.Lock()
         self._component = _component or TmcComponent(logger)
@@ -98,12 +103,6 @@ class TmcComponentManager(TaskExecutorComponentManager):
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
             )
-
-        super().__init__(
-            max_workers,
-            communication_state_callback,
-            component_state_callback,
-        )
 
         self._input_parameter = _input_parameter
 
@@ -344,6 +343,11 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
 
         :param logger: a logger for this component manager
         """
+        super().__init__(
+            max_workers,
+            communication_state_changed_callback,
+            component_state_changed_callback,
+        )
         self.logger = logger
         self.op_state_model = TMCOpStateModel(self.logger)
         self.liveliness_probe = _liveliness_probe
@@ -351,12 +355,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         self.sleep_time = sleep_time
         self.lock = threading.Lock()
         self._device = None  # It should be an object of DeviceInfo class
-
-        super().__init__(
-            max_workers,
-            communication_state_changed_callback,
-            component_state_changed_callback,
-        )
 
     def reset(self):
         pass
