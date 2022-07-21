@@ -26,8 +26,6 @@ def command_object():
         logger=logger,
         _liveliness_probe=False,
         _event_receiver=False,
-        communication_state_callback=None,
-        component_state_callback=None,
     )
     dummy_command = DummyCommand(cm, logger)
     return dummy_command
@@ -36,6 +34,7 @@ def command_object():
 conditions = [(True, True), (False, False)]
 
 
+@pytest.mark.temp
 @pytest.mark.parametrize("value,result", conditions)
 def test_check_allowed(command_object, value, result):
     command_object.set_condition(value)

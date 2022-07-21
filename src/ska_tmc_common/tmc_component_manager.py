@@ -43,7 +43,48 @@ class TmcComponent:
         raise NotImplementedError("This class must be inherited!")
 
 
-class TmcComponentManager(TaskExecutorComponentManager):
+class BaseTmcComponentManager(TaskExecutorComponentManager):
+    def __init__(
+        self,
+        logger=None,
+        _liveliness_probe=False,
+        _event_receiver=False,
+        communication_state_callback=None,
+        component_state_callback=None,
+        max_workers=5,
+        proxy_timeout=500,
+        sleep_time=1,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(
+            max_workers, communication_state_callback, component_state_callback
+        )
+        self.logger = logger
+        self.liveliness_probe = _liveliness_probe
+        self.event_reciever = _event_receiver
+        self.max_workers = max_workers
+        self.proxy_timeout = proxy_timeout
+        self.sleep_time = sleep_time
+        self.op_state_model = TMCOpStateModel(logger, callback=None)
+        self.lock = threading.Lock()
+
+    def is_command_allowed(self, command_name=None):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state
+        to perform this command
+
+        :return: True if command is allowed
+
+        :rtype: boolean
+        """
+        raise NotImplementedError(
+            "is_command_allowed is abstract; method must be implemented in a subclass!"
+        )
+
+
+class TmcComponentManager(BaseTmcComponentManager):
     """
     A component manager for The TMC node component.
 
@@ -81,18 +122,18 @@ class TmcComponentManager(TaskExecutorComponentManager):
             managed; for testing purposes only
         """
         super().__init__(
-            max_workers,
+            logger,
+            _liveliness_probe,
+            _event_receiver,
             communication_state_callback,
             component_state_callback,
+            max_workers,
+            proxy_timeout,
+            sleep_time,
+            args,
+            kwargs,
         )
-        self.logger = logger
-        self.lock = threading.Lock()
         self._component = _component or TmcComponent(logger)
-        self.liveliness_probe = _liveliness_probe
-        self.max_workers = max_workers
-        self.proxy_timeout = proxy_timeout
-        self.sleep_time = sleep_time
-        self.op_state_model = TMCOpStateModel(logger, callback=None)
         self._devices = []
 
         self._event_receiver = None
@@ -296,22 +337,8 @@ class TmcComponentManager(TaskExecutorComponentManager):
             "TmcComponentManager is abstract; method release_resources must be implemented in a subclass!"
         )
 
-    def is_command_allowed(self, command_name=None):
-        """
-        Checks whether this command is allowed
-        It checks that the device is in a state
-        to perform this command
 
-        :return: True if command is allowed
-
-        :rtype: boolean
-        """
-        raise NotImplementedError(
-            "is_command_allowed is abstract; method must be implemented in a subclass!"
-        )
-
-
-class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
+class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     """
     A component manager for The TMC Leaf Node component.
 
@@ -330,6 +357,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         self,
         logger=None,
         _liveliness_probe=False,
+        _event_receiver=False,
         communication_state_changed_callback=None,
         component_state_changed_callback=None,
         max_workers=5,
@@ -344,16 +372,17 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         :param logger: a logger for this component manager
         """
         super().__init__(
-            max_workers,
+            logger,
+            _liveliness_probe,
+            _event_receiver,
             communication_state_changed_callback,
             component_state_changed_callback,
+            max_workers,
+            proxy_timeout,
+            sleep_time,
+            args,
+            kwargs,
         )
-        self.logger = logger
-        self.op_state_model = TMCOpStateModel(self.logger)
-        self.liveliness_probe = _liveliness_probe
-        self.proxy_timeout = proxy_timeout
-        self.sleep_time = sleep_time
-        self.lock = threading.Lock()
         self._device = None  # It should be an object of DeviceInfo class
 
     def reset(self):
@@ -466,16 +495,3 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
             self._device.obs_state = obs_state
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
-
-    def is_command_allowed(self, command_name=None):
-        """
-        Checks whether this command is allowed
-        It checks if the device is in a state to perform this command.
-
-        :return: True if command is allowed
-
-        :rtype: bool
-        """
-        raise NotImplementedError(
-            "is_command_allowed is abstract; method must be implemented in a subclass!"
-        )
