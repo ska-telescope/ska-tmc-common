@@ -92,7 +92,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                         executor.submit(self.device_task, dev_info, proxy)
                         not_read_devices_twice.append(dev_info)
 
-                    for dev_info in self._component_manager.devices:
+                    for dev_info in self._component_manager._devices:
                         if dev_info not in not_read_devices_twice:
                             proxy = self._dev_factory.get_device(
                                 dev_info.dev_name
@@ -112,13 +112,14 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     def __init__(
         self,
         component_manager,
-        monitoring_device,
         logger=None,
         proxy_timeout=500,
         sleep_time=1,
     ):
-        self._monitoring_device = monitoring_device
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
+        # We can either do this, or make component_manager an instance variable
+        # and use it on line 128. Which way should we go?
+        self._monitoring_device = component_manager.get_device()
 
     def run(self):
         while not self._stop:

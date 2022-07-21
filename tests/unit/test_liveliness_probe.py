@@ -25,7 +25,8 @@ def test_stop():
 def test_stop_ln():
     cm = TmcLeafNodeComponentManager(logger, True)
     device = DishDeviceInfo("dummy/monitored/device")
-    cm.start_liveliness_probe(device)
+    cm._device = device
+    cm.start_liveliness_probe()
     lp = cm.liveliness_probe_object
     assert lp._thread.is_alive()
 

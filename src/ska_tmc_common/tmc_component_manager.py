@@ -345,7 +345,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         :param logger: a logger for this component manager
         """
         self.logger = logger
-        self.op_state_model = TMCOpStateModel
+        self.op_state_model = TMCOpStateModel(self.logger)
         self.liveliness_probe = _liveliness_probe
         self.proxy_timeout = proxy_timeout
         self.sleep_time = sleep_time
@@ -381,7 +381,7 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self._device.exception = exception
 
-    def start_liveliness_probe(self, dev_info) -> None:
+    def start_liveliness_probe(self) -> None:
         """Starts Liveliness Probe for the given device.
 
         :param dev_info: Object of either DeviceInfo or one of its child class
@@ -389,7 +389,6 @@ class TmcLeafNodeComponentManager(TaskExecutorComponentManager):
         if self.liveliness_probe:
             self.liveliness_probe_object = SingleDeviceLivelinessProbe(
                 self,
-                dev_info,
                 logger=self.logger,
                 proxy_timeout=self.proxy_timeout,
                 sleep_time=self.sleep_time,
