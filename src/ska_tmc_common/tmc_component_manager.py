@@ -106,7 +106,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 sleep_time=self.sleep_time,
             )
             self.liveliness_probe_object.start()
-
         else:
             self.logger.warning("Liveliness Probe is not running")
 
@@ -169,15 +168,14 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         super().__init__(
             logger,
-            _liveliness_probe,
             _event_receiver,
             communication_state_callback,
             component_state_callback,
             max_workers,
             proxy_timeout,
             sleep_time,
-            args,
-            kwargs,
+            *args,
+            **kwargs,
         )
         self._component = _component or TmcComponent(logger)
         self._devices = []
