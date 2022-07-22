@@ -25,3 +25,10 @@ class DishMode(IntEnum):
     MAINTENANCE = 9
     FORBIDDEN = 10
     ERROR = 11
+
+
+@unique
+class LivelinessProbeType(IntEnum):
+    NONE = 0
+    SINGLE_DEVICE = 1
+    MULTI_DEVICE = 2

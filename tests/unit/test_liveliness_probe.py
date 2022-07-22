@@ -1,47 +1,42 @@
-import logging
-
 from ska_tmc_common.device_info import DishDeviceInfo
+from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.input import InputParameter
-from ska_tmc_common.liveliness_probe import (
-    MultiDeviceLivelinessProbe,
-    SingleDeviceLivelinessProbe,
-)
 from ska_tmc_common.tmc_component_manager import (
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
-
-logger = logging.getLogger(__name__)
+from tests.settings import logger
 
 
 def test_stop():
     cm = TmcComponentManager(
         _input_parameter=InputParameter(None), logger=logger
     )
-    lp = MultiDeviceLivelinessProbe(cm, logger)
-    lp.start()
+    lp = cm.liveliness_probe_object
     assert lp._thread.is_alive()
 
-    lp.stop()
+    cm.stop_liveliness_probe()
     assert lp._stop
 
 
 def test_stop_ln():
-    cm = TmcLeafNodeComponentManager(logger, True)
+    cm = TmcLeafNodeComponentManager(
+        logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
+    )
     device = DishDeviceInfo("dummy/monitored/device")
-    lp = SingleDeviceLivelinessProbe(cm, device, logger)
-    lp.start()
-    assert lp._thread.is_alive()
+    cm._device = device
 
-    lp.stop()
-    assert lp._stop
+    assert cm.liveliness_probe_object._thread.is_alive()
+
+    cm.stop_liveliness_probe()
+    assert cm.liveliness_probe_object._stop
 
 
 def test_add_device():
     cm = TmcComponentManager(
         _input_parameter=InputParameter(None), logger=logger
     )
-    lp = MultiDeviceLivelinessProbe(cm, logger)
+    lp = cm.liveliness_probe_object
     initial_size = lp._monitoring_devices._qsize()
     lp.add_device("dummy/monitored/device")
 

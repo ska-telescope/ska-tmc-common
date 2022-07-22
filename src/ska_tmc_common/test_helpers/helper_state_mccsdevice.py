@@ -1,20 +1,15 @@
 import json
-from typing import Optional
+import time
 
 from ska_tango_base.base.base_device import SKABaseDevice
-from ska_tango_base.base.component_manager import TaskExecutorComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
 
-
-class EmptyComponentManager(TaskExecutorComponentManager):
-    def __init__(
-        self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
-    ):
-        self.logger = logger
-        super().__init__(max_workers=max_workers, *args, **kwargs)
+from ska_tmc_common.test_helpers.helper_csp_master_device import (
+    EmptyComponentManager,
+)
 
 
 class HelperMCCSStateDevice(SKABaseDevice):
@@ -63,6 +58,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
         # import debugpy; debugpy.debug_this_thread()
         if self.dev_state() != argin:
             self.set_state(argin)
+            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
     @command(
@@ -89,6 +85,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
     def On(self):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
+            time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
     def is_Off_allowed(self):
@@ -101,6 +98,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
     def Off(self):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
+            time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
     def is_Standby_allowed(self):
@@ -113,6 +111,7 @@ class HelperMCCSStateDevice(SKABaseDevice):
     def Standby(self):
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
+            time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
     def is_AssignResources_allowed(self):

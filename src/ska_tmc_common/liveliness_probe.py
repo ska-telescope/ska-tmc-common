@@ -43,14 +43,13 @@ class BaseLivelinessProbe:
     def run(self):
         raise NotImplementedError("This method must be inherited")
 
-    def device_task(self, dev_info, proxy):
+    def device_task(self, dev_info):
         with tango.EnsureOmniThread():
             try:
+                proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.set_timeout_millis(self._proxy_timeout)
-                new_dev_info = type(dev_info)(dev_info.dev_name)
-                new_dev_info.ping = proxy.ping()
                 self._component_manager.update_ping_info(
-                    new_dev_info.ping, new_dev_info.dev_name
+                    proxy.ping(), dev_info.dev_name
                 )
             except Exception as e:
                 self._logger.error(
@@ -89,16 +88,12 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     while not self._monitoring_devices.empty():
                         dev_name = self._monitoring_devices.get(block=False)
                         dev_info = self._component_manager.get_device(dev_name)
-                        proxy = self._dev_factory.get_device(dev_info.dev_name)
-                        executor.submit(self.device_task, dev_info, proxy)
+                        executor.submit(self.device_task, dev_info)
                         not_read_devices_twice.append(dev_info)
 
-                    for dev_info in self._component_manager.devices:
+                    for dev_info in self._component_manager._devices:
                         if dev_info not in not_read_devices_twice:
-                            proxy = self._dev_factory.get_device(
-                                dev_info.dev_name
-                            )
-                            executor.submit(self.device_task, dev_info, proxy)
+                            executor.submit(self.device_task, dev_info)
                 except Empty:
                     pass
                 except Exception as e:
@@ -113,21 +108,18 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     def __init__(
         self,
         component_manager,
-        monitoring_device,
         logger=None,
         proxy_timeout=500,
         sleep_time=1,
     ):
-        self._monitoring_device = monitoring_device
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def run(self):
+        dev_info = self._component_manager.get_device()
         while not self._stop:
             with futures.ThreadPoolExecutor(max_workers=1) as executor:
                 try:
-                    dev_info = self._monitoring_device
-                    proxy = self._dev_factory.get_device(dev_info.dev_name)
-                    executor.submit(self.device_task, dev_info, proxy)
+                    executor.submit(self.device_task, dev_info)
                 except Exception as e:
                     self._logger.error(
                         "Error in submitting the task for %s: %s",

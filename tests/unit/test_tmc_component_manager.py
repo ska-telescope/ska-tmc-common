@@ -1,6 +1,3 @@
-import logging
-
-import pytest
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
@@ -11,8 +8,7 @@ from ska_tmc_common.tmc_component_manager import (
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
-
-logger = logging.getLogger(__name__)
+from tests.settings import logger
 
 
 def test_add_device():
@@ -56,78 +52,6 @@ def test_update_device():
     cm.update_device_info(device_info)
     new_device_info = cm.get_device("dummy/monitored/device")
     assert new_device_info.unresponsive is True
-
-
-def test_telescope_on():
-    dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        _component=dummy_component,
-        logger=logger,
-    )
-    # raise NotImplementedError
-    with pytest.raises(NotImplementedError):
-        cm.telescope_on()
-
-
-def test_telescope_off():
-    dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        _component=dummy_component,
-        logger=logger,
-    )
-    # raise NotImplementedError
-    with pytest.raises(NotImplementedError):
-        cm.telescope_off()
-
-
-def test_telescope_standby():
-    dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        _component=dummy_component,
-        logger=logger,
-    )
-    # raise NotImplementedError
-    with pytest.raises(NotImplementedError):
-        cm.telescope_standby()
-
-
-def test_assign_resources():
-    dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        _component=dummy_component,
-        logger=logger,
-    )
-    # raise NotImplementedError
-    with pytest.raises(NotImplementedError):
-        cm.assign_resources()
-
-
-def test_release_resources():
-    dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        _component=dummy_component,
-        logger=logger,
-    )
-    # raise NotImplementedError
-    with pytest.raises(NotImplementedError):
-        cm.release_resources()
-
-
-def test_is_command_allowed():
-    dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        _component=dummy_component,
-        logger=logger,
-    )
-    # raise NotImplementedError
-    with pytest.raises(NotImplementedError):
-        cm.is_command_allowed("TelescopeOn")
 
 
 def test_get_device_leafnode():
