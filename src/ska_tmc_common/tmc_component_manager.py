@@ -12,7 +12,7 @@ from ska_tango_base.base import TaskExecutorComponentManager
 from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
-from ska_tmc_common.enum import LP
+from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
@@ -48,7 +48,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
         logger=None,
-        _liveliness_probe=LP.OFF,
         _event_receiver=False,
         communication_state_callback=None,
         component_state_callback=None,
@@ -59,17 +58,17 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         **kwargs,
     ):
         super().__init__(
-            max_workers, communication_state_callback, component_state_callback
+            logger,
+            communication_state_callback,
+            component_state_callback,
+            max_workers=max_workers,
         )
-        self.logger = logger
         self.event_receiver = _event_receiver
         self.max_workers = max_workers
         self.proxy_timeout = proxy_timeout
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
-        self.start_liveliness_probe(_liveliness_probe)
-        self.start_event_receiver()
 
     def is_command_allowed(self, command_name=None):
         """
@@ -84,12 +83,12 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             "is_command_allowed is abstract; method must be implemented in a subclass!"
         )
 
-    def start_liveliness_probe(self, lp: LP) -> None:
+    def start_liveliness_probe(self, lp: LivelinessProbeType) -> None:
         """Starts Liveliness Probe for the given device.
 
-        :param lp: enum of class LP
+        :param lp: enum of class LivelinessProbeType
         """
-        if lp.value == SingleDeviceLivelinessProbe:
+        if lp == LivelinessProbeType.SINGLE_DEVICE:
             self.liveliness_probe_object = SingleDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -98,7 +97,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.liveliness_probe_object.start()
 
-        elif lp.value == MultiDeviceLivelinessProbe:
+        elif lp == LivelinessProbeType.MULTI_DEVICE:
             self.liveliness_probe_object = MultiDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -151,7 +150,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         _input_parameter,
         logger=None,
         _component=None,
-        _liveliness_probe=LP.MULTI_DEVICE,
+        _liveliness_probe=LivelinessProbeType.MULTI_DEVICE,
         _event_receiver=True,
         communication_state_callback=None,
         component_state_callback=None,
@@ -168,8 +167,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         :param _component: allows setting of the component to be
             managed; for testing purposes only
         """
-        self._component = _component or TmcComponent(logger)
-        self._devices = []
         super().__init__(
             logger,
             _liveliness_probe,
@@ -182,8 +179,11 @@ class TmcComponentManager(BaseTmcComponentManager):
             args,
             kwargs,
         )
-
+        self._component = _component or TmcComponent(logger)
+        self._devices = []
         self._input_parameter = _input_parameter
+        self.start_liveliness_probe(_liveliness_probe)
+        self.start_event_receiver()
 
     def reset(self):
         pass
@@ -310,7 +310,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def __init__(
         self,
         logger=None,
-        _liveliness_probe=LP.OFF,
+        _liveliness_probe=LivelinessProbeType.NONE,
         _event_receiver=False,
         communication_state_callback=None,
         component_state_callback=None,
@@ -325,7 +325,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
         :param logger: a logger for this component manager
         """
-        self._device = None  # It should be an object of DeviceInfo class
         super().__init__(
             logger,
             _liveliness_probe,
@@ -338,6 +337,9 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             args,
             kwargs,
         )
+        self._device = None  # It should be an object of DeviceInfo class
+        self.start_liveliness_probe(_liveliness_probe)
+        self.start_event_receiver()
 
     def reset(self):
         pass

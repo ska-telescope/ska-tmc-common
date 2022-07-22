@@ -1,9 +1,4 @@
-from enum import Enum, IntEnum, unique
-
-from ska_tmc_common.liveliness_probe import (
-    MultiDeviceLivelinessProbe,
-    SingleDeviceLivelinessProbe,
-)
+from enum import IntEnum, unique
 
 
 @unique
@@ -33,7 +28,7 @@ class DishMode(IntEnum):
 
 
 @unique
-class LP(Enum):
-    OFF = False
-    SINGLE_DEVICE = SingleDeviceLivelinessProbe
-    MULTI_DEVICE = MultiDeviceLivelinessProbe
+class LivelinessProbeType(IntEnum):
+    NONE = 0
+    SINGLE_DEVICE = 1
+    MULTI_DEVICE = 2

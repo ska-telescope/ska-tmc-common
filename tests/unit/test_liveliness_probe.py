@@ -1,5 +1,5 @@
 from ska_tmc_common.device_info import DishDeviceInfo
-from ska_tmc_common.enum import LP
+from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.input import InputParameter
 from ska_tmc_common.tmc_component_manager import (
     TmcComponentManager,
@@ -21,7 +21,7 @@ def test_stop():
 
 def test_stop_ln():
     cm = TmcLeafNodeComponentManager(
-        logger=logger, _liveliness_probe=LP.SINGLE_DEVICE
+        logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
     device = DishDeviceInfo("dummy/monitored/device")
     cm._device = device
