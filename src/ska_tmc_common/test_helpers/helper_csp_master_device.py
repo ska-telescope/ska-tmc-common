@@ -12,8 +12,9 @@ class EmptyComponentManager(TaskExecutorComponentManager):
     def __init__(
         self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
     ):
-        self.logger = logger
-        super().__init__(max_workers=max_workers, *args, **kwargs)
+        super().__init__(
+            logger=logger, max_workers=max_workers, *args, **kwargs
+        )
 
 
 class HelperCspMasterDevice(SKABaseDevice):
