@@ -99,6 +99,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     self._logger.warning("Exception occured: %s", e)
                 sleep(self._sleep_time)
 
+
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     """A class for monitoring a single device"""
 

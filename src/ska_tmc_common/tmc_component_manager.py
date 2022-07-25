@@ -131,6 +131,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         if self.event_receiver:
             self.event_receiver_object.stop()
 
+
 class TmcComponentManager(BaseTmcComponentManager):
     """
     A component manager for The TMC node component.
