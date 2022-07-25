@@ -79,10 +79,10 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         self._monitoring_devices.put(dev_name)
 
     def run(self):
-        while not self._stop:
-            with futures.ThreadPoolExecutor(
-                max_workers=self._max_workers
-            ) as executor:
+        with futures.ThreadPoolExecutor(
+            max_workers=self._max_workers
+        ) as executor:
+            while not self._stop:
                 not_read_devices_twice = []
                 try:
                     while not self._monitoring_devices.empty():
@@ -97,7 +97,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     pass
                 except Exception as e:
                     self._logger.warning("Exception occured: %s", e)
-            sleep(self._sleep_time)
+                sleep(self._sleep_time)
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     """A class for monitoring a single device"""

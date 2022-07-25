@@ -70,6 +70,14 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
 
+        if self.event_receiver:
+            self.event_receiver_object = EventReceiver(
+                self,
+                logger=self.logger,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+
     def is_command_allowed(self, command_name=None):
         """
         Checks whether this command is allowed
@@ -116,18 +124,12 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
     def start_event_receiver(self):
         """Starts the Event Receiver for given device"""
         if self.event_receiver:
-            self.event_receiver_object = EventReceiver(
-                self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
             self.event_receiver_object.start()
 
     def stop_event_receiver(self):
         """Stops the Event Receiver"""
-        self.event_receiver_object.stop()
-
+        if self.event_receiver:
+            self.event_receiver_object.stop()
 
 class TmcComponentManager(BaseTmcComponentManager):
     """
@@ -185,6 +187,15 @@ class TmcComponentManager(BaseTmcComponentManager):
 
     def reset(self):
         pass
+
+    @property
+    def devices(self):
+        """
+        Return the list of the monitored devices
+
+        :return: list of the monitored devices
+        """
+        return self._component._devices
 
     def add_device(self, dev_name):
         """
