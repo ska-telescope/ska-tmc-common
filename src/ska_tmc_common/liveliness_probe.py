@@ -113,10 +113,12 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def run(self):
-        dev_info = self._component_manager.get_device()
-        while not self._stop:
-            with futures.ThreadPoolExecutor(max_workers=1) as executor:
+        with futures.ThreadPoolExecutor(max_workers=1) as executor:
+            while not self._stop:
                 try:
+                    dev_info = self._component_manager.get_device()
+                    if dev_info is None:
+                        continue
                     executor.submit(self.device_task, dev_info)
                 except Exception as e:
                     self._logger.error(
@@ -125,4 +127,4 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                         e,
                     )
 
-            sleep(self._sleep_time)
+                sleep(self._sleep_time)
