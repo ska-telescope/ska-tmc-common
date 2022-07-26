@@ -184,7 +184,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         self._devices = []
         self._input_parameter = _input_parameter
         self.start_liveliness_probe(_liveliness_probe)
-        self.start_event_receiver()
 
     def reset(self):
         pass
