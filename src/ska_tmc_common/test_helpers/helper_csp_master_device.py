@@ -1,19 +1,20 @@
 from typing import Optional
 
 from ska_tango_base.base.base_device import SKABaseDevice
-from ska_tango_base.base.component_manager import TaskExecutorComponentManager
+from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
 
 
-class EmptyComponentManager(TaskExecutorComponentManager):
+class EmptyComponentManager(BaseComponentManager):
     def __init__(
         self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
     ):
-        self.logger = logger
-        super().__init__(max_workers=max_workers, *args, **kwargs)
+        super().__init__(
+            logger=logger, max_workers=max_workers, *args, **kwargs
+        )
 
 
 class HelperCspMasterDevice(SKABaseDevice):

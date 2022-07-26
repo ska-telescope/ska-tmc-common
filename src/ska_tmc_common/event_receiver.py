@@ -50,14 +50,17 @@ class EventReceiver:
         # self._thread.join()
 
     def run(self):
-        while not self._stop:
-            with futures.ThreadPoolExecutor(
-                max_workers=self._max_workers
-            ) as executor:
-                for dev_info in self._component_manager._devices:
-                    if dev_info.last_event_arrived is None:
-                        executor.submit(self.subscribe_events, dev_info)
-            sleep(self._sleep_time)
+        with futures.ThreadPoolExecutor(
+            max_workers=self._max_workers
+        ) as executor:
+            while not self._stop:
+                try:
+                    for dev_info in self._component_manager.devices:
+                        if dev_info.last_event_arrived is None:
+                            executor.submit(self.subscribe_events, dev_info)
+                except Exception as e:
+                    self._logger.warning("Exception occured: %s", e)
+                sleep(self._sleep_time)
 
     def subscribe_events(self, dev_info):
         try:
