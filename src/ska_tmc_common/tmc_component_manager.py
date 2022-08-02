@@ -69,6 +69,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
+        self.liveliness_probe_object = None
 
         if self.event_receiver:
             self.event_receiver_object = EventReceiver(
@@ -119,7 +120,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     def stop_liveliness_probe(self):
         """Stops the liveliness probe"""
-        self.liveliness_probe_object.stop()
+        if self.liveliness_probe_object:
+            self.liveliness_probe_object.stop()
 
     def start_event_receiver(self):
         """Starts the Event Receiver for given device"""
