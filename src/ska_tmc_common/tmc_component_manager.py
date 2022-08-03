@@ -85,7 +85,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         It checks that the device is in a state to perform this command
 
         :param command_name: command_name
-        :type command_name: str 
+        :type command_name: str
         :return: True if command is allowed
 
         :rtype: boolean
