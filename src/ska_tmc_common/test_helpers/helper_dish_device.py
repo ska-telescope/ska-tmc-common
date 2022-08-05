@@ -138,7 +138,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetStandbyFPMode(self):
         # import debugpy; debugpy.debug_this_thread()'
-        self.logger.info("Invoked SetStandbyFPMode Command")
+        self.logger.info("Processing SetStandbyFPMode Command")
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)
@@ -152,7 +152,7 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetStandbyLPMode(self):
-        self.logger.info("Invoked SetStandbyLPMode Command")
+        self.logger.info("Processing SetStandbyLPMode Command")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
@@ -169,7 +169,7 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetOperateMode(self):
-        self.logger.info("Invoked SetOperateMode Command")
+        self.logger.info("Processing SetOperateMode Command")
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)
@@ -186,7 +186,7 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetStowMode(self):
-        self.logger.info("Invoked SetStowMode Command")
+        self.logger.info("Processing SetStowMode Command")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
