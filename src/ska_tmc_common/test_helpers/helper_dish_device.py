@@ -141,6 +141,7 @@ class HelperDishDevice(SKABaseDevice):
         self.logger.info("Invoked SetStandbyFPMode Command")
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
+            time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
     def is_SetStandbyLPMode_allowed(self):
@@ -154,7 +155,7 @@ class HelperDishDevice(SKABaseDevice):
         self.logger.info("Invoked SetStandbyLPMode Command")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-        time.sleep(0.1)
+            time.sleep(0.1)
         if self._pointing_state != PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
@@ -188,6 +189,7 @@ class HelperDishDevice(SKABaseDevice):
         self.logger.info("Invoked SetStowMode Command")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
+            time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
     def is_Configure_allowed(self):
