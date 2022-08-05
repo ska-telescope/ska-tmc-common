@@ -79,7 +79,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 sleep_time=self.sleep_time,
             )
 
-    def is_command_allowed(self, command_name=None):
+    def is_command_allowed(self, command_name: str):
         """
         Checks whether this command is allowed
         It checks that the device is in a state to perform this command
