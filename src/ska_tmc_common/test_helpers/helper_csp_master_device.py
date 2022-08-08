@@ -79,6 +79,7 @@ class HelperCspMasterDevice(SKABaseDevice):
     def On(self, argin):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
     def is_Off_allowed(self):
@@ -93,6 +94,7 @@ class HelperCspMasterDevice(SKABaseDevice):
     def Off(self, argin):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
     def is_Standby_allowed(self):
@@ -107,4 +109,5 @@ class HelperCspMasterDevice(SKABaseDevice):
     def Standby(self, argin):
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
