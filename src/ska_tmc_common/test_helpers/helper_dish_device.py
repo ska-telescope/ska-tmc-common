@@ -142,8 +142,8 @@ class HelperDishDevice(SKABaseDevice):
     def SetStandbyFPMode(self):
         # import debugpy; debugpy.debug_this_thread()'
         self.logger.info("Processing SetStandbyFPMode Command")
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
             time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
@@ -192,8 +192,8 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetStowMode(self):
         self.logger.info("Processing SetStowMode Command")
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
+        if self.dev_state() != DevState.DISABLE:
+            self.set_state(DevState.DISABLE)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
