@@ -101,6 +101,7 @@ class HelperDishDevice(SKABaseDevice):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
     def is_Off_allowed(self):
@@ -114,6 +115,7 @@ class HelperDishDevice(SKABaseDevice):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
     def is_SetStandbyFPMode_allowed(self):
@@ -130,6 +132,7 @@ class HelperDishDevice(SKABaseDevice):
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
     @command(
@@ -139,8 +142,8 @@ class HelperDishDevice(SKABaseDevice):
     def SetStandbyFPMode(self):
         # import debugpy; debugpy.debug_this_thread()'
         self.logger.info("Processing SetStandbyFPMode Command")
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
             time.sleep(0.1)
         return [[ResultCode.OK], [""]]
 
@@ -156,6 +159,7 @@ class HelperDishDevice(SKABaseDevice):
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
         if self._pointing_state != PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
@@ -173,6 +177,7 @@ class HelperDishDevice(SKABaseDevice):
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
@@ -187,9 +192,10 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetStowMode(self):
         self.logger.info("Processing SetStowMode Command")
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
+        if self.dev_state() != DevState.DISABLE:
+            self.set_state(DevState.DISABLE)
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
     def is_Configure_allowed(self):
