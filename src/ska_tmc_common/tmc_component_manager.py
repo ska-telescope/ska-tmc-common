@@ -340,7 +340,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         super().__init__(
             logger,
-            _liveliness_probe,
             _event_receiver,
             communication_state_callback,
             component_state_callback,
