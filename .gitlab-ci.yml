@@ -28,6 +28,7 @@ stages:
   
 include:
   # # Python packages build,lint, test and publish
+- template: Security/License-Scanning.gitlab-ci.yml
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/python.gitlab-ci.yml'
 
