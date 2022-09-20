@@ -1,5 +1,7 @@
 import enum
 
+from ska_tango_base.control_model import AdminMode
+
 from ska_tmc_common.dev_factory import DevFactory
 
 
@@ -102,6 +104,14 @@ class CspMasterAdapter(BaseAdapter):
 
     def Off(self, argin):
         self._proxy.Off(argin)
+
+    @property
+    def adminMode(self) -> AdminMode:
+        return self._proxy.read_adminMode()
+
+    @adminMode.setter
+    def adminMode(self, value: AdminMode) -> None:
+        self._proxy.write_adminMode(value)
 
 
 class SubArrayAdapter(BaseAdapter):
