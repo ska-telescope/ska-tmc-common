@@ -107,11 +107,11 @@ class CspMasterAdapter(BaseAdapter):
 
     @property
     def adminMode(self) -> AdminMode:
-        return self._proxy.read_adminMode()
+        return self.proxy.read_adminMode()
 
     @adminMode.setter
     def adminMode(self, value: AdminMode) -> None:
-        self._proxy.write_adminMode(value)
+        self.proxy.write_adminMode(value)
 
 
 class SubArrayAdapter(BaseAdapter):
