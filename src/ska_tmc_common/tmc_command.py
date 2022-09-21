@@ -1,6 +1,6 @@
 import logging
 from operator import methodcaller
-from typing import Optional
+from typing import Optional, Tuple
 
 from ska_tango_base.commands import ResultCode
 
@@ -52,16 +52,14 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     def init_adapter(self):
         raise NotImplementedError("This class must be inherited!")
 
-    def call_adapter_method(self, device, adapter, command_name, *args):
+    def call_adapter_method(
+        self, device, adapter, command_name, argin=None
+    ) -> Tuple[ResultCode, str]:
         if adapter is None:
             return self.adapter_error_message_result(
                 device,
                 "Adapter is None",
             )
-
-        argin = None
-        for value in args:
-            argin = value
 
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"
