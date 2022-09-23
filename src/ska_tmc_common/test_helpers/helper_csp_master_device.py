@@ -3,9 +3,9 @@ from typing import Optional
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState
-from tango import DevState
-from tango.server import command
+from ska_tango_base.control_model import AdminMode, HealthState
+from tango import AttrWriteType, DevState
+from tango.server import attribute, command
 
 
 class EmptyComponentManager(BaseComponentManager):
@@ -19,6 +19,38 @@ class EmptyComponentManager(BaseComponentManager):
 
 class HelperCspMasterDevice(SKABaseDevice):
     """A helper device for triggering state changes with a command on CspMaster."""
+
+    # Attribute
+
+    adminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ_WRITE,
+        memorized=True,
+        hw_memorized=True,
+        doc="The admin mode reported for this device. It may interpret the current "
+        "device condition and condition of all managed devices to set this. "
+        "Most possibly an aggregate attribute.",
+    )
+
+    # Attribute Methods
+
+    def read_adminMode(self) -> AdminMode:
+        """
+        Read the Admin Mode of the device.
+
+        :return: Admin Mode of the device
+        :rtype: AdminMode
+        """
+        return self._admin_mode
+
+    def write_adminMode(self, value: AdminMode) -> None:
+        """
+        Set the Admin Mode of the device.
+
+        :param value: Admin Mode of the device.
+        :type value: AdminMode.
+        """
+        self._admin_mode = value
 
     def init_device(self):
         super().init_device()
