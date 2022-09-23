@@ -106,12 +106,12 @@ class CspMasterAdapter(BaseAdapter):
         self._proxy.Off(argin)
 
     @property
-    def adminMode(self) -> AdminMode:
+    def admin_mode(self) -> AdminMode:
         """Reads the adminMode value."""
         return self.proxy.adminMode
 
-    @adminMode.setter
-    def adminMode(self, value: AdminMode) -> None:
+    @admin_mode.setter
+    def admin_mode(self, value: AdminMode) -> None:
         """Sets the adminMode to given value."""
         self.proxy.adminMode = value
 
