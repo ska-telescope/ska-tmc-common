@@ -14,8 +14,8 @@ name = 'ska-nexus'
 url = 'https://artefact.skao.int/repository/pypi-internal/simple'
 
 [tool.poetry.dependencies]
-python = "^3.7"
-numpy = "1.17.2"
+python = "^3.8"
+numpy = "1.23.0"
 pytango = "9.3.3"
 jsonschema = "^4.0.1"
 marshmallow = "^3.14.1"
@@ -33,15 +33,17 @@ coverage = "^6.2"
 pylint = "^2.12.2"
 pylint2junit = "^1.0.1"
 junitparser = "^2.2.0"
-flake8 = "^4.0.1"
 flake8-formatter-junit-xml = "^0.0.6"
 flake8-rst-docstrings = "^0.2.5"
 docstr-coverage = "^2.1.1"
 darglint = "^1.8.1"
 mock = "^4.0.3"
-isort = "^5.10.1"
-black = "^22.1.0"
 pylint-junit = "^0.3.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.8.0"
+isort = "^5.10.1"
+flake8 = "^5.0.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
