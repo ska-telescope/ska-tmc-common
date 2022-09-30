@@ -4,10 +4,6 @@
 #
 PROJECT = ska-tmc-common
 
-# Issue resolution with twine during publish
-python-pre-publish:
-	pip3 install twine
-
 #DAR101 Missing parameter(s) in Docstring: - fqdn
 #DAR201 Missing "Returns" in Docstring: - return
 #DAR301 Missing "Yields" in Docstring: - yield
