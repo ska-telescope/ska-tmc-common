@@ -16,7 +16,7 @@ class AdapterType(enum.IntEnum):
 
 class AdapterFactory:
     def __init__(self) -> None:
-        self._adapters = []
+        self.adapters = []
         self._dev_factory = DevFactory()
 
     def get_or_create_adapter(self, dev_name, adapter_type=AdapterType.BASE):
@@ -29,7 +29,7 @@ class AdapterFactory:
         :type str
         """
 
-        for adapter in self._adapters:
+        for adapter in self.adapters:
             if adapter.dev_name == dev_name:
                 return adapter
 
