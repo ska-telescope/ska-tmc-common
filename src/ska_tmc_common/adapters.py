@@ -59,7 +59,7 @@ class AdapterFactory:
                 dev_name, self._dev_factory.get_device(dev_name)
             )
 
-        self._adapters.append(new_adapter)
+        self.adapters.append(new_adapter)
         return new_adapter
 
 
