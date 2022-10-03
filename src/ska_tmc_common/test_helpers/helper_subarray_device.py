@@ -375,6 +375,25 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
         return [[ResultCode.OK], [""]]
 
+    def is_GoToIdle_allowed(self):
+        """
+        Check if command `GoToIdle` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def GoToIdle(self):
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            self.push_change_event("obsState", self._obs_state)
+        return [[ResultCode.OK], [""]]
+
     def is_ObsReset_allowed(self):
         """
         Check if command `ObsReset` is allowed in the current device state.
