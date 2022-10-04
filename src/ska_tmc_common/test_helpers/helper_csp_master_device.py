@@ -18,10 +18,12 @@ class EmptyComponentManager(BaseComponentManager):
 
     def start_communicating(self):
         """This method is not used by TMC."""
+        self.logger.info("Start communicating method called")
         pass
 
     def stop_communicating(self):
         """This method is not used by TMC."""
+        self.logger.info("Stop communicating method called")
         pass
 
 
@@ -85,6 +87,7 @@ class HelperCspMasterDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self, argin):
+        self.logger.info("Processing On command")
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
@@ -100,6 +103,7 @@ class HelperCspMasterDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self, argin):
+        self.logger.info("Processing Off command")
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
@@ -115,6 +119,7 @@ class HelperCspMasterDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self, argin):
+        self.logger.info("Processing Standby command")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
