@@ -191,3 +191,5 @@ class CspSubarrayAdapter(SubArrayAdapter):
 
     def End(self):
         return self._proxy.GoToIdle()
+    def ReleaseResources(self, argin):
+        return self.ReleaseAllResources()
