@@ -2,7 +2,7 @@
 name = "ska-tmc-common"
 version = "0.1.52"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
-authors = ["Team NCRA"]
+authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
 
 packages = [
