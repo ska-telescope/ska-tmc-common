@@ -86,8 +86,12 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     not_read_devices_twice = []
                     try:
                         while not self._monitoring_devices.empty():
-                            dev_name = self._monitoring_devices.get(block=False)
-                            dev_info = self._component_manager.get_device(dev_name)
+                            dev_name = self._monitoring_devices.get(
+                                block=False
+                            )
+                            dev_info = self._component_manager.get_device(
+                                dev_name
+                            )
                             executor.submit(self.device_task, dev_info)
                             not_read_devices_twice.append(dev_info)
                         for dev_info in self._component_manager.devices:

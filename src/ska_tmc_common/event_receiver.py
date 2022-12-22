@@ -58,7 +58,9 @@ class EventReceiver:
                     try:
                         for dev_info in self._component_manager.devices:
                             if dev_info.last_event_arrived is None:
-                                executor.submit(self.subscribe_events, dev_info)
+                                executor.submit(
+                                    self.subscribe_events, dev_info
+                                )
                     except Exception as e:
                         self._logger.warning("Exception occured: %s", e)
                     sleep(self._sleep_time)
