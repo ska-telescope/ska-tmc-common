@@ -50,7 +50,7 @@ class EventReceiver:
         # self._thread.join()
 
     def run(self):
-        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
+        with futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:
             while not self._stop:

@@ -44,17 +44,18 @@ class BaseLivelinessProbe:
         raise NotImplementedError("This method must be inherited")
 
     def device_task(self, dev_info):
-        try:
-            proxy = self._dev_factory.get_device(dev_info.dev_name)
-            proxy.set_timeout_millis(self._proxy_timeout)
-            self._component_manager.update_ping_info(
-                proxy.ping(), dev_info.dev_name
-            )
-        except Exception as e:
-            self._logger.error(
-                "Device not working %s: %s", dev_info.dev_name, e
-            )
-            self._component_manager.device_failed(dev_info, e)
+        with tango.EnsureOmniThread():
+            try:
+                proxy = self._dev_factory.get_device(dev_info.dev_name)
+                proxy.set_timeout_millis(self._proxy_timeout)
+                self._component_manager.update_ping_info(
+                    proxy.ping(), dev_info.dev_name
+                )
+            except Exception as e:
+                self._logger.error(
+                    "Device not working %s: %s", dev_info.dev_name, e
+                )
+                self._component_manager.device_failed(dev_info, e)
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
@@ -78,7 +79,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         self._monitoring_devices.put(dev_name)
 
     def run(self):
-        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
+        with futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:
             while not self._stop:
@@ -112,9 +113,7 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def run(self):
-        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
-            max_workers=1
-        ) as executor:
+        with futures.ThreadPoolExecutor(max_workers=1) as executor:
             while not self._stop:
                 try:
                     dev_info = self._component_manager.get_device()
