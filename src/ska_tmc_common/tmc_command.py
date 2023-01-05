@@ -58,10 +58,10 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     def do_low(self, argin=None):
         raise NotImplementedError("This class must be inherited!")
 
-    def init_adapters_mid(self):
+    def init_adapter_mid(self):
         raise NotImplementedError("This class must be inherited!")
 
-    def init_adapters_low(self):
+    def init_adapter_low(self):
         raise NotImplementedError("This class must be inherited!")
 
     def call_adapter_method(
