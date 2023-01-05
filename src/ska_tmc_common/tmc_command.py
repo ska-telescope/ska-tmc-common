@@ -52,6 +52,18 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     def init_adapter(self):
         raise NotImplementedError("This class must be inherited!")
 
+    def do_mid(self, argin=None):
+        raise NotImplementedError("This class must be inherited!")
+
+    def do_low(self, argin=None):
+        raise NotImplementedError("This class must be inherited!")
+
+    def init_adapter_mid(self):
+        raise NotImplementedError("This class must be inherited!")
+
+    def init_adapter_low(self):
+        raise NotImplementedError("This class must be inherited!")
+
     def call_adapter_method(
         self, device, adapter, command_name, argin=None
     ) -> Tuple[ResultCode, str]:
