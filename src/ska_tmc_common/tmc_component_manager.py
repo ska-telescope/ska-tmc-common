@@ -8,8 +8,8 @@ import json
 import threading
 import time
 
-from ska_tango_base.base import TaskExecutorComponentManager
 from ska_tango_base.control_model import HealthState
+from ska_tango_base.executor import TaskExecutorComponentManager
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.enum import LivelinessProbeType
