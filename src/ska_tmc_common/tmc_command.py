@@ -25,6 +25,7 @@ class BaseTMCCommand:
         device_name: str,
         adapter_type: AdapterType,
         start_time,
+        timeout: int,
     ):
         adapter = None
         elapsed_time = 0
@@ -56,8 +57,6 @@ class BaseTMCCommand:
                     device_name,
                     e,
                 )
-
-        return ResultCode.OK, ""
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -94,46 +93,6 @@ class TMCCommand(BaseTMCCommand):
 class TmcLeafNodeCommand(BaseTMCCommand):
     def init_adapter(self):
         raise NotImplementedError("This method must be inherited!")
-
-    def adapter_creation_retry(
-        self,
-        device_name: str,
-        adapter_type: AdapterType,
-        start_time,
-    ):
-
-        adapter = None
-        elapsed_time = 0
-
-        while adapter is None and elapsed_time <= self.timeout:
-            try:
-                adapter = self.adapter_factory.get_or_create_adapter(
-                    device_name,
-                    adapter_type,
-                )
-                return adapter
-
-            except ConnectionFailed as cf:
-                elapsed_time = time.time() - start_time
-                if elapsed_time > self.timeout:
-                    return self.adapter_error_message_result(
-                        device_name,
-                        cf,
-                    )
-            except DevFailed as df:
-                elapsed_time = time.time() - start_time
-                if elapsed_time > self.timeout:
-                    return self.adapter_error_message_result(
-                        device_name,
-                        df,
-                    )
-            except Exception as e:
-                return self.adapter_error_message_result(
-                    device_name,
-                    e,
-                )
-
-        return ResultCode.OK, ""
 
     def do_mid(self, argin=None):
         raise NotImplementedError("This class must be inherited!")
