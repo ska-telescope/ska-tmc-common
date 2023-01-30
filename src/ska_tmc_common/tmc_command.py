@@ -27,11 +27,10 @@ class BaseTMCCommand:
         start_time: float,
         timeout: int,
     ):
-        self.timeout = timeout
         adapter = None
         elapsed_time = 0
 
-        while adapter is None and elapsed_time <= self.timeout:
+        while adapter is None and elapsed_time <= timeout:
             try:
                 adapter = self.adapter_factory.get_or_create_adapter(
                     device_name,
@@ -41,14 +40,14 @@ class BaseTMCCommand:
 
             except ConnectionFailed as cf:
                 elapsed_time = time.time() - start_time
-                if elapsed_time > self.timeout:
+                if elapsed_time > timeout:
                     return self.adapter_error_message_result(
                         device_name,
                         cf,
                     )
             except DevFailed as df:
                 elapsed_time = time.time() - start_time
-                if elapsed_time > self.timeout:
+                if elapsed_time > timeout:
                     return self.adapter_error_message_result(
                         device_name,
                         df,
