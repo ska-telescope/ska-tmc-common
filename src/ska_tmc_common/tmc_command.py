@@ -70,24 +70,24 @@ class BaseTMCCommand:
         return ResultCode.FAILED, message
 
     def do(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
 
 class TMCCommand(BaseTMCCommand):
     def init_adapters(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_mid(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_low(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
 
 class TmcLeafNodeCommand(BaseTMCCommand):
@@ -95,16 +95,16 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_mid(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_low(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def call_adapter_method(
         self, device, adapter, command_name, argin=None
