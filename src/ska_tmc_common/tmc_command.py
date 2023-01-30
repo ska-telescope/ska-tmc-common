@@ -27,7 +27,7 @@ class BaseTMCCommand:
         start_time: float,
         timeout: int,
     ):
-        self.timeout=timeout
+        self.timeout = timeout
         adapter = None
         elapsed_time = 0
 
