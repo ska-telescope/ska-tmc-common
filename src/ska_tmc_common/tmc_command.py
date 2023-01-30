@@ -24,9 +24,10 @@ class BaseTMCCommand:
         self,
         device_name: str,
         adapter_type: AdapterType,
-        start_time,
+        start_time: float,
         timeout: int,
     ):
+        self.timeout=timeout
         adapter = None
         elapsed_time = 0
 
