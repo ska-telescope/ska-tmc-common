@@ -55,7 +55,6 @@ def test_generate_command_result(command_object):
     assert result == (ResultCode.OK, "Test Message")
 
 
-@pytest.mark.test
 def test_adapter_creation(command_object: DummyCommand):
     device = "src/tmc/common"
     start_time = time.time()
@@ -69,7 +68,6 @@ def test_adapter_creation(command_object: DummyCommand):
     assert adapter.dev_name == "src/tmc/common"
 
 
-@pytest.mark.test1
 def test_adapter_creation_failure(command_object: DummyCommand):
     device = "src/tmc/common"
     start_time = time.time()
