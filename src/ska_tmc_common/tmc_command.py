@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed
 
-from ska_tmc_common.adapters import AdapterType
+from ska_tmc_common.adapters import AdapterFactory, AdapterType
 
 
 class BaseTMCCommand:
@@ -17,6 +17,7 @@ class BaseTMCCommand:
         *args,
         **kwargs,
     ):
+        self.adapter_factory = AdapterFactory()
         self.component_manager = component_manager
         self.logger = logger
 

@@ -1,7 +1,13 @@
+import time
+
 import pytest
 from ska_tango_base.commands import ResultCode
 
+from ska_tmc_common.adapters import AdapterType
 from ska_tmc_common.enum import LivelinessProbeType
+from ska_tmc_common.test_helpers.helper_adapter_factory import (
+    HelperAdapterFactory,
+)
 from ska_tmc_common.tmc_command import TMCCommand
 from ska_tmc_common.tmc_component_manager import TmcComponentManager
 from src.ska_tmc_common.input import InputParameter
@@ -47,3 +53,30 @@ def test_generate_command_result(command_object):
         ResultCode.OK, "Test Message"
     )
     assert result == (ResultCode.OK, "Test Message")
+
+
+@pytest.mark.test
+def test_adapter_creation(command_object: DummyCommand):
+    device = "src/tmc/common"
+    start_time = time.time()
+    command_object.adapter_factory = HelperAdapterFactory()
+    adapter = command_object.adapter_creation_retry(
+        device_name=device,
+        adapter_type=AdapterType.BASE,
+        start_time=start_time,
+        timeout=10,
+    )
+    assert adapter.dev_name == "src/tmc/common"
+
+
+@pytest.mark.test1
+def test_adapter_creation_failure(command_object: DummyCommand):
+    device = "src/tmc/common"
+    start_time = time.time()
+    result, error = command_object.adapter_creation_retry(
+        device_name=device,
+        adapter_type=AdapterType.BASE,
+        start_time=start_time,
+        timeout=10,
+    )
+    assert "Error in creating adapter for src/tmc/common" in error
