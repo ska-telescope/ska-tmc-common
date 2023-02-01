@@ -98,7 +98,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         """Stop method for stopping the timer thread"""
         if self.timer_thread.is_alive():
             self.logger.info("Stopping timer thread")
-            self.timer_thread.join()
+            self._stop = True
 
     def run_timer(self, timeout: int) -> Optional[TimeoutOccured]:
         """Runs the timer thread"""

@@ -1,55 +1,43 @@
-import logging
-from typing import Optional
-
 import pytest
+from ska_tango_base.commands import ResultCode
 
-from ska_tmc_common.adapters import AdapterType
-from ska_tmc_common.enum import LivelinessProbeType
-from ska_tmc_common.input import InputParameter
-from ska_tmc_common.test_helpers.helper_adapter_factory import (
-    HelperAdapterFactory,
-)
-from ska_tmc_common.tmc_command import TMCCommand
-from ska_tmc_common.tmc_component_manager import TmcComponentManager
-from tests.settings import logger
-
-
-class StateDevice(TMCCommand):
-    def __init__(
-        self,
-        dev_name: str,
-        component_manager,
-        logger: Optional[logging.Logger] = None,
-        adapter_factory=None,
-        *args,
-        **kwargs
-    ):
-        super().__init__(component_manager, logger, *args, **kwargs)
-        self.dev_name = dev_name
-        self.adapter_factory = adapter_factory
-        self.state_adapter = None
-        self.init_adapters()
-
-    def init_adapters(self):
-        print("Initializing adapter")
-        self.state_adapter = self.adapter_factory.get_or_create_adapter(
-            self.dev_name, AdapterType.BASE
-        )
-
-    def On(self):
-        print("Invoking On command on HelperStateDevice")
-        return self.state_adapter.On()
+from tests.conftest import tear_down
 
 
 @pytest.mark.temp
-def test_command_timeout():
-    cm = TmcComponentManager(
-        _input_parameter=InputParameter(None),
-        logger=logger,
-        _liveliness_probe=LivelinessProbeType.NONE,
-        _event_receiver=False,
-    )
-    command = StateDevice(
-        "dummy/monitored/device", cm, logger, HelperAdapterFactory()
-    )
-    command.On()
+def test_command_execution(helper_device, group_callback, caplog):
+    # os.environ["TANGO_HOST"] = "tango-databaseds:10000"
+    # helper_device.subscribe_event(
+    #     "healthState",
+    #     tango.EventType.CHANGE_EVENT,
+    #     group_callback["healthState"],
+    #     stateless=True,
+    # )
+    result, _ = helper_device.On()
+    assert result[0] == ResultCode.OK
+    tear_down(helper_device)
+    # caplog.set_level(logging.DEBUG, logger="ska_tango_testing.mock")
+    # group_callback["healthState"].assert_change_event(
+    #     HealthState.OK,
+    #     lookahead=1,
+    # )
+    # assert helper_device.StopTimer
+
+
+# @pytest.mark.temp
+# def test_command_timeout(helper_device, group_callback, caplog):
+#     os.environ["TANGO_HOST"] = "tango-databaseds:10000"
+#     # helper_device.subscribe_event(
+#     #     "healthState",
+#     #     tango.EventType.CHANGE_EVENT,
+#     #     group_callback["healthState"],
+#     #     stateless=True,
+#     # )
+#     helper_device.SleepTime = 10
+#     with pytest.raises(TimeoutOccured):
+#         helper_device.On()
+# caplog.set_level(logging.DEBUG, logger="ska_tango_testing.mock")
+# group_callback["healthState"].assert_change_event(
+#     HealthState.OK,
+#     lookahead=1,
+# )

@@ -25,6 +25,7 @@ marshmallow = "^3.14.1"
 fire = "^0.4.0"
 black = "^22.1.0"
 ska-ser-logging = "^0.4.1"
+ska-tango-testing = "0.4.1"
 ska-tango-base = "0.15.0"
 
 [tool.poetry.dev-dependencies]

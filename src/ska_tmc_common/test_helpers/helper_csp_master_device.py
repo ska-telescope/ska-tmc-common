@@ -1,5 +1,6 @@
 import threading
 import time
+from concurrent import futures
 from typing import Optional
 
 import tango
@@ -17,7 +18,7 @@ from ska_tmc_common.exceptions import TimeoutOccured
 class EmptyComponentManager(BaseComponentManager):
     def __init__(
         self,
-        event_receiver: bool = True,
+        event_receiver: bool = False,
         logger=None,
         max_workers: Optional[int] = None,
         *args,
@@ -28,7 +29,7 @@ class EmptyComponentManager(BaseComponentManager):
         )
         self.devices = []
         self._stop = False
-        self.timeout = 30
+        self.timeout = 5
         self.timer_thread = threading.Thread(
             target=self.run_timer, kwargs={"timeout": self.timeout}
         )
@@ -41,6 +42,7 @@ class EmptyComponentManager(BaseComponentManager):
 
     def start_event_receiver(self):
         """Starts the Event Receiver for given device"""
+        print("Starting event receiver")
         if self.event_receiver:
             self.event_receiver_object.start()
 
@@ -59,21 +61,25 @@ class EmptyComponentManager(BaseComponentManager):
     def stop_timer(self) -> None:
         """Stop method for stopping the timer thread"""
         if self.timer_thread.is_alive():
-            self.logger.info("Stopping timer thread")
+            self._stop = True
+            self.logger.info("The stop flag is set to true")
             self.timer_thread.join()
 
     def run_timer(self, timeout: int) -> Optional[TimeoutOccured]:
         """Runs the timer thread"""
         with tango.EnsureOmniThread():
-            start_time = time.time()
-            elapsed_time = start_time
-            while elapsed_time - start_time <= timeout:
-                self.logger.info("Inside timout... counting....")
-                time.sleep(1)
-                if self._stop:
-                    break
-            else:
-                raise TimeoutOccured()
+            try:
+                for _ in range(timeout):
+                    time.sleep(1)
+                    self.logger.info("Counting ....")
+                    if self._stop:
+                        self.logger.info("Stopping timer thread")
+                        break
+                if not self._stop:
+                    self.logger.warning("Raising an exception")
+                    raise TimeoutOccured()
+            except Exception as e:
+                self.logger.warning("Exception Occured : %s", e)
 
     def start_communicating(self):
         """This method is not used by TMC."""

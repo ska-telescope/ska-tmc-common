@@ -59,38 +59,11 @@ class EventReceiver:
                         if dev_info.last_event_arrived is None:
                             executor.submit(self.subscribe_events, dev_info)
                 except Exception as e:
-                    self._logger.warning("Exception occured: %s", e)
+                    print("Exception occured: %s", e)
                 sleep(self._sleep_time)
 
     def subscribe_events(self, dev_info):
-        try:
-            # import debugpy; debugpy.debug_this_thread()
-            proxy = self._dev_factory.get_device(dev_info.dev_name)
-            proxy.subscribe_event(
-                "healthState",
-                tango.EventType.CHANGE_EVENT,
-                self.handle_health_state_event,
-                stateless=True,
-            )
-            proxy.subscribe_event(
-                "State",
-                tango.EventType.CHANGE_EVENT,
-                self.handle_state_event,
-                stateless=True,
-            )
-            if ("subarray" in dev_info.dev_name) and (
-                "leaf" not in dev_info.dev_name
-            ):
-                proxy.subscribe_event(
-                    "ObsState",
-                    tango.EventType.CHANGE_EVENT,
-                    self.handle_obs_state_event,
-                    stateless=True,
-                )
-        except Exception as e:
-            self._logger.debug(
-                "event not working for device %s/%s", proxy.dev_name, e
-            )
+        pass
 
     def stop_timer(self) -> None:
         """Method to stop the timer keeping track of the timeout if the
@@ -131,6 +104,7 @@ class EventReceiver:
         self._component_manager.update_device_state(
             evt.device.dev_name(), new_value
         )
+        self._logger.info("Stopping timer thread")
         self.stop_timer()
 
     def handle_obs_state_event(self, evt):

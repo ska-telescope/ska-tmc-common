@@ -3,9 +3,10 @@ import time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
-from tango import DevState
-from tango.server import command
+from tango import AttrWriteType, DevState
+from tango.server import attribute, command
 
+from ska_tmc_common.device_info import DeviceInfo
 from ska_tmc_common.test_helpers.helper_csp_master_device import (
     EmptyComponentManager,
 )
@@ -17,7 +18,8 @@ class HelperStateDevice(SKABaseDevice):
 
     def init_device(self):
         super().init_device()
-        self._health_state = HealthState.OK
+        self._health_state = HealthState.UNKNOWN
+        self._sleeptime = 0.1
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
@@ -28,9 +30,28 @@ class HelperStateDevice(SKABaseDevice):
 
     def create_component_manager(self):
         cm = EmptyComponentManager(
+            event_receiver=False,
             logger=self.logger,
         )
+        cm.devices.append(DeviceInfo("test/nodb/helperstatedevice"))
         return cm
+
+    @attribute(access=AttrWriteType.READ, dtype="bool")
+    def StopTimer(self):
+        if self.component_manager.timer_thread.is_alive():
+            self.component_manager._stop = True
+            self.component_manager.stop_timer()
+        if not self.component_manager.timer_thread.is_alive():
+            return True
+        return False
+
+    @attribute(dtype="int")
+    def SleepTime(self):
+        return self._sleeptime
+
+    @SleepTime.write
+    def write_SleepTime(self, value):
+        self._sleeptime = value
 
     def always_executed_hook(self):
         pass
@@ -74,9 +95,11 @@ class HelperStateDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self):
+        self.logger.info("Starting Timer")
+        self.component_manager.start_timer()
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
+            time.sleep(self._sleeptime)
             self.push_change_event("State", self.dev_state())
         return [[ResultCode.OK], [""]]
 
@@ -91,7 +114,7 @@ class HelperStateDevice(SKABaseDevice):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
+            self.push_change_event("healthState", HealthState.OK)
         return [[ResultCode.OK], [""]]
 
     def is_SetStandbyFPMode_allowed(self):

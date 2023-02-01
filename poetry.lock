@@ -1,6 +1,6 @@
 [[package]]
 name = "astroid"
-version = "2.13.5"
+version = "2.14.1"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -464,14 +464,14 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pylint"
-version = "2.15.10"
+version = "2.16.0"
 description = "python code static checker"
 category = "dev"
 optional = false
 python-versions = ">=3.7.2"
 
 [package.dependencies]
-astroid = ">=2.12.13,<=2.14.0-dev0"
+astroid = ">=2.14.1,<=2.16.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.2", markers = "python_version < \"3.11\""},
@@ -693,6 +693,22 @@ url = "https://artefact.skao.int/repository/pypi-internal/simple"
 reference = 'ska-nexus'
 
 [[package]]
+name = "ska-tango-testing"
+version = "0.4.1"
+description = "Test harness for testing SKA Tango devices"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+pytango = ">=9.3,<10.0"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skao.int/repository/pypi-internal/simple"
+reference = 'ska-nexus'
+
+[[package]]
 name = "termcolor"
 version = "2.2.0"
 description = "ANSI color formatting for output in terminal"
@@ -773,12 +789,12 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "bc678be49a5f6911e8cd1f3fe77fe167db409227fd8b34a39f9dde9041a50dd2"
+content-hash = "79db86325be0ad4403c5656903c69d1f2e2bf69899a063cecd0a46c7c0c57d8b"
 
 [metadata.files]
 astroid = [
-    {file = "astroid-2.13.5-py3-none-any.whl", hash = "sha256:6891f444625b6edb2ac798829b689e95297e100ddf89dbed5a8c610e34901501"},
-    {file = "astroid-2.13.5.tar.gz", hash = "sha256:df164d5ac811b9f44105a72b8f9d5edfb7b5b2d7e979b04ea377a77b3229114a"},
+    {file = "astroid-2.14.1-py3-none-any.whl", hash = "sha256:23c718921acab5f08cbbbe9293967f1f8fec40c336d19cd75dc12a9ea31d2eb2"},
+    {file = "astroid-2.14.1.tar.gz", hash = "sha256:bd1aa4f9915c98e8aaebcd4e71930154d4e8c9aaf05d35ac0a63d1956091ae3f"},
 ]
 attrs = [
     {file = "attrs-22.2.0-py3-none-any.whl", hash = "sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836"},
@@ -1095,8 +1111,8 @@ Pygments = [
     {file = "Pygments-2.14.0.tar.gz", hash = "sha256:b3ed06a9e8ac9a9aae5a6f5dbe78a8a58655d17b43b93c078f094ddc476ae297"},
 ]
 pylint = [
-    {file = "pylint-2.15.10-py3-none-any.whl", hash = "sha256:9df0d07e8948a1c3ffa3b6e2d7e6e63d9fb457c5da5b961ed63106594780cc7e"},
-    {file = "pylint-2.15.10.tar.gz", hash = "sha256:b3dc5ef7d33858f297ac0d06cc73862f01e4f2e74025ec3eff347ce0bc60baf5"},
+    {file = "pylint-2.16.0-py3-none-any.whl", hash = "sha256:55e5cf00601c4cfe2e9404355c743a14e63be85df7409da7e482ebde5f9f14a1"},
+    {file = "pylint-2.16.0.tar.gz", hash = "sha256:43ee36c9b690507ef9429ce1802bdc4dcde49454c3d665e39c23791567019c0a"},
 ]
 pylint-junit = [
     {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
@@ -1224,6 +1240,10 @@ ska-ser-logging = [
 ska-tango-base = [
     {file = "ska_tango_base-0.15.0-py3-none-any.whl", hash = "sha256:cca88b2fb1084a028e35e9d833096efbd22b3e7e3c1ce8f5330bf6152f8d5ab1"},
     {file = "ska_tango_base-0.15.0.tar.gz", hash = "sha256:f7ad299c036d8b0195dad9eb63f3de56a1c660d701762c8e52c455b87e2f84b3"},
+]
+ska-tango-testing = [
+    {file = "ska-tango-testing-0.4.1.tar.gz", hash = "sha256:c41c1d6593b59de15aa7a11e05a61b39f08e900e824d4325afb053327bc21e63"},
+    {file = "ska_tango_testing-0.4.1-py3-none-any.whl", hash = "sha256:58541c22e741387b119c63ad1f90265f7f5e7b76b21049fc266bb1133fc27bbf"},
 ]
 termcolor = [
     {file = "termcolor-2.2.0-py3-none-any.whl", hash = "sha256:91ddd848e7251200eac969846cbae2dacd7d71c2871e92733289e7e3666f48e7"},
