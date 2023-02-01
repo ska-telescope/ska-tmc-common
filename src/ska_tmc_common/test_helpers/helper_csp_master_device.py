@@ -1,5 +1,8 @@
+import threading
+import time
 from typing import Optional
 
+import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.base.component_manager import BaseComponentManager
 from ska_tango_base.commands import ResultCode
@@ -7,14 +10,70 @@ from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
 
+from ska_tmc_common.event_receiver import EventReceiver
+from ska_tmc_common.exceptions import TimeoutOccured
+
 
 class EmptyComponentManager(BaseComponentManager):
     def __init__(
-        self, logger=None, max_workers: Optional[int] = None, *args, **kwargs
+        self,
+        event_receiver: bool = True,
+        logger=None,
+        max_workers: Optional[int] = None,
+        *args,
+        **kwargs
     ):
         super().__init__(
             logger=logger, max_workers=max_workers, *args, **kwargs
         )
+        self.devices = []
+        self._stop = False
+        self.timeout = 30
+        self.timer_thread = threading.Thread(
+            target=self.run_timer, kwargs={"timeout": self.timeout}
+        )
+        self.event_receiver = event_receiver
+        if self.event_receiver:
+            self.event_receiver_object = EventReceiver(
+                self, logger=self.logger
+            )
+            self.start_event_receiver()
+
+    def start_event_receiver(self):
+        """Starts the Event Receiver for given device"""
+        if self.event_receiver:
+            self.event_receiver_object.start()
+
+    def stop_event_receiver(self):
+        """Stops the Event Receiver"""
+        if self.event_receiver:
+            self.event_receiver_object.stop()
+
+    def start_timer(self) -> Optional[str]:
+        """Starts the timer thread to keep track of timeout during command
+        execution."""
+        if not self.timer_thread.is_alive():
+            self.logger.info("Starting timer thread")
+            self.timer_thread.start()
+
+    def stop_timer(self) -> None:
+        """Stop method for stopping the timer thread"""
+        if self.timer_thread.is_alive():
+            self.logger.info("Stopping timer thread")
+            self.timer_thread.join()
+
+    def run_timer(self, timeout: int) -> Optional[TimeoutOccured]:
+        """Runs the timer thread"""
+        with tango.EnsureOmniThread():
+            start_time = time.time()
+            elapsed_time = start_time
+            while elapsed_time - start_time <= timeout:
+                self.logger.info("Inside timout... counting....")
+                time.sleep(1)
+                if self._stop:
+                    break
+            else:
+                raise TimeoutOccured()
 
     def start_communicating(self):
         """This method is not used by TMC."""

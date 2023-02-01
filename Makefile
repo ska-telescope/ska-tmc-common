@@ -4,9 +4,7 @@
 #
 PROJECT = ska-tmc-common
 
-# Issue resolution with twine during publish
-python-pre-publish:
-	pip3 install twine
+MARK ?= ## What -m opt to pass to pytest
 
 #DAR101 Missing parameter(s) in Docstring: - fqdn
 #DAR201 Missing "Returns" in Docstring: - return
@@ -14,11 +12,13 @@ python-pre-publish:
 #DAR401 Missing exception(s) in Raises section: -r Exception
 PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR301,DAR401,W503 --max-line-length=180
 
+PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE)
 
 # include makefile to pick up the standard Make targets, e.g., 'make build'
 # build, 'make push' docker push procedure, etc. The other Make targets
 # ('make interactive', 'make test', etc.) are defined in this file.
 
 -include .make/*.mk
+-include .make/python.mk
 
 -include PrivateRules.mak

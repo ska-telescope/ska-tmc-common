@@ -7,13 +7,16 @@ package.
 import json
 import threading
 import time
+from typing import Optional
 
+import tango
 from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.event_receiver import EventReceiver
+from ska_tmc_common.exceptions import TimeoutOccured
 from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
@@ -63,6 +66,11 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             component_state_callback,
             max_workers=max_workers,
         )
+        self._stop = False
+        self.timeout = 30
+        self.timer_thread = threading.Thread(
+            target=self.run_timer, kwargs={"timeout": self.timeout}
+        )
         self.event_receiver = _event_receiver
         self.max_workers = max_workers
         self.proxy_timeout = proxy_timeout
@@ -78,6 +86,32 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 proxy_timeout=self.proxy_timeout,
                 sleep_time=self.sleep_time,
             )
+
+    def start_timer(self) -> Optional[str]:
+        """Starts the timer thread to keep track of timeout during command
+        execution."""
+        if not self.timer_thread.is_alive():
+            self.logger.info("Starting timer thread")
+            self.timer_thread.start()
+
+    def stop_timer(self) -> None:
+        """Stop method for stopping the timer thread"""
+        if self.timer_thread.is_alive():
+            self.logger.info("Stopping timer thread")
+            self.timer_thread.join()
+
+    def run_timer(self, timeout: int) -> Optional[TimeoutOccured]:
+        """Runs the timer thread"""
+        with tango.EnsureOmniThread():
+            start_time = time.time()
+            elapsed_time = start_time
+            while elapsed_time - start_time <= timeout:
+                self.logger.info("Inside timout... counting....")
+                time.sleep(1)
+                if self._stop:
+                    break
+            else:
+                raise TimeoutOccured()
 
     def is_command_allowed(self, command_name: str):
         """

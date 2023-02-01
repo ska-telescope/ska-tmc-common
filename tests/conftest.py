@@ -6,6 +6,7 @@ import tango
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common.dev_factory import DevFactory
+from ska_tmc_common.test_helpers.helper_state_device import HelperStateDevice
 from ska_tmc_common.test_helpers.helper_tmc_device import DummyTmcDevice
 
 """
@@ -48,6 +49,12 @@ def devices_to_load():
             "class": DummyTmcDevice,
             "devices": [
                 {"name": "src/tmc/common"},
+            ],
+        },
+        {
+            "class": HelperStateDevice,
+            "devices": [
+                {"name": "dummy/monitored/device"},
             ],
         },
     )

@@ -92,6 +92,14 @@ class EventReceiver:
                 "event not working for device %s/%s", proxy.dev_name, e
             )
 
+    def stop_timer(self) -> None:
+        """Method to stop the timer keeping track of the timeout if the
+        necessary event has arrived.
+        """
+        if self._component_manager.timer_thread.is_alive():
+            self._logger.info("Stopping timer thread from Event Receiver")
+            self._component_manager._stop = True
+
     def handle_health_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()
         if evt.err:
@@ -112,6 +120,7 @@ class EventReceiver:
 
     def handle_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()
+        self._logger.info("Handling State event")
         if evt.err:
             error = evt.errors[0]
             self._logger.error("%s %s", error.reason, error.desc)
@@ -122,6 +131,7 @@ class EventReceiver:
         self._component_manager.update_device_state(
             evt.device.dev_name(), new_value
         )
+        self.stop_timer()
 
     def handle_obs_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()

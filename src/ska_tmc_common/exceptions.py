@@ -5,6 +5,10 @@ class InvalidJSONError(ValidationError):
     """Raised when The JSON format is invalid"""
 
 
+class TimeoutOccured(Exception):
+    """Raised when timeout occurs during execution of command."""
+
+
 class CommandNotAllowed(Exception):
     """Raised when a command is not allowed."""
 
