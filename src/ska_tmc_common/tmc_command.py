@@ -1,8 +1,12 @@
 import logging
+import time
 from operator import methodcaller
 from typing import Optional, Tuple
 
 from ska_tango_base.commands import ResultCode
+from tango import ConnectionFailed, DevFailed
+
+from ska_tmc_common.adapters import AdapterFactory, AdapterType
 
 
 class BaseTMCCommand:
@@ -13,8 +17,47 @@ class BaseTMCCommand:
         *args,
         **kwargs,
     ):
+        self.adapter_factory = AdapterFactory()
         self.component_manager = component_manager
         self.logger = logger
+
+    def adapter_creation_retry(
+        self,
+        device_name: str,
+        adapter_type: AdapterType,
+        start_time: float,
+        timeout: int,
+    ):
+        adapter = None
+        elapsed_time = 0
+
+        while adapter is None and elapsed_time <= timeout:
+            try:
+                adapter = self.adapter_factory.get_or_create_adapter(
+                    device_name,
+                    adapter_type,
+                )
+                return adapter
+
+            except ConnectionFailed as cf:
+                elapsed_time = time.time() - start_time
+                if elapsed_time > timeout:
+                    return self.adapter_error_message_result(
+                        device_name,
+                        cf,
+                    )
+            except DevFailed as df:
+                elapsed_time = time.time() - start_time
+                if elapsed_time > timeout:
+                    return self.adapter_error_message_result(
+                        device_name,
+                        df,
+                    )
+            except Exception as e:
+                return self.adapter_error_message_result(
+                    device_name,
+                    e,
+                )
 
     def generate_command_result(self, result_code, message):
         if result_code == ResultCode.FAILED:
@@ -28,41 +71,41 @@ class BaseTMCCommand:
         return ResultCode.FAILED, message
 
     def do(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
 
 class TMCCommand(BaseTMCCommand):
     def init_adapters(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_mid(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_low(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
 
 class TmcLeafNodeCommand(BaseTMCCommand):
     def init_adapter(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_mid(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_low(self):
-        raise NotImplementedError("This class must be inherited!")
+        raise NotImplementedError("This method must be inherited!")
 
     def call_adapter_method(
         self, device, adapter, command_name, argin=None
