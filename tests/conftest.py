@@ -99,11 +99,14 @@ def group_callback() -> MockTangoEventCallbackGroup:
     :rtype: MockTangoEventCallbackGroup"dummy/monitored/device"
     """
     group_callback = MockTangoEventCallbackGroup(
-        "healthState",
-        timeout=15,
+        "State",
+        timeout=30,
     )
     return group_callback
 
 
-def tear_down(device):
+def tear_down(device, event_id: int):
+    """Tears down the components needed for test run."""
     assert device.StopTimer
+    device.SetDirectState(tango._tango.DevState.DISABLE)
+    device.unsubscribe_event(event_id)

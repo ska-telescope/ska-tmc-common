@@ -1,43 +1,49 @@
+import os
+import time
+
 import pytest
+import tango
 from ska_tango_base.commands import ResultCode
 
+from ska_tmc_common.exceptions import TimeoutOccured
 from tests.conftest import tear_down
 
 
-@pytest.mark.temp
-def test_command_execution(helper_device, group_callback, caplog):
-    # os.environ["TANGO_HOST"] = "tango-databaseds:10000"
-    # helper_device.subscribe_event(
-    #     "healthState",
-    #     tango.EventType.CHANGE_EVENT,
-    #     group_callback["healthState"],
-    #     stateless=True,
-    # )
-    result, _ = helper_device.On()
+@pytest.mark.skip(reason="Will fail as a unit test")
+def test_command_execution(group_callback):
+    os.environ["TANGO_HOST"] = "localhost:10000"
+    proxy = tango.DeviceProxy("helper/state/device")
+    event_id = proxy.subscribe_event(
+        "State",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["State"],
+    )
+    result, _ = proxy.On()
     assert result[0] == ResultCode.OK
-    tear_down(helper_device)
-    # caplog.set_level(logging.DEBUG, logger="ska_tango_testing.mock")
-    # group_callback["healthState"].assert_change_event(
-    #     HealthState.OK,
-    #     lookahead=1,
-    # )
-    # assert helper_device.StopTimer
+
+    group_callback["State"].assert_change_event(
+        tango._tango.DevState.ON,
+        lookahead=3,
+    )
+    tear_down(proxy, event_id)
 
 
-# @pytest.mark.temp
-# def test_command_timeout(helper_device, group_callback, caplog):
-#     os.environ["TANGO_HOST"] = "tango-databaseds:10000"
-#     # helper_device.subscribe_event(
-#     #     "healthState",
-#     #     tango.EventType.CHANGE_EVENT,
-#     #     group_callback["healthState"],
-#     #     stateless=True,
-#     # )
-#     helper_device.SleepTime = 10
-#     with pytest.raises(TimeoutOccured):
-#         helper_device.On()
-# caplog.set_level(logging.DEBUG, logger="ska_tango_testing.mock")
-# group_callback["healthState"].assert_change_event(
-#     HealthState.OK,
-#     lookahead=1,
-# )
+@pytest.mark.skip(reason="Will fail as a unit test")
+def test_command_timeout(group_callback):
+    os.environ["TANGO_HOST"] = "localhost:10000"
+    proxy = tango.DeviceProxy("helper/state/device")
+    event_id = proxy.subscribe_event(
+        "State",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["State"],
+    )
+    with pytest.raises(TimeoutOccured):
+        result, _ = proxy.On()
+        assert result[0] == ResultCode.OK
+        time.sleep(5)
+        group_callback["State"].assert_change_event(
+            tango._tango.DevState.ON,
+            lookahead=3,
+        )
+
+    tear_down(proxy, event_id)
