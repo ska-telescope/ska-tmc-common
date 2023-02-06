@@ -1,3 +1,4 @@
+import threading
 import time
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -6,6 +7,7 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
+from ska_tmc_common.enum import Timeout
 from ska_tmc_common.test_helpers.helper_csp_master_device import (
     EmptyComponentManager,
 )
@@ -18,12 +20,31 @@ class HelperStateDevice(SKABaseDevice):
     def init_device(self):
         super().init_device()
         self._health_state = HealthState.UNKNOWN
+        self._timeout = 5
+
+    def start_timer(self):
+        """Method for starting timer."""
+        self.timer = threading.Timer(
+            interval=self._timeout, function=self.timeout_error
+        )
+        self.logger.info("Starting the timer")
+        self.timer.start()
+
+    def stop_timer(self):
+        """Method for stopping timer."""
+        self.logger.info("Stopping the timer")
+        self.timer.cancel()
+
+    def timeout_error(self):
+        self.logger.info("Timeout Occured")
+        self.push_change_event("Timeout", Timeout.OCCURED)
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("healthState", True, False)
+            self._device.set_change_event("Timeout", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self):
@@ -35,10 +56,17 @@ class HelperStateDevice(SKABaseDevice):
 
     @attribute(access=AttrWriteType.READ, dtype="bool")
     def StopTimer(self):
-        self.component_manager.stop_timer()
-        if not self.component_manager.timer_thread.is_alive():
-            return True
-        return False
+        self.stop_timer()
+        return True
+
+    @attribute(dtype="int")
+    def Timeout(self: SKABaseDevice) -> int:
+        """
+        Read the Version Id of the device.
+
+        :return: the version id of the device
+        """
+        return self._timeout
 
     def always_executed_hook(self):
         pass
@@ -82,7 +110,7 @@ class HelperStateDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self):
-        self.component_manager.start_timer()
+        self.start_timer()
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)

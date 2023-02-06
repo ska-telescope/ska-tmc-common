@@ -100,13 +100,15 @@ def group_callback() -> MockTangoEventCallbackGroup:
     """
     group_callback = MockTangoEventCallbackGroup(
         "State",
+        "Timeout",
         timeout=30,
     )
     return group_callback
 
 
-def tear_down(device, event_id: int):
+def tear_down(device, event_ids: list):
     """Tears down the components needed for test run."""
     assert device.StopTimer
     device.SetDirectState(tango._tango.DevState.DISABLE)
-    device.unsubscribe_event(event_id)
+    for event in event_ids:
+        device.unsubscribe_event(event)

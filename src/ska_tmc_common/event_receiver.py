@@ -63,15 +63,34 @@ class EventReceiver:
                 sleep(self._sleep_time)
 
     def subscribe_events(self, dev_info):
-        pass
-
-    def stop_timer(self) -> None:
-        """Method to stop the timer keeping track of the timeout if the
-        necessary event has arrived.
-        """
-        if self._component_manager.timer_thread.is_alive():
-            self._logger.info("Stopping timer thread from Event Receiver")
-            self._component_manager._stop = True
+        try:
+            # import debugpy; debugpy.debug_this_thread()
+            proxy = self._dev_factory.get_device(dev_info.dev_name)
+            proxy.subscribe_event(
+                "healthState",
+                tango.EventType.CHANGE_EVENT,
+                self.handle_health_state_event,
+                stateless=True,
+            )
+            proxy.subscribe_event(
+                "State",
+                tango.EventType.CHANGE_EVENT,
+                self.handle_state_event,
+                stateless=True,
+            )
+            if ("subarray" in dev_info.dev_name) and (
+                "leaf" not in dev_info.dev_name
+            ):
+                proxy.subscribe_event(
+                    "ObsState",
+                    tango.EventType.CHANGE_EVENT,
+                    self.handle_obs_state_event,
+                    stateless=True,
+                )
+        except Exception as e:
+            self._logger.debug(
+                "event not working for device %s/%s", proxy.dev_name, e
+            )
 
     def handle_health_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()
@@ -93,7 +112,6 @@ class EventReceiver:
 
     def handle_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()
-        self._logger.info("Handling State event")
         if evt.err:
             error = evt.errors[0]
             self._logger.error("%s %s", error.reason, error.desc)
@@ -104,8 +122,6 @@ class EventReceiver:
         self._component_manager.update_device_state(
             evt.device.dev_name(), new_value
         )
-        self._logger.info("Stopping timer thread")
-        self.stop_timer()
 
     def handle_obs_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()

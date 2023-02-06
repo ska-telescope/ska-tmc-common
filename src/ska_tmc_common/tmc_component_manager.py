@@ -68,9 +68,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         )
         self._stop = False
         self.timeout = 30
-        self.timer_thread = threading.Thread(
-            target=self.run_timer, kwargs={"timeout": self.timeout}
-        )
         self.event_receiver = _event_receiver
         self.max_workers = max_workers
         self.proxy_timeout = proxy_timeout
@@ -78,6 +75,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
         self.liveliness_probe_object = None
+        self.timer_thread = None
 
         if self.event_receiver:
             self.event_receiver_object = EventReceiver(
@@ -89,28 +87,38 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     def start_timer(self) -> Optional[str]:
         """Starts the timer thread to keep track of timeout during command
-        execution."""
-        if not self.timer_thread.is_alive():
-            self.logger.info("Starting timer thread")
-            self.timer_thread.start()
+        execution.
+        """
+        self.timer_thread = threading.Thread(
+            target=self.run_timer, kwargs={"timeout": self.timeout}
+        )
+        self.timer_thread.start()
+        self._stop = False
 
     def stop_timer(self) -> None:
         """Stop method for stopping the timer thread"""
         if self.timer_thread.is_alive():
-            self.logger.info("Stopping timer thread")
             self._stop = True
+            # self.timer_thread.join()
 
     def run_timer(self, timeout: int) -> Optional[TimeoutOccured]:
-        """Runs the timer thread"""
+        """This method keep a timer running in a thread. It uses a for loop to
+        keep track of time with sleeps. Raises a TimeoutOccured exception if
+        not stopped before the timer runs out.
+        """
+
         with tango.EnsureOmniThread():
             start_time = time.time()
             elapsed_time = start_time
             while elapsed_time - start_time <= timeout:
-                self.logger.info("Inside timout... counting....")
                 time.sleep(1)
+                elapsed_time = time.time()
                 if self._stop:
                     break
-            else:
+            if not self._stop:
+                self.logger.warning(
+                    "Timeout has occured during command execution."
+                )
                 raise TimeoutOccured()
 
     def is_command_allowed(self, command_name: str):

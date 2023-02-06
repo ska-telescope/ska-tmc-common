@@ -32,3 +32,8 @@ class LivelinessProbeType(IntEnum):
     NONE = 0
     SINGLE_DEVICE = 1
     MULTI_DEVICE = 2
+
+
+@unique
+class Timeout(IntEnum):
+    OCCURED = 0
