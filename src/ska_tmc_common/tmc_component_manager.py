@@ -7,9 +7,13 @@ package.
 import json
 import threading
 import time
+from operator import methodcaller
+from typing import Callable
 
-from ska_tango_base.control_model import HealthState
-from ska_tango_base.executor import TaskExecutorComponentManager
+from ska_control_model import HealthState
+from ska_tango_base.commands import ResultCode
+from ska_tango_base.executor import TaskExecutorComponentManager, TaskStatus
+from tango import EnsureOmniThread
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
 from ska_tmc_common.enum import LivelinessProbeType
@@ -19,6 +23,7 @@ from ska_tmc_common.liveliness_probe import (
     SingleDeviceLivelinessProbe,
 )
 from ska_tmc_common.op_state_model import TMCOpStateModel
+from ska_tmc_common.timeout_callback import TimeoutCallback, TimeoutState
 
 
 class TmcComponent:
@@ -78,6 +83,160 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 proxy_timeout=self.proxy_timeout,
                 sleep_time=self.sleep_time,
             )
+
+    def start_timer(
+        self, id: str, timeout: int, timeout_callback: TimeoutCallback
+    ):
+        """
+        Starts a timer for the command execution which will run for
+        <self.timeout> seconds. After the timer runs out, it will execute the
+        task failed method.
+
+        :param id: Id for TimeoutCallback class object.
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        """
+        self.timer_object = threading.Timer(
+            timeout,
+            self.task_failed,
+            args=[id, timeout_callback],
+        )
+        self.logger.info(f"Starting timer for id : {id}")
+        self.timer_object.start()
+
+    def task_failed(self, id: str, timeout_callback: TimeoutCallback):
+        """
+        Updates the timeout callback to reflect timeout failure.
+
+        :param id: Id for TimeoutCallback class object.
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        """
+        self.logger.info(f"Timeout occured for id : {id}")
+        timeout_callback(id=id, state=TimeoutState.OCCURED)
+
+    def stop_timer(self):
+        """Stops the timer for command execution"""
+        self.logger.info("Stopping timer")
+        self.timer_object.cancel()
+
+    def start_tracker_thread(
+        self,
+        handler,
+        tracked_attribute: str,
+        expected_state,
+        id: str,
+        timeout_callback: TimeoutCallback,
+        task_callback: Callable,
+    ):
+        """
+        Keeps track of the obsState change and the timeout callback to
+        determine whether timeout has occured or the command completed
+        successfully. Logs the result for now.
+
+        :param handler: Class instance of the class whose attribute is to be
+                    tracked.
+
+        :param tracked_attribute: Name of the attribute to be tracked.
+        :tracked_attribute type: str
+
+        :param expected_state: Expected state of the device in case of
+                    successful command execution.
+
+        :param id: Id for TimeoutCallback class object.
+        :id type: str
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        :timeout_callback type: Instance of TimeoutCallback.
+
+        :param task_callback: A callback that sets the status and result for
+                    the command in progress.
+        :task_callback type: Callable.
+        """
+        self.tracker_thread = threading.Thread(
+            target=self.track_timer_and_command,
+            args=[
+                handler,
+                tracked_attribute,
+                expected_state,
+                id,
+                timeout_callback,
+                task_callback,
+            ],
+        )
+        self._stop = False
+        self.logger.info("Starting tracker thread")
+        self.tracker_thread.start()
+
+    def track_timer_and_command(
+        self,
+        handler,
+        tracked_attribute: str,
+        expected_state,
+        id: str,
+        timeout_callback: TimeoutCallback,
+        task_callback: Callable,
+    ):
+        """
+        Keeps track of the obsState change and the timeout callback to
+        determine whether timeout has occured or the command completed
+        successfully. Logs the result for now.
+
+        :param handler: Class instance of the class whose attribute is to be
+                    tracked.
+
+        :param tracked_attribute: Name of the attribute to be tracked.
+        :tracked_attribute type: str
+
+        :param expected_state: Expected state of the device in case of
+                    successful command execution.
+
+        :param id: Id for TimeoutCallback class object.
+        :id type: str
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        :timeout_callback type: Instance of TimeoutCallback.
+
+        :param task_callback: A callback that sets the status and result for
+                    the command in progress.
+        :task_callback type: Callable.
+        """
+        with EnsureOmniThread():
+            func = methodcaller(tracked_attribute)
+            while not self._stop:
+                if func(handler) == expected_state:
+                    self.logger.info(
+                        "State change has occured, command succeded"
+                    )
+                    result = ResultCode.OK
+                    break
+                elif timeout_callback.assert_against_call(
+                    id, TimeoutState.OCCURED
+                ):
+                    self.logger.error("Timeout has occured, command failed")
+                    result = ResultCode.FAILED
+                    break
+                time.sleep(0.1)
+
+            task_callback(
+                status=TaskStatus.COMPLETED,
+                result=result,
+            )
+            self.stop_timer()
+
+    def stop_tracker_thread(self):
+        """
+        External stop method for stopping the timer thread as well as the
+        tracker thread.
+        """
+        if self.tracker_thread.is_alive():
+            self.logger.info("Stopping tracker thread")
+            self._stop = True
+            self.stop_timer()
 
     def is_command_allowed(self, command_name: str):
         """
