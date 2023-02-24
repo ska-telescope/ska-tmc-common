@@ -5,9 +5,9 @@ from typing import Tuple
 
 from ska_tango_base.executor import TaskExecutorComponentManager, TaskStatus
 
-from ska_tmc_common.event_receiver import EventReceiver
-
-
+from ska_tmc_common.timeout_device.event_receiver import EventReceiver
+from ska_tmc_common.timeout_device.command import Command
+from ska_tmc_common.timeout_callback import TimeoutCallback, TimeoutState
 class TimeOutComponentManager(TaskExecutorComponentManager):
     """ """
 
@@ -25,9 +25,9 @@ class TimeOutComponentManager(TaskExecutorComponentManager):
             max_workers=max_workers,
         )
 
-        # self.command_object = Command(
-        #     self, self.op_state_model, self._adapter_factory, logger
-        # )
+        self.command_object = Command(
+            self, logger
+        )
         self.event_receiver = _event_receiver
         self.max_workers = max_workers
 
@@ -39,6 +39,44 @@ class TimeOutComponentManager(TaskExecutorComponentManager):
                 sleep_time=5,
             )
 
+    def start_timer(
+        self, id: str, timeout: int, timeout_callback: TimeoutCallback
+    ):
+        """
+        Starts a timer for the command execution which will run for
+        <self.timeout> seconds. After the timer runs out, it will execute the
+        task failed method.
+
+        :param id: Id for TimeoutCallback class object.
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        """
+        self.timer_object = threading.Timer(
+            timeout,
+            self.task_failed,
+            args=[id, timeout_callback],
+        )
+        self.logger.info(f"Starting timer for id : {id}")
+        self.timer_object.start()
+
+    def task_failed(self, id: str, timeout_callback: TimeoutCallback):
+        """
+        Updates the timeout callback to reflect timeout failure.
+
+        :param id: Id for TimeoutCallback class object.
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        """
+        self.logger.info(f"Timeout occured for id : {id}")
+        timeout_callback(id=id, state=TimeoutState.OCCURED)
+
+    def stop_timer(self):
+        """Stops the timer for command execution"""
+        self.logger.info("Stopping timer")
+        self.timer_object.cancel()
+        
     def start_event_receiver(self):
         """Starts the Event Receiver for given device"""
         if self.event_receiver:

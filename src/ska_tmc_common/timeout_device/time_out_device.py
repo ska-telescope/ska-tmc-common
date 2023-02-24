@@ -96,7 +96,7 @@ class TimeOutDevice(SKABaseDevice):
     def create_component_manager(self):
         cm = TimeOutComponentManager(
             logger=self.logger,
-            _event_receiver=False,
+            _event_receiver=True,
         )
         return cm
 
