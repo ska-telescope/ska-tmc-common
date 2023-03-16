@@ -19,13 +19,13 @@ numpy = [
     {version = "1.21.1", python = ">=3.7,<3.10"},
     {version = "1.23.0", python = "3.10"}
 ]
-pytango = "9.3.3"
+pytango = "9.4.1"
 jsonschema = "^4.0.1"
 marshmallow = "^3.14.1"
 fire = "^0.4.0"
 black = "^22.1.0"
 ska-ser-logging = "^0.4.1"
-ska-tango-base = "0.15.0"
+ska-tango-base = "0.17.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"

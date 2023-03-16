@@ -1,5 +1,6 @@
 import logging
 import time
+import tango
 from operator import methodcaller
 from typing import Optional, Tuple
 
@@ -64,6 +65,9 @@ class BaseTMCCommand:
             self.logger.error(message)
         self.logger.info(message)
         return (result_code, message)
+
+    def re_throw_exception(self, exception, reason, desc, origin, severity):
+        tango.Except.re_throw_exception(exception, reason, desc, origin, severity)
 
     def adapter_error_message_result(self, dev_name, e):
         message = f"Error in creating adapter for {dev_name}: {e}"
