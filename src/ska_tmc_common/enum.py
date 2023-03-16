@@ -24,7 +24,6 @@ class DishMode(IntEnum):
     UNKNOWN = 8
 
 
-
 @unique
 class LivelinessProbeType(IntEnum):
     NONE = 0

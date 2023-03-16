@@ -6,7 +6,7 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
 
-from ska_tmc_common.enum import PointingState, DishMode
+from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_csp_master_device import (
     EmptyComponentManager,
 )
@@ -19,7 +19,7 @@ class HelperDishDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
-        self._dish_mode = DishMode.UNKNOWN #Need to be decided
+        self._dish_mode = DishMode.UNKNOWN  # Need to be decided
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
@@ -28,16 +28,15 @@ class HelperDishDevice(SKABaseDevice):
             self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
-            
+
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
 
-
     def read_pointingState(self):
         return self._pointing_state
-    
+
     def read_dishMode(self):
         return self._dish_mode
 
