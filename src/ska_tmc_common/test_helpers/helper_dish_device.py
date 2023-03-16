@@ -6,7 +6,7 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
 
-from ska_tmc_common.enum import PointingState
+from ska_tmc_common.enum import PointingState, DishMode
 from ska_tmc_common.test_helpers.helper_csp_master_device import (
     EmptyComponentManager,
 )
@@ -19,6 +19,7 @@ class HelperDishDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
+        self._dish_mode = DishMode.UNKNOWN #Need to be decided
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
@@ -26,12 +27,19 @@ class HelperDishDevice(SKABaseDevice):
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("pointingState", True, False)
+            self._device.set_change_event("dishMode", True, False)
+            
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
+    dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
+
 
     def read_pointingState(self):
         return self._pointing_state
+    
+    def read_dishMode(self):
+        return self._dish_mode
 
     def create_component_manager(self):
         cm = EmptyComponentManager(
@@ -75,6 +83,19 @@ class HelperDishDevice(SKABaseDevice):
         if self._health_state != value:
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
+
+    @command(
+        dtype_in=int,
+        doc_in=" Assign Dish Mode.",
+    )
+    def SetDirectDishMode(self, argin):
+        """
+        Trigger a DishMode change
+        """
+        value = DishMode(argin)
+        if self._dish_mode != value:
+            self._dish_mode = DishMode(argin)
+            self.push_change_event("dishMode", self._dish_mode)
 
     @command(
         dtype_in=int,
