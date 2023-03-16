@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.1.57"
-description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
+version = "0.1.58"
+description = "Updated ska-tango-base version to 0.17.0."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
 
