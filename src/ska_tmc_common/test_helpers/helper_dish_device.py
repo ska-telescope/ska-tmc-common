@@ -84,7 +84,6 @@ class HelperDishDevice(SKABaseDevice):
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
 
-
     @command(
         dtype_in=int,
         doc_in=" Assign Dish Mode.",
@@ -97,7 +96,6 @@ class HelperDishDevice(SKABaseDevice):
         if self._dish_mode != value:
             self._dish_mode = DishMode(argin)
             self.push_change_event("dishMode", self._dish_mode)
-
 
     @command(
         dtype_in=int,
@@ -125,7 +123,7 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set the Dish Mode   
+        # Set the Dish Mode
         if self._dish_mode != DishMode.STARTUP:
             self._dish_mode = DishMode.STARTUP
             time.sleep(0.1)
@@ -140,12 +138,12 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self):
-        #Set device state
+        # Set device state
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set the Dish Mode
+        # Set the Dish Mode
         if self._dish_mode != DishMode.SHUTDOWN:
             self._dish_mode = DishMode.SHUTDOWN
             time.sleep(0.1)
@@ -164,12 +162,12 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self):
-        #Set the device state
+        # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set the Dish Mode
+        # Set the Dish Mode
         if self._dish_mode != DishMode.STANDBY_LP:
             self._dish_mode = DishMode.STANDBY_LP
             time.sleep(0.1)
@@ -183,12 +181,12 @@ class HelperDishDevice(SKABaseDevice):
     def SetStandbyFPMode(self):
         # import debugpy; debugpy.debug_this_thread()'
         self.logger.info("Processing SetStandbyFPMode Command")
-        #Set the Device State
+        # Set the Device State
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set the Dish Mode
+        # Set the Dish Mode
         if self._dish_mode != DishMode.STANDBY_FP:
             self._dish_mode = DishMode.STANDBY_FP
             time.sleep(0.1)
@@ -205,16 +203,16 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetStandbyLPMode(self):
         self.logger.info("Processing SetStandbyLPMode Command")
-        #Set the device state
+        # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set the Pointing state
+        # Set the Pointing state
         if self._pointing_state != PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
-        #Set the Dish Mode
+        # Set the Dish Mode
         if self._dish_mode != DishMode.STANDBY_LP:
             self._dish_mode = DishMode.STANDBY_LP
             time.sleep(0.1)
@@ -230,16 +228,16 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetOperateMode(self):
         self.logger.info("Processing SetOperateMode Command")
-        #Set the device state
+        # Set the device state
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set the pointing state
+        # Set the pointing state
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
-        #Set the Dish Mode
+        # Set the Dish Mode
         if self._dish_mode != DishMode.OPERATE:
             self._dish_mode = DishMode.OPERATE
             time.sleep(0.1)
@@ -255,12 +253,12 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetStowMode(self):
         self.logger.info("Processing SetStowMode Command")
-        #Set device state
+        # Set device state
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        #Set dish mode
+        # Set dish mode
         if self._dish_mode != DishMode.STOW:
             self._dish_mode = DishMode.STOW
             time.sleep(0.1)
@@ -278,12 +276,11 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Configure(self, argin):
         self.logger.info("Configure Completed...")
-        #Set dish mode
+        # Set dish mode
         if self._dish_mode != DishMode.CONFIG:
             self._dish_mode = DishMode.CONFIG
-            time(0.1)
+            time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-
         return [[ResultCode.OK], [""]]
 
     def is_Track_allowed(self):
@@ -296,7 +293,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Track(self, argin):
         self.logger.info("Track Completed...")
-        #Set dish mode
+        # Set dish mode
         if self._dish_mode != DishMode.OPERATE:
             self._dish_mode = DishMode.OPERATE
             time.sleep(0.1)
@@ -312,7 +309,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def StopTrack(self):
         self.logger.info("StopTrack Completed...")
-        #Set dish mode
+        # Set dish mode
         if self._dish_mode != DishMode.OPERATE:
             self._dish_mode = DishMode.OPERATE
             time.sleep(0.1)
@@ -328,7 +325,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Abort(self):
         self.logger.info("Abort Completed...")
-        #set dish mode
+        # set dish mode
         if self._dish_mode != DishMode.OPERATE:
             self._dish_mode = DishMode.OPERATE
             time.sleep(0.1)
@@ -344,7 +341,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def ObsReset(self):
         self.logger.info("ObsReset Completed...")
-        #Set dish mode
+        # Set dish mode
         if self._dish_mode != DishMode.STANDBY_FP:
             self._dish_mode = DishMode.STANDBY_FP
             time.sleep(0.1)
@@ -360,7 +357,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Restart(self):
         self.logger.info("Restart Completed...")
-        #Set dish mode
+        # Set dish mode
         if self._dish_mode != DishMode.STANDBY_LP:
             self._dish_mode = DishMode.STANDBY_LP
             time.sleep(0.1)
