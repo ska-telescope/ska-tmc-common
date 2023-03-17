@@ -19,17 +19,15 @@ class HelperDishDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
-        self._dish_mode = DishMode.UNKNOWN  # Need to be decided
+        self._dish_mode = DishMode.UNKNOWN
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
-
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
@@ -111,6 +109,10 @@ class HelperDishDevice(SKABaseDevice):
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
 
+    def set_dish_mode(self, dishMode):
+        if self._dish_mode != dishMode:
+            self._dish_mode = dishMode
+
     def is_On_allowed(self):
         return True
 
@@ -119,16 +121,16 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self):
+        # Set device state
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        if self._dish_mode != DishMode.STARTUP:
-            self._dish_mode = DishMode.STARTUP
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STARTUP)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     def is_Off_allowed(self):
         return True
@@ -143,13 +145,11 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        if self._dish_mode != DishMode.SHUTDOWN:
-            self._dish_mode = DishMode.SHUTDOWN
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.SHUTDOWN)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     def is_SetStandbyFPMode_allowed(self):
         return True
@@ -167,12 +167,11 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        if self._dish_mode != DishMode.STANDBY_LP:
-            self._dish_mode = DishMode.STANDBY_LP
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_LP)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -186,13 +185,11 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        if self._dish_mode != DishMode.STANDBY_FP:
-            self._dish_mode = DishMode.STANDBY_FP
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_FP)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     def is_SetStandbyLPMode_allowed(self):
         return True
@@ -212,12 +209,11 @@ class HelperDishDevice(SKABaseDevice):
         if self._pointing_state != PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
-        # Set the Dish Mode
-        if self._dish_mode != DishMode.STANDBY_LP:
-            self._dish_mode = DishMode.STANDBY_LP
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_LP)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     def is_SetOperateMode_allowed(self):
         return True
@@ -237,12 +233,11 @@ class HelperDishDevice(SKABaseDevice):
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
-        # Set the Dish Mode
-        if self._dish_mode != DishMode.OPERATE:
-            self._dish_mode = DishMode.OPERATE
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.OPERATE)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     def is_SetStowMode_allowed(self):
         return True
@@ -258,95 +253,53 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.DISABLE)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set dish mode
-        if self._dish_mode != DishMode.STOW:
-            self._dish_mode = DishMode.STOW
+            # Set dish mode
+            self.set_dish_mode(DishMode.STOW)
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-
-        return [[ResultCode.OK], [""]]
-
-    def is_Configure_allowed(self):
-        return True
-
-    @command(
-        dtype_in=("str"),
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Configure(self, argin):
-        self.logger.info("Configure Completed...")
-        # Set dish mode
-        if self._dish_mode != DishMode.CONFIG:
-            self._dish_mode = DishMode.CONFIG
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        return ResultCode.OK, ""
 
     def is_Track_allowed(self):
         return True
 
     @command(
-        dtype_in=("str"),
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Track(self, argin):
-        self.logger.info("Track Completed...")
+    def Track(self):
+        self.logger.info("Processing Track Command")
         # Set dish mode
-        if self._dish_mode != DishMode.OPERATE:
-            self._dish_mode = DishMode.OPERATE
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        self.set_dish_mode(DishMode.OPERATE)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+        return ResultCode.OK, ""
 
-    def is_StopTrack_allowed(self):
+    def is_TrackStop_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def StopTrack(self):
-        self.logger.info("StopTrack Completed...")
+    def TrackStop(self):
+        self.logger.info("Processing TrackStop Command")
         # Set dish mode
-        if self._dish_mode != DishMode.OPERATE:
-            self._dish_mode = DishMode.OPERATE
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        self.set_dish_mode(DishMode.OPERATE)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+        return ResultCode.OK, ""
 
-    def is_Abort_allowed(self):
+    def is_AbortCommands_allowed(self):
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Abort(self):
-        self.logger.info("Abort Completed...")
-        # set dish mode
-        if self._dish_mode != DishMode.OPERATE:
-            self._dish_mode = DishMode.OPERATE
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
-
-    def is_ObsReset_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ObsReset(self):
-        self.logger.info("ObsReset Completed...")
-        # Set dish mode
-        if self._dish_mode != DishMode.STANDBY_FP:
-            self._dish_mode = DishMode.STANDBY_FP
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+    def AbortCommands(self):
+        self.logger.info("Abort Completed")
+        # Not Applicable
+        return ResultCode.OK, ""
 
     def is_Restart_allowed(self):
         return True
@@ -356,10 +309,118 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self):
-        self.logger.info("Restart Completed...")
+        self.logger.info("Restart Completed")
+        # Not Applicable
+        return ResultCode.OK, ""
+
+    def is_ConfigureBand1_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ConfigureBand1(self, argin):
+        self.logger.info("Processing ConfigureBand1")
         # Set dish mode
-        if self._dish_mode != DishMode.STANDBY_LP:
-            self._dish_mode = DishMode.STANDBY_LP
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
-        return [[ResultCode.OK], [""]]
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def is_ConfigureBand2_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ConfigureBand2(self, argin):
+        self.logger.info("Processing ConfigureBand2")
+        # Set dish mode
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def is_ConfigureBand3_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ConfigureBand3(self, argin):
+        self.logger.info("Processing ConfigureBand3")
+        # Set dish mode
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def is_ConfigureBand4_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ConfigureBand4(self, argin):
+        self.logger.info("Processing ConfigureBand4")
+        # Set dish mode
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def is_ConfigureBand5a_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ConfigureBand5a(self, argin):
+        self.logger.info("Processing ConfigureBand5a")
+        # Set dish mode
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def is_ConfigureBand5b_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ConfigureBand5b(self, argin):
+        self.logger.info("Processing ConfigureBand5")
+        # Set dish mode
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def Slew(self):
+        # To be discussed
+        pass
+
+    def StartCapture(self):
+        # To be discussed
+        pass
+
+    def SetMaintenanceMode(self):
+        # To be discussed
+        pass
+
+    def CheckLongRunningCommandStatus(self):
+        # To be discussed
+        pass
+
+    def FlushCommandQueue(self):
+        # To be discussed
+        pass
+
+    def Scan(self):
+        # To be discussed
+        pass
+
+    def Reset(self):
+        # To be discussed
+        pass
