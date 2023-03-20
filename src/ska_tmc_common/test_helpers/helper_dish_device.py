@@ -91,9 +91,7 @@ class HelperDishDevice(SKABaseDevice):
         """
         Trigger a DishMode change
         """
-        if self._dish_mode != argin:
-            self._dish_mode = argin
-            self.push_change_event("dishMode", self._dish_mode)
+        self.set_dish_mode(argin)
 
     @command(
         dtype_in=int,
