@@ -5,7 +5,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
-
+from enum import IntEnum
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_csp_master_device import (
     EmptyComponentManager,
@@ -83,16 +83,15 @@ class HelperDishDevice(SKABaseDevice):
             self.push_change_event("healthState", self._health_state)
 
     @command(
-        dtype_in=int,
+        dtype_in=IntEnum,
         doc_in=" Assign Dish Mode.",
     )
     def SetDirectDishMode(self, argin):
         """
         Trigger a DishMode change
         """
-        value = DishMode(argin)
-        if self._dish_mode != value:
-            self._dish_mode = DishMode(argin)
+        if self._dish_mode != argin:
+            self._dish_mode = argin
             self.push_change_event("dishMode", self._dish_mode)
 
     @command(
@@ -128,8 +127,7 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.STARTUP)
+        # TBD: Dish mode change
         return ResultCode.OK, ""
 
     def is_Off_allowed(self):
@@ -145,8 +143,7 @@ class HelperDishDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.SHUTDOWN)
+        # TBD: Dish mode change
         return ResultCode.OK, ""
 
     def is_SetStandbyFPMode_allowed(self):
@@ -281,7 +278,7 @@ class HelperDishDevice(SKABaseDevice):
     )
     def AbortCommands(self):
         self.logger.info("Abort Completed")
-        # Not Applicable
+        # Dish Mode Not Applicable.
         return ResultCode.OK, ""
 
     def is_ConfigureBand1_allowed(self):
