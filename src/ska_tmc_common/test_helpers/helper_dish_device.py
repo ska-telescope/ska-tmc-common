@@ -161,7 +161,7 @@ class HelperDishDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Standby(self):
+    def     (self):
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
@@ -278,8 +278,8 @@ class HelperDishDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        dtype_in="DevVoid",
+        doc_out="(ReturnType, 'DevVoid')",
     )
     def TrackStop(self):
         self.logger.info("Processing TrackStop Command")
@@ -287,7 +287,6 @@ class HelperDishDevice(SKABaseDevice):
         self.set_dish_mode(DishMode.OPERATE)
         time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
-        return ResultCode.OK, ""
 
     def is_AbortCommands_allowed(self):
         return True
@@ -303,15 +302,6 @@ class HelperDishDevice(SKABaseDevice):
 
     def is_Restart_allowed(self):
         return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Restart(self):
-        self.logger.info("Restart Completed")
-        # Not Applicable
-        return ResultCode.OK, ""
 
     def is_ConfigureBand1_allowed(self):
         return True
@@ -332,7 +322,7 @@ class HelperDishDevice(SKABaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand2(self, argin):
         self.logger.info("Processing ConfigureBand2")
@@ -340,13 +330,14 @@ class HelperDishDevice(SKABaseDevice):
         self.set_dish_mode(DishMode.CONFIG)
         time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
+        return ResultCode.OK, ""
 
     def is_ConfigureBand3_allowed(self):
         return True
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand3(self, argin):
         self.logger.info("Processing ConfigureBand3")
@@ -360,7 +351,7 @@ class HelperDishDevice(SKABaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand4(self, argin):
         self.logger.info("Processing ConfigureBand4")
@@ -374,7 +365,7 @@ class HelperDishDevice(SKABaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand5a(self, argin):
         self.logger.info("Processing ConfigureBand5a")
@@ -388,7 +379,7 @@ class HelperDishDevice(SKABaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand5b(self, argin):
         self.logger.info("Processing ConfigureBand5")
@@ -397,30 +388,43 @@ class HelperDishDevice(SKABaseDevice):
         time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
 
+    @command(
+        dtype_in=("DevVarDoubleArray"),
+        doc_out="(ReturnType, 'DevVoid')",
+    )
     def Slew(self):
-        # To be discussed
+        # TBD: Dish mode change
         pass
 
+    @command(
+        dtype_in=("DevVoid"),
+        doc_out="(ReturnType, 'DevVoid')",
+    )
     def StartCapture(self):
-        # To be discussed
+        # TBD: Dish mode change
         pass
-
+    
+    @command(
+        dtype_in=("DevVoid"),
+        doc_out="(ReturnType, 'DevVoid')",
+    )
     def SetMaintenanceMode(self):
-        # To be discussed
+        # TBD: Dish mode change
         pass
-
-    def CheckLongRunningCommandStatus(self):
-        # To be discussed
-        pass
-
-    def FlushCommandQueue(self):
-        # To be discussed
-        pass
-
+    
+    @command(
+        dtype_in=("DevVoid"),
+        doc_out="(ReturnType, 'DevVoid')",
+    )
     def Scan(self):
-        # To be discussed
+        # TBD: Dish mode change
         pass
-
+    
+    @command(
+        dtype_in=("DevVoid"),
+        dtype_out=("DevVarLongStringArray")
+        doc_out="(ReturnType, 'DevVoid')",
+    )
     def Reset(self):
-        # To be discussed
-        pass
+        # TBD: Dish mode change
+        return ResultCode.OK, ""
