@@ -112,8 +112,8 @@ class HelperDishDevice(SKABaseDevice):
     def set_dish_mode(self, dishMode):
         if self._dish_mode != dishMode:
             self._dish_mode = dishMode
-        time.sleep(0.1)
-        self.push_change_event("dishMode", self._dish_mode)
+            time.sleep(0.1)
+            self.push_change_event("dishMode", self._dish_mode)
 
     def is_On_allowed(self):
         return True
