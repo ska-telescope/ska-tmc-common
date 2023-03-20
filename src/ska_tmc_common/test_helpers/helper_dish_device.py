@@ -161,7 +161,7 @@ class HelperDishDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def     (self):
+    def Standby(self):
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
@@ -403,7 +403,7 @@ class HelperDishDevice(SKABaseDevice):
     def StartCapture(self):
         # TBD: Dish mode change
         pass
-    
+
     @command(
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'DevVoid')",
@@ -411,7 +411,7 @@ class HelperDishDevice(SKABaseDevice):
     def SetMaintenanceMode(self):
         # TBD: Dish mode change
         pass
-    
+
     @command(
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'DevVoid')",
@@ -419,11 +419,10 @@ class HelperDishDevice(SKABaseDevice):
     def Scan(self):
         # TBD: Dish mode change
         pass
-    
+
     @command(
         dtype_in=("DevVoid"),
-        dtype_out=("DevVarLongStringArray")
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Reset(self):
         # TBD: Dish mode change
