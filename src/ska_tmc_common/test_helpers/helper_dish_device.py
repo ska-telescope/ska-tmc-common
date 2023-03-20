@@ -1,11 +1,12 @@
 import time
+from enum import IntEnum
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
-from enum import IntEnum
+
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_csp_master_device import (
     EmptyComponentManager,
@@ -253,6 +254,9 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Track(self):
         self.logger.info("Processing Track Command")
+        if self._pointing_state != PointingState.TRACK:
+            self._pointing_state = PointingState.TRACK
+            self.push_change_event("pointingState", self._pointing_state)
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
         return ResultCode.OK, ""
@@ -359,8 +363,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def Slew(self):
+        if self._pointing_state != PointingState.SLEW:
+            self._pointing_state = PointingState.SLEW
+            self.push_change_event("pointingState", self._pointing_state)
         # TBD: Dish mode change
-        pass
 
     @command(
         dtype_in=("DevVoid"),
