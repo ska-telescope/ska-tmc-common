@@ -299,6 +299,7 @@ class HelperDishDevice(SKABaseDevice):
 
     @command(
         dtype_in=("DevString"),
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def ConfigureBand2(self, argin):
