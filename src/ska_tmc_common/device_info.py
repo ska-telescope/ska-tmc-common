@@ -190,10 +190,21 @@ class DishDeviceInfo(DeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.id = -1
         self.pointing_state = PointingState.NONE
-        self.dish_mode = DishMode.UNKNOWN
+        self._dish_mode = DishMode.UNKNOWN
         self.rx_capturing_data = 0
         self.achieved_pointing = []
         self.desired_pointing = []
+
+    @property
+    def dishMode(self) -> DishMode:
+        """Returns the dish mode value for Dish master device"""
+        return self._dish_mode
+
+    @dishMode.setter
+    def dishMode(self, value: DishMode) -> None:
+        """Sets the value of dish mode for Dish master device"""
+        if self._dish_mode != value:
+            self._dish_mode = value
 
     def from_dev_info(self, dish_device_info):
         super().from_dev_info(dish_device_info)
