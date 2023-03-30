@@ -184,8 +184,11 @@ class DishAdapter(BaseAdapter):
     def Track(self, argin):
         self._proxy.Track(argin)
 
-    def StopTrack(self):
-        self._proxy.StopTrack()
+    def TrackStop(self):
+        self._proxy.TrackStop()
+
+    def Scan(self):
+        self._proxy.Scan()
 
     def Restart(self):
         self._proxy.Restart()

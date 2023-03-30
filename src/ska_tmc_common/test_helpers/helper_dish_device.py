@@ -388,7 +388,10 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Scan(self):
         # TBD: Dish mode change
-        pass
+        self.logger.info("Processing Scan")
+
+    def is_Scan_allowed(self):
+        return True
 
     @command(
         dtype_in=("DevVoid"),
