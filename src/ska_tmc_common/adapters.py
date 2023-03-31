@@ -193,6 +193,12 @@ class DishAdapter(BaseAdapter):
     def ConfigureBand4(self, argin):
         self._proxy.ConfigureBand4(argin)
 
+    def ConfigureBand5a(self, argin):
+        self._proxy.ConfigureBand5a(argin)
+
+    def ConfigureBand5b(self, argin):
+        self._proxy.ConfigureBand5b(argin)
+
     def Track(self, argin):
         self._proxy.Track(argin)
 
