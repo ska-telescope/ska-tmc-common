@@ -1,0 +1,116 @@
+import logging
+import time
+from logging import Logger
+from typing import Callable, Tuple
+
+import pytest
+from ska_tango_base.commands import ResultCode
+from ska_tango_base.executor import TaskStatus
+
+from ska_tmc_common.enum import TimeoutState
+from ska_tmc_common.timeout_callback import TimeoutCallback
+from ska_tmc_common.tmc_command import TmcLeafNodeCommand
+from ska_tmc_common.tmc_component_manager import TmcLeafNodeComponentManager
+
+logger = logging.getLogger(__name__)
+
+
+class DummyCommandClass(TmcLeafNodeCommand):
+    """Dummy Command class for testing"""
+
+    def __init__(self, component_manager, logger: Logger, *args, **kwargs):
+        super().__init__(component_manager, logger, *args, **kwargs)
+        self._id = f"{time.time()}-{self.__class__.__name__}"
+        self.timeout_callback = TimeoutCallback(self._id)
+        self._state_val = "NORMAL"
+
+    @property
+    def state(self) -> str:
+        return self._state_val
+
+    @state.setter
+    def state(self, value: str) -> None:
+        self._state_val = value
+
+    def get_state(self) -> str:
+        return self.state
+
+    def invoke_do(
+        self, argin: bool, timeout: int, task_callback: Callable
+    ) -> None:
+        self.component_manager.start_timer(
+            self._id, timeout, self.timeout_callback
+        )
+        self.task_callback = task_callback
+        result, _ = self.do(argin)
+        if result == ResultCode.OK:
+            self.start_tracker_thread(
+                self.get_state, "CHANGED", self._id, self.timeout_callback
+            )
+        else:
+            self.logger.error("Command Failed")
+
+    def do(self, argin: bool) -> Tuple[ResultCode, str]:
+        time.sleep(2)
+        if argin:
+            return ResultCode.OK, ""
+        else:
+            return ResultCode.FAILED, ""
+
+    def update_task_status(self, result: ResultCode) -> None:
+        self.component_manager.stop_timer()
+        if result == ResultCode.OK:
+            self.task_callback(result=result, status=TaskStatus.COMPLETED)
+        else:
+            self.task_callback(
+                result=result,
+                status=TaskStatus.COMPLETED,
+                exception="Timeout occured while executing the command",
+            )
+
+
+def test_timer_thread():
+    cm = TmcLeafNodeComponentManager(logger)
+    timer_id = f"{time.time()}-{cm.__class__.__name__}"
+    timeout_callback = TimeoutCallback(timer_id)
+    cm.start_timer(timer_id, 10, timeout_callback)
+    assert cm.timer_object.is_alive()
+    cm.stop_timer()
+    time.sleep(0.5)
+    assert not cm.timer_object.is_alive()
+
+
+def test_timeout_callback():
+    timer_id = f"{time.time()}-{__name__}"
+    timeout_callback = TimeoutCallback(timer_id)
+    assert timeout_callback.assert_against_call(
+        timer_id, TimeoutState.NOT_OCCURED
+    )
+    timeout_callback(timer_id, TimeoutState.OCCURED)
+    assert timeout_callback.assert_against_call(timer_id, TimeoutState.OCCURED)
+    with pytest.raises(ValueError):
+        timeout_callback("123", TimeoutState.OCCURED)
+
+
+def test_command_timeout_success(task_callback):
+    cm = TmcLeafNodeComponentManager(logger)
+    dummy_command = DummyCommandClass(cm, logger)
+    dummy_command.invoke_do(True, 10, task_callback)
+    dummy_command.state = "CHANGED"
+    time.sleep(2)
+    assert not cm.timer_object.is_alive()
+    task_callback.assert_against_call(
+        status=TaskStatus.COMPLETED, result=ResultCode.OK
+    )
+
+
+def test_command_timeout_failure(task_callback):
+    cm = TmcLeafNodeComponentManager(logger)
+    dummy_command = DummyCommandClass(cm, logger)
+    dummy_command.invoke_do(True, 2, task_callback)
+    time.sleep(3)
+    task_callback.assert_against_call(
+        status=TaskStatus.COMPLETED,
+        result=ResultCode.FAILED,
+        exception="Timeout occured while executing the command",
+    )

@@ -693,6 +693,22 @@ url = "https://artefact.skao.int/repository/pypi-internal/simple"
 reference = 'ska-nexus'
 
 [[package]]
+name = "ska-tango-testing"
+version = "0.4.1"
+description = "Test harness for testing SKA Tango devices"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+pytango = ">=9.3,<10.0"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skao.int/repository/pypi-internal/simple"
+reference = 'ska-nexus'
+
+[[package]]
 name = "termcolor"
 version = "2.2.0"
 description = "ANSI color formatting for output in terminal"
@@ -773,7 +789,7 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d0028adc5de5a9aa695e7fcbbbdacb6e2b016435e0a5d16eafc90e79966df7b5"
+content-hash = "3a5588bb048ae27eef2eb39095f2cc173618fdfb7c6c944d923cc206d9ee00d5"
 
 [metadata.files]
 astroid = [
@@ -1224,6 +1240,10 @@ ska-ser-logging = [
 ska-tango-base = [
     {file = "ska_tango_base-0.17.0-py3-none-any.whl", hash = "sha256:b35d36066acf3f28d207c573b567a3bb291441133784b1934eb2f8cc2a983fad"},
     {file = "ska_tango_base-0.17.0.tar.gz", hash = "sha256:9e36547473a4aa6ab5e3b2f2bee980e36ecc1d45787f4319244450035631aff1"},
+]
+ska-tango-testing = [
+    {file = "ska-tango-testing-0.4.1.tar.gz", hash = "sha256:c41c1d6593b59de15aa7a11e05a61b39f08e900e824d4325afb053327bc21e63"},
+    {file = "ska_tango_testing-0.4.1-py3-none-any.whl", hash = "sha256:58541c22e741387b119c63ad1f90265f7f5e7b76b21049fc266bb1133fc27bbf"},
 ]
 termcolor = [
     {file = "termcolor-2.2.0-py3-none-any.whl", hash = "sha256:91ddd848e7251200eac969846cbae2dacd7d71c2871e92733289e7e3666f48e7"},
