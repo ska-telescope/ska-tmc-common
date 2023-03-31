@@ -19,7 +19,7 @@ class HelperDishDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
-        self._dish_mode = DishMode.UNKNOWN
+        self._dish_mode = DishMode.STANDBY_LP
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
@@ -144,9 +144,6 @@ class HelperDishDevice(SKABaseDevice):
         # TBD: Dish mode change
         return ([ResultCode.OK], [""])
 
-    def is_SetStandbyFPMode_allowed(self):
-        return True
-
     def is_Standby_allowed(self):
         return True
 
@@ -163,6 +160,10 @@ class HelperDishDevice(SKABaseDevice):
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_LP)
         return ([ResultCode.OK], [""])
+
+
+    def is_SetStandbyFPMode_allowed(self):
+        return True
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -356,6 +357,9 @@ class HelperDishDevice(SKABaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
 
+    def is_Slew_allowed(self):
+        return True
+
     @command(
         dtype_in=("DevVarDoubleArray"),
         doc_out="(ReturnType, 'DevVoid')",
@@ -382,6 +386,9 @@ class HelperDishDevice(SKABaseDevice):
         # TBD: Dish mode change
         pass
 
+    def is_Scan_allowed(self):
+        return True
+
     @command(
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'DevVoid')",
@@ -390,7 +397,7 @@ class HelperDishDevice(SKABaseDevice):
         # TBD: Dish mode change
         self.logger.info("Processing Scan")
 
-    def is_Scan_allowed(self):
+    def is_Reset_allowed(self):
         return True
 
     @command(
