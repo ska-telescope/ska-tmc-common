@@ -89,7 +89,7 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state,
-        id: str,
+        timeout_id: str,
         timeout_callback: TimeoutCallback,
     ) -> None:
         """Creates and starts a thread that will keep track of the State/
@@ -100,14 +100,19 @@ class BaseTMCCommand:
         :param expected_state: Expected state of the device in case of
                     successful command execution.
 
-        :param id: Id for TimeoutCallback class object.
+        :param timeout_id: Id for TimeoutCallback class object.
 
         :param timeout_callback: An instance of TimeoutCallback class that acts
                     as a callable functions to call in the event of timeout.
         """
         self.tracker_thread = threading.Thread(
             target=self.track_timeout_and_transition,
-            args=[state_function, expected_state, id, timeout_callback],
+            args=[
+                state_function,
+                expected_state,
+                timeout_id,
+                timeout_callback,
+            ],
         )
         self._stop = False
         self.logger.info("Starting tracker thread")
@@ -117,7 +122,7 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state,
-        id: str,
+        timeout_id: str,
         timeout_callback: TimeoutCallback,
     ) -> None:
         """Keeps track of the obsState change and the timeout callback to
@@ -127,7 +132,7 @@ class BaseTMCCommand:
         :param expected_state: Expected state of the device in case of
                     successful command execution.
 
-        :param id: Id for TimeoutCallback class object.
+        :param timeout_id: Id for TimeoutCallback class object.
 
         :param timeout_callback: An instance of TimeoutCallback class that acts
                     as a callable functions to call in the event of timeout.
@@ -140,8 +145,9 @@ class BaseTMCCommand:
                     )
                     self.update_task_status(result=ResultCode.OK)
                     self.stop_tracker_thread()
+
                 elif timeout_callback.assert_against_call(
-                    id, TimeoutState.OCCURED
+                    timeout_id, TimeoutState.OCCURED
                 ):
                     self.logger.error("Timeout has occured, command failed")
                     self.update_task_status(result=ResultCode.FAILED)

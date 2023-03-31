@@ -20,8 +20,8 @@ class DummyCommandClass(TmcLeafNodeCommand):
 
     def __init__(self, component_manager, logger: Logger, *args, **kwargs):
         super().__init__(component_manager, logger, *args, **kwargs)
-        self._id = f"{time.time()}-{self.__class__.__name__}"
-        self.timeout_callback = TimeoutCallback(self._id, self.logger)
+        self._timeout_id = f"{time.time()}-{self.__class__.__name__}"
+        self.timeout_callback = TimeoutCallback(self._timeout_id, self.logger)
         self._state_val = "NORMAL"
 
     @property
@@ -39,13 +39,16 @@ class DummyCommandClass(TmcLeafNodeCommand):
         self, argin: bool, timeout: int, task_callback: Callable
     ) -> None:
         self.component_manager.start_timer(
-            self._id, timeout, self.timeout_callback
+            self._timeout_id, timeout, self.timeout_callback
         )
         self.task_callback = task_callback
         result, _ = self.do(argin)
         if result == ResultCode.OK:
             self.start_tracker_thread(
-                self.get_state, "CHANGED", self._id, self.timeout_callback
+                self.get_state,
+                "CHANGED",
+                self._timeout_id,
+                self.timeout_callback,
             )
         else:
             self.logger.error("Command Failed")

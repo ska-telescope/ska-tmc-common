@@ -137,13 +137,13 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             self.event_receiver_object.stop()
 
     def start_timer(
-        self, id: str, timeout: int, timeout_callback: TimeoutCallback
+        self, timeout_id: str, timeout: int, timeout_callback: TimeoutCallback
     ) -> None:
         """Starts a timer for the command execution which will run for given
         amount of seconds. After the timer runs out, it will execute the
         task failed method.
 
-        :param id: Id for TimeoutCallback class object.
+        :param timeout_id: Id for TimeoutCallback class object.
 
         :param timeout: Interval value for the Timer
 
@@ -154,9 +154,9 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             self.timer_object = threading.Timer(
                 interval=timeout,
                 function=self.timeout_handler,
-                args=[id, timeout_callback],
+                args=[timeout_id, timeout_callback],
             )
-            self.logger.info(f"Starting timer for id : {id}")
+            self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
         except Exception as e:
             self.logger.exception(
@@ -165,17 +165,19 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
 
     def timeout_handler(
-        self, id: str, timeout_callback: TimeoutCallback
+        self, timeout_id: str, timeout_callback: TimeoutCallback
     ) -> None:
         """Updates the timeout callback to reflect timeout failure.
 
-        :param id: Id for TimeoutCallback class object.
+        :param timeout_id: Id for TimeoutCallback class object.
 
         :param timeout_callback: An instance of TimeoutCallback class that acts
                     as a callable functions to call in the event of timeout.
         """
-        self.logger.info(f"Timeout occured for id : {id}")
-        timeout_callback(id=id, timeout_state=TimeoutState.OCCURED)
+        self.logger.info(f"Timeout occured for id : {timeout_id}")
+        timeout_callback(
+            timeout_id=timeout_id, timeout_state=TimeoutState.OCCURED
+        )
 
     def stop_timer(self) -> None:
         """Stops the timer for command execution"""
