@@ -21,7 +21,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
     def __init__(self, component_manager, logger: Logger, *args, **kwargs):
         super().__init__(component_manager, logger, *args, **kwargs)
         self._id = f"{time.time()}-{self.__class__.__name__}"
-        self.timeout_callback = TimeoutCallback(self._id)
+        self.timeout_callback = TimeoutCallback(self._id, self.logger)
         self._state_val = "NORMAL"
 
     @property
@@ -72,7 +72,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
 def test_timer_thread():
     cm = TmcLeafNodeComponentManager(logger)
     timer_id = f"{time.time()}-{cm.__class__.__name__}"
-    timeout_callback = TimeoutCallback(timer_id)
+    timeout_callback = TimeoutCallback(timer_id, logger)
     cm.start_timer(timer_id, 10, timeout_callback)
     assert cm.timer_object.is_alive()
     cm.stop_timer()
@@ -82,7 +82,7 @@ def test_timer_thread():
 
 def test_timeout_callback():
     timer_id = f"{time.time()}-{__name__}"
-    timeout_callback = TimeoutCallback(timer_id)
+    timeout_callback = TimeoutCallback(timer_id, logger)
     assert timeout_callback.assert_against_call(
         timer_id, TimeoutState.NOT_OCCURED
     )
