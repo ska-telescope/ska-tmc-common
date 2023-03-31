@@ -161,7 +161,6 @@ class HelperDishDevice(SKABaseDevice):
         self.set_dish_mode(DishMode.STANDBY_LP)
         return ([ResultCode.OK], [""])
 
-
     def is_SetStandbyFPMode_allowed(self):
         return True
 
