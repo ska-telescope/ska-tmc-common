@@ -36,7 +36,7 @@ class AdapterFactory:
         new_adapter = None
         if adapter_type == AdapterType.DISH:
             new_adapter = DishAdapter(
-                dev_name, self._dev_factory.get_device(dev_name, True)
+                dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.SUBARRAY:
             new_adapter = SubArrayAdapter(
