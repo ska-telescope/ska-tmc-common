@@ -5,6 +5,7 @@ from typing import Callable, Tuple
 
 import pytest
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskStatus
 
 from ska_tmc_common.enum import TimeoutState
@@ -93,6 +94,39 @@ def test_timeout_callback():
     assert timeout_callback.assert_against_call(timer_id, TimeoutState.OCCURED)
     with pytest.raises(ValueError):
         timeout_callback("123", TimeoutState.OCCURED)
+
+
+def test_kwargs_functionality_timeout_callback():
+    timer_id = f"{time.time()}-{__name__}"
+    timeout_callback = TimeoutCallback(timer_id, logger)
+    timeout_callback(timer_id, TimeoutState.OCCURED, state=HealthState.OK)
+    assert timeout_callback.assert_against_call(
+        timer_id, TimeoutState.OCCURED, state=HealthState.OK
+    )
+
+    timeout_callback(
+        timer_id, TimeoutState.OCCURED, state=HealthState.DEGRADED
+    )
+    assert timeout_callback.assert_against_call(timer_id, TimeoutState.OCCURED)
+
+    timeout_callback(timer_id, TimeoutState.OCCURED)
+    assert not timeout_callback.assert_against_call(
+        timer_id,
+        TimeoutState.OCCURED,
+        state=HealthState.OK,
+    )
+
+    timeout_callback(
+        timer_id, TimeoutState.OCCURED, kwarg1="String", kwarg2=24, kwarg3=12.6
+    )
+    assert timeout_callback.assert_against_call(
+        timer_id,
+        TimeoutState.OCCURED,
+        state=HealthState.DEGRADED,
+        kwarg1="String",
+        kwarg2=24,
+        kwarg3=12.6,
+    )
 
 
 def test_command_timeout_success(task_callback):

@@ -12,6 +12,7 @@ class TimeoutCallback:
         self._timeout_id = timeout_id
         self.logger = logger
         self._timeout_state = TimeoutState.NOT_OCCURED
+        self._kwargs = {}
 
     def __call__(
         self, timeout_id: str, timeout_state: TimeoutState, **kwargs: Any
@@ -25,18 +26,37 @@ class TimeoutCallback:
         """
         if self._timeout_id == timeout_id:
             self._timeout_state = timeout_state
+            for key, value in kwargs.items():
+                self._kwargs[key] = value
         else:
             raise ValueError("The id for the callback is invalid")
 
     def assert_against_call(
-        self, timeout_id: str, timeout_state: TimeoutState
+        self, timeout_id: str, timeout_state: TimeoutState, **kwargs: Any
     ) -> bool:
-        """Assertion method to check if the desired state change has occured."""
-        try:
-            assert self._timeout_id == timeout_id
-            assert self._timeout_state == timeout_state
-            return True
-        except AssertionError as e:
-            self.logger.exception(e)
+        """Assertion method to check if the desired timeout state change has occured."""
+        if timeout_id != self._timeout_id:
+            self.logger.debug("The timeout id is incorrect.")
+            return False
 
-        return False
+        if timeout_state != self._timeout_state:
+            self.logger.debug(
+                "The actual timeout state %s is not equal to asserted timeout state %s",
+                self._timeout_state,
+                timeout_state,
+            )
+            return False
+
+        try:
+            for key, value in kwargs.items():
+                if self._kwargs[key] != value:
+                    return False
+        except KeyError as e:
+            self.logger.debug(
+                "The assertion is invalid as one or more keyword arguments "
+                + "are invalid. Error : %s",
+                e,
+            )
+            return False
+
+        return True
