@@ -1,0 +1,126 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of the DishLeafNode project
+#
+#
+#
+# Distributed under the terms of the BSD-3-Clause license.
+# See LICENSE.txt for more info.
+""" The purpose of this module is to provide classes and
+methods used in dish related calculations.
+"""
+# Standard Python imports
+
+import logging
+import math
+
+import katpoint
+from ska_telmodel.data import TMData
+
+logger = logging.getLogger(__name__)
+
+
+class AntennaLocation:
+    """class to init antenna location parameters"""
+
+    def __init__(self):
+        "Class constructor"
+        self.latitude = 0.0
+        self.longitude = 0.0
+        self.height = 0.0
+
+    def get_latitude(self):
+        """Added to resolve pylint  too-few-public-methods"""
+        return self.latitude
+
+
+class AntennaParams:
+    """Class to define antenna parameters"""
+
+    def __init__(self):
+        """AntennaParams Constructor"""
+        self.antenna_station_name = ""
+        self.antenna_location = AntennaLocation()
+        self.dish_diameter = 0.0
+
+    def get_station_name(self):
+        """Added to resolve pylint  too-few-public-methods"""
+        return self.antenna_station_name
+
+
+def get_antenna_params(antenna_params):
+    """Method to return object of class AntennaParams"""
+    antenna_location = AntennaLocation()
+    antenna_param = AntennaParams()
+    antenna_location.latitude = float(
+        antenna_params["location"]["geodetic"]["lat"]
+    )
+    antenna_location.longitude = float(
+        antenna_params["location"]["geodetic"]["lon"]
+    )
+    antenna_location.height = float(
+        antenna_params["location"]["geodetic"]["h"]
+    )
+    antenna_param.antenna_location = antenna_location
+    antenna_param.dish_diameter = antenna_params["diameter"]
+    antenna_param.antenna_station_name = antenna_params["station_name"]
+    return antenna_param
+
+
+def dd_to_dms(argin):
+    """
+    Converts a number in degree decimal to Deg:Min:Sec.
+
+    :param argin: A number in decimal degrees.
+        Example: 30.7129252
+    :return: Number in deg:min:sec format.
+        Example: 30:42:46.5307 is returned value for input 30.7129252.
+    """
+    try:
+        sign = 1
+        if argin < 0:
+            sign = -1
+        frac_min, degrees = math.modf(abs(argin))
+        frac_sec, minutes = math.modf(frac_min * 60)
+        seconds = frac_sec * 60
+        return f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
+    except SyntaxError as error:
+        log_msg = (
+            f"Error while converting decimal degree to dig:min:sec.{error}"
+        )
+        logger.error(log_msg)
+
+
+def dish_antennas_list():
+    """This method identifies the KATPoint.
+    Antenna object to be used from the Dish Number."""
+    antennas = []
+    try:
+        sources = [
+            "gitlab://gitlab.com/ska-telescope/"
+            + "sdp/ska-sdp-tmlite-repository?main#tmdata"
+        ]
+        layout_path = "instrument/ska1_mid/layout/mid-layout.json"
+        antenna_params = TMData(sources)[layout_path].get_dict()
+
+        for receptor in range(len(antenna_params["receptors"])):
+            receptor_params = get_antenna_params(
+                antenna_params["receptors"][receptor]
+            )
+
+            input_to_antenna = f"{receptor_params.antenna_station_name},\
+                    {dd_to_dms(receptor_params.antenna_location.latitude)},\
+                        {dd_to_dms(receptor_params.antenna_location.longitude)},\
+                            {receptor_params.antenna_location.height},\
+                                {receptor_params.dish_diameter}"
+            antennas.append(katpoint.Antenna(input_to_antenna))
+
+    except OSError as err:
+        logger.exception(err)
+        raise f"OSError.'{err}'in AzElConverter.create_antenna_obj."
+
+    except ValueError as verr:
+        logger.exception(verr)
+        raise f"ValueError.'{verr}'in AzElConverter.create_antenna_obj."
+
+    return antennas

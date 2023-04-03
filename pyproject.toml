@@ -42,6 +42,9 @@ docstr-coverage = "^2.1.1"
 darglint = "^1.8.1"
 mock = "^4.0.3"
 pylint-junit = "^0.3.2"
+katpoint = "1.0a2"
+ska-telmodel = "1.4.0"
+
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
