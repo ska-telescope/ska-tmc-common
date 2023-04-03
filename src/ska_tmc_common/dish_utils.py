@@ -17,6 +17,10 @@ import math
 import katpoint
 from ska_telmodel.data import TMData
 
+LAYOUT_PATH = "instrument/ska1_mid/layout/mid-layout.json"
+GITLAB_MAIN_PATH = "gitlab://gitlab.com/ska-telescope/"
+GITLAB_SUB_PATH = "sdp/ska-sdp-tmlite-repository?main#tmdata"
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,79 +52,85 @@ class AntennaParams:
         return self.antenna_station_name
 
 
-def get_antenna_params(antenna_params):
-    """Method to return object of class AntennaParams"""
-    antenna_location = AntennaLocation()
-    antenna_param = AntennaParams()
-    antenna_location.latitude = float(
-        antenna_params["location"]["geodetic"]["lat"]
-    )
-    antenna_location.longitude = float(
-        antenna_params["location"]["geodetic"]["lon"]
-    )
-    antenna_location.height = float(
-        antenna_params["location"]["geodetic"]["h"]
-    )
-    antenna_param.antenna_location = antenna_location
-    antenna_param.dish_diameter = antenna_params["diameter"]
-    antenna_param.antenna_station_name = antenna_params["station_name"]
-    return antenna_param
+class dishHelper:
+    """Class to provide support for dish related calculations."""
 
+    def __init__(self):
+        self.antenna_location = AntennaLocation()
+        self.antenna_param = AntennaParams()
 
-def dd_to_dms(argin):
-    """
-    Converts a number in degree decimal to Deg:Min:Sec.
+    def get_antenna_params(self, antenna_params):
+        """Method to return object of class AntennaParams"""
 
-    :param argin: A number in decimal degrees.
-        Example: 30.7129252
-    :return: Number in deg:min:sec format.
-        Example: 30:42:46.5307 is returned value for input 30.7129252.
-    """
-    try:
-        sign = 1
-        if argin < 0:
-            sign = -1
-        frac_min, degrees = math.modf(abs(argin))
-        frac_sec, minutes = math.modf(frac_min * 60)
-        seconds = frac_sec * 60
-        return f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
-    except SyntaxError as error:
-        log_msg = (
-            f"Error while converting decimal degree to dig:min:sec.{error}"
+        self.antenna_location.latitude = float(
+            antenna_params["location"]["geodetic"]["lat"]
         )
-        logger.error(log_msg)
-
-
-def dish_antennas_list():
-    """This method identifies the KATPoint.
-    Antenna object to be used from the Dish Number."""
-    antennas = []
-    try:
-        sources = [
-            "gitlab://gitlab.com/ska-telescope/"
-            + "sdp/ska-sdp-tmlite-repository?main#tmdata"
+        self.antenna_location.longitude = float(
+            antenna_params["location"]["geodetic"]["lon"]
+        )
+        self.antenna_location.height = float(
+            antenna_params["location"]["geodetic"]["h"]
+        )
+        self.antenna_param.antenna_location = self.antenna_location
+        self.antenna_param.dish_diameter = antenna_params["diameter"]
+        self.antenna_param.antenna_station_name = antenna_params[
+            "station_name"
         ]
-        layout_path = "instrument/ska1_mid/layout/mid-layout.json"
-        antenna_params = TMData(sources)[layout_path].get_dict()
+        return self.antenna_param
 
-        for receptor in range(len(antenna_params["receptors"])):
-            receptor_params = get_antenna_params(
-                antenna_params["receptors"][receptor]
+    def dd_to_dms(self, argin):
+        """
+        Converts a number in degree decimal to Deg:Min:Sec.
+
+        :param argin: A number in decimal degrees.
+            Example: 30.7129252
+        :return: Number in deg:min:sec format.
+            Example: 30:42:46.5307 is returned value for input 30.7129252.
+        """
+        try:
+            sign = 1
+            if argin < 0:
+                sign = -1
+            frac_min, degrees = math.modf(abs(argin))
+            frac_sec, minutes = math.modf(frac_min * 60)
+            seconds = frac_sec * 60
+            return f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
+        except SyntaxError as error:
+            log_msg = (
+                f"Error while converting decimal degree to dig:min:sec.{error}"
             )
+            logger.error(log_msg)
 
-            input_to_antenna = f"{receptor_params.antenna_station_name},\
-                    {dd_to_dms(receptor_params.antenna_location.latitude)},\
-                        {dd_to_dms(receptor_params.antenna_location.longitude)},\
-                            {receptor_params.antenna_location.height},\
-                                {receptor_params.dish_diameter}"
-            antennas.append(katpoint.Antenna(input_to_antenna))
+    def dish_antennas_list(self):
+        """This method returns the antennas list.It gets the
+        information from TelModel library.Each antenna in the list
+        represents an antenna and have information station name, latitude,
+        longitude, dish diameter, height.
+        """
+        antennas = []
+        try:
+            sources = [GITLAB_MAIN_PATH + GITLAB_SUB_PATH]
+            layout_path = LAYOUT_PATH
+            antenna_params = TMData(sources)[layout_path].get_dict()
 
-    except OSError as err:
-        logger.exception(err)
-        raise f"OSError.'{err}'in AzElConverter.create_antenna_obj."
+            for receptor in range(len(antenna_params["receptors"])):
+                receptor_params = self.get_antenna_params(
+                    antenna_params["receptors"][receptor]
+                )
 
-    except ValueError as verr:
-        logger.exception(verr)
-        raise f"ValueError.'{verr}'in AzElConverter.create_antenna_obj."
+                input_to_antenna = f"{receptor_params.antenna_station_name},\
+                        {self.dd_to_dms(receptor_params.antenna_location.latitude)},\
+                            {self.dd_to_dms(receptor_params.antenna_location.longitude)},\
+                                {receptor_params.antenna_location.height},\
+                                    {receptor_params.dish_diameter}"
+                antennas.append(katpoint.Antenna(input_to_antenna))
 
-    return antennas
+        except OSError as err:
+            logger.exception(err)
+            raise f"OSError.'{err}'in AzElConverter.create_antenna_obj."
+
+        except ValueError as verr:
+            logger.exception(verr)
+            raise f"ValueError.'{verr}'in AzElConverter.create_antenna_obj."
+
+        return antennas
