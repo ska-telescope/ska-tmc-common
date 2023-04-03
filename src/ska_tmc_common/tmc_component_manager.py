@@ -12,13 +12,14 @@ from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
-from ska_tmc_common.enum import LivelinessProbeType
+from ska_tmc_common.enum import LivelinessProbeType, TimeoutState
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
 )
 from ska_tmc_common.op_state_model import TMCOpStateModel
+from ska_tmc_common.timeout_callback import TimeoutCallback
 
 
 class TmcComponent:
@@ -134,6 +135,54 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         """Stops the Event Receiver"""
         if self.event_receiver:
             self.event_receiver_object.stop()
+
+    def start_timer(
+        self, timeout_id: str, timeout: int, timeout_callback: TimeoutCallback
+    ) -> None:
+        """Starts a timer for the command execution which will run for given
+        amount of seconds. After the timer runs out, it will execute the
+        task failed method.
+
+        :param timeout_id: Id for TimeoutCallback class object.
+
+        :param timeout: Interval value for the Timer
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        """
+        try:
+            self.timer_object = threading.Timer(
+                interval=timeout,
+                function=self.timeout_handler,
+                args=[timeout_id, timeout_callback],
+            )
+            self.logger.info(f"Starting timer for id : {timeout_id}")
+            self.timer_object.start()
+        except Exception as e:
+            self.logger.exception(
+                "Exception occured while starting the timer thread : %s",
+                e,
+            )
+
+    def timeout_handler(
+        self, timeout_id: str, timeout_callback: TimeoutCallback
+    ) -> None:
+        """Updates the timeout callback to reflect timeout failure.
+
+        :param timeout_id: Id for TimeoutCallback class object.
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable functions to call in the event of timeout.
+        """
+        self.logger.info(f"Timeout occured for id : {timeout_id}")
+        timeout_callback(
+            timeout_id=timeout_id, timeout_state=TimeoutState.OCCURED
+        )
+
+    def stop_timer(self) -> None:
+        """Stops the timer for command execution"""
+        self.logger.info("Stopping timer")
+        self.timer_object.cancel()
 
 
 class TmcComponentManager(BaseTmcComponentManager):
