@@ -52,31 +52,27 @@ class AntennaParams:
         return self.antenna_station_name
 
 
-class dishHelper:
+class DishHelper:
     """Class to provide support for dish related calculations."""
-
-    def __init__(self):
-        self.antenna_location = AntennaLocation()
-        self.antenna_param = AntennaParams()
 
     def get_antenna_params(self, antenna_params):
         """Method to return object of class AntennaParams"""
+        antenna_location = AntennaLocation()
+        antenna_param = AntennaParams()
 
-        self.antenna_location.latitude = float(
+        antenna_location.latitude = float(
             antenna_params["location"]["geodetic"]["lat"]
         )
-        self.antenna_location.longitude = float(
+        antenna_location.longitude = float(
             antenna_params["location"]["geodetic"]["lon"]
         )
-        self.antenna_location.height = float(
+        antenna_location.height = float(
             antenna_params["location"]["geodetic"]["h"]
         )
-        self.antenna_param.antenna_location = self.antenna_location
-        self.antenna_param.dish_diameter = antenna_params["diameter"]
-        self.antenna_param.antenna_station_name = antenna_params[
-            "station_name"
-        ]
-        return self.antenna_param
+        antenna_param.antenna_location = antenna_location
+        antenna_param.dish_diameter = antenna_params["diameter"]
+        antenna_param.antenna_station_name = antenna_params["station_name"]
+        return antenna_param
 
     def dd_to_dms(self, argin):
         """
@@ -101,7 +97,7 @@ class dishHelper:
             )
             logger.error(log_msg)
 
-    def dish_antennas_list(self):
+    def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the
         information from TelModel library.Each antenna in the list
         represents an antenna and have information station name, latitude,
@@ -110,8 +106,7 @@ class dishHelper:
         antennas = []
         try:
             sources = [GITLAB_MAIN_PATH + GITLAB_SUB_PATH]
-            layout_path = LAYOUT_PATH
-            antenna_params = TMData(sources)[layout_path].get_dict()
+            antenna_params = TMData(sources)[LAYOUT_PATH].get_dict()
 
             for receptor in range(len(antenna_params["receptors"])):
                 receptor_params = self.get_antenna_params(
