@@ -1,6 +1,6 @@
 import logging
 from typing import Callable
-
+import json
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
@@ -286,6 +286,14 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def AssignResources(self, argin):
+        # Json Valdation
+        self.logger.info(f"Argin on SdpSubarray helper: {argin}")
+        input = json.loads(argin)
+
+        if "eb_id" not in input["execution_block"]:
+            self.logger.info("eb_id is not present in input")
+            raise Exception(f"eb_id not found in the input")
+
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
