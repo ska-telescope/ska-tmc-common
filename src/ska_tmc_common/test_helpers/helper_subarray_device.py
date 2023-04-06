@@ -152,6 +152,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def SetDefective(self, value: bool):
         """Trigger defective change"""
+        self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
 
     @command(

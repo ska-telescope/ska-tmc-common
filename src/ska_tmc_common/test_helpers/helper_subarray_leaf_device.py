@@ -17,6 +17,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
     def init_device(self):
         super().init_device()
         self._health_state = HealthState.OK
+        self._defective = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
@@ -40,6 +41,18 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
     def delete_device(self):
         pass
 
+    def read_defective(self):
+        return self._defective
+
+    @command(
+        dtype_in=bool,
+        doc_in="Set Defective",
+    )
+    def SetDefective(self, value: bool):
+        """Trigger defective change"""
+        self.logger.info("Setting the defective value to : %s", value)
+        self._defective = value
+
     @command(
         dtype_in="DevState",
         doc_in="state to assign",
@@ -49,10 +62,11 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         Trigger a DevState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        if self.dev_state() != argin:
-            self.set_state(argin)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
+        if not self._defective:
+            if self.dev_state() != argin:
+                self.set_state(argin)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
 
     @command(
         dtype_in=int,
@@ -63,10 +77,11 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         Trigger a HealthState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        value = HealthState(argin)
-        if self._health_state != value:
-            self._health_state = HealthState(argin)
-            self.push_change_event("healthState", self._health_state)
+        if not self._defective:
+            value = HealthState(argin)
+            if self._health_state != value:
+                self._health_state = HealthState(argin)
+                self.push_change_event("healthState", self._health_state)
 
     def is_On_allowed(self):
         return True
@@ -76,11 +91,17 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self):
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            if self.dev_state() != DevState.ON:
+                self.set_state(DevState.ON)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_Off_allowed(self):
         return True
@@ -90,11 +111,17 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self):
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            if self.dev_state() != DevState.OFF:
+                self.set_state(DevState.OFF)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_Standby_allowed(self):
         return True
@@ -104,11 +131,17 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self):
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            if self.dev_state() != DevState.STANDBY:
+                self.set_state(DevState.STANDBY)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_AssignResources_allowed(self):
         return True
@@ -120,8 +153,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def AssignResources(self, argin):
-        self.logger.info("AssignResource completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("AssignResource completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_Configure_allowed(self):
         return True
@@ -133,8 +172,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin):
-        self.logger.info("Configure completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("Configure completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_Scan_allowed(self):
         return True
@@ -146,8 +191,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self, argin):
-        self.logger.info("Scan completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("Scan completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_EndScan_allowed(self):
         return True
@@ -157,8 +208,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def EndScan(self):
-        self.logger.info("EndScan completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("EndScan completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_End_allowed(self):
         return True
@@ -168,8 +225,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def End(self):
-        self.logger.info("End completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("End completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_GoToIdle_allowed(self):
         return True
@@ -179,8 +242,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def GoToIdle(self):
-        self.logger.info("GoToIdle completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("GoToIdle completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_Abort_allowed(self):
         return True
@@ -190,7 +259,7 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self):
-        self.logger.info("Abort completed....")
+        self.logger.info("Abort completed.")
         return [[ResultCode.OK], [""]]
 
     def is_ObsReset_allowed(self):
@@ -201,8 +270,14 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self):
-        self.logger.info("ObsReset completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("ObsReset completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_Restart_allowed(self):
         return True
@@ -212,11 +287,10 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self):
-        self.logger.info("Restart completed....")
+        self.logger.info("Restart completed.")
         return [[ResultCode.OK], [""]]
 
     def is_ReleaseAllResources_allowed(self):
-        self.logger.info("In is_ReleaseAllResources_allowed ....... ")
         return True
 
     @command(
@@ -224,11 +298,16 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseAllResources(self):
-        self.logger.info("ReleaseAllResources completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("ReleaseAllResources completed")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
 
     def is_ReleaseResources_allowed(self):
-        self.logger.info("In is_ReleaseResources_allowed ....... ")
         return True
 
     @command(
@@ -238,5 +317,11 @@ class HelperSubarrayLeafDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseResources(self, argin):
-        self.logger.info("ReleaseResources completed....")
-        return [[ResultCode.OK], [""]]
+        if not self._defective:
+            self.logger.info("ReleaseResources completed.")
+            return [[ResultCode.OK], [""]]
+        else:
+            return [
+                [ResultCode.FAILED],
+                ["Device is Defective, cannot process command."],
+            ]
