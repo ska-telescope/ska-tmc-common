@@ -107,11 +107,10 @@ class HelperCspMasterDevice(SKABaseDevice):
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Off_allowed(self):
@@ -128,11 +127,10 @@ class HelperCspMasterDevice(SKABaseDevice):
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Standby_allowed(self):
@@ -149,9 +147,8 @@ class HelperCspMasterDevice(SKABaseDevice):
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
-                return [[ResultCode.OK], [""]]
+                return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]

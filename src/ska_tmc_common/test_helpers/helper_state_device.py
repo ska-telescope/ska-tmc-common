@@ -98,11 +98,10 @@ class HelperStateDevice(SKABaseDevice):
                 self.set_state(DevState.ON)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Off_allowed(self):
@@ -118,11 +117,10 @@ class HelperStateDevice(SKABaseDevice):
                 self.set_state(DevState.OFF)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetStandbyFPMode_allowed(self):
@@ -135,11 +133,10 @@ class HelperStateDevice(SKABaseDevice):
     def SetStandbyFPMode(self):
         if not self._defective:
             # import debugpy; debugpy.debug_this_thread()
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetStandbyLPMode_allowed(self):
@@ -155,11 +152,10 @@ class HelperStateDevice(SKABaseDevice):
                 self.set_state(DevState.OFF)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetOperateMode_allowed(self):
@@ -175,11 +171,10 @@ class HelperStateDevice(SKABaseDevice):
                 self.set_state(DevState.ON)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetStowMode_allowed(self):
@@ -191,11 +186,10 @@ class HelperStateDevice(SKABaseDevice):
     )
     def SetStowMode(self):
         if not self._defective:
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Standby_allowed(self):
@@ -211,11 +205,10 @@ class HelperStateDevice(SKABaseDevice):
                 self.set_state(DevState.STANDBY)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Disable_allowed(self):
@@ -231,9 +224,8 @@ class HelperStateDevice(SKABaseDevice):
                 self.set_state(DevState.DISABLE)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            return [[ResultCode.OK], [""]]
+            return [ResultCode.OK], [""]
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]

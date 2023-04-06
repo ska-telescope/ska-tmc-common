@@ -147,9 +147,8 @@ class HelperDishDevice(SKABaseDevice):
             # TBD: Dish mode change
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Off_allowed(self):
@@ -169,9 +168,8 @@ class HelperDishDevice(SKABaseDevice):
             # TBD: Dish mode change
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Standby_allowed(self):
@@ -192,9 +190,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.STANDBY_LP)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetStandbyFPMode_allowed(self):
@@ -217,9 +214,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.STANDBY_FP)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetStandbyLPMode_allowed(self):
@@ -245,9 +241,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.STANDBY_LP)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetOperateMode_allowed(self):
@@ -273,9 +268,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_SetStowMode_allowed(self):
@@ -297,9 +291,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.STOW)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_Track_allowed(self):
@@ -319,9 +312,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_TrackStop_allowed(self):
@@ -377,9 +369,8 @@ class HelperDishDevice(SKABaseDevice):
             self.set_dish_mode(DishMode.CONFIG)
             return ([ResultCode.OK], [""])
         else:
-            return [
-                [ResultCode.FAILED],
-                ["Device is Defective, cannot process command."],
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
             ]
 
     def is_ConfigureBand3_allowed(self):
