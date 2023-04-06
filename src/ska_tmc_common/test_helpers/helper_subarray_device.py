@@ -1,6 +1,7 @@
+import json
 import logging
 from typing import Callable
-import json
+
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
@@ -14,14 +15,14 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         logger: logging.Logger,
         communication_state_callback: Callable,
         component_state_callback: Callable,
-        **state
+        **state,
     ):
         self.logger = logger
         super().__init__(
             logger,
             communication_state_callback,
             component_state_callback,
-            **state
+            **state,
         )
         self._assigned_resources = []
 
@@ -292,7 +293,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if "eb_id" not in input["execution_block"]:
             self.logger.info("eb_id is not present in input")
-            raise Exception(f"eb_id not found in the input")
+            raise Exception("eb_id not found in the input")
 
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
