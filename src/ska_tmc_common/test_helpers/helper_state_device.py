@@ -38,6 +38,9 @@ class HelperStateDevice(SKABaseDevice):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
+    def read_defective(self):
+        return self._defective
+
     def always_executed_hook(self):
         pass
 
