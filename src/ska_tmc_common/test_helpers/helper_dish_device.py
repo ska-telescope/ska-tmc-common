@@ -20,6 +20,7 @@ class HelperDishDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.STANDBY_LP
+        self._defective = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
@@ -32,9 +33,13 @@ class HelperDishDevice(SKABaseDevice):
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
+    defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_pointingState(self):
         return self._pointing_state
+
+    def read_defective(self):
+        return self._defective
 
     def read_dishMode(self):
         return self._dish_mode
@@ -55,6 +60,14 @@ class HelperDishDevice(SKABaseDevice):
         pass
 
     @command(
+        dtype_in=bool,
+        doc_in="Set Defective",
+    )
+    def SetDefective(self, value: bool):
+        """Trigger defective change"""
+        self._defective = value
+
+    @command(
         dtype_in="DevState",
         doc_in="state to assign",
     )
@@ -63,10 +76,11 @@ class HelperDishDevice(SKABaseDevice):
         Trigger a DevState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        if self.dev_state() != argin:
-            self.set_state(argin)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
+        if not self._defective:
+            if self.dev_state() != argin:
+                self.set_state(argin)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
 
     @command(
         dtype_in=int,
@@ -77,10 +91,11 @@ class HelperDishDevice(SKABaseDevice):
         Trigger a HealthState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        value = HealthState(argin)
-        if self._health_state != value:
-            self._health_state = HealthState(argin)
-            self.push_change_event("healthState", self._health_state)
+        if not self._defective:
+            value = HealthState(argin)
+            if self._health_state != value:
+                self._health_state = HealthState(argin)
+                self.push_change_event("healthState", self._health_state)
 
     @command(
         dtype_in=DevEnum,
@@ -90,7 +105,8 @@ class HelperDishDevice(SKABaseDevice):
         """
         Trigger a DishMode change
         """
-        self.set_dish_mode(argin)
+        if not self._defective:
+            self.set_dish_mode(argin)
 
     @command(
         dtype_in=int,
@@ -101,16 +117,18 @@ class HelperDishDevice(SKABaseDevice):
         Trigger a PointingState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        value = PointingState(argin)
-        if self._pointing_state != value:
-            self._pointing_state = PointingState(argin)
-            self.push_change_event("pointingState", self._pointing_state)
+        if not self._defective:
+            value = PointingState(argin)
+            if self._pointing_state != value:
+                self._pointing_state = PointingState(argin)
+                self.push_change_event("pointingState", self._pointing_state)
 
     def set_dish_mode(self, dishMode):
-        if self._dish_mode != dishMode:
-            self._dish_mode = dishMode
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
+        if not self._defective:
+            if self._dish_mode != dishMode:
+                self._dish_mode = dishMode
+                time.sleep(0.1)
+                self.push_change_event("dishMode", self._dish_mode)
 
     def is_On_allowed(self):
         return True
@@ -121,12 +139,17 @@ class HelperDishDevice(SKABaseDevice):
     )
     def On(self):
         # Set device state
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # TBD: Dish mode change
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            if self.dev_state() != DevState.ON:
+                self.set_state(DevState.ON)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # TBD: Dish mode change
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_Off_allowed(self):
         return True
@@ -137,12 +160,17 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Off(self):
         # Set device state
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # TBD: Dish mode change
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            if self.dev_state() != DevState.OFF:
+                self.set_state(DevState.OFF)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # TBD: Dish mode change
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_Standby_allowed(self):
         return True
@@ -153,13 +181,18 @@ class HelperDishDevice(SKABaseDevice):
     )
     def Standby(self):
         # Set the device state
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.STANDBY_LP)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            if self.dev_state() != DevState.STANDBY:
+                self.set_state(DevState.STANDBY)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_LP)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_SetStandbyFPMode_allowed(self):
         return True
@@ -170,15 +203,20 @@ class HelperDishDevice(SKABaseDevice):
     )
     def SetStandbyFPMode(self):
         # import debugpy; debugpy.debug_this_thread()'
-        self.logger.info("Processing SetStandbyFPMode Command")
-        # Set the Device State
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.STANDBY_FP)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            self.logger.info("Processing SetStandbyFPMode Command")
+            # Set the Device State
+            if self.dev_state() != DevState.STANDBY:
+                self.set_state(DevState.STANDBY)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_FP)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_SetStandbyLPMode_allowed(self):
         return True
@@ -188,19 +226,24 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetStandbyLPMode(self):
-        self.logger.info("Processing SetStandbyLPMode Command")
-        # Set the device state
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set the Pointing state
-        if self._pointing_state != PointingState.NONE:
-            self._pointing_state = PointingState.NONE
-            self.push_change_event("pointingState", self._pointing_state)
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.STANDBY_LP)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            self.logger.info("Processing SetStandbyLPMode Command")
+            # Set the device state
+            if self.dev_state() != DevState.STANDBY:
+                self.set_state(DevState.STANDBY)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # Set the Pointing state
+            if self._pointing_state != PointingState.NONE:
+                self._pointing_state = PointingState.NONE
+                self.push_change_event("pointingState", self._pointing_state)
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_LP)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_SetOperateMode_allowed(self):
         return True
@@ -210,19 +253,24 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetOperateMode(self):
-        self.logger.info("Processing SetOperateMode Command")
-        # Set the device state
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set the pointing state
-        if self._pointing_state != PointingState.READY:
-            self._pointing_state = PointingState.READY
-            self.push_change_event("pointingState", self._pointing_state)
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.OPERATE)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            self.logger.info("Processing SetOperateMode Command")
+            # Set the device state
+            if self.dev_state() != DevState.ON:
+                self.set_state(DevState.ON)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # Set the pointing state
+            if self._pointing_state != PointingState.READY:
+                self._pointing_state = PointingState.READY
+                self.push_change_event("pointingState", self._pointing_state)
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.OPERATE)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_SetStowMode_allowed(self):
         return True
@@ -232,15 +280,20 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetStowMode(self):
-        self.logger.info("Processing SetStowMode Command")
-        # Set device state
-        if self.dev_state() != DevState.DISABLE:
-            self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set dish mode
-        self.set_dish_mode(DishMode.STOW)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            self.logger.info("Processing SetStowMode Command")
+            # Set device state
+            if self.dev_state() != DevState.DISABLE:
+                self.set_state(DevState.DISABLE)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            # Set dish mode
+            self.set_dish_mode(DishMode.STOW)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_Track_allowed(self):
         return True
@@ -250,13 +303,18 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Track(self):
-        self.logger.info("Processing Track Command")
-        if self._pointing_state != PointingState.TRACK:
-            self._pointing_state = PointingState.TRACK
-            self.push_change_event("pointingState", self._pointing_state)
-        # Set dish mode
-        self.set_dish_mode(DishMode.OPERATE)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            self.logger.info("Processing Track Command")
+            if self._pointing_state != PointingState.TRACK:
+                self._pointing_state = PointingState.TRACK
+                self.push_change_event("pointingState", self._pointing_state)
+            # Set dish mode
+            self.set_dish_mode(DishMode.OPERATE)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_TrackStop_allowed(self):
         return True
@@ -266,9 +324,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def TrackStop(self):
-        self.logger.info("Processing TrackStop Command")
-        # Set dish mode
-        self.set_dish_mode(DishMode.OPERATE)
+        if not self._defective:
+            self.logger.info("Processing TrackStop Command")
+            # Set dish mode
+            self.set_dish_mode(DishMode.OPERATE)
 
     def is_AbortCommands_allowed(self):
         return True
@@ -290,9 +349,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand1(self, argin):
-        self.logger.info("Processing ConfigureBand1")
-        # Set dish mode
-        self.set_dish_mode(DishMode.CONFIG)
+        if not self._defective:
+            self.logger.info("Processing ConfigureBand1")
+            # Set dish mode
+            self.set_dish_mode(DishMode.CONFIG)
 
     def is_ConfigureBand2_allowed(self):
         return True
@@ -303,10 +363,15 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def ConfigureBand2(self, argin):
-        self.logger.info("Processing ConfigureBand2")
-        # Set dish mode
-        self.set_dish_mode(DishMode.CONFIG)
-        return ([ResultCode.OK], [""])
+        if not self._defective:
+            self.logger.info("Processing ConfigureBand2")
+            # Set dish mode
+            self.set_dish_mode(DishMode.CONFIG)
+            return ([ResultCode.OK], [""])
+        else:
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command."
+            ]
 
     def is_ConfigureBand3_allowed(self):
         return True
@@ -316,9 +381,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand3(self, argin):
-        self.logger.info("Processing ConfigureBand3")
-        # Set dish mode
-        self.set_dish_mode(DishMode.CONFIG)
+        if not self._defective:
+            self.logger.info("Processing ConfigureBand3")
+            # Set dish mode
+            self.set_dish_mode(DishMode.CONFIG)
 
     def is_ConfigureBand4_allowed(self):
         return True
@@ -328,9 +394,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand4(self, argin):
-        self.logger.info("Processing ConfigureBand4")
-        # Set dish mode
-        self.set_dish_mode(DishMode.CONFIG)
+        if not self._defective:
+            self.logger.info("Processing ConfigureBand4")
+            # Set dish mode
+            self.set_dish_mode(DishMode.CONFIG)
 
     def is_ConfigureBand5a_allowed(self):
         return True
@@ -340,9 +407,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand5a(self, argin):
-        self.logger.info("Processing ConfigureBand5a")
-        # Set dish mode
-        self.set_dish_mode(DishMode.CONFIG)
+        if not self._defective:
+            self.logger.info("Processing ConfigureBand5a")
+            # Set dish mode
+            self.set_dish_mode(DishMode.CONFIG)
 
     def is_ConfigureBand5b_allowed(self):
         return True
@@ -352,9 +420,10 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def ConfigureBand5b(self, argin):
-        self.logger.info("Processing ConfigureBand5")
-        # Set dish mode
-        self.set_dish_mode(DishMode.CONFIG)
+        if not self._defective:
+            self.logger.info("Processing ConfigureBand5")
+            # Set dish mode
+            self.set_dish_mode(DishMode.CONFIG)
 
     def is_Slew_allowed(self):
         return True
@@ -364,10 +433,11 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def Slew(self):
-        if self._pointing_state != PointingState.SLEW:
-            self._pointing_state = PointingState.SLEW
-            self.push_change_event("pointingState", self._pointing_state)
-        # TBD: Dish mode change
+        if not self._defective:
+            if self._pointing_state != PointingState.SLEW:
+                self._pointing_state = PointingState.SLEW
+                self.push_change_event("pointingState", self._pointing_state)
+            # TBD: Dish mode change
 
     @command(
         dtype_in=("DevVoid"),
