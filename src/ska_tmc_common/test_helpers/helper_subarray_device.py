@@ -366,7 +366,7 @@ class HelperSubArrayDevice(SKASubarray):
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
         else:
-            self._obs_state = ObsState.RESOURCING
+            self._obs_state = ObsState.CONFIGURING
             self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [
                 "Device is Defective, cannot process command completely."
