@@ -143,7 +143,7 @@ class HelperCspMasterDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self, argin):
-        if not self.defective:
+        if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
