@@ -329,6 +329,7 @@ class HelperDishDevice(SKABaseDevice):
             if self._pointing_state != PointingState.READY:
                 self._pointing_state = PointingState.READY
                 self.push_change_event("pointingState", self._pointing_state)
+                self.logger.info(f"Pointing State: {self._pointing_state}")
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
 
