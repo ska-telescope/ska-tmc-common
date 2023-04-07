@@ -56,13 +56,13 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         :param configuration: the configuration to be configured
         :type configuration: dict
         """
-        self.logger("%s", configuration)
+        self.logger.info("%s", configuration)
 
         return (ResultCode.OK, "")
 
     def scan(self, args):
         """Start scanning."""
-        self.logger("%s", args)
+        self.logger.info("%s", args)
         return (ResultCode.OK, "")
 
     def end_scan(self):
@@ -164,11 +164,10 @@ class HelperSubArrayDevice(SKASubarray):
         Trigger a ObsState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            value = ObsState(argin)
-            if self._obs_state != value:
-                self._obs_state = value
-                self.push_change_event("obsState", self._obs_state)
+        value = ObsState(argin)
+        if self._obs_state != value:
+            self._obs_state = value
+            self.push_change_event("obsState", self._obs_state)
 
     @command(
         dtype_in="DevState",
@@ -176,13 +175,14 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def SetDirectState(self, argin):
         """
-        Trigger a DevState change
+        Trigger a DevStateif self.dev_state() != argin:
+            self.set_state(argin)
+             change
         """
         # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            if self.dev_state() != argin:
-                self.set_state(argin)
-                self.push_change_event("State", self.dev_state())
+        if self.dev_state() != argin:
+            self.set_state(argin)
+            self.push_change_event("State", self.dev_state())
 
     @command(
         dtype_in=int,
@@ -194,11 +194,10 @@ class HelperSubArrayDevice(SKASubarray):
         """
         # import debugpy; debugpy.debug_this_thread()
         # # pylint: disable=E0203
-        if not self._defective:
-            value = HealthState(argin)
-            if self._health_state != value:
-                self._health_state = HealthState(argin)
-                self.push_change_event("healthState", self._health_state)
+        value = HealthState(argin)
+        if self._health_state != value:
+            self._health_state = HealthState(argin)
+            self.push_change_event("healthState", self._health_state)
 
     @command(
         dtype_in="DevString",
@@ -209,12 +208,11 @@ class HelperSubArrayDevice(SKASubarray):
         Trigger a CommandInProgress change
         """
         # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            if self._command_in_progress != argin:
-                self._command_in_progress = argin
-                self.push_change_event(
-                    "commandInProgress", self._command_in_progress
-                )
+        if self._command_in_progress != argin:
+            self._command_in_progress = argin
+            self.push_change_event(
+                "commandInProgress", self._command_in_progress
+            )
 
     def is_On_allowed(self):
         return True
@@ -292,8 +290,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
         else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.OK], [
+                "Device is Defective, cannot process command completely."
             ]
 
     def is_ReleaseResources_allowed(self):
@@ -366,8 +366,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
         else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
+            self._obs_state = ObsState.CONFIGURING
+            self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.OK], [
+                "Device is Defective, cannot process command completely."
             ]
 
     def is_Scan_allowed(self):
