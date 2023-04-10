@@ -211,7 +211,7 @@ class DishAdapter(BaseAdapter):
     def Restart(self):
         self._proxy.Restart()
 
-    def Abort(self):
+    def AbortCommands(self):
         self._proxy.AbortCommands()
 
     def ObsReset(self):
