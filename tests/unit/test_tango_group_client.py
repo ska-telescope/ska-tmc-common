@@ -6,7 +6,7 @@ import pytest
 from mock import Mock
 
 # Additional import
-from src.ska_tmc_common.tango_group_client import TangoGroupClient
+from ska_tmc_common import TangoGroupClient
 
 # from os.path import dirname, join
 

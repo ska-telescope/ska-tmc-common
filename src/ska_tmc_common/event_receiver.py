@@ -26,7 +26,7 @@ class EventReceiver:
     def __init__(
         self,
         component_manager,
-        logger=None,
+        logger,
         max_workers=1,
         proxy_timeout=500,
         sleep_time=1,
@@ -64,33 +64,37 @@ class EventReceiver:
 
     def subscribe_events(self, dev_info):
         try:
-            # import debugpy; debugpy.debug_this_thread()
             proxy = self._dev_factory.get_device(dev_info.dev_name)
-            proxy.subscribe_event(
-                "healthState",
-                tango.EventType.CHANGE_EVENT,
-                self.handle_health_state_event,
-                stateless=True,
-            )
-            proxy.subscribe_event(
-                "State",
-                tango.EventType.CHANGE_EVENT,
-                self.handle_state_event,
-                stateless=True,
-            )
-            if ("subarray" in dev_info.dev_name) and (
-                "leaf" not in dev_info.dev_name
-            ):
+        except Exception as e:
+            self._logger.error("Exception occured while creating proxy: %s", e)
+        else:
+            try:
+                # import debugpy; debugpy.debug_this_thread()
                 proxy.subscribe_event(
-                    "ObsState",
+                    "healthState",
                     tango.EventType.CHANGE_EVENT,
-                    self.handle_obs_state_event,
+                    self.handle_health_state_event,
                     stateless=True,
                 )
-        except Exception as e:
-            self._logger.debug(
-                "event not working for device %s/%s", proxy.dev_name, e
-            )
+                proxy.subscribe_event(
+                    "State",
+                    tango.EventType.CHANGE_EVENT,
+                    self.handle_state_event,
+                    stateless=True,
+                )
+                if ("subarray" in dev_info.dev_name) and (
+                    "leaf" not in dev_info.dev_name
+                ):
+                    proxy.subscribe_event(
+                        "ObsState",
+                        tango.EventType.CHANGE_EVENT,
+                        self.handle_obs_state_event,
+                        stateless=True,
+                    )
+            except Exception as e:
+                self._logger.debug(
+                    "Event not working for device %s :%s", proxy.dev_name, e
+                )
 
     def handle_health_state_event(self, evt):
         # import debugpy; debugpy.debug_this_thread()

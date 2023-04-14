@@ -2,7 +2,7 @@ import pytest
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.subarray import SKASubarray
 
-from ska_tmc_common.adapters import (
+from ska_tmc_common import (
     AdapterFactory,
     AdapterType,
     BaseAdapter,

@@ -8,10 +8,12 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskStatus
 
-from ska_tmc_common.enum import TimeoutState
-from ska_tmc_common.timeout_callback import TimeoutCallback
-from ska_tmc_common.tmc_command import TmcLeafNodeCommand
-from ska_tmc_common.tmc_component_manager import TmcLeafNodeComponentManager
+from ska_tmc_common import (
+    TimeoutCallback,
+    TimeoutState,
+    TmcLeafNodeCommand,
+    TmcLeafNodeComponentManager,
+)
 
 logger = logging.getLogger(__name__)
 

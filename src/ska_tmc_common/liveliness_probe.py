@@ -20,7 +20,7 @@ class BaseLivelinessProbe:
     def __init__(
         self,
         component_manager,
-        logger=None,
+        logger,
         proxy_timeout=500,
         sleep_time=1,
     ):
@@ -118,14 +118,19 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
             while not self._stop:
                 try:
                     dev_info = self._component_manager.get_device()
-                    if dev_info is None:
-                        continue
-                    executor.submit(self.device_task, dev_info)
                 except Exception as e:
                     self._logger.error(
-                        "Error in submitting the task for %s: %s",
-                        dev_info.dev_name,
-                        e,
+                        "Exception occured while getting device info: %s", e
                     )
-
+                else:
+                    try:
+                        if dev_info is None:
+                            continue
+                        executor.submit(self.device_task, dev_info)
+                    except Exception as e:
+                        self._logger.error(
+                            "Error in submitting the task for %s: %s",
+                            dev_info.dev_name,
+                            e,
+                        )
                 sleep(self._sleep_time)

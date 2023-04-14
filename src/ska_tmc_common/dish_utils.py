@@ -122,10 +122,14 @@ class DishHelper:
 
         except OSError as err:
             logger.exception(err)
-            raise f"OSError.'{err}'in AzElConverter.create_antenna_obj."
+            raise OSError(
+                f"OSError.'{err}'in AzElConverter.create_antenna_obj."
+            )
 
         except ValueError as verr:
             logger.exception(verr)
-            raise f"ValueError.'{verr}'in AzElConverter.create_antenna_obj."
+            raise ValueError(
+                f"ValueError.'{verr}'in AzElConverter.create_antenna_obj."
+            )
 
         return antennas
