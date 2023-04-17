@@ -8,8 +8,6 @@ from mock import Mock
 # Additional import
 from ska_tmc_common import TangoGroupClient
 
-# from os.path import dirname, join
-
 
 def test_get_tango_group():
     dish_group = "DishLeafNode_Group"
