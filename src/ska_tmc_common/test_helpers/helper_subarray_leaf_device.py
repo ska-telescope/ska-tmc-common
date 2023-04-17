@@ -6,7 +6,9 @@ from ska_tango_base.control_model import HealthState
 from tango import DevState
 from tango.server import command
 
-from ska_tmc_common import EmptyComponentManager
+from ska_tmc_common.test_helpers.helper_csp_master_device import (
+    EmptyComponentManager,
+)
 
 
 class HelperSubarrayLeafDevice(SKABaseDevice):

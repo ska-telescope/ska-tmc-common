@@ -1,7 +1,7 @@
 from logging import Logger
 from typing import Any, Optional
 
-from ska_tmc_common import TimeoutState
+from ska_tmc_common.enum import TimeoutState
 
 
 class TimeoutCallback:

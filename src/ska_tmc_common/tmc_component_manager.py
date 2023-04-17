@@ -11,17 +11,15 @@ import time
 from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
-from ska_tmc_common import (
-    DeviceInfo,
-    EventReceiver,
-    LivelinessProbeType,
+from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.enum import LivelinessProbeType, TimeoutState
+from ska_tmc_common.event_receiver import EventReceiver
+from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
-    SubArrayDeviceInfo,
-    TimeoutCallback,
-    TimeoutState,
-    TMCOpStateModel,
 )
+from ska_tmc_common.op_state_model import TMCOpStateModel
+from ska_tmc_common.timeout_callback import TimeoutCallback
 
 
 class TmcComponent:

@@ -6,8 +6,10 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevEnum, DevState
 from tango.server import attribute, command
 
-from ska_tmc_common import EmptyComponentManager
 from ska_tmc_common.enum import DishMode, PointingState
+from ska_tmc_common.test_helpers.helper_csp_master_device import (
+    EmptyComponentManager,
+)
 
 
 class HelperDishDevice(SKABaseDevice):

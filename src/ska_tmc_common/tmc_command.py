@@ -7,13 +7,10 @@ from typing import Callable, Tuple
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
-from ska_tmc_common import (
-    AdapterFactory,
-    AdapterType,
-    TimeoutCallback,
-    TimeoutState,
-    TMCOpStateModel,
-)
+from ska_tmc_common.adapters import AdapterFactory, AdapterType
+from ska_tmc_common.enum import TimeoutState
+from ska_tmc_common.op_state_model import TMCOpStateModel
+from ska_tmc_common.timeout_callback import TimeoutCallback
 
 
 class BaseTMCCommand:
