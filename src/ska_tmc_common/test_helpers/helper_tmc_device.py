@@ -5,8 +5,9 @@ from ska_tango_base.control_model import HealthState
 # from tango import DevState
 from tango.server import command
 
-from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
-from ska_tmc_common.tmc_component_manager import (
+from ska_tmc_common import (
+    DeviceInfo,
+    SubArrayDeviceInfo,
     TmcComponent,
     TmcComponentManager,
 )

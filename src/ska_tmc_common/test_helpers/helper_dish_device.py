@@ -6,10 +6,8 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevEnum, DevState
 from tango.server import attribute, command
 
+from ska_tmc_common import EmptyComponentManager
 from ska_tmc_common.enum import DishMode, PointingState
-from ska_tmc_common.test_helpers.helper_csp_master_device import (
-    EmptyComponentManager,
-)
 
 
 class HelperDishDevice(SKABaseDevice):
@@ -367,10 +365,13 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def ConfigureBand2(self, argin):
+        current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            time.sleep(2)
+            self.set_dish_mode(current_dish_mode)
             return ([ResultCode.OK], [""])
         else:
             return [ResultCode.FAILED], [

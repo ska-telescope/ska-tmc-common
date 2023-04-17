@@ -7,9 +7,7 @@ from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command
 
-from ska_tmc_common.test_helpers.helper_csp_master_device import (
-    EmptyComponentManager,
-)
+from ska_tmc_common import EmptyComponentManager
 
 
 class HelperMCCSStateDevice(SKABaseDevice):
