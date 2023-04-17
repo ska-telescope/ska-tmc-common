@@ -6,7 +6,7 @@ import pytest
 from mock import Mock
 
 # Additional import
-from src.ska_tmc_common.tango_client import TangoClient
+from ska_tmc_common import TangoClient
 
 
 def test_get_fqdn():

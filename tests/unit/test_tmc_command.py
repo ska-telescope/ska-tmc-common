@@ -3,14 +3,14 @@ import time
 import pytest
 from ska_tango_base.commands import ResultCode
 
-from ska_tmc_common.adapters import AdapterType
-from ska_tmc_common.enum import LivelinessProbeType
-from ska_tmc_common.test_helpers.helper_adapter_factory import (
+from ska_tmc_common import (
+    AdapterType,
     HelperAdapterFactory,
+    LivelinessProbeType,
+    TMCCommand,
+    TmcComponentManager,
 )
-from ska_tmc_common.tmc_command import TMCCommand
-from ska_tmc_common.tmc_component_manager import TmcComponentManager
-from src.ska_tmc_common.input import InputParameter
+from src.ska_tmc_common import InputParameter
 from tests.settings import logger
 
 

@@ -4,7 +4,7 @@ import mock
 from mock import Mock
 
 # Additional imports
-from src.ska_tmc_common.tango_server_helper import TangoServerHelper
+from ska_tmc_common import TangoServerHelper
 
 
 def test_set_status():

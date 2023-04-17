@@ -367,10 +367,13 @@ class HelperDishDevice(SKABaseDevice):
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def ConfigureBand2(self, argin):
+        current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            time.sleep(2)
+            self.set_dish_mode(current_dish_mode)
             return ([ResultCode.OK], [""])
         else:
             return [ResultCode.FAILED], [

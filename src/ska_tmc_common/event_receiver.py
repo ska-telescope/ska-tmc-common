@@ -26,7 +26,7 @@ class EventReceiver:
     def __init__(
         self,
         component_manager,
-        logger=None,
+        logger,
         max_workers=1,
         proxy_timeout=500,
         sleep_time=1,
@@ -64,74 +64,84 @@ class EventReceiver:
 
     def subscribe_events(self, dev_info):
         try:
-            # import debugpy; debugpy.debug_this_thread()
             proxy = self._dev_factory.get_device(dev_info.dev_name)
-            proxy.subscribe_event(
-                "healthState",
-                tango.EventType.CHANGE_EVENT,
-                self.handle_health_state_event,
-                stateless=True,
-            )
-            proxy.subscribe_event(
-                "State",
-                tango.EventType.CHANGE_EVENT,
-                self.handle_state_event,
-                stateless=True,
-            )
-            if ("subarray" in dev_info.dev_name) and (
-                "leaf" not in dev_info.dev_name
-            ):
+        except Exception as e:
+            self._logger.error("Exception occured while creating proxy: %s", e)
+        else:
+            try:
+                # import debugpy; debugpy.debug_this_thread()
                 proxy.subscribe_event(
-                    "ObsState",
+                    "healthState",
                     tango.EventType.CHANGE_EVENT,
-                    self.handle_obs_state_event,
+                    self.handle_health_state_event,
                     stateless=True,
                 )
-        except Exception as e:
-            self._logger.debug(
-                "event not working for device %s/%s", proxy.dev_name, e
-            )
+                proxy.subscribe_event(
+                    "State",
+                    tango.EventType.CHANGE_EVENT,
+                    self.handle_state_event,
+                    stateless=True,
+                )
+                if ("subarray" in dev_info.dev_name) and (
+                    "leaf" not in dev_info.dev_name
+                ):
+                    proxy.subscribe_event(
+                        "ObsState",
+                        tango.EventType.CHANGE_EVENT,
+                        self.handle_obs_state_event,
+                        stateless=True,
+                    )
+            except Exception as e:
+                self._logger.debug(
+                    "Event not working for device %s :%s", proxy.dev_name, e
+                )
 
-    def handle_health_state_event(self, evt):
+    def handle_health_state_event(self, event):
         # import debugpy; debugpy.debug_this_thread()
-        if evt.err:
-            error = evt.errors[0]
+        if event.err:
+            error = event.errors[0]
             self._logger.error(
                 "Received error from device %s: %s %s",
-                evt.device.dev_name(),
+                event.device.dev_name(),
                 error.reason,
                 error.desc,
             )
-            self._component_manager.update_event_failure(evt.device.dev_name())
+            self._component_manager.update_event_failure(
+                event.device.dev_name()
+            )
             return
 
-        new_value = evt.attr_value.value
+        new_value = event.attr_value.value
         self._component_manager.update_device_health_state(
-            evt.device.dev_name(), new_value
+            event.device.dev_name(), new_value
         )
 
-    def handle_state_event(self, evt):
+    def handle_state_event(self, event):
         # import debugpy; debugpy.debug_this_thread()
-        if evt.err:
-            error = evt.errors[0]
+        if event.err:
+            error = event.errors[0]
             self._logger.error("%s %s", error.reason, error.desc)
-            self._component_manager.update_event_failure(evt.device.dev_name())
+            self._component_manager.update_event_failure(
+                event.device.dev_name()
+            )
             return
 
-        new_value = evt.attr_value.value
+        new_value = event.attr_value.value
         self._component_manager.update_device_state(
-            evt.device.dev_name(), new_value
+            event.device.dev_name(), new_value
         )
 
-    def handle_obs_state_event(self, evt):
+    def handle_obs_state_event(self, event):
         # import debugpy; debugpy.debug_this_thread()
-        if evt.err:
-            error = evt.errors[0]
+        if event.err:
+            error = event.errors[0]
             self._logger.error("%s %s", error.reason, error.desc)
-            self._component_manager.update_event_failure(evt.device.dev_name())
+            self._component_manager.update_event_failure(
+                event.device.dev_name()
+            )
             return
 
-        new_value = evt.attr_value.value
+        new_value = event.attr_value.value
         self._component_manager.update_device_obs_state(
-            evt.device.dev_name(), new_value
+            event.device.dev_name(), new_value
         )

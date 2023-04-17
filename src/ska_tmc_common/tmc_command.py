@@ -9,6 +9,7 @@ from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
 from ska_tmc_common.adapters import AdapterFactory, AdapterType
 from ska_tmc_common.enum import TimeoutState
+from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
 
 
@@ -21,6 +22,7 @@ class BaseTMCCommand:
         **kwargs,
     ):
         self.adapter_factory = AdapterFactory()
+        self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.component_manager = component_manager
         self.logger = logger
 
@@ -197,7 +199,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         raise NotImplementedError("This method must be inherited!")
 
     def call_adapter_method(
-        self, device, adapter, command_name, argin=None
+        self, device: str, adapter, command_name: str, argin=None
     ) -> Tuple[ResultCode, str]:
         if adapter is None:
             return self.adapter_error_message_result(
@@ -221,12 +223,12 @@ class TmcLeafNodeCommand(BaseTMCCommand):
             return self.generate_command_result(
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
-                f"{device} device {adapter.dev_name}.\n"
-                f"Reason: Error in calling the {command_name} command on {device}.\n"
-                "The command has NOT been executed.\n"
-                "This device will continue with normal operation.",
+                + f"{device} device {adapter.dev_name}.\n"
+                + f"Reason: Followin exception occured - {e}.\n"
+                + "The command has NOT been executed.\n"
+                + "This device will continue with normal operation.",
             )
         self.logger.info(
             f"{command_name} command successfully invoked on:{adapter.dev_name}"
         )
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""

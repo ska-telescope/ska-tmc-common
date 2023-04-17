@@ -1,7 +1,7 @@
-from ska_tmc_common.device_info import DishDeviceInfo
-from ska_tmc_common.enum import LivelinessProbeType
-from ska_tmc_common.input import InputParameter
-from ska_tmc_common.tmc_component_manager import (
+from ska_tmc_common import (
+    DishDeviceInfo,
+    InputParameter,
+    LivelinessProbeType,
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )

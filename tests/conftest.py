@@ -6,8 +6,7 @@ import tango
 from ska_tango_testing.mock import MockCallable
 from tango.test_context import MultiDeviceTestContext
 
-from ska_tmc_common.dev_factory import DevFactory
-from ska_tmc_common.test_helpers.helper_tmc_device import DummyTmcDevice
+from ska_tmc_common import DevFactory, DummyTmcDevice
 
 """
 A module defining a list of fixtures that are shared across all ska_tmc_common tests.

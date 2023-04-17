@@ -1,10 +1,11 @@
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
-from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
-from ska_tmc_common.input import InputParameter
-from ska_tmc_common.test_helpers.helper_tmc_device import DummyComponent
-from ska_tmc_common.tmc_component_manager import (
+from ska_tmc_common import (
+    DeviceInfo,
+    DummyComponent,
+    InputParameter,
+    SubArrayDeviceInfo,
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
