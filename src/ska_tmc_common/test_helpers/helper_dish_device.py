@@ -1,3 +1,4 @@
+import threading
 import time
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -370,15 +371,25 @@ class HelperDishDevice(SKABaseDevice):
         current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
-            # Set dish mode
-            self.set_dish_mode(DishMode.CONFIG)
-            time.sleep(2)
-            self.set_dish_mode(current_dish_mode)
+            # Create thread which update dishMode
+            start_dish_mode_transition = threading.Thread(
+                None,
+                self.start_config_transition,
+                "DishHelper",
+                args=(current_dish_mode,),
+            )
+            start_dish_mode_transition.start()
             return ([ResultCode.OK], [""])
         else:
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
+
+    def start_config_transition(self, current_dish_mode):
+        """Update Dish Mode to CONFIG and then to current_dish_mode"""
+        self.set_dish_mode(DishMode.CONFIG)
+        time.sleep(2)
+        self.set_dish_mode(current_dish_mode)
 
     def is_ConfigureBand3_allowed(self):
         return True
