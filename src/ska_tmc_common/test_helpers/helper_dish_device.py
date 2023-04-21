@@ -372,20 +372,20 @@ class HelperDishDevice(SKABaseDevice):
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
             # Create thread which update dishMode
-            start_dish_mode_update = threading.Thread(
+            start_dish_mode_transition = threading.Thread(
                 None,
-                self.update_dish_mode,
+                self.start_config_transition,
                 "DishHelper",
                 args=(current_dish_mode,),
             )
-            start_dish_mode_update.start()
+            start_dish_mode_transition.start()
             return ([ResultCode.OK], [""])
         else:
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
 
-    def update_dish_mode(self, current_dish_mode):
+    def start_config_transition(self, current_dish_mode):
         """Update Dish Mode to CONFIG and then to current_dish_mode"""
         self.set_dish_mode(DishMode.CONFIG)
         time.sleep(2)
