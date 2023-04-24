@@ -346,6 +346,19 @@ class HelperDishDevice(SKABaseDevice):
         # Dish Mode Not Applicable.
         return ([ResultCode.OK], [""])
 
+    def is_Configure_allowed(self):
+        return True
+
+    @command(
+        dtype_in=("DevString"),
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
+    )
+    def Configure(self, argin):
+        if not self._defective:
+            self.logger.info("Processing Configure command")
+            return [ResultCode.OK], ["Configure completed"]
+        return [ResultCode.FAILED], ["Device defective. Configure Failed."]
+
     def is_ConfigureBand1_allowed(self):
         return True
 
