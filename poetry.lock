@@ -2,13 +2,13 @@
 name = "appdirs"
 version = "1.4.4"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
 [[package]]
 name = "astroid"
-version = "2.15.3"
+version = "2.15.4"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -26,7 +26,7 @@ wrapt = [
 name = "astropy"
 version = "5.2.2"
 description = "Astronomy and astrophysics core library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -84,7 +84,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 name = "certifi"
 version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -92,7 +92,7 @@ python-versions = ">=3.6"
 name = "charset-normalizer"
 version = "3.1.0"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7.0"
 
@@ -119,7 +119,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7
 name = "contextlib2"
 version = "21.6.0"
 description = "Backports and enhancements for the contextlib module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -165,7 +165,7 @@ graph = ["objgraph (>=1.7.2)"]
 name = "docopt"
 version = "0.6.2"
 description = "Pythonic argument parser, that will make you smile"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -286,7 +286,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -382,7 +382,7 @@ future = "*"
 name = "katpoint"
 version = "1.0a2"
 description = "Karoo Array Telescope pointing coordinate library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6, <4"
 
@@ -428,7 +428,7 @@ python-versions = ">=3.6"
 name = "mock"
 version = "4.0.3"
 description = "Rolling backport of unittest.mock for all Pythons"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -465,7 +465,7 @@ python-versions = ">=3.8"
 name = "numpy"
 version = "1.24.3"
 description = "Fundamental package for array computing in Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -537,7 +537,7 @@ python-versions = ">=3.6"
 name = "pyerfa"
 version = "2.0.0.3"
 description = "Python bindings for ERFA"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -716,7 +716,7 @@ testing = ["filelock"]
 name = "python-gitlab"
 version = "3.14.0"
 description = "Interact with GitLab API"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7.0"
 
@@ -732,7 +732,7 @@ yaml = ["PyYaml (>=5.2)"]
 name = "PyYAML"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -740,7 +740,7 @@ python-versions = ">=3.6"
 name = "requests"
 version = "2.28.2"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7, <4"
 
@@ -758,7 +758,7 @@ use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 name = "requests-toolbelt"
 version = "0.10.1"
 description = "A utility belt for advanced users of python-requests"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -780,7 +780,7 @@ docutils = ">=0.11,<1.0"
 name = "schema"
 version = "0.7.5"
 description = "Simple data validation library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -791,7 +791,7 @@ contextlib2 = ">=0.5.5"
 name = "sgp4"
 version = "2.21"
 description = "Track Earth satellites given TLE data, using up-to-date 2020 SGP4 routines."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -880,7 +880,7 @@ reference = 'ska-nexus'
 name = "ska-telmodel"
 version = "1.4.0"
 description = "SKA telescope model library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7.2,<4.0.0"
 
@@ -935,7 +935,7 @@ python-versions = ">=3.7"
 name = "toolz"
 version = "0.12.0"
 description = "List processing tools and functional utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -982,7 +982,7 @@ python-versions = ">=3.7"
 name = "urllib3"
 version = "1.26.15"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
@@ -1014,7 +1014,7 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "623349257639d3692230dccba922391e530f8982c09e05ee475ec32e940f9859"
+content-hash = "816e6c220dd880f7fda4f255bcafef17ce67cf4ada6ef069e2fb3e142995475f"
 
 [metadata.files]
 appdirs = [
@@ -1022,8 +1022,8 @@ appdirs = [
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 astroid = [
-    {file = "astroid-2.15.3-py3-none-any.whl", hash = "sha256:f11e74658da0f2a14a8d19776a8647900870a63de71db83713a8e77a6af52662"},
-    {file = "astroid-2.15.3.tar.gz", hash = "sha256:44224ad27c54d770233751315fa7f74c46fa3ee0fab7beef1065f99f09897efe"},
+    {file = "astroid-2.15.4-py3-none-any.whl", hash = "sha256:a1b8543ef9d36ea777194bc9b17f5f8678d2c56ee6a45b2c2f17eec96f242347"},
+    {file = "astroid-2.15.4.tar.gz", hash = "sha256:c81e1c7fbac615037744d067a9bb5f9aeb655edf59b63ee8b59585475d6f80d8"},
 ]
 astropy = [
     {file = "astropy-5.2.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:66522e897daf3766775c00ef5c63b69beb0eb359e1f45d18745d0f0ca7f29cc1"},

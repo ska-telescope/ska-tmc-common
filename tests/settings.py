@@ -5,7 +5,7 @@ import pytest
 
 from ska_tmc_common import (
     DummyTmcDevice,
-    HelperStateDevice,
+    HelperBaseDevice,
     InputParameter,
     TmcComponentManager,
 )
@@ -29,7 +29,7 @@ def devices_to_load():
             "devices": [{"name": "dummy/tmc/device"}],
         },
         {
-            "class": HelperStateDevice,
+            "class": HelperBaseDevice,
             "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
         },
     )
