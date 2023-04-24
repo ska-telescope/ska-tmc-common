@@ -351,7 +351,7 @@ class HelperDishDevice(SKABaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Configure(self, argin):
         if not self._defective:
