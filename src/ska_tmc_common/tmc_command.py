@@ -47,13 +47,13 @@ class BaseTMCCommand:
             except ConnectionFailed as cf:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
-                    return device_name, cf
+                    return device_name, str(cf)
             except DevFailed as df:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
-                    return device_name, df
+                    return device_name, str(df)
             except Exception as e:
-                return device_name, e
+                return device_name, str(e)
 
     def do(self, argin=None) -> NotImplementedError:
         raise NotImplementedError(
