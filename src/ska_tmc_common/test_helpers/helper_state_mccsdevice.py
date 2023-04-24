@@ -15,8 +15,6 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         def do(self):
             super().do()
             self._device._assigned_resources = "{ }"
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
             return (ResultCode.OK, "")
 
     assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)

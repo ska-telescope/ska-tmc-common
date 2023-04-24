@@ -3,7 +3,6 @@ import time
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevEnum, DevState
 from tango.server import attribute, command
 
@@ -16,16 +15,12 @@ class HelperDishDevice(HelperBaseDevice):
 
     def init_device(self):
         super().init_device()
-        self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.STANDBY_LP
-        self._defective = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             return (ResultCode.OK, "")
