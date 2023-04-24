@@ -3,100 +3,36 @@ import time
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState
 from tango import AttrWriteType, DevEnum, DevState
 from tango.server import attribute, command
 
 from ska_tmc_common.enum import DishMode, PointingState
-from ska_tmc_common.test_helpers.helper_csp_master_device import (
-    EmptyComponentManager,
-)
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
-class HelperDishDevice(SKABaseDevice):
+class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 
     def init_device(self):
         super().init_device()
-        self._health_state = HealthState.OK
         self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.STANDBY_LP
-        self._defective = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self):
             super().do()
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
-    defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_pointingState(self):
         return self._pointing_state
 
-    def read_defective(self):
-        return self._defective
-
     def read_dishMode(self):
         return self._dish_mode
-
-    def create_component_manager(self):
-        cm = EmptyComponentManager(
-            logger=self.logger,
-            max_workers=None,
-            communication_state_callback=None,
-            component_state_callback=None,
-        )
-        return cm
-
-    def always_executed_hook(self):
-        pass
-
-    def delete_device(self):
-        pass
-
-    @command(
-        dtype_in=bool,
-        doc_in="Set Defective",
-    )
-    def SetDefective(self, value: bool):
-        """Trigger defective change"""
-        self._defective = value
-
-    @command(
-        dtype_in="DevState",
-        doc_in="state to assign",
-    )
-    def SetDirectState(self, argin):
-        """
-        Trigger a DevState change
-        """
-        # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            if self.dev_state() != argin:
-                self.set_state(argin)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-
-    @command(
-        dtype_in=int,
-        doc_in="health state to assign",
-    )
-    def SetDirectHealthState(self, argin):
-        """
-        Trigger a HealthState change
-        """
-        # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            value = HealthState(argin)
-            if self._health_state != value:
-                self._health_state = HealthState(argin)
-                self.push_change_event("healthState", self._health_state)
 
     @command(
         dtype_in=DevEnum,
@@ -130,48 +66,6 @@ class HelperDishDevice(SKABaseDevice):
                 self._dish_mode = dishMode
                 time.sleep(0.1)
                 self.push_change_event("dishMode", self._dish_mode)
-
-    def is_On_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def On(self):
-        # Set device state
-        if not self._defective:
-            if self.dev_state() != DevState.ON:
-                self.set_state(DevState.ON)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-            # TBD: Dish mode change
-            return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
-
-    def is_Off_allowed(self):
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Off(self):
-        # Set device state
-        if not self._defective:
-            if self.dev_state() != DevState.OFF:
-                self.set_state(DevState.OFF)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-            # TBD: Dish mode change
-            return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
 
     def is_Standby_allowed(self):
         return True

@@ -2,7 +2,7 @@ import threading
 import time
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
@@ -47,35 +47,13 @@ class BaseTMCCommand:
             except ConnectionFailed as cf:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
-                    return self.adapter_error_message_result(
-                        device_name,
-                        cf,
-                    )
+                    return device_name, str(cf)
             except DevFailed as df:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
-                    return self.adapter_error_message_result(
-                        device_name,
-                        df,
-                    )
+                    return device_name, str(df)
             except Exception as e:
-                return self.adapter_error_message_result(
-                    device_name,
-                    e,
-                )
-
-    def generate_command_result(
-        self, result_code: ResultCode, message: str
-    ) -> Tuple[ResultCode, str]:
-        self.logger.info(message)
-        return result_code, message
-
-    def adapter_error_message_result(
-        self, dev_name: str, e: str
-    ) -> Tuple[ResultCode, str]:
-        message = f"Error in creating adapter for {dev_name}: {e}"
-        self.logger.error(message)
-        return ResultCode.FAILED, message
+                return device_name, str(e)
 
     def do(self, argin=None) -> NotImplementedError:
         raise NotImplementedError(
@@ -200,12 +178,9 @@ class TmcLeafNodeCommand(BaseTMCCommand):
 
     def call_adapter_method(
         self, device: str, adapter, command_name: str, argin=None
-    ) -> Tuple[ResultCode, str]:
+    ) -> Union[Tuple[ResultCode, str], Tuple[str, str]]:
         if adapter is None:
-            return self.adapter_error_message_result(
-                device,
-                "Adapter is None",
-            )
+            return device, "Adapter is None"
 
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"
@@ -220,7 +195,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
 
         except Exception as e:
             self.logger.exception("Command invocation failed: %s", e)
-            return self.generate_command_result(
+            return (
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"

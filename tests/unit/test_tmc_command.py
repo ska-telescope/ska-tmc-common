@@ -1,7 +1,6 @@
 import time
 
 import pytest
-from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import (
     AdapterType,
@@ -48,13 +47,6 @@ def test_check_allowed(command_object, value, result):
     assert return_value == result
 
 
-def test_generate_command_result(command_object):
-    result = command_object.generate_command_result(
-        ResultCode.OK, "Test Message"
-    )
-    assert result == (ResultCode.OK, "Test Message")
-
-
 def test_adapter_creation(command_object: DummyCommand):
     device = "src/tmc/common"
     start_time = time.time()
@@ -71,10 +63,11 @@ def test_adapter_creation(command_object: DummyCommand):
 def test_adapter_creation_failure(command_object: DummyCommand):
     device = "src/tmc/common"
     start_time = time.time()
-    result, error = command_object.adapter_creation_retry(
+    dev_name, error = command_object.adapter_creation_retry(
         device_name=device,
         adapter_type=AdapterType.BASE,
         start_time=start_time,
         timeout=10,
     )
-    assert "Error in creating adapter for src/tmc/common" in error
+    assert dev_name == "src/tmc/common"
+    assert "DevFailed" in error

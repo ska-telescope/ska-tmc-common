@@ -1,11 +1,10 @@
-from ska_tango_base.base import SKABaseDevice
 from ska_tango_base.commands import ResultCode, SlowCommand
-from ska_tango_base.control_model import HealthState
 
 # from tango import DevState
 from tango.server import command
 
 from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 from ska_tmc_common.tmc_component_manager import (
     TmcComponent,
     TmcComponentManager,
@@ -81,28 +80,8 @@ class DummyComponentManager(TmcComponentManager):
         return self._sample_data
 
 
-class DummyTmcDevice(SKABaseDevice):
+class DummyTmcDevice(HelperBaseDevice):
     """A dummy TMC device for triggering state changes with a command"""
-
-    def init_device(self):
-        super().init_device()
-        self._health_state = HealthState.OK
-
-    class InitCommand(SKABaseDevice.InitCommand):
-        def do(self):
-            super().do()
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
-            return (ResultCode.OK, "")
-
-    def create_component_manager(self):
-        cm = DummyComponentManager(
-            logger=self.logger,
-            max_workers=None,
-            communication_state_callback=None,
-            component_state_callback=None,
-        )
-        return cm
 
     class SetDataCommand(SlowCommand):
         def __init__(self, target):

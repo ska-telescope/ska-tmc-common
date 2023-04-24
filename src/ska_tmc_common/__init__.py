@@ -50,13 +50,10 @@ from .op_state_model import TMCOpStateMachine, TMCOpStateModel
 from .tango_client import TangoClient
 from .tango_group_client import TangoGroupClient
 from .tango_server_helper import TangoServerHelper
+from .test_helpers.empty_component_manager import EmptyComponentManager
 from .test_helpers.helper_adapter_factory import HelperAdapterFactory
-from .test_helpers.helper_csp_master_device import (
-    EmptyComponentManager,
-    HelperCspMasterDevice,
-)
+from .test_helpers.helper_base_device import HelperBaseDevice
 from .test_helpers.helper_dish_device import HelperDishDevice
-from .test_helpers.helper_state_device import HelperStateDevice
 from .test_helpers.helper_state_mccsdevice import HelperMCCSStateDevice
 from .test_helpers.helper_subarray_device import (
     EmptySubArrayComponentManager,
@@ -127,10 +124,9 @@ __all__ = [
     "TmcLeafNodeComponentManager",
     "TmcComponent",
     "HelperAdapterFactory",
-    "HelperCspMasterDevice",
     "EmptyComponentManager",
     "HelperDishDevice",
-    "HelperStateDevice",
+    "HelperBaseDevice",
     "HelperMCCSStateDevice",
     "HelperSubArrayDevice",
     "EmptySubArrayComponentManager",
