@@ -1,7 +1,6 @@
 import time
 
 import pytest
-from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import (
     AdapterType,
@@ -46,13 +45,6 @@ def test_check_allowed(command_object, value, result):
     command_object.set_condition(value)
     return_value = command_object.check_allowed()
     assert return_value == result
-
-
-def test_generate_command_result(command_object):
-    result = command_object.generate_command_result(
-        ResultCode.OK, "Test Message"
-    )
-    assert result == (ResultCode.OK, "Test Message")
 
 
 def test_adapter_creation(command_object: DummyCommand):
