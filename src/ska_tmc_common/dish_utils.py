@@ -27,29 +27,21 @@ logger = logging.getLogger(__name__)
 class AntennaLocation:
     """class to init antenna location parameters"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         "Class constructor"
         self.latitude = 0.0
         self.longitude = 0.0
         self.height = 0.0
 
-    def get_latitude(self):
-        """Added to resolve pylint  too-few-public-methods"""
-        return self.latitude
-
 
 class AntennaParams:
     """Class to define antenna parameters"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """AntennaParams Constructor"""
         self.antenna_station_name = ""
         self.antenna_location = AntennaLocation()
         self.dish_diameter = 0.0
-
-    def get_station_name(self):
-        """Added to resolve pylint  too-few-public-methods"""
-        return self.antenna_station_name
 
 
 class DishHelper:
