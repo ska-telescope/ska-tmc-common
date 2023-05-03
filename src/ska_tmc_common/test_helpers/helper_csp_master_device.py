@@ -1,88 +1,13 @@
 import time
 
-from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState
 from tango import DevState
-from tango.server import AttrWriteType, attribute, command
+from tango.server import command
 
-from ska_tmc_common.test_helpers.empty_component_manager import (
-    EmptyComponentManager,
-)
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
-
-class HelperCspMasterDevice(SKABaseDevice):
-    """A common base device for helper devices to share functionality."""
-
-    def init_device(self):
-        super().init_device()
-        self._health_state = HealthState.OK
-        self._defective = False
-
-    class InitCommand(SKABaseDevice.InitCommand):
-        def do(self):
-            super().do()
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
-            return (ResultCode.OK, "")
-
-    def create_component_manager(self):
-        cm = EmptyComponentManager(
-            logger=self.logger,
-            max_workers=None,
-            communication_state_callback=None,
-            component_state_callback=None,
-        )
-        return cm
-
-    defective = attribute(dtype=bool, access=AttrWriteType.READ)
-
-    def read_defective(self):
-        return self._defective
-
-    def always_executed_hook(self):
-        pass
-
-    def delete_device(self):
-        pass
-
-    @command(
-        dtype_in=bool,
-        doc_in="Set Defective",
-    )
-    def SetDefective(self, value: bool):
-        """Trigger defective change"""
-        self._defective = value
-
-    @command(
-        dtype_in="DevState",
-        doc_in="state to assign",
-    )
-    def SetDirectState(self, argin):
-        """
-        Trigger a DevState change
-        """
-        # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            if self.dev_state() != argin:
-                self.set_state(argin)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-
-    @command(
-        dtype_in=int,
-        doc_in="state to assign",
-    )
-    def SetDirectHealthState(self, argin):
-        """
-        Trigger a HealthState change
-        """
-        # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            value = HealthState(argin)
-            if self._health_state != value:
-                self._health_state = HealthState(argin)
-                self.push_change_event("healthState", self._health_state)
+class HelperCspMasterDevice(HelperBaseDevice):
+    """A helper device class for Csp Controller device"""
 
     def is_On_allowed(self):
         return True
