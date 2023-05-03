@@ -1,12 +1,12 @@
 import pytest
-from ska_tango_base.base.base_device import SKABaseDevice
-from ska_tango_base.subarray import SKASubarray
 
 from ska_tmc_common import (
     AdapterFactory,
     AdapterType,
     BaseAdapter,
     DishAdapter,
+    HelperBaseDevice,
+    HelperSubArrayDevice,
     SubArrayAdapter,
 )
 
@@ -15,11 +15,11 @@ from ska_tmc_common import (
 def devices_to_load():
     return (
         {
-            "class": SKASubarray,
+            "class": HelperSubArrayDevice,
             "devices": [{"name": "test/subarray/1"}],
         },
         {
-            "class": SKABaseDevice,
+            "class": HelperBaseDevice,
             "devices": [{"name": "test/base/1"}, {"name": "test/dish/1"}],
         },
     )

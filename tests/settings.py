@@ -1,12 +1,16 @@
 import logging
 import time
+from typing import Tuple
 
 import pytest
+import tango
 
 from ska_tmc_common import (
+    DevFactory,
     DummyTmcDevice,
     HelperBaseDevice,
     InputParameter,
+    LivelinessProbeType,
     TmcComponentManager,
 )
 
@@ -15,7 +19,7 @@ logger = logging.getLogger(__name__)
 SLEEP_TIME = 0.5
 TIMEOUT = 10
 
-DishLeafNodePrefix = "ska_mid/tm_leaf_node/d"
+DishLeafNodePrefix = "ska_mid/tm_leaf_node/d0"
 NumDishes = 10
 
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
@@ -44,10 +48,10 @@ def count_faulty_devices(cm):
 
 
 def create_cm(
-    _input_parameter=InputParameter(None),
-    p_liveliness_probe=True,
-    p_event_receiver=True,
-):
+    _input_parameter: InputParameter = InputParameter(None),
+    p_liveliness_probe: LivelinessProbeType = LivelinessProbeType.MULTI_DEVICE,
+    p_event_receiver: bool = True,
+) -> Tuple[TmcComponentManager, float]:
     cm = TmcComponentManager(
         _input_parameter=_input_parameter,
         logger=logger,
@@ -59,14 +63,18 @@ def create_cm(
     return cm, start_time
 
 
-def set_devices_state(devices, state, devFactory, cm, expected_elapsed_time):
+def set_devices_state(
+    devices: list, state: tango.DevState, devFactory: DevFactory
+) -> None:
     for device in devices:
         proxy = devFactory.get_device(device)
         proxy.SetDirectState(state)
         assert proxy.State() == state
 
 
-def set_device_state(device, state, devFactory):
+def set_device_state(
+    device: str, state: tango.DevState, devFactory: DevFactory
+) -> None:
     proxy = devFactory.get_device(device)
     proxy.SetDirectState(state)
     assert proxy.State() == state
