@@ -1,8 +1,9 @@
 import threading
 import time
+from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, Tuple, Union
+from typing import Callable, Tuple
 
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
@@ -11,12 +12,13 @@ from ska_tmc_common.adapters import AdapterFactory, AdapterType
 from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
+from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
 class BaseTMCCommand:
     def __init__(
         self,
-        component_manager,
+        component_manager: BaseTmcComponentManager,
         logger: Logger,
         *args,
         **kwargs,
@@ -33,10 +35,9 @@ class BaseTMCCommand:
         start_time: float,
         timeout: int,
     ):
-        adapter = None
         elapsed_time = 0
 
-        while adapter is None and elapsed_time <= timeout:
+        while elapsed_time <= timeout:
             try:
                 adapter = self.adapter_factory.get_or_create_adapter(
                     device_name,
@@ -68,7 +69,7 @@ class BaseTMCCommand:
     def start_tracker_thread(
         self,
         state_function: Callable,
-        expected_state,
+        expected_state: IntEnum,
         timeout_id: str,
         timeout_callback: TimeoutCallback,
     ) -> None:
@@ -101,7 +102,7 @@ class BaseTMCCommand:
     def track_timeout_and_transition(
         self,
         state_function: Callable,
-        expected_state,
+        expected_state: IntEnum,
         timeout_id: str,
         timeout_callback: TimeoutCallback,
     ) -> None:
@@ -178,9 +179,9 @@ class TmcLeafNodeCommand(BaseTMCCommand):
 
     def call_adapter_method(
         self, device: str, adapter, command_name: str, argin=None
-    ) -> Union[Tuple[ResultCode, str], Tuple[str, str]]:
+    ) -> Tuple[ResultCode, str]:
         if adapter is None:
-            return device, "Adapter is None"
+            return ResultCode.FAILED, f"Adapter is None for device: {device}"
 
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"

@@ -20,7 +20,7 @@ class InvalidObsStateError(ValueError):
 class ResourceReassignmentError(Exception):
     """Raised when the resource is already assigned to another subarray"""
 
-    def __init__(self, message, resources=None):
+    def __init__(self, message: str, resources=None) -> None:
         super(ResourceReassignmentError, self).__init__(message)
         self.value = message
         self.resources_reallocation = resources

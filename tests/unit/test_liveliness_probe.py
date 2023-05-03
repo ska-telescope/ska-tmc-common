@@ -34,7 +34,8 @@ def test_stop_ln():
 
 def test_add_device():
     cm = TmcComponentManager(
-        _input_parameter=InputParameter(None), logger=logger
+        _input_parameter=InputParameter(None),
+        logger=logger,
     )
     lp = cm.liveliness_probe_object
     initial_size = lp._monitoring_devices._qsize()
