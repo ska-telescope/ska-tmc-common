@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.3.10"
+version = "0.3.11"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -23,13 +23,15 @@ pytango = "9.3.3"
 jsonschema = "^4.0.1"
 marshmallow = "^3.14.1"
 fire = "^0.4.0"
-black = "^22.1.0"
 ska-ser-logging = "^0.4.1"
 ska-tango-base = "0.17.0"
 ska-tango-testing = "0.4.1"
 katpoint = "1.0a2"
 ska-telmodel = "1.5.0"
 mock = "^4.0.3"
+black = "^22.8.0"
+isort = "^5.10.1"
+flake8 = "^5.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
@@ -47,10 +49,6 @@ darglint = "^1.8.1"
 pylint-junit = "^0.3.2"
 
 
-[tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
-isort = "^5.10.1"
-flake8 = "^5.0.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
