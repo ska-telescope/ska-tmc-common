@@ -115,7 +115,7 @@ class HelperSubArrayDevice(SKASubarray):
     class InitCommand(SKASubarray.InitCommand):
         def do(self):
             super().do()
-            self._device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]}}'
+            self._device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}},"calibration:b":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}}}'
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
@@ -361,7 +361,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def Configure(self, argin):
         if not self._defective:
-            if self._obs_state != ObsState.READY:
+            if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
