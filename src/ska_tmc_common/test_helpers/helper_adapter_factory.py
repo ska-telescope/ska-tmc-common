@@ -1,3 +1,5 @@
+from typing import Union
+
 import mock
 
 from ska_tmc_common.adapters import (
@@ -17,8 +19,19 @@ class HelperAdapterFactory(AdapterFactory):
         self.adapters = []
 
     def get_or_create_adapter(
-        self, dev_name, adapter_type=AdapterType.BASE, proxy=None, attrs=None
-    ):
+        self,
+        dev_name: str,
+        adapter_type: AdapterType = AdapterType.BASE,
+        proxy=None,
+        attrs=None,
+    ) -> Union[
+        DishAdapter,
+        SubArrayAdapter,
+        CspMasterAdapter,
+        CspSubarrayAdapter,
+        MCCSAdapter,
+        BaseAdapter,
+    ]:
         if proxy is None:
             proxy = mock.Mock(attrs)
 

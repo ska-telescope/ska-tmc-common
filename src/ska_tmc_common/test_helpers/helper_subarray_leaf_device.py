@@ -1,3 +1,5 @@
+from typing import Literal
+
 from ska_tango_base.commands import ResultCode
 from tango.server import command
 
@@ -7,7 +9,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
-    def is_AssignResources_allowed(self):
+    def is_AssignResources_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -25,7 +27,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Configure_allowed(self):
+    def is_Configure_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -43,7 +45,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Scan_allowed(self):
+    def is_Scan_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -61,7 +63,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_EndScan_allowed(self):
+    def is_EndScan_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -77,7 +79,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_End_allowed(self):
+    def is_End_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -93,7 +95,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_GoToIdle_allowed(self):
+    def is_GoToIdle_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -109,7 +111,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Abort_allowed(self):
+    def is_Abort_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -120,7 +122,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("Abort completed.")
         return [ResultCode.OK], [""]
 
-    def is_ObsReset_allowed(self):
+    def is_ObsReset_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -136,7 +138,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Restart_allowed(self):
+    def is_Restart_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -147,7 +149,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("Restart completed.")
         return [ResultCode.OK], [""]
 
-    def is_ReleaseAllResources_allowed(self):
+    def is_ReleaseAllResources_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -163,7 +165,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_ReleaseResources_allowed(self):
+    def is_ReleaseResources_allowed(self) -> Literal[True]:
         return True
 
     @command(

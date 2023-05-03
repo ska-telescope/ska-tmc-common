@@ -1,5 +1,5 @@
-import logging
-from typing import Callable
+from logging import Logger
+from typing import Callable, Literal, Optional, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
@@ -11,21 +11,21 @@ from tango.server import attribute, command
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     def __init__(
         self,
-        logger: logging.Logger,
-        communication_state_callback: Callable,
-        component_state_callback: Callable,
-        **state
-    ):
+        logger: Logger,
+        communication_state_callback: Optional[Callable],
+        component_state_callback: Optional[Callable],
+        **kwargs
+    ) -> None:
         self.logger = logger
         super().__init__(
             logger,
             communication_state_callback,
             component_state_callback,
-            **state
+            **kwargs
         )
         self._assigned_resources = []
 
-    def assign(self, resources):
+    def assign(self, resources) -> Tuple[ResultCode, str]:
         """
         Assign resources to the component.
 
@@ -33,23 +33,23 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         self.logger.info("Resources: %s", resources)
         self._assigned_resources = ["0001"]
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def release(self, resources):
+    def release(self, resources) -> Tuple[ResultCode, str]:
         """
         Release resources from the component.
 
         :param resources: resources to be released
         """
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def release_all(self):
+    def release_all(self) -> Tuple[ResultCode, str]:
         """Release all resources."""
         self._assigned_resources = []
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def configure(self, configuration):
+    def configure(self, configuration) -> Tuple[ResultCode, str]:
         """
         Configure the component.
 
@@ -58,40 +58,40 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         self.logger.info("%s", configuration)
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def scan(self, args):
+    def scan(self, args) -> Tuple[ResultCode, str]:
         """Start scanning."""
         self.logger.info("%s", args)
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def end_scan(self):
+    def end_scan(self) -> Tuple[ResultCode, str]:
         """End scanning."""
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def end(self):
+    def end(self) -> Tuple[ResultCode, str]:
         """End Scheduling blocks."""
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def abort(self):
+    def abort(self) -> Tuple[ResultCode, str]:
         """Tell the component to abort whatever it was doing."""
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def obsreset(self):
+    def obsreset(self) -> Tuple[ResultCode, str]:
         """Reset the component to unconfigured but do not release resources."""
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
-    def restart(self):
+    def restart(self) -> Tuple[ResultCode, str]:
         """Deconfigure and release all resources."""
 
-        return (ResultCode.OK, "")
+        return ResultCode.OK, ""
 
     @property
-    def assigned_resources(self):
+    def assigned_resources(self) -> list:
         """
         Return the resources assigned to the component.
 
@@ -113,7 +113,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._defective = False
 
     class InitCommand(SKASubarray.InitCommand):
-        def do(self):
+        def do(self) -> Tuple[ResultCode, str]:
             super().do()
             self._device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}},"calibration:b":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}}}'
             self._device.set_change_event("State", True, False)
@@ -121,7 +121,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event("commandInProgress", True, False)
             self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("receiveAddresses", True, False)
-            return (ResultCode.OK, "")
+            return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
 
@@ -129,16 +129,16 @@ class HelperSubArrayDevice(SKASubarray):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    def read_receiveAddresses(self):
+    def read_receiveAddresses(self) -> str:
         return self._receive_addresses
 
-    def read_commandInProgress(self):
+    def read_commandInProgress(self) -> str:
         return self._command_in_progress
 
-    def read_defective(self):
+    def read_defective(self) -> bool:
         return self._defective
 
-    def create_component_manager(self):
+    def create_component_manager(self) -> EmptySubArrayComponentManager:
         cm = EmptySubArrayComponentManager(
             logger=self.logger,
             communication_state_callback=None,
@@ -214,7 +214,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "commandInProgress", self._command_in_progress
             )
 
-    def is_On_allowed(self):
+    def is_On_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -232,7 +232,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Off_allowed(self):
+    def is_Off_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -250,7 +250,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Standby_allowed(self):
+    def is_Standby_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -268,7 +268,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_AssignResources_allowed(self):
+    def is_AssignResources_allowed(self) -> Literal[True]:
         """
         Check if command `AssignResources` is allowed in the current device state.
 
@@ -296,7 +296,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command completely."
             ]
 
-    def is_ReleaseResources_allowed(self):
+    def is_ReleaseResources_allowed(self) -> Literal[True]:
         """
         Check if command `ReleaseResources` is allowed in the current device state.
 
@@ -320,7 +320,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_ReleaseAllResources_allowed(self):
+    def is_ReleaseAllResources_allowed(self) -> Literal[True]:
         """
         Check if command `ReleaseAllResources` is allowed in the current device state.
 
@@ -344,7 +344,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Configure_allowed(self):
+    def is_Configure_allowed(self) -> Literal[True]:
         """
         Check if command `Configure` is allowed in the current device state.
 
@@ -372,7 +372,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command completely."
             ]
 
-    def is_Scan_allowed(self):
+    def is_Scan_allowed(self) -> Literal[True]:
         """
         Check if command `Scan` is allowed in the current device state.
 
@@ -398,7 +398,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_EndScan_allowed(self):
+    def is_EndScan_allowed(self) -> Literal[True]:
         """
         Check if command `EndScan` is allowed in the current device state.
 
@@ -422,7 +422,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_End_allowed(self):
+    def is_End_allowed(self) -> Literal[True]:
         """
         Check if command `End` is allowed in the current device state.
 
@@ -446,7 +446,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_GoToIdle_allowed(self):
+    def is_GoToIdle_allowed(self) -> Literal[True]:
         """
         Check if command `GoToIdle` is allowed in the current device state.
 
@@ -470,7 +470,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_ObsReset_allowed(self):
+    def is_ObsReset_allowed(self) -> Literal[True]:
         """
         Check if command `ObsReset` is allowed in the current device state.
 
@@ -494,7 +494,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Abort_allowed(self):
+    def is_Abort_allowed(self) -> Literal[True]:
         """
         Check if command `Abort` is allowed in the current device state.
 
@@ -513,7 +513,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
         return [ResultCode.OK], [""]
 
-    def is_Restart_allowed(self):
+    def is_Restart_allowed(self) -> Literal[True]:
         """
         Check if command `Restart` is allowed in the current device state.
 

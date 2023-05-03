@@ -30,8 +30,7 @@ def test_get_device_proxy():
         tango_client_obj = TangoClient(
             csp_subarray1_ln_fqdn, logging.getLogger("test")
         )
-        device_proxy = tango_client_obj._get_deviceproxy()
-        assert device_proxy is not None
+        assert tango_client_obj.deviceproxy is not None
 
 
 @pytest.mark.xfail(reason="Need to mock Tango DeviceProxy object")
@@ -45,7 +44,6 @@ def test_send_command():
         tango_client_obj = TangoClient(
             csp_subarray1_ln_fqdn, logging.getLogger("test")
         )
-        device_proxy = tango_client_obj._get_deviceproxy()
         result = tango_client_obj.send_command("End")
         assert result is True
 

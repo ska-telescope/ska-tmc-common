@@ -1,5 +1,6 @@
 import threading
 import time
+from typing import Literal
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -28,17 +29,17 @@ class HelperDishDevice(HelperBaseDevice):
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
 
-    def read_pointingState(self):
+    def read_pointingState(self) -> PointingState:
         return self._pointing_state
 
-    def read_dishMode(self):
+    def read_dishMode(self) -> DishMode:
         return self._dish_mode
 
     @command(
         dtype_in=DevEnum,
-        doc_in=" Assign Dish Mode.",
+        doc_in="Assign Dish Mode.",
     )
-    def SetDirectDishMode(self, argin):
+    def SetDirectDishMode(self, argin) -> None:
         """
         Trigger a DishMode change
         """
@@ -49,7 +50,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=int,
         doc_in="pointing state to assign",
     )
-    def SetDirectPointingState(self, argin):
+    def SetDirectPointingState(self, argin) -> None:
         """
         Trigger a PointingState change
         """
@@ -60,14 +61,14 @@ class HelperDishDevice(HelperBaseDevice):
                 self._pointing_state = PointingState(argin)
                 self.push_change_event("pointingState", self._pointing_state)
 
-    def set_dish_mode(self, dishMode):
+    def set_dish_mode(self, dishMode) -> None:
         if not self._defective:
             if self._dish_mode != dishMode:
                 self._dish_mode = dishMode
                 time.sleep(0.1)
                 self.push_change_event("dishMode", self._dish_mode)
 
-    def is_Standby_allowed(self):
+    def is_Standby_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -89,7 +90,7 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_SetStandbyFPMode_allowed(self):
+    def is_SetStandbyFPMode_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -113,7 +114,7 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_SetStandbyLPMode_allowed(self):
+    def is_SetStandbyLPMode_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -140,7 +141,7 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_SetOperateMode_allowed(self):
+    def is_SetOperateMode_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -167,7 +168,7 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_SetStowMode_allowed(self):
+    def is_SetStowMode_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -190,7 +191,7 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Track_allowed(self):
+    def is_Track_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -211,7 +212,7 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_TrackStop_allowed(self):
+    def is_TrackStop_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -228,7 +229,7 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
 
-    def is_AbortCommands_allowed(self):
+    def is_AbortCommands_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -240,7 +241,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Dish Mode Not Applicable.
         return ([ResultCode.OK], [""])
 
-    def is_Configure_allowed(self):
+    def is_Configure_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -253,7 +254,7 @@ class HelperDishDevice(HelperBaseDevice):
             return [ResultCode.OK], ["Configure completed"]
         return [ResultCode.FAILED], ["Device defective. Configure Failed."]
 
-    def is_ConfigureBand1_allowed(self):
+    def is_ConfigureBand1_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -266,7 +267,7 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
 
-    def is_ConfigureBand2_allowed(self):
+    def is_ConfigureBand2_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -292,13 +293,13 @@ class HelperDishDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def start_config_transition(self, current_dish_mode):
+    def start_config_transition(self, current_dish_mode: DishMode) -> None:
         """Update Dish Mode to CONFIG and then to current_dish_mode"""
         self.set_dish_mode(DishMode.CONFIG)
         time.sleep(2)
         self.set_dish_mode(current_dish_mode)
 
-    def is_ConfigureBand3_allowed(self):
+    def is_ConfigureBand3_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -311,7 +312,7 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
 
-    def is_ConfigureBand4_allowed(self):
+    def is_ConfigureBand4_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -324,7 +325,7 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
 
-    def is_ConfigureBand5a_allowed(self):
+    def is_ConfigureBand5a_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -337,7 +338,7 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
 
-    def is_ConfigureBand5b_allowed(self):
+    def is_ConfigureBand5b_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -350,7 +351,7 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
 
-    def is_Slew_allowed(self):
+    def is_Slew_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -380,7 +381,7 @@ class HelperDishDevice(HelperBaseDevice):
         # TBD: Dish mode change
         pass
 
-    def is_Scan_allowed(self):
+    def is_Scan_allowed(self) -> Literal[True]:
         return True
 
     @command(
@@ -391,7 +392,7 @@ class HelperDishDevice(HelperBaseDevice):
         # TBD: Dish mode change
         self.logger.info("Processing Scan")
 
-    def is_Reset_allowed(self):
+    def is_Reset_allowed(self) -> Literal[True]:
         return True
 
     @command(
