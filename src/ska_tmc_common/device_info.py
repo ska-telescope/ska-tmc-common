@@ -1,5 +1,6 @@
 import json
 import threading
+from typing import Any
 
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
@@ -49,7 +50,7 @@ class DeviceInfo:
         self._unresponsive = _unresponsive
         self.lock = threading.Lock()
 
-    def from_dev_info(self, dev_info) -> None:
+    def from_dev_info(self, dev_info: "DeviceInfo") -> None:
         self.dev_name = dev_info.dev_name
         self.state = dev_info.state
         self.health_state = dev_info.health_state
@@ -57,7 +58,7 @@ class DeviceInfo:
         self.last_event_arrived = dev_info.last_event_arrived
         self.lock = dev_info.lock
 
-    def update_unresponsive(self, value: bool, exception=None) -> None:
+    def update_unresponsive(self, value: bool, exception: str = "") -> None:
         """
         Set device unresponsive
 
@@ -98,7 +99,7 @@ class DeviceInfo:
         """
         return self._unresponsive
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, DeviceInfo):
             return self.dev_name == other.dev_name
         else:
@@ -121,20 +122,22 @@ class DeviceInfo:
 
 
 class SubArrayDeviceInfo(DeviceInfo):
-    def __init__(self, dev_name: str, _unresponsive=False) -> None:
+    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
         self.id = -1
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
-    def from_dev_info(self, subarray_device_info) -> None:
+    def from_dev_info(
+        self, subarray_device_info: "SubArrayDeviceInfo"
+    ) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
             self.id = subarray_device_info.id
             self.resources = subarray_device_info.resources
             self.obs_state = subarray_device_info.obs_state
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, SubArrayDeviceInfo) or isinstance(
             other, DeviceInfo
         ):
@@ -163,12 +166,14 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
 
-    def from_dev_info(self, sdp_subarray_device_info) -> None:
+    def from_dev_info(
+        self, sdp_subarray_device_info: "SdpSubarrayDeviceInfo"
+    ) -> None:
         super().from_dev_info(sdp_subarray_device_info)
         if isinstance(sdp_subarray_device_info, SdpSubarrayDeviceInfo):
             self.receive_addresses = sdp_subarray_device_info.receive_addresses
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, SdpSubarrayDeviceInfo) or isinstance(
             other, DeviceInfo
         ):
@@ -206,7 +211,7 @@ class DishDeviceInfo(DeviceInfo):
         if self._dish_mode != value:
             self._dish_mode = value
 
-    def from_dev_info(self, dish_device_info) -> None:
+    def from_dev_info(self, dish_device_info: "DishDeviceInfo") -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
             self.id = dish_device_info.id
@@ -216,7 +221,7 @@ class DishDeviceInfo(DeviceInfo):
             self.achieved_pointing = dish_device_info.achieved_pointing
             self.desired_pointing = dish_device_info.desired_pointing
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, DishDeviceInfo) or isinstance(other, DeviceInfo):
             return self.dev_name == other.dev_name
         else:
