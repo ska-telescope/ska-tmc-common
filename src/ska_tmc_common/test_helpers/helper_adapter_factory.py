@@ -1,6 +1,7 @@
-from typing import Union
+from typing import Any, Optional, Union
 
 import mock
+from tango import DeviceProxy
 
 from ska_tmc_common.adapters import (
     AdapterFactory,
@@ -22,8 +23,8 @@ class HelperAdapterFactory(AdapterFactory):
         self,
         dev_name: str,
         adapter_type: AdapterType = AdapterType.BASE,
-        proxy=None,
-        attrs=None,
+        proxy: Optional[DeviceProxy] = None,
+        attrs: Any = None,
     ) -> Union[
         DishAdapter,
         SubArrayAdapter,

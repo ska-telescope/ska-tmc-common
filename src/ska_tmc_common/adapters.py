@@ -1,7 +1,8 @@
 import enum
-from typing import Union
+from typing import List, Tuple, Union
 
 import tango
+from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common.dev_factory import DevFactory
 
@@ -62,34 +63,38 @@ class SubArrayAdapter(BaseAdapter):
     def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
         super().__init__(dev_name, proxy)
 
-    def AssignResources(self, argin):
+    def AssignResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.AssignResources(argin)
 
-    def ReleaseAllResources(self):
+    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.ReleaseAllResources()
 
-    def ReleaseResources(self, argin):
+    def ReleaseResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.ReleaseResources(argin)
 
-    def Configure(self, argin):
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.Configure(argin)
 
-    def Scan(self, argin):
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.Scan(argin)
 
-    def EndScan(self):
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.EndScan()
 
-    def End(self):
+    def End(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.End()
 
-    def Abort(self):
+    def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.Abort()
 
-    def Restart(self):
+    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.Restart()
 
-    def ObsReset(self):
+    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.ObsReset()
 
 
@@ -97,10 +102,14 @@ class MCCSAdapter(BaseAdapter):
     def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
         super().__init__(dev_name, proxy)
 
-    def AssignResources(self, argin):
+    def AssignResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.AssignResources(argin)
 
-    def ReleaseResources(self, argin):
+    def ReleaseResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.ReleaseResources(argin)
 
 
@@ -108,55 +117,55 @@ class DishAdapter(BaseAdapter):
     def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
         super().__init__(dev_name, proxy)
 
-    def SetStandbyFPMode(self):
+    def SetStandbyFPMode(self) -> None:
         self._proxy.SetStandbyFPMode()
 
-    def SetOperateMode(self):
+    def SetOperateMode(self) -> None:
         self._proxy.SetOperateMode()
 
-    def SetStandbyLPMode(self):
+    def SetStandbyLPMode(self) -> None:
         self._proxy.SetStandbyLPMode()
 
-    def SetStowMode(self):
+    def SetStowMode(self) -> None:
         self._proxy.SetStowMode()
 
-    def Configure(self, argin):
+    def Configure(self, argin: str) -> None:
         self._proxy.Configure(argin)
 
-    def ConfigureBand1(self, argin):
+    def ConfigureBand1(self, argin: str) -> None:
         self._proxy.ConfigureBand1(argin)
 
-    def ConfigureBand2(self, argin):
+    def ConfigureBand2(self, argin: str) -> None:
         self._proxy.ConfigureBand2(argin)
 
-    def ConfigureBand3(self, argin):
+    def ConfigureBand3(self, argin: str) -> None:
         self._proxy.ConfigureBand3(argin)
 
-    def ConfigureBand4(self, argin):
+    def ConfigureBand4(self, argin: str) -> None:
         self._proxy.ConfigureBand4(argin)
 
-    def ConfigureBand5a(self, argin):
+    def ConfigureBand5a(self, argin: str) -> None:
         self._proxy.ConfigureBand5a(argin)
 
-    def ConfigureBand5b(self, argin):
+    def ConfigureBand5b(self, argin: str) -> None:
         self._proxy.ConfigureBand5b(argin)
 
-    def Track(self):
+    def Track(self) -> None:
         self._proxy.Track()
 
-    def TrackStop(self):
+    def TrackStop(self) -> None:
         self._proxy.TrackStop()
 
-    def Scan(self):
+    def Scan(self) -> None:
         self._proxy.Scan()
 
-    def Restart(self):
+    def Restart(self) -> None:
         self._proxy.Restart()
 
-    def Abort(self):
+    def Abort(self) -> None:
         self._proxy.AbortCommands()
 
-    def ObsReset(self):
+    def ObsReset(self) -> None:
         self._proxy.ObsReset()
 
 
@@ -164,7 +173,7 @@ class CspSubarrayAdapter(SubArrayAdapter):
     def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
         super().__init__(dev_name, proxy)
 
-    def End(self):
+    def End(self) -> Tuple[List[ResultCode], List[str]]:
         return self._proxy.GoToIdle()
 
 
