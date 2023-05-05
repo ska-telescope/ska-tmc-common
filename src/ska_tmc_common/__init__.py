@@ -53,6 +53,7 @@ from .tango_server_helper import TangoServerHelper
 from .test_helpers.empty_component_manager import EmptyComponentManager
 from .test_helpers.helper_adapter_factory import HelperAdapterFactory
 from .test_helpers.helper_base_device import HelperBaseDevice
+from .test_helpers.helper_csp_master_device import HelperCspMasterDevice
 from .test_helpers.helper_dish_device import HelperDishDevice
 from .test_helpers.helper_state_mccsdevice import HelperMCCSStateDevice
 from .test_helpers.helper_subarray_device import (
@@ -129,6 +130,7 @@ __all__ = [
     "HelperBaseDevice",
     "HelperMCCSStateDevice",
     "HelperSubArrayDevice",
+    "HelperCspMasterDevice",
     "EmptySubArrayComponentManager",
     "HelperSubarrayLeafDevice",
     "DummyComponent",

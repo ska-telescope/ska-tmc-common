@@ -7,13 +7,21 @@ package.
 import json
 import threading
 import time
+from logging import Logger
+from typing import Callable, Optional
 
-from ska_tango_base.control_model import HealthState
+import tango
+from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
-from ska_tmc_common.device_info import DeviceInfo, SubArrayDeviceInfo
+from ska_tmc_common.device_info import (
+    DeviceInfo,
+    DishDeviceInfo,
+    SubArrayDeviceInfo,
+)
 from ska_tmc_common.enum import LivelinessProbeType, TimeoutState
 from ska_tmc_common.event_receiver import EventReceiver
+from ska_tmc_common.input import InputParameter
 from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
@@ -23,7 +31,7 @@ from ska_tmc_common.timeout_callback import TimeoutCallback
 
 
 class TmcComponent:
-    def __init__(self, logger):
+    def __init__(self, logger: Logger):
         self.logger = logger
         # _health_state is never changing. Setter not implemented
         self._health_state = HealthState.OK
@@ -38,7 +46,7 @@ class TmcComponent:
     def update_device_exception(self, device_info, exception):
         raise NotImplementedError("This method must be inherited!")
 
-    def to_json(self):
+    def to_json(self) -> str:
         return json.dumps(self.to_dict())
 
     def to_dict(self):
@@ -48,13 +56,13 @@ class TmcComponent:
 class BaseTmcComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
-        logger=None,
-        _event_receiver=False,
-        communication_state_callback=None,
-        component_state_callback=None,
-        max_workers=5,
-        proxy_timeout=500,
-        sleep_time=1,
+        logger: Logger,
+        _event_receiver: bool = False,
+        communication_state_callback: Optional[Callable] = None,
+        component_state_callback: Optional[Callable] = None,
+        max_workers: int = 5,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
         *args,
         **kwargs,
     ):
@@ -70,14 +78,13 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
-        self.liveliness_probe_object = None
 
         if self.event_receiver:
             self.event_receiver_object = EventReceiver(
                 self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
+                logger=logger,
+                proxy_timeout=proxy_timeout,
+                sleep_time=sleep_time,
             )
 
     def is_command_allowed(self, command_name: str):
@@ -121,17 +128,17 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         else:
             self.logger.warning("Liveliness Probe is not running")
 
-    def stop_liveliness_probe(self):
+    def stop_liveliness_probe(self) -> None:
         """Stops the liveliness probe"""
         if self.liveliness_probe_object:
             self.liveliness_probe_object.stop()
 
-    def start_event_receiver(self):
+    def start_event_receiver(self) -> None:
         """Starts the Event Receiver for given device"""
         if self.event_receiver:
             self.event_receiver_object.start()
 
-    def stop_event_receiver(self):
+    def stop_event_receiver(self) -> None:
         """Stops the Event Receiver"""
         if self.event_receiver:
             self.event_receiver_object.stop()
@@ -202,16 +209,16 @@ class TmcComponentManager(BaseTmcComponentManager):
 
     def __init__(
         self,
-        _input_parameter,
-        logger=None,
-        _component=None,
-        _liveliness_probe=LivelinessProbeType.MULTI_DEVICE,
-        _event_receiver=True,
-        communication_state_callback=None,
-        component_state_callback=None,
-        max_workers=5,
-        proxy_timeout=500,
-        sleep_time=1,
+        _input_parameter: InputParameter,
+        logger: Logger,
+        _component: Optional[TmcComponent] = None,
+        _liveliness_probe: LivelinessProbeType = LivelinessProbeType.MULTI_DEVICE,
+        _event_receiver: bool = True,
+        communication_state_callback: Optional[Callable] = None,
+        component_state_callback: Optional[Callable] = None,
+        max_workers: int = 5,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
         *args,
         **kwargs,
     ):
@@ -238,11 +245,11 @@ class TmcComponentManager(BaseTmcComponentManager):
         self._input_parameter = _input_parameter
         self.start_liveliness_probe(_liveliness_probe)
 
-    def reset(self):
+    def reset(self) -> None:
         pass
 
     @property
-    def devices(self):
+    def devices(self) -> list:
         """
         Return the list of the monitored devices
 
@@ -250,7 +257,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         return self._component._devices
 
-    def add_device(self, dev_name):
+    def add_device(self, dev_name: str) -> None:
         """
         Add device to the monitoring loop
 
@@ -262,12 +269,14 @@ class TmcComponentManager(BaseTmcComponentManager):
 
         if "subarray" in dev_name.lower():
             dev_info = SubArrayDeviceInfo(dev_name, False)
+        elif "dish/master" in dev_name.lower():
+            dev_info = DishDeviceInfo(dev_name, False)
         else:
             dev_info = DeviceInfo(dev_name, False)
 
         self._component.update_device(dev_info)
 
-    def get_device(self, dev_name):
+    def get_device(self, dev_name: str) -> DeviceInfo:
         """
         Return the device info our of the monitoring loop with name dev_name
 
@@ -278,7 +287,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         return self._component.get_device(dev_name)
 
-    def device_failed(self, device_info, exception):
+    def device_failed(self, device_info: DeviceInfo, exception: str) -> None:
         """
         Set a device to failed and call the relative callback if available
 
@@ -290,13 +299,13 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device_exception(device_info, exception)
 
-    def update_event_failure(self, dev_name):
+    def update_event_failure(self, dev_name: str) -> None:
         with self.lock:
             dev_info = self._component.get_device(dev_name)
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
-    def update_device_info(self, device_info):
+    def update_device_info(self, device_info: DeviceInfo) -> None:
         """
         Update a device with correct monitoring information
         and call the relative callback if available
@@ -307,7 +316,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device(device_info)
 
-    def update_ping_info(self, ping, dev_name):
+    def update_ping_info(self, ping: int, dev_name: str) -> None:
         """
         Update a device with correct ping information.
 
@@ -320,7 +329,9 @@ class TmcComponentManager(BaseTmcComponentManager):
             dev_info = self._component.get_device(dev_name)
             dev_info.ping = ping
 
-    def update_device_health_state(self, dev_name, health_state):
+    def update_device_health_state(
+        self, dev_name: str, health_state: HealthState
+    ) -> None:
         """
         Update a monitored device health state
         aggregate the health states available
@@ -331,12 +342,14 @@ class TmcComponentManager(BaseTmcComponentManager):
         :type health_state: HealthState
         """
         with self.lock:
-            dev_info = self.component.get_device(dev_name)
+            dev_info = self._component.get_device(dev_name)
             dev_info.health_state = health_state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
-    def update_device_state(self, dev_name, state):
+    def update_device_state(
+        self, dev_name: str, state: tango.DevState
+    ) -> None:
         """
         Update a monitored device state,
         aggregate the states available
@@ -371,14 +384,14 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def __init__(
         self,
-        logger=None,
-        _liveliness_probe=LivelinessProbeType.NONE,
-        _event_receiver=False,
-        communication_state_callback=None,
-        component_state_callback=None,
-        max_workers=5,
-        proxy_timeout=500,
-        sleep_time=1,
+        logger: Logger,
+        _liveliness_probe: LivelinessProbeType = LivelinessProbeType.NONE,
+        _event_receiver: bool = False,
+        communication_state_callback: Optional[Callable] = None,
+        component_state_callback: Optional[Callable] = None,
+        max_workers: int = 5,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
         *args,
         **kwargs,
     ):
@@ -398,14 +411,14 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             args,
             kwargs,
         )
-        self._device = None  # It should be an object of DeviceInfo class
+        self._device: DeviceInfo  # It should be an object of DeviceInfo class
         self.start_liveliness_probe(_liveliness_probe)
         self.start_event_receiver()
 
-    def reset(self):
+    def reset(self) -> None:
         pass
 
-    def get_device(self):
+    def get_device(self) -> DeviceInfo:
         """
         Return the device info our of the monitoring loop with name dev_name
 
@@ -415,7 +428,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         return self._device
 
-    def device_failed(self, exception):
+    def device_failed(self, exception: str) -> None:
         """
         Set a device to failed and call the relative callback if available
 
@@ -425,7 +438,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.exception = exception
 
-    def update_device_info(self, device_info):
+    def update_device_info(self, device_info: DeviceInfo) -> None:
         """
         Update a device with correct monitoring information
         and call the relative callback if available
@@ -448,12 +461,12 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.ping = ping
 
-    def update_event_failure(self):
+    def update_event_failure(self) -> None:
         with self.lock:
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_health_state(self, health_state):
+    def update_device_health_state(self, health_state: HealthState) -> None:
         """
         Update a monitored device health state
         aggregate the health states available
@@ -466,7 +479,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_state(self, state):
+    def update_device_state(self, state: tango.DevState) -> None:
         """
         Update a monitored device state,
         aggregate the states available
@@ -480,7 +493,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_obs_state(self, obs_state):
+    def update_device_obs_state(self, obs_state: ObsState) -> None:
         """
         Update a monitored device obs state,
         and call the relative callbacks if available

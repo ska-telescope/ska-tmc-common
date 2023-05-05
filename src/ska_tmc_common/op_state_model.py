@@ -9,6 +9,9 @@ It consists of:
   `tango.DevState` enum value, and reported using the tango
   device's special ``state()`` method.
 """
+from logging import Logger
+from typing import Callable, List, Optional
+
 from ska_tango_base.base import OpStateModel
 from tango import DevState
 from transitions.extensions import LockedMachine as Machine
@@ -47,19 +50,19 @@ class TMCOpStateMachine(Machine):
     * **component_on**: the component has been switched on
     """
 
-    def __init__(self, callback=None, **extra_kwargs):
+    def __init__(self, callback: Optional[Callable] = None, **kwargs):
         """
         Initialise the state model.
 
         :param callback: A callback to be called when a transition
             implies a change to op state
         :type callback: callable
-        :param extra_kwargs: Additional keywords arguments to pass to
+        :param kwargs: Additional keywords arguments to pass to
             superclass initialiser (useful for graphing)
         """
         self._callback = callback
 
-        states = [
+        states: List[str] = [
             "_UNINITIALISED",
             "INIT_ON",
             "INIT_FAULT",
@@ -67,7 +70,7 @@ class TMCOpStateMachine(Machine):
             "FAULT",
         ]
 
-        transitions = [
+        transitions: List[dict] = [
             # Initial transition on the device starting initialisation
             {
                 "source": "_UNINITIALISED",
@@ -119,11 +122,11 @@ class TMCOpStateMachine(Machine):
             initial="_UNINITIALISED",
             transitions=transitions,
             after_state_change=self._state_changed,
-            **extra_kwargs,
+            **kwargs,
         )
         self._state_changed()
 
-    def _state_changed(self):
+    def _state_changed(self) -> None:
         """
         State machine callback that is called every time the op_state changes.
 
@@ -153,13 +156,13 @@ class TMCOpStateModel(OpStateModel):
     * **component_on**: the component has been switched on
     """
 
-    def __init__(self, logger, callback=None):
+    def __init__(self, logger: Logger, callback: Optional[Callable] = None):
         super().__init__(logger, callback=callback)
         self._op_state_machine = TMCOpStateMachine(
             callback=self._op_state_changed
         )
 
-    _op_state_mapping = {
+    _op_state_mapping: dict = {
         "_UNINITIALISED": None,
         "INIT_ON": DevState.INIT,
         "INIT_FAULT": DevState.INIT,

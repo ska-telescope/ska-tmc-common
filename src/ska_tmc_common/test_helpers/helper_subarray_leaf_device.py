@@ -1,5 +1,7 @@
+from typing import List, Tuple
+
 from ska_tango_base.commands import ResultCode
-from tango.server import command
+from tango.server import command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
@@ -7,7 +9,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
-    def is_AssignResources_allowed(self):
+    def is_AssignResources_allowed(self) -> bool:
         return True
 
     @command(
@@ -16,7 +18,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def AssignResources(self, argin):
+    def AssignResources(
+        self, argin: str = ""
+    ) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("AssignResource completed.")
             return [ResultCode.OK], [""]
@@ -25,7 +29,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Configure_allowed(self):
+    def is_Configure_allowed(self) -> bool:
         return True
 
     @command(
@@ -34,7 +38,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Configure(self, argin):
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Configure completed.")
             return [ResultCode.OK], [""]
@@ -43,7 +47,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Scan_allowed(self):
+    def is_Scan_allowed(self) -> bool:
         return True
 
     @command(
@@ -52,7 +56,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Scan(self, argin):
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Scan completed.")
             return [ResultCode.OK], [""]
@@ -61,14 +65,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_EndScan_allowed(self):
+    def is_EndScan_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def EndScan(self):
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("EndScan completed.")
             return [ResultCode.OK], [""]
@@ -77,14 +81,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_End_allowed(self):
+    def is_End_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def End(self):
+    def End(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("End completed.")
             return [ResultCode.OK], [""]
@@ -93,14 +97,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_GoToIdle_allowed(self):
+    def is_GoToIdle_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def GoToIdle(self):
+    def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("GoToIdle completed.")
             return [ResultCode.OK], [""]
@@ -109,25 +113,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Abort_allowed(self):
+    def is_Abort_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Abort(self):
+    def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         self.logger.info("Abort completed.")
         return [ResultCode.OK], [""]
 
-    def is_ObsReset_allowed(self):
+    def is_ObsReset_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ObsReset(self):
+    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("ObsReset completed.")
             return [ResultCode.OK], [""]
@@ -136,25 +140,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Restart_allowed(self):
+    def is_Restart_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Restart(self):
+    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         self.logger.info("Restart completed.")
         return [ResultCode.OK], [""]
 
-    def is_ReleaseAllResources_allowed(self):
+    def is_ReleaseAllResources_allowed(self) -> bool:
         return True
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseAllResources(self):
+    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("ReleaseAllResources completed")
             return [ResultCode.OK], [""]
@@ -163,7 +167,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_ReleaseResources_allowed(self):
+    def is_ReleaseResources_allowed(self) -> bool:
         return True
 
     @command(
@@ -172,7 +176,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseResources(self, argin):
+    def ReleaseResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("ReleaseResources completed.")
             return [ResultCode.OK], [""]
@@ -180,3 +186,24 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
+
+
+# ----------
+# Run server
+# ----------
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperSubarrayLeafDevice Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperSubarrayLeafDevice,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()

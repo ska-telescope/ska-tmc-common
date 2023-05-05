@@ -1,11 +1,13 @@
 import threading
 from concurrent import futures
+from logging import Logger
 from queue import Empty, Queue
 from time import sleep
 
 import tango
 
 from ska_tmc_common.dev_factory import DevFactory
+from ska_tmc_common.device_info import DeviceInfo
 
 
 class BaseLivelinessProbe:
@@ -20,9 +22,9 @@ class BaseLivelinessProbe:
     def __init__(
         self,
         component_manager,
-        logger,
-        proxy_timeout=500,
-        sleep_time=1,
+        logger: Logger,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
     ):
         self._thread = threading.Thread(target=self.run)
         self._stop = False
@@ -33,17 +35,17 @@ class BaseLivelinessProbe:
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
 
-    def start(self):
+    def start(self) -> None:
         if not self._thread.is_alive():
             self._thread.start()
 
-    def stop(self):
+    def stop(self) -> None:
         self._stop = True
 
-    def run(self):
+    def run(self) -> NotImplementedError:
         raise NotImplementedError("This method must be inherited")
 
-    def device_task(self, dev_info):
+    def device_task(self, dev_info: DeviceInfo) -> None:
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
@@ -63,21 +65,21 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
     def __init__(
         self,
         component_manager,
-        logger=None,
-        max_workers=5,
-        proxy_timeout=500,
-        sleep_time=1,
+        logger: Logger,
+        max_workers: int = 5,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
     ):
         self._max_workers = max_workers
         self._monitoring_devices = Queue(0)
 
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
-    def add_device(self, dev_name):
+    def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
         self._monitoring_devices.put(dev_name)
 
-    def run(self):
+    def run(self) -> None:
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:
@@ -105,13 +107,13 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     def __init__(
         self,
         component_manager,
-        logger=None,
-        proxy_timeout=500,
-        sleep_time=1,
+        logger: Logger,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
     ):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
-    def run(self):
+    def run(self) -> None:
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=1
         ) as executor:

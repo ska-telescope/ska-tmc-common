@@ -1,22 +1,33 @@
 import threading
 import time
+from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
-from ska_tmc_common.adapters import AdapterFactory, AdapterType
+from ska_tmc_common.adapters import (
+    AdapterFactory,
+    AdapterType,
+    BaseAdapter,
+    CspMasterAdapter,
+    CspSubarrayAdapter,
+    DishAdapter,
+    MCCSAdapter,
+    SubArrayAdapter,
+)
 from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
+from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
 class BaseTMCCommand:
     def __init__(
         self,
-        component_manager,
+        component_manager: BaseTmcComponentManager,
         logger: Logger,
         *args,
         **kwargs,
@@ -32,11 +43,19 @@ class BaseTMCCommand:
         adapter_type: AdapterType,
         start_time: float,
         timeout: int,
-    ):
-        adapter = None
+    ) -> Optional[
+        Union[
+            DishAdapter,
+            SubArrayAdapter,
+            CspMasterAdapter,
+            CspSubarrayAdapter,
+            MCCSAdapter,
+            BaseAdapter,
+        ]
+    ]:
         elapsed_time = 0
 
-        while adapter is None and elapsed_time <= timeout:
+        while elapsed_time <= timeout:
             try:
                 adapter = self.adapter_factory.get_or_create_adapter(
                     device_name,
@@ -44,16 +63,20 @@ class BaseTMCCommand:
                 )
                 return adapter
 
-            except ConnectionFailed as cf:
+            except ConnectionFailed:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
-                    return device_name, str(cf)
-            except DevFailed as df:
+                    raise
+            except DevFailed:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
-                    return device_name, str(df)
+                    raise
             except Exception as e:
-                return device_name, str(e)
+                self.logger.error(
+                    "Unexpected error occured while creating the adapter: %s",
+                    e,
+                )
+                raise
 
     def do(self, argin=None) -> NotImplementedError:
         raise NotImplementedError(
@@ -68,7 +91,7 @@ class BaseTMCCommand:
     def start_tracker_thread(
         self,
         state_function: Callable,
-        expected_state,
+        expected_state: IntEnum,
         timeout_id: str,
         timeout_callback: TimeoutCallback,
     ) -> None:
@@ -101,7 +124,7 @@ class BaseTMCCommand:
     def track_timeout_and_transition(
         self,
         state_function: Callable,
-        expected_state,
+        expected_state: IntEnum,
         timeout_id: str,
         timeout_callback: TimeoutCallback,
     ) -> None:
@@ -178,9 +201,9 @@ class TmcLeafNodeCommand(BaseTMCCommand):
 
     def call_adapter_method(
         self, device: str, adapter, command_name: str, argin=None
-    ) -> Union[Tuple[ResultCode, str], Tuple[str, str]]:
+    ) -> Tuple[ResultCode, str]:
         if adapter is None:
-            return device, "Adapter is None"
+            return ResultCode.FAILED, f"The proxy is missing for {device}"
 
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"

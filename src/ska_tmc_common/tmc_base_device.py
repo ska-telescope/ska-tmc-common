@@ -29,10 +29,10 @@ class TMCBaseDevice(SKABaseDevice):
         dtype="DevString",
         doc="Json String representing the entire internal model transformed for better reading.",
     )
-    def transformedInternalModel(self):
+    def transformedInternalModel(self) -> str:
         return self.transformedInternalModel_read()
 
-    def transformedInternalModel_read(self):
+    def transformedInternalModel_read(self) -> str:
         """
         This method consists of basic  read implementation of transformedInternalModel and
         must be overloaded to add additional values to result dictionary.
@@ -63,10 +63,10 @@ class TMCBaseDevice(SKABaseDevice):
         dtype="DevString",
         doc="Json String representing the entire internal model.",
     )
-    def internalModel(self):
+    def internalModel(self) -> str:
         return self.internalModel_read()
 
-    def internalModel_read(self):
+    def internalModel_read(self) -> str:
         """
             This method consists of basic  read implementation of InternalModel and
             must be overloaded to add additional attribute values to internal model.

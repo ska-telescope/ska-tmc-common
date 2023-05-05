@@ -20,8 +20,7 @@ def test_get_tango_group():
         tango_client_obj = TangoGroupClient(
             dish_group, logging.getLogger("test")
         )
-        tango_group = tango_client_obj.get_tango_group(dish_group)
-        assert tango_group is not None
+        assert tango_client_obj.tango_group is not None
 
 
 @pytest.mark.xfail(reason="Need to mock Tango Group object")
@@ -37,7 +36,7 @@ def test_get_group_device_list():
         tango_client_obj = TangoGroupClient(
             dish_group, logging.getLogger("test")
         )
-        dish_devices = ["ska_mid/tm_leaf_node/d0001"]
-        tango_client_obj.add_device(dish_devices)
+        dish_device = "ska_mid/tm_leaf_node/d0001"
+        tango_client_obj.add_device(dish_device)
         result_list = tango_client_obj.get_group_device_list()
-        assert result_list is dish_devices
+        assert result_list is dish_device

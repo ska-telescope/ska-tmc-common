@@ -1,8 +1,9 @@
 import time
+from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from tango import DevState
-from tango.server import command
+from tango.server import command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
@@ -10,7 +11,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
 
-    def is_On_allowed(self):
+    def is_On_allowed(self) -> bool:
         return True
 
     @command(
@@ -19,7 +20,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def On(self, argin):
+    def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
@@ -31,7 +32,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Off_allowed(self):
+    def is_Off_allowed(self) -> bool:
         return True
 
     @command(
@@ -40,7 +41,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Off(self, argin):
+    def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
@@ -52,7 +53,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Standby_allowed(self):
+    def is_Standby_allowed(self) -> bool:
         return True
 
     @command(
@@ -61,7 +62,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Standby(self, argin):
+    def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
@@ -72,3 +73,24 @@ class HelperCspMasterDevice(HelperBaseDevice):
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
+
+
+# ----------
+# Run server
+# ----------
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperCspMasterDevice Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperCspMasterDevice,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()

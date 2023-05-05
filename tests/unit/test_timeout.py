@@ -1,5 +1,6 @@
 import logging
 import time
+from enum import IntEnum, unique
 from logging import Logger
 from typing import Callable, Tuple
 
@@ -18,6 +19,14 @@ from ska_tmc_common import (
 logger = logging.getLogger(__name__)
 
 
+@unique
+class State(IntEnum):
+    """Integer enum for testing"""
+
+    NORMAL = 1
+    CHANGED = 2
+
+
 class DummyCommandClass(TmcLeafNodeCommand):
     """Dummy Command class for testing"""
 
@@ -25,17 +34,17 @@ class DummyCommandClass(TmcLeafNodeCommand):
         super().__init__(component_manager, logger, *args, **kwargs)
         self._timeout_id = f"{time.time()}-{self.__class__.__name__}"
         self.timeout_callback = TimeoutCallback(self._timeout_id, self.logger)
-        self._state_val = "NORMAL"
+        self._state_val = State.NORMAL
 
     @property
-    def state(self) -> str:
+    def state(self) -> IntEnum:
         return self._state_val
 
     @state.setter
-    def state(self, value: str) -> None:
+    def state(self, value: IntEnum) -> None:
         self._state_val = value
 
-    def get_state(self) -> str:
+    def get_state(self) -> IntEnum:
         return self.state
 
     def invoke_do(
@@ -49,7 +58,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         if result == ResultCode.OK:
             self.start_tracker_thread(
                 self.get_state,
-                "CHANGED",
+                State.CHANGED,
                 self._timeout_id,
                 self.timeout_callback,
             )
@@ -135,7 +144,7 @@ def test_command_timeout_success(task_callback):
     cm = TmcLeafNodeComponentManager(logger)
     dummy_command = DummyCommandClass(cm, logger)
     dummy_command.invoke_do(True, 10, task_callback)
-    dummy_command.state = "CHANGED"
+    dummy_command.state = State.CHANGED
     time.sleep(2)
     assert not cm.timer_object.is_alive()
     task_callback.assert_against_call(

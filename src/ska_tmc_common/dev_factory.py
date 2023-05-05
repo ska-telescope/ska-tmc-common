@@ -22,12 +22,14 @@ class DevFactory:
 
     _test_context = None
 
-    def __init__(self, green_mode=tango.GreenMode.Synchronous):
+    def __init__(
+        self, green_mode: tango.GreenMode = tango.GreenMode.Synchronous
+    ) -> None:
         self.dev_proxys = {}
         self.logger = logging.getLogger(__name__)
         self.default_green_mode = green_mode
 
-    def get_device(self, dev_name, green_mode=None):
+    def get_device(self, dev_name: str, green_mode=None) -> tango.DeviceProxy:
         """
         Create (if not done before) a DeviceProxy for the Device fqnm
 

@@ -11,6 +11,8 @@
 
 """
 import logging
+from logging import Logger
+from typing import Optional
 
 # Tango imports
 import tango
@@ -22,15 +24,12 @@ class TangoGroupClient:
     Class for TangoGroupClient API
     """
 
-    def __init__(self, group_name, logger):
-        if logger is None:
-            self.logger = logging.getLogger(__name__)
-        else:
-            self.logger = logger
+    def __init__(self, group_name, logger: Optional[Logger] = None):
+        self.logger = logger or logging.getLogger(__name__)
         self.group_name = group_name
         self.tango_group = self.get_tango_group(group_name)
 
-    def get_tango_group(self, group_name):
+    def get_tango_group(self, group_name) -> tango.Group:
         """
         Creates a Tango Group with given name
 
@@ -41,10 +40,9 @@ class TangoGroupClient:
             None
 
         """
-        self.tango_group = tango.Group(group_name)
-        return self.tango_group
+        return tango.Group(group_name)
 
-    def add_device(self, device_to_add):
+    def add_device(self, device_to_add: str):
         """
         Add device element in the Group.
 
@@ -66,7 +64,7 @@ class TangoGroupClient:
                 "TangoGroupClient.add_device()",
             )
 
-    def remove_device(self, device_to_remove):
+    def remove_device(self, device_to_remove: str):
         """
         Removes specified elements in the device_to_remove from the Group.
 

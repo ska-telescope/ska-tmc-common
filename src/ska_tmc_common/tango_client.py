@@ -9,11 +9,12 @@
 """ Tango Client Code"""
 
 import logging
+from logging import Logger
+from typing import Callable, Optional
 
 # Tango imports
 import tango
 from tango import DevFailed, DeviceProxy, EventType
-from tango.server import attribute
 
 
 class TangoClient:
@@ -21,7 +22,7 @@ class TangoClient:
     Class for TangoClient API
     """
 
-    def __init__(self, fqdn, logger=None):
+    def __init__(self, fqdn: str, logger: Optional[Logger] = None):
         """
         The class constructor.
         :param fqdn: string.
@@ -31,42 +32,33 @@ class TangoClient:
         :param
             logger: (optional) The logger object.
         """
-
-        if logger is None:
-            self.logger = logging.getLogger(__name__)
-        else:
-            self.logger = logger
+        self.logger = logger or logging.getLogger(__name__)
 
         self.device_fqdn = fqdn
-        self.deviceproxy = None
         self.deviceproxy = self._get_deviceproxy()
 
-    def _get_deviceproxy(self):
+    def _get_deviceproxy(self) -> DeviceProxy:
         """
         Returns device proxy for given FQDN.
         """
+        retry = 0
+        while retry < 3:
+            try:
+                return DeviceProxy(self.device_fqdn)
+            except DevFailed as df:
+                if retry >= 2:
+                    tango.Except.re_throw_exception(
+                        df,
+                        "Retries exhausted while creating device proxy.",
+                        "Failed to create DeviceProxy of "
+                        + str(self.device_fqdn),
+                        "SubarrayNode.get_deviceproxy()",
+                        tango.ErrSeverity.ERR,
+                    )
+                retry += 1
+                continue
 
-        if self.deviceproxy is None:
-            retry = 0
-            while retry < 3:
-                try:
-                    self.deviceproxy = DeviceProxy(self.device_fqdn)
-                    break
-                except DevFailed as df:
-                    if retry >= 2:
-                        tango.Except.re_throw_exception(
-                            df,
-                            "Retries exhausted while creating device proxy.",
-                            "Failed to create DeviceProxy of "
-                            + str(self.device_fqdn),
-                            "SubarrayNode.get_deviceproxy()",
-                            tango.ErrSeverity.ERR,
-                        )
-                    retry += 1
-                    continue
-        return self.deviceproxy
-
-    def get_device_fqdn(self):
+    def get_device_fqdn(self) -> str:
         """
         Returns the Fully Qualified Device Name
 
@@ -74,7 +66,7 @@ class TangoClient:
         """
         return self.device_fqdn
 
-    def send_command(self, command_name, command_data=None):
+    def send_command(self, command_name: str, command_data=None):
         """
         This method invokes command on the device server in synchronous mode.
 
@@ -109,7 +101,7 @@ class TangoClient:
             )
 
     def send_command_async(
-        self, command_name, command_data=None, callback_method=None
+        self, command_name: str, command_data=None, callback_method=None
     ):
         """
         This method invokes command on the device server in asynchronous mode.
@@ -158,7 +150,7 @@ class TangoClient:
                 tango.ErrSeverity.ERR,
             )
 
-    def get_attribute(self, attribute_name):
+    def get_attribute(self, attribute_name: str):
         """
         This method reads the value of the given attribute.
 
@@ -183,13 +175,13 @@ class TangoClient:
             )
             self.logger.debug(log_msg)
             tango.Except.throw_exception(
-                attribute + "Attribute not found",
+                f"{attribute_name} attribute not found",
                 log_msg,
                 "TangoClient.get_attribute",
                 tango.ErrSeverity.ERR,
             )
 
-    def set_attribute(self, attribute_name, value):
+    def set_attribute(self, attribute_name: str, value):
         """
         This method writes the value to the given attribute.
 
@@ -215,13 +207,13 @@ class TangoClient:
                 attribute_name + "Attribute not found" + str(attribute_error)
             )
             tango.Except.throw_exception(
-                attribute + "Attribute not found",
+                f"{attribute_name} attribute not found",
                 log_msg,
                 "TangoClient.set_attribute",
                 tango.ErrSeverity.ERR,
             )
 
-    def subscribe_attribute(self, attr_name, callback_method):
+    def subscribe_attribute(self, attr_name: str, callback_method: Callable):
         """
         Subscribes to the change event on the given attribute.
 
@@ -253,7 +245,7 @@ class TangoClient:
                 tango.ErrSeverity.ERR,
             )
 
-    def unsubscribe_attribute(self, event_id):
+    def unsubscribe_attribute(self, event_id: int):
         """
         Unsubscribes a client from receiving the event specified by event_id.
 

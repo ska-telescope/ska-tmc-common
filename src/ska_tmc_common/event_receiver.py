@@ -1,10 +1,12 @@
 import threading
 from concurrent import futures
+from logging import Logger
 from time import sleep
 
 import tango
 
 from ska_tmc_common.dev_factory import DevFactory
+from ska_tmc_common.device_info import DeviceInfo
 
 
 class EventReceiver:
@@ -26,10 +28,10 @@ class EventReceiver:
     def __init__(
         self,
         component_manager,
-        logger,
-        max_workers=1,
-        proxy_timeout=500,
-        sleep_time=1,
+        logger: Logger,
+        max_workers: int = 1,
+        proxy_timeout: int = 500,
+        sleep_time: int = 1,
     ):
         self._thread = threading.Thread(target=self.run)
         self._stop = False
@@ -41,15 +43,15 @@ class EventReceiver:
         self._max_workers = max_workers
         self._dev_factory = DevFactory()
 
-    def start(self):
+    def start(self) -> None:
         if not self._thread.is_alive():
             self._thread.start()
 
-    def stop(self):
+    def stop(self) -> None:
         self._stop = True
         # self._thread.join()
 
-    def run(self):
+    def run(self) -> None:
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:
@@ -62,7 +64,7 @@ class EventReceiver:
                     self._logger.warning("Exception occured: %s", e)
                 sleep(self._sleep_time)
 
-    def subscribe_events(self, dev_info):
+    def subscribe_events(self, dev_info: DeviceInfo) -> None:
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
         except Exception as e:
@@ -96,7 +98,7 @@ class EventReceiver:
                     "Event not working for device %s :%s", proxy.dev_name, e
                 )
 
-    def handle_health_state_event(self, event):
+    def handle_health_state_event(self, event: tango.EventData) -> None:
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
@@ -116,7 +118,7 @@ class EventReceiver:
             event.device.dev_name(), new_value
         )
 
-    def handle_state_event(self, event):
+    def handle_state_event(self, event: tango.EventData) -> None:
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
@@ -131,7 +133,7 @@ class EventReceiver:
             event.device.dev_name(), new_value
         )
 
-    def handle_obs_state_event(self, event):
+    def handle_obs_state_event(self, event: tango.EventData) -> None:
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]

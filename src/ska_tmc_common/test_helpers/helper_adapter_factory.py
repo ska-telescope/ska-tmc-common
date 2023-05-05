@@ -1,4 +1,7 @@
+from typing import Any, Optional, Union
+
 import mock
+from tango import DeviceProxy
 
 from ska_tmc_common.adapters import (
     AdapterFactory,
@@ -17,8 +20,19 @@ class HelperAdapterFactory(AdapterFactory):
         self.adapters = []
 
     def get_or_create_adapter(
-        self, dev_name, adapter_type=AdapterType.BASE, proxy=None, attrs=None
-    ):
+        self,
+        dev_name: str,
+        adapter_type: AdapterType = AdapterType.BASE,
+        proxy: Optional[DeviceProxy] = None,
+        attrs: Any = None,
+    ) -> Union[
+        DishAdapter,
+        SubArrayAdapter,
+        CspMasterAdapter,
+        CspSubarrayAdapter,
+        MCCSAdapter,
+        BaseAdapter,
+    ]:
         if proxy is None:
             proxy = mock.Mock(attrs)
 
