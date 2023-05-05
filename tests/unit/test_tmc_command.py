@@ -1,6 +1,7 @@
 import time
 
 import pytest
+from tango import DevFailed
 
 from ska_tmc_common import (
     AdapterType,
@@ -63,11 +64,10 @@ def test_adapter_creation(command_object: DummyCommand):
 def test_adapter_creation_failure(command_object: DummyCommand):
     device = "src/tmc/common"
     start_time = time.time()
-    dev_name, error = command_object.adapter_creation_retry(
-        device_name=device,
-        adapter_type=AdapterType.BASE,
-        start_time=start_time,
-        timeout=10,
-    )
-    assert dev_name == "src/tmc/common"
-    assert "DevFailed" in error
+    with pytest.raises(DevFailed):
+        command_object.adapter_creation_retry(
+            device_name=device,
+            adapter_type=AdapterType.BASE,
+            start_time=start_time,
+            timeout=10,
+        )
