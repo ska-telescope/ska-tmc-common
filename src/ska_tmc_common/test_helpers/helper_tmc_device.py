@@ -1,6 +1,6 @@
 import logging
 from logging import Logger
-from typing import Any, List, Literal, Optional, Tuple
+from typing import Any, Literal, Optional, Tuple
 
 from ska_tango_base.commands import ResultCode, SlowCommand
 
@@ -105,9 +105,9 @@ class DummyTmcDevice(HelperBaseDevice):
         def __init__(self, target) -> None:
             self._component_manager = target.component_manager
 
-        def do(self, value: str) -> Tuple[List[ResultCode], str]:
+        def do(self, value: str) -> Tuple[ResultCode, str]:
             self._component_manager.sample_data = value
-            return [ResultCode.OK], ""
+            return ResultCode.OK, ""
 
     def is_SetData_allowed(self) -> Literal[True]:
         return True
