@@ -1,5 +1,5 @@
 import time
-from typing import List, Literal, Tuple
+from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from tango import DevState
@@ -11,7 +11,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
 
-    def is_On_allowed(self) -> Literal[True]:
+    def is_On_allowed(self) -> bool:
         return True
 
     @command(
@@ -32,7 +32,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Off_allowed(self) -> Literal[True]:
+    def is_Off_allowed(self) -> bool:
         return True
 
     @command(
@@ -53,7 +53,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Standby_allowed(self) -> Literal[True]:
+    def is_Standby_allowed(self) -> bool:
         return True
 
     @command(

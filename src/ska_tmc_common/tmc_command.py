@@ -181,7 +181,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         self, device: str, adapter, command_name: str, argin=None
     ) -> Tuple[ResultCode, str]:
         if adapter is None:
-            return ResultCode.FAILED, f"The adapter is missing for {device}"
+            return ResultCode.FAILED, f"The proxy is missing for {device}"
 
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"

@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import Any, Callable, List, Literal, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
@@ -215,7 +215,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "commandInProgress", self._command_in_progress
             )
 
-    def is_On_allowed(self) -> Literal[True]:
+    def is_On_allowed(self) -> bool:
         return True
 
     @command(
@@ -233,7 +233,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Off_allowed(self) -> Literal[True]:
+    def is_Off_allowed(self) -> bool:
         return True
 
     @command(
@@ -251,7 +251,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Standby_allowed(self) -> Literal[True]:
+    def is_Standby_allowed(self) -> bool:
         return True
 
     @command(
@@ -269,7 +269,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_AssignResources_allowed(self) -> Literal[True]:
+    def is_AssignResources_allowed(self) -> bool:
         """
         Check if command `AssignResources` is allowed in the current device state.
 
@@ -299,7 +299,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command completely."
             ]
 
-    def is_ReleaseResources_allowed(self) -> Literal[True]:
+    def is_ReleaseResources_allowed(self) -> bool:
         """
         Check if command `ReleaseResources` is allowed in the current device state.
 
@@ -323,7 +323,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_ReleaseAllResources_allowed(self) -> Literal[True]:
+    def is_ReleaseAllResources_allowed(self) -> bool:
         """
         Check if command `ReleaseAllResources` is allowed in the current device state.
 
@@ -347,7 +347,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Configure_allowed(self) -> Literal[True]:
+    def is_Configure_allowed(self) -> bool:
         """
         Check if command `Configure` is allowed in the current device state.
 
@@ -375,7 +375,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command completely."
             ]
 
-    def is_Scan_allowed(self) -> Literal[True]:
+    def is_Scan_allowed(self) -> bool:
         """
         Check if command `Scan` is allowed in the current device state.
 
@@ -401,7 +401,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_EndScan_allowed(self) -> Literal[True]:
+    def is_EndScan_allowed(self) -> bool:
         """
         Check if command `EndScan` is allowed in the current device state.
 
@@ -425,7 +425,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_End_allowed(self) -> Literal[True]:
+    def is_End_allowed(self) -> bool:
         """
         Check if command `End` is allowed in the current device state.
 
@@ -449,7 +449,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_GoToIdle_allowed(self) -> Literal[True]:
+    def is_GoToIdle_allowed(self) -> bool:
         """
         Check if command `GoToIdle` is allowed in the current device state.
 
@@ -473,7 +473,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_ObsReset_allowed(self) -> Literal[True]:
+    def is_ObsReset_allowed(self) -> bool:
         """
         Check if command `ObsReset` is allowed in the current device state.
 
@@ -497,7 +497,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Abort_allowed(self) -> Literal[True]:
+    def is_Abort_allowed(self) -> bool:
         """
         Check if command `Abort` is allowed in the current device state.
 
@@ -516,7 +516,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
         return [ResultCode.OK], [""]
 
-    def is_Restart_allowed(self) -> Literal[True]:
+    def is_Restart_allowed(self) -> bool:
         """
         Check if command `Restart` is allowed in the current device state.
 

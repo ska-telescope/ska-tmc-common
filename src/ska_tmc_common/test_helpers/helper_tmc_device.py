@@ -1,6 +1,6 @@
 import logging
 from logging import Logger
-from typing import Any, Literal, Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from ska_tango_base.commands import ResultCode, SlowCommand
 
@@ -109,7 +109,7 @@ class DummyTmcDevice(HelperBaseDevice):
             self._component_manager.sample_data = value
             return ResultCode.OK, ""
 
-    def is_SetData_allowed(self) -> Literal[True]:
+    def is_SetData_allowed(self) -> bool:
         return True
 
     @command(

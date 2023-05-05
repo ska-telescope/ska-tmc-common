@@ -1,5 +1,5 @@
 import time
-from typing import List, Literal, Tuple
+from typing import List, Tuple
 
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -86,7 +86,7 @@ class HelperBaseDevice(SKABaseDevice):
                 self._health_state = HealthState(argin)
                 self.push_change_event("healthState", self._health_state)
 
-    def is_On_allowed(self) -> Literal[True]:
+    def is_On_allowed(self) -> bool:
         return True
 
     @command(
@@ -105,7 +105,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Off_allowed(self) -> Literal[True]:
+    def is_Off_allowed(self) -> bool:
         return True
 
     @command(
@@ -124,7 +124,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "Device is Defective, cannot process command."
             ]
 
-    def is_Standby_allowed(self) -> Literal[True]:
+    def is_Standby_allowed(self) -> bool:
         return True
 
     @command(

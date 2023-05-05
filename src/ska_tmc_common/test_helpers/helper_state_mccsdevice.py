@@ -1,5 +1,5 @@
 import json
-from typing import List, Literal, Tuple
+from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -23,7 +23,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
     def read_assignedResources(self) -> str:
         return self._device._assigned_resources
 
-    def is_AssignResources_allowed(self) -> Literal[True]:
+    def is_AssignResources_allowed(self) -> bool:
         return True
 
     @command(
@@ -44,7 +44,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         self._assigned_resources = json.dumps(tmpDict)
         return [ResultCode.OK], [""]
 
-    def is_ReleaseResources_allowed(self) -> Literal[True]:
+    def is_ReleaseResources_allowed(self) -> bool:
         return True
 
     @command(
