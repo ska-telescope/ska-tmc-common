@@ -1,5 +1,5 @@
 import json
-from typing import Literal, Tuple
+from typing import List, Literal, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -32,7 +32,9 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def AssignResources(self, argin):
+    def AssignResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         tmpDict = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [1],
@@ -40,7 +42,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
             "channel_blocks": [3],
         }
         self._assigned_resources = json.dumps(tmpDict)
-        return [[ResultCode.OK], [""]]
+        return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> Literal[True]:
         return True
@@ -51,7 +53,9 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseResources(self, argin):
+    def ReleaseResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         tmpDict = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [],
@@ -59,4 +63,4 @@ class HelperMCCSStateDevice(HelperBaseDevice):
             "channel_blocks": [],
         }
         self._assigned_resources = json.dumps(tmpDict)
-        return [[ResultCode.OK], [""]]
+        return [ResultCode.OK], [""]

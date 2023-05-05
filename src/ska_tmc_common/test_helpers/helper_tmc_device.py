@@ -1,6 +1,6 @@
 import logging
 from logging import Logger
-from typing import List, Literal, Optional, Tuple
+from typing import Any, List, Literal, Optional, Tuple
 
 from ska_tango_base.commands import ResultCode, SlowCommand
 
@@ -102,7 +102,7 @@ class DummyTmcDevice(HelperBaseDevice):
     """A dummy TMC device for triggering state changes with a command"""
 
     class SetDataCommand(SlowCommand):
-        def __init__(self, target):
+        def __init__(self, target) -> None:
             self._component_manager = target.component_manager
 
         def do(self, value: str) -> Tuple[List[ResultCode], str]:
@@ -113,9 +113,9 @@ class DummyTmcDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_out="DevVarLongStringArray",
+        dtype_out="DevVoid",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetData(self, value):
+    def SetData(self, value: Any) -> None:
         handler = self.get_command_object("SetData")
         handler()

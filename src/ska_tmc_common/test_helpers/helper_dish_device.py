@@ -1,11 +1,11 @@
 import threading
 import time
-from typing import Literal
+from typing import List, Literal, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType, DevEnum, DevState
-from tango.server import attribute, command
+from tango.server import attribute, command, run
 
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
@@ -20,7 +20,7 @@ class HelperDishDevice(HelperBaseDevice):
         self._dish_mode = DishMode.STANDBY_LP
 
     class InitCommand(SKABaseDevice.InitCommand):
-        def do(self):
+        def do(self) -> Tuple[ResultCode, str]:
             super().do()
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
@@ -39,7 +39,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=DevEnum,
         doc_in="Assign Dish Mode.",
     )
-    def SetDirectDishMode(self, argin) -> None:
+    def SetDirectDishMode(self, argin: DishMode) -> None:
         """
         Trigger a DishMode change
         """
@@ -50,7 +50,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=int,
         doc_in="pointing state to assign",
     )
-    def SetDirectPointingState(self, argin) -> None:
+    def SetDirectPointingState(self, argin: PointingState) -> None:
         """
         Trigger a PointingState change
         """
@@ -61,7 +61,7 @@ class HelperDishDevice(HelperBaseDevice):
                 self._pointing_state = PointingState(argin)
                 self.push_change_event("pointingState", self._pointing_state)
 
-    def set_dish_mode(self, dishMode) -> None:
+    def set_dish_mode(self, dishMode: DishMode) -> None:
         if not self._defective:
             if self._dish_mode != dishMode:
                 self._dish_mode = dishMode
@@ -75,7 +75,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Standby(self):
+    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         # Set the device state
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
@@ -97,7 +97,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetStandbyFPMode(self):
+    def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         # import debugpy; debugpy.debug_this_thread()'
         if not self._defective:
             self.logger.info("Processing SetStandbyFPMode Command")
@@ -121,7 +121,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetStandbyLPMode(self):
+    def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Processing SetStandbyLPMode Command")
             # Set the device state
@@ -148,7 +148,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetOperateMode(self):
+    def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Processing SetOperateMode Command")
             # Set the device state
@@ -175,7 +175,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetStowMode(self):
+    def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Processing SetStowMode Command")
             # Set device state
@@ -198,7 +198,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Track(self):
+    def Track(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Processing Track Command")
             if self._pointing_state != PointingState.TRACK:
@@ -219,7 +219,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in="DevVoid",
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def TrackStop(self):
+    def TrackStop(self) -> None:
         if not self._defective:
             self.logger.info("Processing TrackStop Command")
             if self._pointing_state != PointingState.READY:
@@ -236,7 +236,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def AbortCommands(self):
+    def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         self.logger.info("Abort Completed")
         # Dish Mode Not Applicable.
         return ([ResultCode.OK], [""])
@@ -248,7 +248,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevString"),
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def Configure(self, argin):
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             self.logger.info("Processing Configure command")
             return [ResultCode.OK], ["Configure completed"]
@@ -261,7 +261,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevString"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def ConfigureBand1(self, argin):
+    def ConfigureBand1(self, argin: str) -> None:
         if not self._defective:
             self.logger.info("Processing ConfigureBand1")
             # Set dish mode
@@ -275,7 +275,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def ConfigureBand2(self, argin):
+    def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
@@ -306,7 +306,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevString"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def ConfigureBand3(self, argin):
+    def ConfigureBand3(self, argin: str) -> None:
         if not self._defective:
             self.logger.info("Processing ConfigureBand3")
             # Set dish mode
@@ -319,7 +319,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevString"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def ConfigureBand4(self, argin):
+    def ConfigureBand4(self, argin: str) -> None:
         if not self._defective:
             self.logger.info("Processing ConfigureBand4")
             # Set dish mode
@@ -332,7 +332,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevString"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def ConfigureBand5a(self, argin):
+    def ConfigureBand5a(self, argin: str) -> None:
         if not self._defective:
             self.logger.info("Processing ConfigureBand5a")
             # Set dish mode
@@ -345,7 +345,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevString"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def ConfigureBand5b(self, argin):
+    def ConfigureBand5b(self, argin: str) -> None:
         if not self._defective:
             self.logger.info("Processing ConfigureBand5")
             # Set dish mode
@@ -358,7 +358,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevVarDoubleArray"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def Slew(self):
+    def Slew(self) -> None:
         if not self._defective:
             if self._pointing_state != PointingState.SLEW:
                 self._pointing_state = PointingState.SLEW
@@ -369,7 +369,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def StartCapture(self):
+    def StartCapture(self) -> None:
         # TBD: Dish mode change
         pass
 
@@ -377,7 +377,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def SetMaintenanceMode(self):
+    def SetMaintenanceMode(self) -> None:
         # TBD: Dish mode change
         pass
 
@@ -388,7 +388,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'DevVoid')",
     )
-    def Scan(self):
+    def Scan(self) -> None:
         # TBD: Dish mode change
         self.logger.info("Processing Scan")
 
@@ -399,6 +399,27 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in=("DevVoid"),
         doc_out="(ReturnType, 'informational message')",
     )
-    def Reset(self):
+    def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         # TBD: Dish mode change
         return ([ResultCode.OK], [""])
+
+
+# ----------
+# Run server
+# ----------
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperDishDevice Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperDishDevice,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()

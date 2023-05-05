@@ -1,11 +1,12 @@
 from logging import Logger
-from typing import Callable, Literal, Optional, Tuple
+from typing import Any, Callable, List, Literal, Optional, Tuple
 
+import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState
-from tango.server import attribute, command
+from tango.server import attribute, command, run
 
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
@@ -25,7 +26,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         )
         self._assigned_resources = []
 
-    def assign(self, resources) -> Tuple[ResultCode, str]:
+    def assign(self, resources: list) -> Tuple[ResultCode, str]:
         """
         Assign resources to the component.
 
@@ -35,7 +36,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         self._assigned_resources = ["0001"]
         return ResultCode.OK, ""
 
-    def release(self, resources) -> Tuple[ResultCode, str]:
+    def release(self, resources: list) -> Tuple[ResultCode, str]:
         """
         Release resources from the component.
 
@@ -49,7 +50,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
         return ResultCode.OK, ""
 
-    def configure(self, configuration) -> Tuple[ResultCode, str]:
+    def configure(self, configuration: str) -> Tuple[ResultCode, str]:
         """
         Configure the component.
 
@@ -60,7 +61,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
         return ResultCode.OK, ""
 
-    def scan(self, args) -> Tuple[ResultCode, str]:
+    def scan(self, args: Any) -> Tuple[ResultCode, str]:
         """Start scanning."""
         self.logger.info("%s", args)
         return ResultCode.OK, ""
@@ -150,7 +151,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=bool,
         doc_in="Set Defective",
     )
-    def SetDefective(self, value: bool):
+    def SetDefective(self, value: bool) -> None:
         """Trigger defective change"""
         self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
@@ -159,7 +160,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=int,
         doc_in="Set ObsState",
     )
-    def SetDirectObsState(self, argin):
+    def SetDirectObsState(self, argin: ObsState) -> None:
         """
         Trigger a ObsState change
         """
@@ -173,11 +174,11 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in="DevState",
         doc_in="state to assign",
     )
-    def SetDirectState(self, argin):
+    def SetDirectState(self, argin: tango.DevState) -> None:
         """
         Trigger a DevStateif self.dev_state() != argin:
             self.set_state(argin)
-             change
+                change
         """
         # import debugpy; debugpy.debug_this_thread()
         if self.dev_state() != argin:
@@ -188,7 +189,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=int,
         doc_in="state to assign",
     )
-    def SetDirectHealthState(self, argin):
+    def SetDirectHealthState(self, argin: HealthState) -> None:
         """
         Trigger a HealthState change
         """
@@ -203,7 +204,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in="DevString",
         doc_in="command in progress",
     )
-    def SetDirectCommandInProgress(self, argin):
+    def SetDirectCommandInProgress(self, argin: str) -> None:
         """
         Trigger a CommandInProgress change
         """
@@ -221,7 +222,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def On(self):
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
@@ -239,7 +240,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Off(self):
+    def Off(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
@@ -257,7 +258,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Standby(self):
+    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
@@ -283,7 +284,9 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def AssignResources(self, argin):
+    def AssignResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -309,7 +312,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseResources(self):
+    def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
@@ -333,7 +336,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseAllResources(self):
+    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
@@ -359,7 +362,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Configure(self, argin):
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.READY
@@ -387,7 +390,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Scan(self, argin):
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
@@ -411,7 +414,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def EndScan(self):
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
@@ -435,7 +438,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def End(self):
+    def End(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -459,7 +462,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def GoToIdle(self):
+    def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -483,7 +486,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ObsReset(self):
+    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -507,7 +510,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Abort(self):
+    def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTED
             self.push_change_event("obsState", self._obs_state)
@@ -526,8 +529,29 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Restart(self):
+    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
         return [ResultCode.OK], [""]
+
+
+# ----------
+# Run server
+# ----------
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperSubArrayDevice Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperSubArrayDevice,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,11 +1,12 @@
 import time
-from typing import Literal, Tuple
+from typing import List, Literal, Tuple
 
+import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from tango import DevState
-from tango.server import AttrWriteType, attribute, command
+from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
@@ -59,7 +60,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_in="DevState",
         doc_in="state to assign",
     )
-    def SetDirectState(self, argin) -> None:
+    def SetDirectState(self, argin: tango.DevState) -> None:
         """
         Trigger a DevState change
         """
@@ -74,7 +75,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_in=int,
         doc_in="state to assign",
     )
-    def SetDirectHealthState(self, argin) -> None:
+    def SetDirectHealthState(self, argin: HealthState) -> None:
         """
         Trigger a HealthState change
         """
@@ -92,7 +93,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def On(self):
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
@@ -111,7 +112,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Off(self):
+    def Off(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
@@ -130,7 +131,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Standby(self):
+    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
@@ -141,3 +142,24 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
+
+
+# ----------
+# Run server
+# ----------
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperBaseDevice Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperBaseDevice,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()
