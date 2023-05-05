@@ -50,7 +50,7 @@ class DeviceInfo:
         self._unresponsive = _unresponsive
         self.lock = threading.Lock()
 
-    def from_dev_info(self, dev_info: "DeviceInfo") -> None:
+    def from_dev_info(self, dev_info) -> None:
         self.dev_name = dev_info.dev_name
         self.state = dev_info.state
         self.health_state = dev_info.health_state
@@ -128,9 +128,7 @@ class SubArrayDeviceInfo(DeviceInfo):
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
-    def from_dev_info(
-        self, subarray_device_info: "SubArrayDeviceInfo"
-    ) -> None:
+    def from_dev_info(self, subarray_device_info) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
             self.id = subarray_device_info.id
@@ -166,9 +164,7 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
 
-    def from_dev_info(
-        self, sdp_subarray_device_info: "SdpSubarrayDeviceInfo"
-    ) -> None:
+    def from_dev_info(self, sdp_subarray_device_info) -> None:
         super().from_dev_info(sdp_subarray_device_info)
         if isinstance(sdp_subarray_device_info, SdpSubarrayDeviceInfo):
             self.receive_addresses = sdp_subarray_device_info.receive_addresses
@@ -211,7 +207,7 @@ class DishDeviceInfo(DeviceInfo):
         if self._dish_mode != value:
             self._dish_mode = value
 
-    def from_dev_info(self, dish_device_info: "DishDeviceInfo") -> None:
+    def from_dev_info(self, dish_device_info) -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
             self.id = dish_device_info.id
