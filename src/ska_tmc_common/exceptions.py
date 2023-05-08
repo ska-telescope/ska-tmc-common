@@ -1,3 +1,7 @@
+"""
+Has different types of exceptions
+that may aries during the execution
+"""
 from marshmallow import ValidationError
 
 
@@ -14,7 +18,8 @@ class DeviceUnresponsive(Exception):
 
 
 class InvalidObsStateError(ValueError):
-    """Raised when the device obsState does not allow to invoke the command as per SKA state model"""
+    """Raised when the device obsState does not
+    allow to invoke the command as per SKA state model"""
 
 
 class ResourceReassignmentError(Exception):

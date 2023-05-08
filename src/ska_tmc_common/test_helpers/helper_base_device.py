@@ -1,3 +1,6 @@
+"""
+A common module for helper devices to share functionality."
+"""
 import time
 from typing import List, Tuple
 
@@ -40,6 +43,9 @@ class HelperBaseDevice(SKABaseDevice):
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_defective(self) -> bool:
+        """
+        Returns defective status of devices
+        """
         return self._defective
 
     def always_executed_hook(self) -> None:

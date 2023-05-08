@@ -1,3 +1,6 @@
+"""
+This module provi_d es us the information about the devices
+"""
 import json
 import threading
 from typing import Any
@@ -9,6 +12,9 @@ from ska_tmc_common.enum import DishMode, PointingState
 
 
 def dev_state_2_str(value: DevState) -> str:
+    """
+    Converts device state to string datatype.
+    """
     if value == DevState.ON:
         return "DevState.ON"
     elif value == DevState.OFF:
@@ -40,6 +46,11 @@ def dev_state_2_str(value: DevState) -> str:
 
 
 class DeviceInfo:
+    """
+    Provi_d es different information about the device.
+    Such as HealthState , DevState
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         self.dev_name = dev_name
         self.state: DevState = DevState.UNKNOWN
@@ -51,6 +62,9 @@ class DeviceInfo:
         self.lock = threading.Lock()
 
     def from_dev_info(self, dev_info) -> None:
+        """
+        It gets the information about devices
+        """
         self.dev_name = dev_info.dev_name
         self.state = dev_info.state
         self.health_state = dev_info.health_state
@@ -106,9 +120,15 @@ class DeviceInfo:
             return False
 
     def to_json(self) -> str:
+        """
+        Converts str input to json
+        """
         return json.dumps(self.to_dict())
 
     def to_dict(self) -> dict:
+        """
+        Converts input to dictionary.
+        """
         result = {
             "dev_name": self.dev_name,
             "state": dev_state_2_str(DevState(self.state)),
@@ -122,16 +142,20 @@ class DeviceInfo:
 
 
 class SubArrayDeviceInfo(DeviceInfo):
+    """
+    Gives subarray devices information
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
-        self.id = -1
+        self.i_d = -1
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
     def from_dev_info(self, subarray_device_info) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.id = subarray_device_info.id
+            self.i_d = subarray_device_info.i_d
             self.resources = subarray_device_info.resources
             self.obs_state = subarray_device_info.obs_state
 
@@ -154,12 +178,16 @@ class SubArrayDeviceInfo(DeviceInfo):
                 result.append(res)
             super_dict["resources"] = result
         super_dict["resources"] = result
-        super_dict["id"] = self.id
+        super_dict["i_d "] = self.i_d
         super_dict["obsState"] = str(ObsState(self.obs_state))
         return super_dict
 
 
 class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
+    """
+    Gives SDP subarray device information
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
@@ -187,9 +215,13 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
 
 
 class DishDeviceInfo(DeviceInfo):
+    """
+    Gives Dishes device information
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
-        self.id = -1
+        self.i_d = -1
         self.pointing_state = PointingState.NONE
         self._dish_mode = DishMode.UNKNOWN
         self.rx_capturing_data = 0
@@ -210,9 +242,9 @@ class DishDeviceInfo(DeviceInfo):
     def from_dev_info(self, dish_device_info) -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
-            self.id = dish_device_info.id
+            self.i_d = dish_device_info.i_d
             self.pointing_state = dish_device_info.pointing_state
-            self.dishMode = dish_device_info._dish_mode
+            self.dish_mode = dish_device_info._dish_mode
             self.rx_capturing_data = dish_device_info.rx_capturing_data
             self.achieved_pointing = dish_device_info.achieved_pointing
             self.desired_pointing = dish_device_info.desired_pointing
@@ -228,9 +260,9 @@ class DishDeviceInfo(DeviceInfo):
 
     def to_dict(self) -> dict:
         super_dict = super().to_dict()
-        super_dict["id"] = self.id
+        super_dict["i_d "] = self.i_d
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
-        super_dict["dishMode"] = str(DishMode(self.dishMode))
+        super_dict["dish_mode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["desiredPointing"] = self.desired_pointing

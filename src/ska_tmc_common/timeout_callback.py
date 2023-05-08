@@ -1,3 +1,6 @@
+"""
+This module keeps tracks of timeouts during command executions.
+"""
 from logging import Logger
 from typing import Any, Optional
 
@@ -51,11 +54,11 @@ class TimeoutCallback:
             for key, value in kwargs.items():
                 if self._kwargs[key] != value:
                     return False
-        except KeyError as e:
+        except KeyError as exp_msg:
             self.logger.debug(
                 "The assertion is invalid as one or more keyword arguments "
                 + "are invalid. Error : %s",
-                e,
+                exp_msg,
             )
             return False
 

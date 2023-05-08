@@ -45,10 +45,10 @@ class TangoClient:
         while retry < 3:
             try:
                 return DeviceProxy(self.device_fqdn)
-            except DevFailed as df:
+            except DevFailed as exp_msg:
                 if retry >= 2:
                     tango.Except.re_throw_exception(
-                        df,
+                        exp_msg,
                         "Retries exhausted while creating device proxy.",
                         "Failed to create DeviceProxy of "
                         + str(self.device_fqdn),
@@ -260,7 +260,7 @@ class TangoClient:
             self.logger.debug(log_msg)
             self.deviceproxy.unsubscribe_event(event_id)
         except DevFailed as dev_failed:
-            log_message = "Failed to unsubscribe event {}.".format(dev_failed)
+            log_message = f"Failed to unsubscribe event {format(dev_failed)}."
             self.logger.error(log_message)
             tango.Except.re_throw_exception(
                 dev_failed,

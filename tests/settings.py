@@ -1,3 +1,7 @@
+"""
+This module contains the fixtures, methods and variables required for testing.
+"""
+
 import logging
 import time
 from typing import Tuple
@@ -27,6 +31,9 @@ DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
 
 @pytest.fixture(scope="module")
 def devices_to_load():
+    """
+    This method contains the list of devices to load.
+    """
     return (
         {
             "class": DummyTmcDevice,
@@ -40,6 +47,9 @@ def devices_to_load():
 
 
 def count_faulty_devices(cm):
+    """
+    It counts the number of faulty devices present.
+    """
     result = 0
     for dev_info in cm.checked_devices:
         if dev_info.unresponsive:
@@ -52,6 +62,9 @@ def create_cm(
     p_liveliness_probe: LivelinessProbeType = LivelinessProbeType.MULTI_DEVICE,
     p_event_receiver: bool = True,
 ) -> Tuple[TmcComponentManager, float]:
+    """
+    It creates the instance of the component manager class.
+    """
     cm = TmcComponentManager(
         _input_parameter=_input_parameter,
         logger=logger,
@@ -66,6 +79,9 @@ def create_cm(
 def set_devices_state(
     devices: list, state: tango.DevState, devFactory: DevFactory
 ) -> None:
+    """
+    It sets the state of multiple Device
+    """
     for device in devices:
         proxy = devFactory.get_device(device)
         proxy.SetDirectState(state)
@@ -75,6 +91,9 @@ def set_devices_state(
 def set_device_state(
     device: str, state: tango.DevState, devFactory: DevFactory
 ) -> None:
+    """
+    It sets the state of the Device
+    """
     proxy = devFactory.get_device(device)
     proxy.SetDirectState(state)
     assert proxy.State() == state

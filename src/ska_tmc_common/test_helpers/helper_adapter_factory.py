@@ -1,3 +1,6 @@
+"""
+This module manages to create and manages adaptor.
+"""
 from typing import Any, Optional, Union
 
 import mock
@@ -16,6 +19,10 @@ from ska_tmc_common.adapters import (
 
 
 class HelperAdapterFactory(AdapterFactory):
+    """
+    This class manages to create and manages adaptor.
+    """
+
     def __init__(self) -> None:
         self.adapters = []
 
@@ -33,6 +40,9 @@ class HelperAdapterFactory(AdapterFactory):
         MCCSAdapter,
         BaseAdapter,
     ]:
+        """
+        Method to create adaptor for different devices
+        """
         if proxy is None:
             proxy = mock.Mock(attrs)
 

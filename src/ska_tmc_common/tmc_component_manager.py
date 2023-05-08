@@ -31,6 +31,10 @@ from ska_tmc_common.timeout_callback import TimeoutCallback
 
 
 class TmcComponent:
+    """
+    This class provides a reference implementation of BaseComponentManager.
+    """
+
     def __init__(self, logger: Logger):
         self.logger = logger
         # _health_state is never changing. Setter not implemented
@@ -38,22 +42,42 @@ class TmcComponent:
         self._devices = []
 
     def get_device(self, dev_name):
+        """
+        Base method for get_device method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device(self, dev_info):
+        """
+        Base method for update_device method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device_exception(self, device_info, exception):
+        """
+        Base method for update_device_exception method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def to_json(self) -> str:
+        """
+        Base method for to_json method for different nodes
+        """
         return json.dumps(self.to_dict())
 
     def to_dict(self):
+        """
+        Base method for to_dict method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
 
 class BaseTmcComponentManager(TaskExecutorComponentManager):
+    """
+    This class manages obsstates , commands and various checks
+    on TMC components.
+    """
+
     def __init__(
         self,
         logger: Logger,
@@ -165,10 +189,10 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
-        except Exception as e:
+        except Exception as exp_msg:
             self.logger.exception(
                 "Exception occured while starting the timer thread : %s",
-                e,
+                exp_msg,
             )
 
     def timeout_handler(
@@ -246,6 +270,9 @@ class TmcComponentManager(BaseTmcComponentManager):
         self.start_liveliness_probe(_liveliness_probe)
 
     def reset(self) -> None:
+        """
+        Method to reset components
+        """
         pass
 
     @property
@@ -300,6 +327,10 @@ class TmcComponentManager(BaseTmcComponentManager):
             self._component.update_device_exception(device_info, exception)
 
     def update_event_failure(self, dev_name: str) -> None:
+        """
+        Update a device with correct device failure information
+        and call the relative callback if available
+        """
         with self.lock:
             dev_info = self._component.get_device(dev_name)
             dev_info.last_event_arrived = time.time()
@@ -416,6 +447,9 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         self.start_event_receiver()
 
     def reset(self) -> None:
+        """
+        Returns device reset info
+        """
         pass
 
     def get_device(self) -> DeviceInfo:
@@ -462,6 +496,9 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.ping = ping
 
     def update_event_failure(self) -> None:
+        """
+        Update a monitored device failure status
+        """
         with self.lock:
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)

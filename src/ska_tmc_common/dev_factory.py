@@ -1,3 +1,7 @@
+"""It is a factory class which provide the ability to create an object of
+type DeviceProxy.
+"""
+
 import logging
 
 import tango

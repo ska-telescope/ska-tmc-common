@@ -1,8 +1,16 @@
+"""
+This module assigns the enum values to PointingState,
+DishMode, Number of devices LivelinessProbeType, TimeoutState
+"""
 from enum import IntEnum, unique
 
 
 @unique
 class PointingState(IntEnum):
+    """
+    This class assigns the enum value to PointingState.
+    """
+
     NONE = 0
     READY = 1
     SLEW = 2
@@ -13,6 +21,10 @@ class PointingState(IntEnum):
 
 @unique
 class DishMode(IntEnum):
+    """
+    This class assigns the enum value to DishMode.
+    """
+
     # ska-mid-dish-manager is having dependency conflicts with ska-tmc-common
     # So redefined DishMode enum, which reflects the ska-mid-dish-manager DishMode enum.
     # We will work out on this separately once dish manager is sorted.
@@ -29,6 +41,10 @@ class DishMode(IntEnum):
 
 @unique
 class LivelinessProbeType(IntEnum):
+    """
+    This class assigns the enum value to single or multiple devices.
+    """
+
     NONE = 0
     SINGLE_DEVICE = 1
     MULTI_DEVICE = 2

@@ -1,3 +1,7 @@
+"""
+This module implements the Helper devices for subarray nodes for testing
+an integrated TMC
+"""
 from logging import Logger
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -10,6 +14,10 @@ from tango.server import attribute, command, run
 
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
+    """
+    This is a Component Manager created for the use of Helper Subarray devices.
+    """
+
     def __init__(
         self,
         logger: Logger,
@@ -114,7 +122,12 @@ class HelperSubArrayDevice(SKASubarray):
         self._defective = False
 
     class InitCommand(SKASubarray.InitCommand):
+        """A class for the HelperSubarrayDevice's init_device() "command"."""
+
         def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialisation.
+            """
             super().do()
             self._device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}},"calibration:b":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}}}'
             self._device.set_change_event("State", True, False)
@@ -131,15 +144,28 @@ class HelperSubArrayDevice(SKASubarray):
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_receiveAddresses(self) -> str:
+        """
+        This method is used to read the receive Address
+        """
         return self._receive_addresses
 
     def read_commandInProgress(self) -> str:
+        """
+        This method is used to read, which command is in progress
+        """
         return self._command_in_progress
 
     def read_defective(self) -> bool:
+        """
+        This method is used to read the value of the attribute defective
+        """
         return self._defective
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
+        """
+        This method is used to create an instance of
+        EmptySubarrayComponentManager
+        """
         cm = EmptySubArrayComponentManager(
             logger=self.logger,
             communication_state_callback=None,
@@ -259,6 +285,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Standby command on subarray devices
+        """
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
@@ -287,6 +316,9 @@ class HelperSubArrayDevice(SKASubarray):
     def AssignResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes AssignResources command on subarray devices
+        """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -313,6 +345,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseResources command on subarray device
+        """
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
@@ -337,6 +372,10 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseAllResources command on
+        helper_subarray_device
+        """
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
@@ -363,6 +402,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Configure command on ubarray devices
+        """
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.READY
@@ -391,6 +433,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Scan command on subarray devices.
+        """
         if not self._defective:
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
@@ -415,6 +460,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes EndScan command on subarray devices.
+        """
         if not self._defective:
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
@@ -439,6 +487,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def End(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes End command on subarray devices.
+        """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -463,6 +514,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes GoToIdle command on subarray devices.
+        """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -511,6 +565,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Abort command on subarray devices.
+        """
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTED
             self.push_change_event("obsState", self._obs_state)
@@ -530,6 +587,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Restart command on subarray devices
+        """
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
