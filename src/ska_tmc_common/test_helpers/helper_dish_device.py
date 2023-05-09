@@ -108,10 +108,10 @@ class HelperDishDevice(HelperBaseDevice):
             # Set the Dish Mode
             self.set_dish_mode(DishMode.STANDBY_LP)
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -139,10 +139,10 @@ class HelperDishDevice(HelperBaseDevice):
             # Set the Dish Mode
             self.set_dish_mode(DishMode.STANDBY_FP)
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
@@ -173,10 +173,10 @@ class HelperDishDevice(HelperBaseDevice):
             # Set the Dish Mode
             self.set_dish_mode(DishMode.STANDBY_LP)
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_SetOperateMode_allowed(self) -> bool:
         """
@@ -207,10 +207,10 @@ class HelperDishDevice(HelperBaseDevice):
             # Set the Dish Mode
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_SetStowMode_allowed(self) -> bool:
         """
@@ -237,10 +237,10 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.STOW)
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Track_allowed(self) -> bool:
         """
@@ -265,10 +265,10 @@ class HelperDishDevice(HelperBaseDevice):
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_TrackStop_allowed(self) -> bool:
         """
@@ -381,10 +381,10 @@ class HelperDishDevice(HelperBaseDevice):
             )
             start_dish_mode_transition.start()
             return ([ResultCode.OK], [""])
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def start_config_transition(self, current_dish_mode: DishMode) -> None:
         """Update Dish Mode to CONFIG and then to current_dish_mode"""

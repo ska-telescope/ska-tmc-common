@@ -254,10 +254,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Off_allowed(self) -> bool:
         return True
@@ -272,10 +272,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Standby_allowed(self) -> bool:
         return True
@@ -293,10 +293,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -324,12 +324,12 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [
-                "Device is Defective, cannot process command completely."
-            ]
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.OK], [
+            "Device is Defective, cannot process command completely."
+        ]
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -353,10 +353,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -381,10 +381,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -410,12 +410,12 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            self._obs_state = ObsState.CONFIGURING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [
-                "Device is Defective, cannot process command completely."
-            ]
+
+        self._obs_state = ObsState.CONFIGURING
+        self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.OK], [
+            "Device is Defective, cannot process command completely."
+        ]
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -441,10 +441,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.SCANNING
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -468,10 +468,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_End_allowed(self) -> bool:
         """
@@ -495,10 +495,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -522,10 +522,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_ObsReset_allowed(self) -> bool:
         """
@@ -546,10 +546,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Abort_allowed(self) -> bool:
         """

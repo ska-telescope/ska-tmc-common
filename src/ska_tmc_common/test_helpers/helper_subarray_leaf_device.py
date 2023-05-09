@@ -34,10 +34,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("AssignResource completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -59,10 +59,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("Configure completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -84,10 +84,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("Scan completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -107,10 +107,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("EndScan completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_End_allowed(self) -> bool:
         """
@@ -130,10 +130,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("End completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -153,10 +153,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("GoToIdle completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -194,10 +194,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("ObsReset completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Restart_allowed(self) -> bool:
         """
@@ -235,10 +235,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("ReleaseAllResources completed")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -262,10 +262,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("ReleaseResources completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
 
 # ----------

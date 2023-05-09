@@ -30,8 +30,8 @@ class TangoServerHelper:
         """
         if TangoServerHelper.__instance is not None:
             raise Exception("This is singletone class")
-        else:
-            TangoServerHelper.__instance = self
+
+        TangoServerHelper.__instance = self
         self.device = None
 
     @staticmethod

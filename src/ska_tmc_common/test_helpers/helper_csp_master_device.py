@@ -30,10 +30,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Off_allowed(self) -> bool:
         return True
@@ -51,10 +51,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Standby_allowed(self) -> bool:
         return True
@@ -72,10 +72,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
 
 # ----------

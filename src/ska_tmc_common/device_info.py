@@ -17,32 +17,31 @@ def dev_state_2_str(value: DevState) -> str:
     """
     if value == DevState.ON:
         return "DevState.ON"
-    elif value == DevState.OFF:
+    if value == DevState.OFF:
         return "DevState.OFF"
-    elif value == DevState.CLOSE:
+    if value == DevState.CLOSE:
         return "DevState.CLOSE"
-    elif value == DevState.OPEN:
+    if value == DevState.OPEN:
         return "DevState.OPEN"
-    elif value == DevState.INSERT:
+    if value == DevState.INSERT:
         return "DevState.INSERT"
-    elif value == DevState.EXTRACT:
+    if value == DevState.EXTRACT:
         return "DevState.EXTRACT"
-    elif value == DevState.MOVING:
+    if value == DevState.MOVING:
         return "DevState.MOVING"
-    elif value == DevState.STANDBY:
+    if value == DevState.STANDBY:
         return "DevState.STANDBY"
-    elif value == DevState.FAULT:
+    if value == DevState.FAULT:
         return "DevState.FAULT"
-    elif value == DevState.INIT:
+    if value == DevState.INIT:
         return "DevState.INIT"
-    elif value == DevState.RUNNING:
+    if value == DevState.RUNNING:
         return "DevState.RUNNING"
-    elif value == DevState.ALARM:
+    if value == DevState.ALARM:
         return "DevState.ALARM"
-    elif value == DevState.DISABLE:
+    if value == DevState.DISABLE:
         return "DevState.DISABLE"
-    else:
-        return "DevState.UNKNOWN"
+    return "DevState.UNKNOWN"
 
 
 class DeviceInfo:
@@ -116,8 +115,7 @@ class DeviceInfo:
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, DeviceInfo):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         """
@@ -163,8 +161,7 @@ class SubArrayDeviceInfo(DeviceInfo):
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DeviceInfo, SubArrayDeviceInfo)):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
@@ -199,8 +196,7 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DeviceInfo, SdpSubarrayDeviceInfo)):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
@@ -249,9 +245,7 @@ class DishDeviceInfo(DeviceInfo):
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DishDeviceInfo, DeviceInfo)):
             return self.dev_name == other.dev_name
-
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
