@@ -212,7 +212,7 @@ class DishDeviceInfo(DeviceInfo):
         if isinstance(dish_device_info, DishDeviceInfo):
             self.id = dish_device_info.id
             self.pointing_state = dish_device_info.pointing_state
-            self.dishMode = dish_device_info._dish_mode
+            self.dish_mode = dish_device_info._dish_mode
             self.rx_capturing_data = dish_device_info.rx_capturing_data
             self.achieved_pointing = dish_device_info.achieved_pointing
             self.desired_pointing = dish_device_info.desired_pointing
@@ -230,7 +230,7 @@ class DishDeviceInfo(DeviceInfo):
         super_dict = super().to_dict()
         super_dict["id"] = self.id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
-        super_dict["dishMode"] = str(DishMode(self.dishMode))
+        super_dict["dishMode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["desiredPointing"] = self.desired_pointing
