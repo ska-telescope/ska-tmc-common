@@ -293,6 +293,7 @@ class TangoServerHelper:
         """
         try:
             return self.device.attr_map[attr_name]
+
         except ValueError as val_error:
             tango.Except.re_throw_exception(
                 val_error,

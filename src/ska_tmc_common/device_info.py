@@ -147,7 +147,8 @@ class SubArrayDeviceInfo(DeviceInfo):
     """
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
-        super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
+        # super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
+        super().__init__(dev_name, _unresponsive)
         self.i_d = -1
         self.resources = []
         self.obs_state = ObsState.EMPTY
@@ -160,9 +161,7 @@ class SubArrayDeviceInfo(DeviceInfo):
             self.obs_state = subarray_device_info.obs_state
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, SubArrayDeviceInfo) or isinstance(
-            other, DeviceInfo
-        ):
+        if isinstance(other, (DeviceInfo, SubArrayDeviceInfo)):
             return self.dev_name == other.dev_name
         else:
             return False
@@ -198,9 +197,7 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
             self.receive_addresses = sdp_subarray_device_info.receive_addresses
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, SdpSubarrayDeviceInfo) or isinstance(
-            other, DeviceInfo
-        ):
+        if isinstance(other, (DeviceInfo, SdpSubarrayDeviceInfo)):
             return self.dev_name == other.dev_name
         else:
             return False
@@ -250,8 +247,9 @@ class DishDeviceInfo(DeviceInfo):
             self.desired_pointing = dish_device_info.desired_pointing
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, DishDeviceInfo) or isinstance(other, DeviceInfo):
+        if isinstance(other, (DishDeviceInfo, DeviceInfo)):
             return self.dev_name == other.dev_name
+
         else:
             return False
 
