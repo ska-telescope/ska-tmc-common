@@ -25,6 +25,8 @@ class HelperBaseDevice(SKABaseDevice):
         self._defective = False
 
     class InitCommand(SKABaseDevice.InitCommand):
+        """A class for the HelperBaseDevice's init_device() "command"."""
+
         def do(self) -> Tuple[ResultCode, str]:
             super().do()
             self._device.set_change_event("State", True, False)

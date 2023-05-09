@@ -497,6 +497,9 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def StartCapture(self) -> None:
+        """
+        This method invokes StartCapture command on Dish
+        """
         # TBD: Dish mode change
         pass
 
@@ -505,6 +508,9 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def SetMaintenanceMode(self) -> None:
+        """
+        This method sets the Maintainance Mode for the dish
+        """
         # TBD: Dish mode change
         pass
 
@@ -519,6 +525,9 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'DevVoid')",
     )
     def Scan(self) -> None:
+        """
+        This method invokes Scan command on Dish
+        """
         # TBD: Dish mode change
         self.logger.info("Processing Scan")
 
@@ -533,6 +542,9 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Reset command on Dish
+        """
         # TBD: Dish mode change
         return ([ResultCode.OK], [""])
 
