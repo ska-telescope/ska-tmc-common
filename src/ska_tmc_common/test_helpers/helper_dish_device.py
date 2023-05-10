@@ -290,7 +290,7 @@ class HelperDishDevice(HelperBaseDevice):
             if self._pointing_state != PointingState.READY:
                 self._pointing_state = PointingState.READY
                 self.push_change_event("pointingState", self._pointing_state)
-                self.logger.info(f"Pointing State: {self._pointing_state}")
+                self.logger.info("Pointing State: %s", self._pointing_state)
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
 
@@ -501,7 +501,6 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes StartCapture command on Dish
         """
         # TBD: Dish mode change
-        pass
 
     @command(
         dtype_in=("DevVoid"),
@@ -512,7 +511,6 @@ class HelperDishDevice(HelperBaseDevice):
         This method sets the Maintainance Mode for the dish
         """
         # TBD: Dish mode change
-        pass
 
     def is_Scan_allowed(self) -> bool:
         """

@@ -66,9 +66,9 @@ class DummyComponentManager(TmcComponentManager):
 
     def __init__(
         self,
+        *args,
         _component: Optional[TmcComponent] = None,
         logger: Logger = logger,
-        *args,
         **kwargs
     ):
         super().__init__(_component=_component, logger=logger, *args, **kwargs)
@@ -122,6 +122,7 @@ class DummyTmcDevice(HelperBaseDevice):
         """
 
         def __init__(self, target) -> None:
+            super().__init__(target)
             self._component_manager = target.component_manager
 
         def do(self, value: str) -> Tuple[ResultCode, str]:

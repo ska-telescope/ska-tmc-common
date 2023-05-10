@@ -273,7 +273,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         Method to reset components
         """
-        pass
 
     @property
     def devices(self) -> list:
@@ -450,7 +449,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         Returns device reset info
         """
-        pass
 
     def get_device(self) -> DeviceInfo:
         """

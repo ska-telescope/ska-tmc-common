@@ -1,5 +1,7 @@
 """
 This module contains the fixtures, methods and devices required for testing.
+A module defining a list of fixtures that are shared across all ska_tmc_common tests.
+
 """
 
 # pylint: disable=unused-argument
@@ -11,10 +13,6 @@ from ska_tango_testing.mock import MockCallable
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import DevFactory, DummyTmcDevice
-
-"""
-A module defining a list of fixtures that are shared across all ska_tmc_common tests.
-"""
 
 
 def pytest_sessionstart(session):

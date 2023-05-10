@@ -24,6 +24,7 @@ class HelperAdapterFactory(AdapterFactory):
     """
 
     def __init__(self) -> None:
+        super().__init__()
         self.adapters = []
 
     def get_or_create_adapter(
