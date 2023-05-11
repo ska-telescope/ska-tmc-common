@@ -24,7 +24,7 @@ class HelperDishDevice(HelperBaseDevice):
         self._dish_mode = DishMode.STANDBY_LP
 
     class InitCommand(SKABaseDevice.InitCommand):
-        """A class for the HelperDishDevice's init_device() "command"."""
+        """A class for the HelperDishDevice's init_device() command."""
 
         def do(self) -> Tuple[ResultCode, str]:
             """
@@ -98,7 +98,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Standby command on Dish
+        This method invokes Standby command on Dish Master
         """
         # Set the device state
         if not self._defective:
@@ -116,7 +116,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
-        This method checks if the StandbyFPMode Command is allowed in current
+        This method checks if the is_SetStandbyFPMode_allowed Command is allowed in current
         State.
         """
         return True
@@ -127,7 +127,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes SetStandbyFPMode command on Dish
+        This method invokes SetStandbyFPMode command on  Dish Master
         """
         # import debugpy; debugpy.debug_this_thread()'
         if not self._defective:
@@ -147,7 +147,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
-        This method checks if the StandbyLPMode Command is allowed in current
+        This method checks if the is_SetStandbyLPMode_allowed Command is allowed in current
         State.
         """
         return True
@@ -158,7 +158,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes SetStandbyLPMode command on Dish
+        This method invokes SetStandbyLPMode command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing SetStandbyLPMode Command")
@@ -192,7 +192,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes SetOperateMode command on Dish
+        This method invokes SetOperateMode command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing SetOperateMode Command")
@@ -226,7 +226,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes SetOperateMode command on Dish
+        This method invokes SetStowMode command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing SetStowMode Command")
@@ -256,7 +256,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Track command on Dish
+        This method invokes Track command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing Track Command")
@@ -284,7 +284,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def TrackStop(self) -> None:
         """
-        This method invokes TrackStop command on Dish
+        This method invokes TrackStop command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing TrackStop Command")
@@ -297,7 +297,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_AbortCommands_allowed(self) -> bool:
         """
-        This method checks if the AbortCommands Command is allowed in current
+        This method checks if the AbortCommands command is allowed in current
         State.
         """
         return True
@@ -308,7 +308,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes AbortCommands command on Dish
+        This method invokes AbortCommands command on  Dish Master
         """
         self.logger.info("Abort Completed")
         # Dish Mode Not Applicable.
@@ -327,7 +327,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Configure command on Dish
+        This method invokes Configure command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing Configure command")
@@ -336,7 +336,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
-        This method checks if the ConfigureBand1 Command is allowed in current
+        This method checks if the ConfigureBand1 command is allowed in current
         State.
         """
         return True
@@ -347,7 +347,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ConfigureBand1(self, argin: str) -> None:
         """
-        This method invokes ConfigureBand1 command on Dish
+        This method invokes ConfigureBand1 command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing ConfigureBand1")
@@ -368,7 +368,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ConfigureBand2 command on Dish
+        This method invokes ConfigureBand2 command on Dish Master
         """
         current_dish_mode = self._dish_mode
         if not self._defective:
@@ -406,7 +406,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ConfigureBand3(self, argin: str) -> None:
         """
-        This method invokes ConfigureBand3 command on Dish
+        This method invokes ConfigureBand3 command on  Dish Master
         """
         if not self._defective:
             self.logger.info("Processing ConfigureBand3")
@@ -426,7 +426,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ConfigureBand4(self, argin: str) -> None:
         """
-        This method invokes ConfigureBand4 command on Dish
+        This method invokes ConfigureBand4 command on Dish Master
         """
         if not self._defective:
             self.logger.info("Processing ConfigureBand4")
@@ -446,7 +446,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ConfigureBand5a(self, argin: str) -> None:
         """
-        This method invokes ConfigureBand5a command on Dish
+        This method invokes ConfigureBand5a command on Dish Master
         """
         if not self._defective:
             self.logger.info("Processing ConfigureBand5a")
@@ -466,7 +466,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ConfigureBand5b(self, argin: str) -> None:
         """
-        This method invokes ConfigureBand5b command on Dish
+        This method invokes ConfigureBand5b command on Dish Master
         """
         if not self._defective:
             self.logger.info("Processing ConfigureBand5")
@@ -475,7 +475,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_Slew_allowed(self) -> bool:
         """
-        This method checks if the Slew Command is allowed in current State.
+        This method checks if the Slew command is allowed in current State.
         """
         return True
 
@@ -485,7 +485,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def Slew(self) -> None:
         """
-        This method invokes Slew command on Dish
+        This method invokes Slew command on Dish Master
         """
         if not self._defective:
             if self._pointing_state != PointingState.SLEW:
@@ -499,7 +499,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def StartCapture(self) -> None:
         """
-        This method invokes StartCapture command on Dish
+        This method invokes StartCapture command on Dish Master
         """
         # TBD: Dish mode change
 
@@ -525,7 +525,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def Scan(self) -> None:
         """
-        This method invokes Scan command on Dish
+        This method invokes Scan command on Dish Master
         """
         # TBD: Dish mode change
         self.logger.info("Processing Scan")
@@ -542,7 +542,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Reset command on Dish
+        This method invokes Reset command on Dish Master
         """
         # TBD: Dish mode change
         return ([ResultCode.OK], [""])

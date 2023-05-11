@@ -156,7 +156,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     def read_receiveAddresses(self) -> str:
         """
-        This method is used to read the receive Address
+        This method is used to read receiveAddresses attribute
         """
         return self._receive_addresses
 
@@ -385,7 +385,7 @@ class HelperSubArrayDevice(SKASubarray):
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseAllResources command on
-        helper_subarray_device
+        subarray device
         """
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:

@@ -19,7 +19,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
     """A generic device for triggering state changes with a command"""
 
     class InitCommand(SKABaseDevice.InitCommand):
-        """A class for the HelperMCCSStateDevice's init_device() "command"."""
+        """A class for the HelperMccsStateDevice's init_device() "command"."""
 
         def do(self) -> Tuple[ResultCode, str]:
             """
@@ -58,7 +58,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         """
         This method invokes AssignResources command on subarray device
 
-        :return: a tuple conataining Resultcose and Message
+        :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
         tmpDict = {

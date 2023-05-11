@@ -46,8 +46,8 @@ def dev_state_2_str(value: DevState) -> str:
 
 class DeviceInfo:
     """
-    Provi_d es different information about the device.
-    Such as HealthState , DevState
+    Provides different information about the device.
+    Such as HealthState, DevState
     """
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
@@ -62,7 +62,8 @@ class DeviceInfo:
 
     def from_dev_info(self, dev_info) -> None:
         """
-        It gets the information about devices
+        This method makes a copy of DeviceInfo object
+        from another DeviceInfo object.
         """
         self.dev_name = dev_info.dev_name
         self.state = dev_info.state
@@ -145,16 +146,15 @@ class SubArrayDeviceInfo(DeviceInfo):
     """
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
-        # super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
         super().__init__(dev_name, _unresponsive)
-        self.i_d = -1
+        self.id = -1
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
     def from_dev_info(self, subarray_device_info) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.i_d = subarray_device_info.i_d
+            self.id = subarray_device_info.i_d
             self.resources = subarray_device_info.resources
             self.obs_state = subarray_device_info.obs_state
 
@@ -174,7 +174,7 @@ class SubArrayDeviceInfo(DeviceInfo):
                 result.append(res)
             super_dict["resources"] = result
         super_dict["resources"] = result
-        super_dict["i_d "] = self.i_d
+        super_dict["id "] = self.id
         super_dict["obsState"] = str(ObsState(self.obs_state))
         return super_dict
 
@@ -214,7 +214,7 @@ class DishDeviceInfo(DeviceInfo):
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
-        self.i_d = -1
+        self.id = -1
         self.pointing_state = PointingState.NONE
         self._dish_mode = DishMode.UNKNOWN
         self.rx_capturing_data = 0
@@ -235,7 +235,7 @@ class DishDeviceInfo(DeviceInfo):
     def from_dev_info(self, dish_device_info) -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
-            self.i_d = dish_device_info.i_d
+            self.id = dish_device_info.i_d
             self.pointing_state = dish_device_info.pointing_state
             self.dish_mode = dish_device_info._dish_mode
             self.rx_capturing_data = dish_device_info.rx_capturing_data
@@ -252,7 +252,7 @@ class DishDeviceInfo(DeviceInfo):
 
     def to_dict(self) -> dict:
         super_dict = super().to_dict()
-        super_dict["i_d "] = self.i_d
+        super_dict["i_d "] = self.id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
         super_dict["dish_mode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data
