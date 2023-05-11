@@ -30,9 +30,6 @@ class DummyComponent(TmcComponent):
     This is a Dummy Component class which monitors and update the device-info.
     """
 
-    def __init__(self, logger: Logger):
-        super().__init__(logger)
-
     def get_device(self, dev_name: str) -> Optional[DeviceInfo]:
         """
         Return the monitored device info by name.

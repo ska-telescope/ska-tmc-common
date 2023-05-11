@@ -44,7 +44,10 @@ class BaseTMCCommand:
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.component_manager = component_manager
         self.logger = logger
+        self.tracker_thread: threading.Thread
+        self._stop: bool
 
+    # pylint: disable=inconsistent-return-statements
     def adapter_creation_retry(
         self,
         device_name: str,
@@ -89,6 +92,7 @@ class BaseTMCCommand:
                 )
                 raise
 
+    # pylint: enable=inconsistent-return-statements
     def do(self, argin=None) -> NotImplementedError:
         """
         Base method for do method for different nodes
@@ -280,7 +284,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"
-                + f"Reason: Followin exception occured - {exp_msg}.\n"
+                + f"Reason: Following exception occured - {exp_msg}.\n"
                 + "The command has NOT been executed.\n"
                 + "This device will continue with normal operation.",
             )

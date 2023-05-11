@@ -14,6 +14,7 @@ from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
+# pylint: disable=attribute-defined-outside-init
 class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 

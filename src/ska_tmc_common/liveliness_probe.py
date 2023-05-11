@@ -86,10 +86,9 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         sleep_time: int = 1,
     ):
+        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
         self._max_workers = max_workers
         self._monitoring_devices = Queue(0)
-
-        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
@@ -120,15 +119,6 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     """A class for monitoring a single device"""
-
-    def __init__(
-        self,
-        component_manager,
-        logger: Logger,
-        proxy_timeout: int = 500,
-        sleep_time: int = 1,
-    ):
-        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""

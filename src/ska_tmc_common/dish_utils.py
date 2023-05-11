@@ -75,6 +75,7 @@ class DishHelper:
         :return: Number in deg:min:sec format.
             Example: 30:42:46.5307 is returned value for input 30.7129252.
         """
+        dms = ""  # degree:minutes:seconds
         try:
             sign = 1
             if argin < 0:
@@ -82,12 +83,13 @@ class DishHelper:
             frac_min, degrees = math.modf(abs(argin))
             frac_sec, minutes = math.modf(frac_min * 60)
             seconds = frac_sec * 60
-            return f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
+            dms = f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
         except SyntaxError as error:
             log_msg = (
                 f"Error while converting decimal degree to dig:min:sec.{error}"
             )
             logger.error(log_msg)
+        return dms
 
     def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the
@@ -114,14 +116,10 @@ class DishHelper:
 
         except OSError as err:
             logger.exception(err)
-            raise OSError(
-                f"OSError.'{err}'in AzElConverter.create_antenna_obj."
-            ) from err
+            raise
 
         except ValueError as verr:
             logger.exception(verr)
-            raise ValueError(
-                f"ValueError.'{verr}'in AzElConverter.create_antenna_obj."
-            ) from verr
+            raise
 
         return antennas

@@ -8,6 +8,8 @@
 # See LICENSE.txt for more info.
 """ Tango Client Code"""
 
+# pylint: disable=inconsistent-return-statements
+
 import logging
 from logging import Logger
 from typing import Callable, Optional

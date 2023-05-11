@@ -1,6 +1,7 @@
 """
 This module manages csp controller device
 """
+# pylint: disable=attribute-defined-outside-init
 import time
 from typing import List, Tuple
 

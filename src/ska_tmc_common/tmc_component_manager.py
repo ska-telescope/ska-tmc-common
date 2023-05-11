@@ -23,6 +23,7 @@ from ska_tmc_common.enum import LivelinessProbeType, TimeoutState
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.input import InputParameter
 from ska_tmc_common.liveliness_probe import (
+    BaseLivelinessProbe,
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
 )
@@ -81,13 +82,13 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
     def __init__(
         self,
         logger: Logger,
+        *args,
         _event_receiver: bool = False,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        *args,
         **kwargs,
     ):
         super().__init__(
@@ -110,6 +111,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
             )
+        self.timer_object: threading.Timer
+        self.liveliness_probe_object: BaseLivelinessProbe
 
     def is_command_allowed(self, command_name: str):
         """
@@ -235,6 +238,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         self,
         _input_parameter: InputParameter,
         logger: Logger,
+        *args,
         _component: Optional[TmcComponent] = None,
         _liveliness_probe: LivelinessProbeType = LivelinessProbeType.MULTI_DEVICE,
         _event_receiver: bool = True,
@@ -243,7 +247,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        *args,
         **kwargs,
     ):
         """
@@ -415,6 +418,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def __init__(
         self,
         logger: Logger,
+        *args,
         _liveliness_probe: LivelinessProbeType = LivelinessProbeType.NONE,
         _event_receiver: bool = False,
         communication_state_callback: Optional[Callable] = None,
@@ -422,7 +426,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        *args,
         **kwargs,
     ):
         """

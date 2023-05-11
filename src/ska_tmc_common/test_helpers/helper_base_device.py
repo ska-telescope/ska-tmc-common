@@ -16,6 +16,7 @@ from ska_tmc_common.test_helpers.empty_component_manager import (
 )
 
 
+# pylint: disable=attribute-defined-outside-init
 class HelperBaseDevice(SKABaseDevice):
     """A common base device for helper devices to share functionality."""
 

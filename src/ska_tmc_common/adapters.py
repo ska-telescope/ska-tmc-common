@@ -84,9 +84,6 @@ class CspMasterAdapter(BaseAdapter):
     for CSP master devices.
     """
 
-    def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
-        super().__init__(dev_name, proxy)
-
     def On(self, argin) -> None:
         """
         Sets device proxies to ON state
@@ -111,9 +108,6 @@ class SubArrayAdapter(BaseAdapter):
     This class is used for creating and managing adaptors
     for Subarray devices.
     """
-
-    def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
-        super().__init__(dev_name, proxy)
 
     def AssignResources(
         self, argin: str
@@ -186,9 +180,6 @@ class MCCSAdapter(BaseAdapter):
     for MCCS devices.
     """
 
-    def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
-        super().__init__(dev_name, proxy)
-
     def AssignResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -211,9 +202,6 @@ class DishAdapter(BaseAdapter):
     This class is used for creating and managing adaptors
     for Dishes proxies.
     """
-
-    def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
-        super().__init__(dev_name, proxy)
 
     def SetStandbyFPMode(self) -> None:
         """
@@ -323,9 +311,6 @@ class CspSubarrayAdapter(SubArrayAdapter):
     This class is used for creating and managing adaptors
     for CSP subarray devices proxies.
     """
-
-    def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
-        super().__init__(dev_name, proxy)
 
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
