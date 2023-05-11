@@ -255,9 +255,9 @@ class DishDeviceInfo(DeviceInfo):
 
     def to_dict(self) -> dict:
         super_dict = super().to_dict()
-        super_dict["id "] = self.id
+        super_dict["id"] = self.id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
-        super_dict["dish_mode"] = str(DishMode(self.dish_mode))
+        super_dict["dishMode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["desiredPointing"] = self.desired_pointing
