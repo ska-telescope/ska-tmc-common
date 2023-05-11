@@ -24,6 +24,8 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :returns: ResultCode, message
+            :rtype:tuple
             """
             super().do()
             self._device._assigned_resources = "{ }"
@@ -34,6 +36,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
     def read_assignedResources(self) -> str:
         """
         Reads the values of the assignedResources
+        :rtype:str
         """
         return self._device._assigned_resources
 

@@ -75,6 +75,10 @@ class DummyComponentManager(TmcComponentManager):
     def set_data(self, value: str) -> Tuple[ResultCode, str]:
         """
         It invokes the SetData Command.
+
+        :param: value
+        :return: ResultCode, message
+        :rtype: Tuple
         """
         self._sample_data = value
         return ResultCode.OK, ""
@@ -129,6 +133,8 @@ class DummyTmcDevice(HelperBaseDevice):
     def is_SetData_allowed(self) -> bool:
         """
         It checks if the SetData is allowed or not.
+
+        :rtype : bool
         """
         return True
 

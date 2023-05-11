@@ -32,6 +32,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke AssignResources command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("AssignResource completed.")
@@ -45,6 +47,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks the Configure is allowed in the current device
         state.
+        :rtype:bool
         """
         return True
 
@@ -57,6 +60,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Configure command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("Configure completed.")
@@ -70,6 +75,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Scan command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -82,6 +88,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Scan command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("Scan completed.")
@@ -95,6 +103,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the EndScan command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -105,6 +114,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke EndScan command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("EndScan completed.")
@@ -118,6 +129,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the End command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -128,6 +140,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke End command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("End completed.")
@@ -141,6 +155,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the GoToIdle command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -151,6 +166,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke GoToIdle command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("GoToIdle completed.")
@@ -164,6 +181,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Abort command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -174,6 +192,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Abort command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         self.logger.info("Abort completed.")
         return [ResultCode.OK], [""]
@@ -182,6 +202,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ObsReset command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -192,6 +213,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke ObsReset command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("ObsReset completed.")
@@ -205,6 +228,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Restart command is allowed in the current
         device state.
+        :rtype:bool
         """
         return True
 
@@ -215,6 +239,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Restart command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         self.logger.info("Restart completed.")
         return [ResultCode.OK], [""]
@@ -223,6 +249,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ReleaseAllResources command is allowed in
         the current device state.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         return True
 
@@ -233,6 +261,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke ReleaseAllResources command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("ReleaseAllResources completed")
@@ -246,6 +276,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ReleaseResources command is allowed in the
         current device state.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         return True
 
@@ -260,6 +292,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke ReleaseResources command.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             self.logger.info("ReleaseResources completed.")

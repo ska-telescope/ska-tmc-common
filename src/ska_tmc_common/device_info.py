@@ -1,5 +1,5 @@
 """
-This module provi_d es us the information about the devices
+This module provid es us the information about the devices
 """
 import json
 import threading
@@ -120,13 +120,16 @@ class DeviceInfo:
 
     def to_json(self) -> str:
         """
-        Converts str input to json
+        This method returns the json encoded string.
+        rtype:str
         """
         return json.dumps(self.to_dict())
 
     def to_dict(self) -> dict:
         """
         Converts input to dictionary.
+        :return: result : device information
+        :rtype:dict
         """
         result = {
             "dev_name": self.dev_name,
@@ -154,7 +157,7 @@ class SubArrayDeviceInfo(DeviceInfo):
     def from_dev_info(self, subarray_device_info) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.id = subarray_device_info.i_d
+            self.id = subarray_device_info.id
             self.resources = subarray_device_info.resources
             self.obs_state = subarray_device_info.obs_state
 
@@ -235,7 +238,7 @@ class DishDeviceInfo(DeviceInfo):
     def from_dev_info(self, dish_device_info) -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
-            self.id = dish_device_info.i_d
+            self.id = dish_device_info.id
             self.pointing_state = dish_device_info.pointing_state
             self.dish_mode = dish_device_info._dish_mode
             self.rx_capturing_data = dish_device_info.rx_capturing_data
@@ -252,7 +255,7 @@ class DishDeviceInfo(DeviceInfo):
 
     def to_dict(self) -> dict:
         super_dict = super().to_dict()
-        super_dict["i_d "] = self.id
+        super_dict["id "] = self.id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
         super_dict["dish_mode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data

@@ -1,5 +1,5 @@
 """
-A common module for helper devices to share functionality."
+A common module for different helper devices(mock devices)"
 """
 import time
 from typing import List, Tuple
@@ -18,7 +18,7 @@ from ska_tmc_common.test_helpers.empty_component_manager import (
 
 # pylint: disable=attribute-defined-outside-init
 class HelperBaseDevice(SKABaseDevice):
-    """A common base device for helper devices to share functionality."""
+    """A common base device for helper devices."""
 
     def init_device(self) -> None:
         super().init_device()
@@ -26,7 +26,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._defective = False
 
     class InitCommand(SKABaseDevice.InitCommand):
-        """A class for the HelperBaseDevice's init_device() "command"."""
+        """A class for the HelperBaseDevice's init_device() command."""
 
         def do(self) -> Tuple[ResultCode, str]:
             super().do()
@@ -35,6 +35,10 @@ class HelperBaseDevice(SKABaseDevice):
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
+        """
+        Creates an instance of EmptyComponentManager
+        :rtype:class
+        """
         cm = EmptyComponentManager(
             logger=self.logger,
             max_workers=1,
@@ -48,6 +52,8 @@ class HelperBaseDevice(SKABaseDevice):
     def read_defective(self) -> bool:
         """
         Returns defective status of devices
+
+        :rtype: bool
         """
         return self._defective
 
@@ -62,7 +68,11 @@ class HelperBaseDevice(SKABaseDevice):
         doc_in="Set Defective",
     )
     def SetDefective(self, value: bool) -> None:
-        """Trigger defective change"""
+        """
+        Trigger defective change
+        :param: value
+        :type: bool
+        """
         self._defective = value
 
     @command(
@@ -72,6 +82,8 @@ class HelperBaseDevice(SKABaseDevice):
     def SetDirectState(self, argin: tango.DevState) -> None:
         """
         Trigger a DevState change
+
+        :param tango.DevState
         """
         # import debugpy; debugpy.debug_this_thread()
         if not self._defective:
@@ -87,6 +99,7 @@ class HelperBaseDevice(SKABaseDevice):
     def SetDirectHealthState(self, argin: HealthState) -> None:
         """
         Trigger a HealthState change
+        :param tango.DevState
         """
         # import debugpy; debugpy.debug_this_thread()
         if not self._defective:
@@ -110,7 +123,7 @@ class HelperBaseDevice(SKABaseDevice):
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Off_allowed(self) -> bool:

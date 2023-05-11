@@ -8,7 +8,7 @@ from enum import IntEnum, unique
 @unique
 class PointingState(IntEnum):
     """
-    This class assigns the enum value to PointingState.
+    This is an enumerator class that contains PointingState values.
     """
 
     NONE = 0

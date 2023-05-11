@@ -1,5 +1,6 @@
 """
-This module manages to create and manages adapter.
+This module defines classes/methods that manage
+the adapters required to communicate with various devices.
 """
 from typing import Any, Optional, Union
 
@@ -20,7 +21,7 @@ from ska_tmc_common.adapters import (
 
 class HelperAdapterFactory(AdapterFactory):
     """
-    This class manages to create and manages adapter.
+    This class to create various types of adapters for various devices
     """
 
     def __init__(self) -> None:
@@ -43,6 +44,12 @@ class HelperAdapterFactory(AdapterFactory):
     ]:
         """
         Method to create adapter for different devices
+        :param dev_name: device name
+        :param adapter_type: type of adapter
+        :param proxy : Device proxy
+
+        :return: new_adapter
+        :rtype: Union
         """
         if proxy is None:
             proxy = mock.Mock(attrs)

@@ -39,8 +39,9 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def assign(self, resources: list) -> Tuple[ResultCode, str]:
         """
         Assign resources to the component.
-
-        :param resources: resources to be assign
+        :param resources: resources to be assigned
+        :returns: ResultCode, message
+        :rtype:tuple
         """
         self.logger.info("Resources: %s", resources)
         self._assigned_resources = ["0001"]
@@ -49,13 +50,18 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def release(self, resources: list) -> Tuple[ResultCode, str]:
         """
         Release resources from the component.
-
         :param resources: resources to be released
+        :returns: ResultCode, message
+        :rtype:tuple
         """
         return ResultCode.OK, ""
 
     def release_all(self) -> Tuple[ResultCode, str]:
-        """Release all resources."""
+        """
+        Release all resources.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
         self._assigned_resources = []
 
         return ResultCode.OK, ""
@@ -63,41 +69,66 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def configure(self, configuration: str) -> Tuple[ResultCode, str]:
         """
         Configure the component.
-
         :param configuration: the configuration to be configured
         :type configuration: dict
+        :returns: ResultCode, message
+        :rtype:tuple
         """
         self.logger.info("%s", configuration)
 
         return ResultCode.OK, ""
 
     def scan(self, args: Any) -> Tuple[ResultCode, str]:
-        """Start scanning."""
+        """
+        Start scanning.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
         self.logger.info("%s", args)
         return ResultCode.OK, ""
 
     def end_scan(self) -> Tuple[ResultCode, str]:
-        """End scanning."""
+        """
+        End scanning.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def end(self) -> Tuple[ResultCode, str]:
-        """End Scheduling blocks."""
+        """
+        End Scheduling blocks.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def abort(self) -> Tuple[ResultCode, str]:
-        """Tell the component to abort whatever it was doing."""
+        """
+        Tell the component to abort whatever it was doing.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def obsreset(self) -> Tuple[ResultCode, str]:
-        """Reset the component to unconfigured but do not release resources."""
+        """
+        Reset the component to unconfirmed but do not release resources.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def restart(self) -> Tuple[ResultCode, str]:
-        """Deconfigure and release all resources."""
+        """
+        Deconfigure and release all resources.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
@@ -157,25 +188,29 @@ class HelperSubArrayDevice(SKASubarray):
     def read_receiveAddresses(self) -> str:
         """
         This method is used to read receiveAddresses attribute
+        :rtype:str
         """
         return self._receive_addresses
 
     def read_commandInProgress(self) -> str:
         """
         This method is used to read, which command is in progress
+        :rtype:str
         """
         return self._command_in_progress
 
     def read_defective(self) -> bool:
         """
         This method is used to read the value of the attribute defective
+        :rtype:bool
         """
         return self._defective
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
         This method is used to create an instance of
-        EmptySubarrayComponentManager
+        EmptySubarrayComponentManager         :return:
+        :rtype: class
         """
         cm = EmptySubArrayComponentManager(
             logger=self.logger,
@@ -189,7 +224,10 @@ class HelperSubArrayDevice(SKASubarray):
         doc_in="Set Defective",
     )
     def SetDefective(self, value: bool) -> None:
-        """Trigger defective change"""
+        """
+        Trigger defective change
+        :rtype: bool
+        """
         self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
 
@@ -298,6 +336,8 @@ class HelperSubArrayDevice(SKASubarray):
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
@@ -386,6 +426,8 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes ReleaseAllResources command on
         subarray device
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
@@ -415,6 +457,8 @@ class HelperSubArrayDevice(SKASubarray):
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Configure command on ubarray devices
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
@@ -446,6 +490,8 @@ class HelperSubArrayDevice(SKASubarray):
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self._obs_state != ObsState.SCANNING:
@@ -473,6 +519,8 @@ class HelperSubArrayDevice(SKASubarray):
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes EndScan command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self._obs_state != ObsState.READY:
@@ -500,6 +548,8 @@ class HelperSubArrayDevice(SKASubarray):
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes End command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
@@ -527,6 +577,8 @@ class HelperSubArrayDevice(SKASubarray):
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes GoToIdle command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
@@ -578,6 +630,8 @@ class HelperSubArrayDevice(SKASubarray):
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Abort command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTED
@@ -600,6 +654,8 @@ class HelperSubArrayDevice(SKASubarray):
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Restart command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
