@@ -29,7 +29,7 @@ class BaseLivelinessProbe:
         self._thread = threading.Thread(target=self.run)
         self._stop = False
         self._logger = logger
-        self._thread.setDaemon(True)
+        self._thread.daemon = True
         self._component_manager = component_manager
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time

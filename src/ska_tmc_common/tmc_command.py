@@ -166,7 +166,7 @@ class BaseTMCCommand:
                         self.update_task_status(result=ResultCode.OK)
                         self.stop_tracker_thread()
 
-                    elif timeout_id:
+                    if timeout_id:
                         if timeout_callback.assert_against_call(
                             timeout_id, TimeoutState.OCCURED
                         ):
@@ -179,7 +179,7 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread()
 
-                    elif command_id:
+                    if command_id:
                         if lrcr_callback.assert_against_call(
                             command_id, ExceptionState.EXCEPTION_OCCURED
                         ):

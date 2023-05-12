@@ -28,6 +28,7 @@ nosetests.xml
 results.xml
 htmlcov
 coverage.xml
+pytest-logs.txt
 
 # Developer tools
 *~

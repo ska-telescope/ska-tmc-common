@@ -17,7 +17,7 @@ class LRCRCallback:
         self,
         command_id: str,
         exception_state: ExceptionState,
-        exception_msg,
+        exception_msg: str = "",
         **kwargs: Any
     ) -> Optional[ValueError]:
         """Call method for the Callback class that sets the state of the
