@@ -72,7 +72,9 @@ class DummyCommandClass(TmcLeafNodeCommand):
         else:
             return ResultCode.FAILED, ""
 
-    def update_task_status(self, result: ResultCode) -> None:
+    def update_task_status(
+        self, result: ResultCode, message: str = ""
+    ) -> None:
         self.component_manager.stop_timer()
         if result == ResultCode.OK:
             self.task_callback(result=result, status=TaskStatus.COMPLETED)
@@ -80,7 +82,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.task_callback(
                 result=result,
                 status=TaskStatus.COMPLETED,
-                exception="Timeout occured while executing the command",
+                exception=message,
             )
 
 
@@ -160,5 +162,5 @@ def test_command_timeout_failure(task_callback):
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
         result=ResultCode.FAILED,
-        exception="Timeout occured while executing the command",
+        exception="Timeout has occured, command failed",
     )
