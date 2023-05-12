@@ -154,7 +154,13 @@ class BaseTMCCommand:
         :param timeout_id: Id for TimeoutCallback class object.
 
         :param timeout_callback: An instance of TimeoutCallback class that acts
-                    as a callable functions to call in the event of timeout.
+                    as a callable function to call in the event of timeout.
+
+        :param command_id: Id for LRCRCallback class object.
+
+        :param lrcr_callback: An instance of LRCRCallback class that acts
+                    as a callable function to call when an event from the
+                    attribute longRunningCommandResult arrives.
         """
         with EnsureOmniThread():
             while not self._stop:

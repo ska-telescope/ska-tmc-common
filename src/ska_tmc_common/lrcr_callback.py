@@ -8,7 +8,7 @@ class LRCRCallback:
     """Callback class for keeping track of raised exceptions during command executions"""
 
     def __init__(self, logger: Logger) -> None:
-        """Initialises the exception state to COMMAND_IN_PROGRESS and set the command id."""
+        """Initialises the variables Command Data and the kwargs."""
         self.command_data = {}
         self.logger = logger
         self._kwargs = {}
@@ -23,7 +23,11 @@ class LRCRCallback:
         """Call method for the Callback class that sets the state of the
         exception.
 
+        :param command_id: ID of command.
+
         :param exception_state: Enum of ExceptionState class.
+
+        :param exception_msg: String of execption message. (Optional)
 
         :return: Raises ValueError
         """
@@ -48,11 +52,6 @@ class LRCRCallback:
             return False
 
         if exception_state != self.command_data[command_id]["exception_state"]:
-            self.logger.debug(
-                "The actual exception state %s is not equal to asserted exception state %s",
-                self.command_data[command_id]["exception_state"],
-                exception_state,
-            )
             return False
 
         try:
@@ -68,3 +67,7 @@ class LRCRCallback:
             return False
 
         return True
+
+    def get_data(self, command_id: str) -> dict:
+        """Returns the data for given command id"""
+        return self.command_data[command_id]

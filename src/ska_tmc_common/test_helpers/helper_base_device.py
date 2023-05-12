@@ -1,4 +1,5 @@
 import time
+from enum import IntEnum
 from typing import List, Tuple
 
 import tango
@@ -20,6 +21,7 @@ class HelperBaseDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._defective = False
+        self._delay = 2
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self) -> Tuple[ResultCode, str]:
@@ -41,9 +43,13 @@ class HelperBaseDevice(SKABaseDevice):
         return cm
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
+    delay = attribute(dtype=int, access=AttrWriteType.READ)
 
     def read_defective(self) -> bool:
         return self._defective
+
+    def read_delay(self) -> int:
+        return self._delay
 
     def always_executed_hook(self) -> None:
         pass
@@ -58,6 +64,14 @@ class HelperBaseDevice(SKABaseDevice):
     def SetDefective(self, value: bool) -> None:
         """Trigger defective change"""
         self._defective = value
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, value: int) -> None:
+        """Change Delay value"""
+        self._delay = value
 
     @command(
         dtype_in="DevState",
@@ -145,6 +159,17 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
+
+    def update_device_state(self, value: IntEnum, attribute_type: str) -> None:
+        """Updates the given data after a delay."""
+        with tango.EnsureOmniThread():
+            time.sleep(self._delay)
+            if attribute_type == "State":
+                self.SetDirectState(value)
+            elif attribute_type == "PointingState":
+                self.SetDirectPointingState(value)
+            elif attribute_type == "DishMode":
+                self.SetDirectDishMode(value)
 
 
 # ----------

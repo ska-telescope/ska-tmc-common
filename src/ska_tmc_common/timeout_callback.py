@@ -20,6 +20,8 @@ class TimeoutCallback:
         """Call method for the Callback class that sets the state of the
         timeout.
 
+        :param timeout_id: ID for the callback instance.
+
         :param timeout_state: Enum of TimeoutState class.
 
         :return: Raises ValueError
@@ -36,15 +38,9 @@ class TimeoutCallback:
     ) -> bool:
         """Assertion method to check if the desired timeout state change has occured."""
         if timeout_id != self._timeout_id:
-            self.logger.debug("The timeout id is incorrect.")
             return False
 
         if timeout_state != self._timeout_state:
-            self.logger.debug(
-                "The actual timeout state %s is not equal to asserted timeout state %s",
-                self._timeout_state,
-                timeout_state,
-            )
             return False
 
         try:
