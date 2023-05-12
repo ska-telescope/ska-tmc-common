@@ -1,3 +1,5 @@
+import threading
+import time
 from logging import Logger
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -531,9 +533,17 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         if self._obs_state != ObsState.EMPTY:
-            self._obs_state = ObsState.EMPTY
-            self.push_change_event("obsState", self._obs_state)
+            thread = threading.Thread(target=self.start_restart)
+            thread.start()
         return [ResultCode.OK], [""]
+
+    def start_restart(self) -> None:
+        """Update Obstate Mode to RESTARTING and then to EMPTY"""
+        self._obs_state = ObsState.RESTARTING
+        self.push_change_event("obsState", self._obs_state)
+        time.sleep(3)
+        self._obs_state = ObsState.EMPTY
+        self.push_change_event("obsState", self._obs_state)
 
 
 # ----------
