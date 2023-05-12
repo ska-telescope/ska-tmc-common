@@ -1,5 +1,5 @@
 """
-This module provid es us the information about the devices
+This module provdevice_id es us the information about the devices
 """
 import json
 import threading
@@ -46,7 +46,7 @@ def dev_state_2_str(value: DevState) -> str:
 
 class DeviceInfo:
     """
-    Provides different information about the device.
+    Provdevice_ides different information about the device.
     Such as HealthState, DevState
     """
 
@@ -150,14 +150,14 @@ class SubArrayDeviceInfo(DeviceInfo):
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
-        self.id = -1
+        self.device_id = -1
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
     def from_dev_info(self, subarray_device_info) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.id = subarray_device_info.id
+            self.device_id = subarray_device_info.device_id
             self.resources = subarray_device_info.resources
             self.obs_state = subarray_device_info.obs_state
 
@@ -177,7 +177,7 @@ class SubArrayDeviceInfo(DeviceInfo):
                 result.append(res)
             super_dict["resources"] = result
         super_dict["resources"] = result
-        super_dict["id "] = self.id
+        super_dict["device_id "] = self.device_id
         super_dict["obsState"] = str(ObsState(self.obs_state))
         return super_dict
 
@@ -217,7 +217,7 @@ class DishDeviceInfo(DeviceInfo):
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
-        self.id = -1
+        self.device_id = -1
         self.pointing_state = PointingState.NONE
         self._dish_mode = DishMode.UNKNOWN
         self.rx_capturing_data = 0
@@ -238,7 +238,7 @@ class DishDeviceInfo(DeviceInfo):
     def from_dev_info(self, dish_device_info) -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
-            self.id = dish_device_info.id
+            self.device_id = dish_device_info.device_id
             self.pointing_state = dish_device_info.pointing_state
             self.dish_mode = dish_device_info._dish_mode
             self.rx_capturing_data = dish_device_info.rx_capturing_data
@@ -255,7 +255,7 @@ class DishDeviceInfo(DeviceInfo):
 
     def to_dict(self) -> dict:
         super_dict = super().to_dict()
-        super_dict["id"] = self.id
+        super_dict["device_id"] = self.device_id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
         super_dict["dishMode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data
