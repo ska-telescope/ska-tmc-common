@@ -46,3 +46,19 @@ class TimeoutState(IntEnum):
 
     NOT_OCCURED = 0
     OCCURED = 1
+
+@unique
+class ExceptionState(IntEnum):
+    """Enum class for keeping track of exception state.
+    Has 3 values according to occurance of exceptions.
+
+    :COMMAND_IN_PROGRESS: Specifics the command still being in progress.
+    :COMMAND_COMPLETE: Specifies that command has completed execution without
+        raising any exceptions.
+    :EXCEPTION_OCCURED: Specifies that an exception has occured during command
+        run.
+    """
+
+    COMMAND_IN_PROGRESS = 0
+    COMMAND_COMPLETE = 1
+    EXCEPTION_OCCURED = 2
