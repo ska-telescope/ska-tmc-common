@@ -281,8 +281,8 @@ class HelperDishDevice(HelperBaseDevice):
             self.logger.info("Processing ConfigureBand2")
             self.set_dish_mode(DishMode.CONFIG)
             thread = threading.Thread(
-                target=self.update_device_state,
-                args=[current_dish_mode, "DishMode"],
+                target=self.update_dish_mode,
+                args=[current_dish_mode],
             )
             thread.start()
             return ([ResultCode.OK], [""])
@@ -290,6 +290,11 @@ class HelperDishDevice(HelperBaseDevice):
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
+
+    def update_dish_mode(self, value):
+        """Sets the dish mode back to original state."""
+        time.sleep(2)
+        self.set_dish_mode(value)
 
     def is_ConfigureBand3_allowed(self) -> bool:
         return True
