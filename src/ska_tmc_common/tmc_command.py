@@ -18,10 +18,10 @@ from ska_tmc_common.adapters import (
     MCCSAdapter,
     SubArrayAdapter,
 )
-from ska_tmc_common.enum import TimeoutState, ExceptionState
+from ska_tmc_common.enum import ExceptionState, TimeoutState
+from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
-from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
@@ -84,7 +84,9 @@ class BaseTMCCommand:
             "This method must be implemented by command class"
         )
 
-    def update_task_status(self, result: ResultCode, message: str = "") -> NotImplementedError:
+    def update_task_status(
+        self, result: ResultCode, message: str = ""
+    ) -> NotImplementedError:
         raise NotImplementedError(
             "This method must be implemented by command class"
         )
@@ -158,35 +160,43 @@ class BaseTMCCommand:
             while not self._stop:
                 try:
                     if state_function() == expected_state:
-                        self.logger.info("State change has occured, command succeded")
+                        self.logger.info(
+                            "State change has occured, command succeded"
+                        )
                         self.update_task_status(result=ResultCode.OK)
                         self.stop_tracker_thread()
 
                     elif timeout_id:
                         if timeout_callback.assert_against_call(
-                            timeout_id,
-                            TimeoutState.OCCURED
+                            timeout_id, TimeoutState.OCCURED
                         ):
-                            self.logger.error("Timeout has occured, command failed")
+                            self.logger.error(
+                                "Timeout has occured, command failed"
+                            )
                             self.update_task_status(
                                 result=ResultCode.FAILED,
-                                message="Timeout has occured, command failed"
+                                message="Timeout has occured, command failed",
                             )
                             self.stop_tracker_thread()
 
                     elif command_id:
                         if lrcr_callback.assert_against_call(
-                            command_id,
-                            ExceptionState.EXCEPTION_OCCURED
+                            command_id, ExceptionState.EXCEPTION_OCCURED
                         ):
-                            self.logger.error("Exception has occured, command failed")
+                            self.logger.error(
+                                "Exception has occured, command failed"
+                            )
                             self.update_task_status(
                                 result=ResultCode.FAILED,
-                                message=lrcr_callback.command_data[command_id]["exception_message"]
+                                message=lrcr_callback.command_data[command_id][
+                                    "exception_message"
+                                ],
                             )
                             self.stop_tracker_thread()
                 except Exception as e:
-                    self.logger.error("Exception occured in Tracker thread: %s", e)
+                    self.logger.error(
+                        "Exception occured in Tracker thread: %s", e
+                    )
 
                 time.sleep(0.1)
 

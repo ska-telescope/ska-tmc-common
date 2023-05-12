@@ -1,10 +1,10 @@
-from typing import List, Tuple
 import threading
 import time
+from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
-from tango.server import command, run
 from tango import EnsureOmniThread
+from tango.server import command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
@@ -41,7 +41,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         with EnsureOmniThread():
             time.sleep(5)
             command_id = "1000"
-            command_result = (command_id, f"Exception occured on device: {self.dev_name}")
+            command_result = (
+                command_id,
+                f"Exception occured on device: {self.dev_name}",
+            )
             self.push_change_event("longRunningCommandResult", command_result)
 
     def is_Configure_allowed(self) -> bool:

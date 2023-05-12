@@ -47,6 +47,7 @@ class TimeoutState(IntEnum):
     NOT_OCCURED = 0
     OCCURED = 1
 
+
 @unique
 class ExceptionState(IntEnum):
     """Enum class for keeping track of exception state.
