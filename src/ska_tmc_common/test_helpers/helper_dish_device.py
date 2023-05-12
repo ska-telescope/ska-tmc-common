@@ -279,25 +279,17 @@ class HelperDishDevice(HelperBaseDevice):
         current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
-            # Create thread which update dishMode
-            start_dish_mode_transition = threading.Thread(
-                None,
-                self.start_config_transition,
-                "DishHelper",
-                args=(current_dish_mode,),
+            self.set_dish_mode(DishMode.CONFIG)
+            thread = threading.Thread(
+                target=self.update_device_state,
+                args=[current_dish_mode, "DishMode"],
             )
-            start_dish_mode_transition.start()
+            thread.start()
             return ([ResultCode.OK], [""])
         else:
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command."
             ]
-
-    def start_config_transition(self, current_dish_mode: DishMode) -> None:
-        """Update Dish Mode to CONFIG and then to current_dish_mode"""
-        self.set_dish_mode(DishMode.CONFIG)
-        time.sleep(2)
-        self.set_dish_mode(current_dish_mode)
 
     def is_ConfigureBand3_allowed(self) -> bool:
         return True

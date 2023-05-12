@@ -165,11 +165,17 @@ class HelperBaseDevice(SKABaseDevice):
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
             if attribute_type == "State":
-                self.SetDirectState(value)
+                self.set_state(value)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
             elif attribute_type == "PointingState":
-                self.SetDirectPointingState(value)
+                self._pointing_state = value
+                time.sleep(0.1)
+                self.push_change_event("pointingState", self._pointing_state)
             elif attribute_type == "DishMode":
-                self.SetDirectDishMode(value)
+                self._dish_mode = value
+                time.sleep(0.1)
+                self.push_change_event("dishMode", self._dish_mode)
 
 
 # ----------
