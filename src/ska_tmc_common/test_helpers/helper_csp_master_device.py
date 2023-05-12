@@ -2,6 +2,7 @@
 This module defines a helper device that acts as csp master in our testing.
 """
 # pylint: disable=attribute-defined-outside-init
+# pylint: disable=unused-argument
 import time
 from typing import List, Tuple
 

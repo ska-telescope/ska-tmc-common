@@ -3,7 +3,7 @@ This module implements the Helper devices for subarray leaf nodes for testing
 an integrated TMC
 """
 # pylint: disable=attribute-defined-outside-init
-
+# pylint: disable=unused-argument
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode

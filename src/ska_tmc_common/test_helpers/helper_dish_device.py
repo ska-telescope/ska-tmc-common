@@ -1,6 +1,7 @@
 """
 This module implements the Helper Dish Device for testing an integrated TMC
 """
+# pylint: disable=unused-argument
 import threading
 import time
 from typing import List, Tuple

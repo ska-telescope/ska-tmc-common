@@ -11,6 +11,7 @@
 
 """
 # pylint: disable=inconsistent-return-statements
+# pylint: disable=unused-argument
 
 import logging
 from logging import Logger

@@ -62,7 +62,7 @@ confidence=
 # --disable=W".
 disable=abstract-method,broad-exception-raised,broad-exception-caught,
         arguments-renamed,redefined-builtin,
-        redefined-outer-name,arguments-differ,unused-argument,
+        redefined-outer-name,arguments-differ,
         protected-access,invalid-name,
         no-member
 

@@ -2,7 +2,7 @@
 This module implements the Helper MCCS subarray devices for testing
 an integrated TMC
 """
-
+# pylint: disable=unused-argument
 import json
 from typing import List, Tuple
 
