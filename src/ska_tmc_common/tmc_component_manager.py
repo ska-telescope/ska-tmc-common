@@ -428,6 +428,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
+        availablity_callback=None,
         **kwargs,
     ):
         """
@@ -465,15 +466,21 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         return self._device
 
-    def device_failed(self, exception: str) -> None:
+    def device_failed(self, device_info: DeviceInfo, exception: str) -> None:
         """
         Set a device to failed and call the relative callback if available
 
+        :param device_info: a device info
+        :type device_info: DeviceInfo
         :param exception: an exception
         :type: Exception
         """
         with self.lock:
             self._device.exception = exception
+            device_info.update_unresponsive(True, exception)
+
+            if self.availablity_callback is not None:
+                self.availablity_callback(False)
 
     def update_device_info(self, device_info: DeviceInfo) -> None:
         """
@@ -497,6 +504,8 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._device.ping = ping
+            if self.availablity_callback is not None:
+                self.availablity_callback(True)
 
     def update_event_failure(self) -> None:
         """
