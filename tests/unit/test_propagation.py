@@ -90,7 +90,7 @@ def test_kwargs_functionality_lrcr_callback():
     )
 
 
-def test_command_propogation_success(task_callback, caplog):
+def test_command_propogation_success(task_callback):
     cm = DummyComponentManager(logger)
     cm.invoke_command(True, task_callback)
     cm.lrcr_callback(
