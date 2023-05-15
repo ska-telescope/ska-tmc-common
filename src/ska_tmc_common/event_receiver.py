@@ -1,3 +1,8 @@
+"""
+The event_receiver has the responsibility to receive events
+from the sub devices managed by a TMC node.
+"""
+
 import threading
 from concurrent import futures
 from logging import Logger
@@ -44,14 +49,23 @@ class EventReceiver:
         self._dev_factory = DevFactory()
 
     def start(self) -> None:
+        """
+        checks if device is alive
+        """
         if not self._thread.is_alive():
             self._thread.start()
 
     def stop(self) -> None:
+        """
+        checks if device has stopped
+        """
         self._stop = True
         # self._thread.join()
 
     def run(self) -> None:
+        """
+        checks if device is running
+        """
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:
@@ -60,15 +74,20 @@ class EventReceiver:
                     for dev_info in self._component_manager.devices:
                         if dev_info.last_event_arrived is None:
                             executor.submit(self.subscribe_events, dev_info)
-                except Exception as e:
-                    self._logger.warning("Exception occured: %s", e)
+                except Exception as x:
+                    self._logger.warning("Exception occurred: %s", x)
                 sleep(self._sleep_time)
 
     def subscribe_events(self, dev_info: DeviceInfo) -> None:
+        """
+        It subscribes the events from lower level devices
+        """
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
-        except Exception as e:
-            self._logger.error("Exception occured while creating proxy: %s", e)
+        except Exception as x:
+            self._logger.error(
+                "Exception occurred while creating proxy: %s", x
+            )
         else:
             try:
                 # import debugpy; debugpy.debug_this_thread()
@@ -93,12 +112,15 @@ class EventReceiver:
                         self.handle_obs_state_event,
                         stateless=True,
                     )
-            except Exception as e:
+            except Exception as x:
                 self._logger.debug(
-                    "Event not working for device %s :%s", proxy.dev_name, e
+                    "Event not working for device %s :%s", proxy.dev_name, x
                 )
 
     def handle_health_state_event(self, event: tango.EventData) -> None:
+        """
+        It handles the health state of different devices
+        """
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
@@ -119,6 +141,9 @@ class EventReceiver:
         )
 
     def handle_state_event(self, event: tango.EventData) -> None:
+        """
+        It handles the state of different devices
+        """
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
@@ -134,6 +159,9 @@ class EventReceiver:
         )
 
     def handle_obs_state_event(self, event: tango.EventData) -> None:
+        """
+        It handles the observation state of different devices
+        """
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]

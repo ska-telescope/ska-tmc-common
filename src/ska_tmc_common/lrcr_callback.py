@@ -1,3 +1,5 @@
+"""This module provides a callback to keep track of the
+longRunningCommandResult events."""
 from logging import Logger
 from typing import Any, Optional
 
@@ -55,12 +57,11 @@ class LRCRCallback:
             return False
 
         try:
-            if not all(
-                [
-                    self.command_data[command_id][key] == value
-                    for key, value in kwargs.items()
-                ]
-            ):
+            is_valid = [
+                self.command_data[command_id][key] == value
+                for key, value in kwargs.items()
+            ]
+            if not all(is_valid):
                 return False
         except KeyError as e:
             self.logger.debug(

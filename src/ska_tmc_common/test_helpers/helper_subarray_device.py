@@ -1,3 +1,8 @@
+"""
+This module implements the Helper devices for subarray nodes for testing
+an integrated TMC
+"""
+# pylint: disable=attribute-defined-outside-init
 import threading
 import time
 from enum import IntEnum
@@ -13,6 +18,10 @@ from tango.server import attribute, command, run
 
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
+    """
+    This is a Component Manager created for the use of Helper Subarray devices.
+    """
+
     def __init__(
         self,
         logger: Logger,
@@ -32,8 +41,9 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def assign(self, resources: list) -> Tuple[ResultCode, str]:
         """
         Assign resources to the component.
-
-        :param resources: resources to be assign
+        :param resources: resources to be assigned
+        :returns: ResultCode, message
+        :rtype:tuple
         """
         self.logger.info("Resources: %s", resources)
         self._assigned_resources = ["0001"]
@@ -42,13 +52,18 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def release(self, resources: list) -> Tuple[ResultCode, str]:
         """
         Release resources from the component.
-
         :param resources: resources to be released
+        :returns: ResultCode, message
+        :rtype:tuple
         """
         return ResultCode.OK, ""
 
     def release_all(self) -> Tuple[ResultCode, str]:
-        """Release all resources."""
+        """
+        Release all resources.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
         self._assigned_resources = []
 
         return ResultCode.OK, ""
@@ -56,41 +71,66 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def configure(self, configuration: str) -> Tuple[ResultCode, str]:
         """
         Configure the component.
-
         :param configuration: the configuration to be configured
         :type configuration: dict
+        :returns: ResultCode, message
+        :rtype:tuple
         """
         self.logger.info("%s", configuration)
 
         return ResultCode.OK, ""
 
     def scan(self, args: Any) -> Tuple[ResultCode, str]:
-        """Start scanning."""
+        """
+        Start scanning.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
         self.logger.info("%s", args)
         return ResultCode.OK, ""
 
     def end_scan(self) -> Tuple[ResultCode, str]:
-        """End scanning."""
+        """
+        End scanning.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def end(self) -> Tuple[ResultCode, str]:
-        """End Scheduling blocks."""
+        """
+        End Scheduling blocks.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def abort(self) -> Tuple[ResultCode, str]:
-        """Tell the component to abort whatever it was doing."""
+        """
+        Tell the component to abort whatever it was doing.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def obsreset(self) -> Tuple[ResultCode, str]:
-        """Reset the component to unconfigured but do not release resources."""
+        """
+        Reset the component to unconfirmed but do not release resources.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
     def restart(self) -> Tuple[ResultCode, str]:
-        """Deconfigure and release all resources."""
+        """
+        Deconfigure and release all resources.
+        :returns: ResultCode, message
+        :rtype:tuple
+        """
 
         return ResultCode.OK, ""
 
@@ -118,9 +158,23 @@ class HelperSubArrayDevice(SKASubarray):
         self._delay = 2
 
     class InitCommand(SKASubarray.InitCommand):
+        """A class for the HelperSubarrayDevice's init_device() "command"."""
+
         def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialisation.
+            """
             super().do()
-            self._device._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}},"calibration:b":{"vis0":{"function":"visibilities","host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],"port":[[0,9000,1]]}}}'
+            self._device._receive_addresses = (
+                '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
+                '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
+                '"function":"visibilities","host":[[0,'
+                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+                '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
+                '"function":"visibilities","host":[[0,'
+                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+                '"port":[[0,9000,1]]}}}'
+            )
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
@@ -137,15 +191,28 @@ class HelperSubArrayDevice(SKASubarray):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
     def read_delay(self) -> int:
+        """This method is used to read the attribute value for delay."""
         return self._delay
 
     def read_receiveAddresses(self) -> str:
+        """
+        This method is used to read receiveAddresses attribute
+        :rtype:str
+        """
         return self._receive_addresses
 
     def read_commandInProgress(self) -> str:
+        """
+        This method is used to read, which command is in progress
+        :rtype:str
+        """
         return self._command_in_progress
 
     def read_defective(self) -> bool:
+        """
+        This method is used to read the value of the attribute defective
+        :rtype:bool
+        """
         return self._defective
 
     def update_device_obsstate(self, value: IntEnum) -> None:
@@ -157,6 +224,11 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
+        """
+        This method is used to create an instance of
+        EmptySubarrayComponentManager         :return:
+        :rtype: class
+        """
         cm = EmptySubArrayComponentManager(
             logger=self.logger,
             communication_state_callback=None,
@@ -169,7 +241,10 @@ class HelperSubArrayDevice(SKASubarray):
         doc_in="Set Defective",
     )
     def SetDefective(self, value: bool) -> None:
-        """Trigger defective change"""
+        """
+        Trigger defective change
+        :rtype: bool
+        """
         self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
 
@@ -254,10 +329,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Off_allowed(self) -> bool:
         return True
@@ -272,10 +347,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Standby_allowed(self) -> bool:
         return True
@@ -285,15 +360,20 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Standby command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -313,6 +393,9 @@ class HelperSubArrayDevice(SKASubarray):
     def AssignResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes AssignResources command on subarray devices
+        """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.RESOURCING
@@ -322,12 +405,11 @@ class HelperSubArrayDevice(SKASubarray):
                 )
                 thread.start()
             return [ResultCode.OK], [""]
-        else:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command completely."
-            ]
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command completely."
+        ]
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -343,15 +425,18 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseResources command on subarray device
+        """
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -367,15 +452,21 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseAllResources command on
+        subarray device
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -393,6 +484,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Configure command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
@@ -402,12 +498,11 @@ class HelperSubArrayDevice(SKASubarray):
                 )
                 thread.start()
             return [ResultCode.OK], [""]
-        else:
-            self._obs_state = ObsState.CONFIGURING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command completely."
-            ]
+        self._obs_state = ObsState.CONFIGURING
+        self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command completely."
+        ]
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -425,6 +520,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Scan command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
@@ -434,10 +534,10 @@ class HelperSubArrayDevice(SKASubarray):
                 )
                 thread.start()
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -453,15 +553,20 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes EndScan command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_End_allowed(self) -> bool:
         """
@@ -477,15 +582,20 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def End(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes End command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -501,15 +611,20 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes GoToIdle command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_ObsReset_allowed(self) -> bool:
         """
@@ -530,10 +645,10 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -549,6 +664,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Abort command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
@@ -572,6 +692,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Restart command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)

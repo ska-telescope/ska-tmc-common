@@ -1,3 +1,9 @@
+"""
+This module implements the Helper devices for subarray leaf nodes for testing
+an integrated TMC
+"""
+# pylint: disable=attribute-defined-outside-init
+# pylint: disable=unused-argument
 import threading
 import time
 from typing import List, Tuple
@@ -13,6 +19,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
     def is_AssignResources_allowed(self) -> bool:
+        """
+        This method checks if the AssignResources command is allowed or not
+        """
         return True
 
     @command(
@@ -24,20 +33,26 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def AssignResources(
         self, argin: str = ""
     ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke AssignResources command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("AssignResource completed.")
             return [ResultCode.OK], [""]
-        else:
-            self.thread = threading.Thread(target=self.start_process)
-            self.thread.start()
-            self.logger.info("Starting Assign on device %s", self.dev_name)
-            return [ResultCode.QUEUED], [""]
+        self.thread = threading.Thread(target=self.start_process)
+        self.thread.start()
+        self.logger.info("Starting Assign on device %s", self.dev_name)
+        return [ResultCode.QUEUED], [""]
 
     def stop_thread(self):
+        """Stops the thread."""
         if self.thread.is_alive():
             self.thread.join()
 
     def start_process(self):
+        """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
             time.sleep(5)
             command_id = "1000"
@@ -48,6 +63,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self.push_change_event("longRunningCommandResult", command_result)
 
     def is_Configure_allowed(self) -> bool:
+        """
+        This method checks the Configure is allowed in the current device
+        state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -57,15 +77,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke Configure command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("Configure completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_Scan_allowed(self) -> bool:
+        """
+        This method checks if the Scan command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -75,15 +105,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke Scan command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("Scan completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_EndScan_allowed(self) -> bool:
+        """
+        This method checks if the EndScan command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -91,15 +131,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke EndScan command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("EndScan completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_End_allowed(self) -> bool:
+        """
+        This method checks if the End command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -107,15 +157,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def End(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke End command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("End completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_GoToIdle_allowed(self) -> bool:
+        """
+        This method checks if the GoToIdle command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -123,15 +183,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke GoToIdle command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("GoToIdle completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_Abort_allowed(self) -> bool:
+        """
+        This method checks if the Abort command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -139,10 +209,20 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke Abort command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         self.logger.info("Abort completed.")
         return [ResultCode.OK], [""]
 
     def is_ObsReset_allowed(self) -> bool:
+        """
+        This method checks if the ObsReset command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -150,15 +230,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke ObsReset command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("ObsReset completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_Restart_allowed(self) -> bool:
+        """
+        This method checks if the Restart command is allowed in the current
+        device state.
+        :rtype:bool
+        """
         return True
 
     @command(
@@ -166,10 +256,21 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke Restart command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         self.logger.info("Restart completed.")
         return [ResultCode.OK], [""]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
+        """
+        This method checks if the ReleaseAllResources command is allowed in
+        the current device state.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         return True
 
     @command(
@@ -177,15 +278,26 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke ReleaseAllResources command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("ReleaseAllResources completed")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
     def is_ReleaseResources_allowed(self) -> bool:
+        """
+        This method checks if the ReleaseResources command is allowed in the
+        current device state.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         return True
 
     @command(
@@ -197,13 +309,18 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def ReleaseResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke ReleaseResources command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
         if not self._defective:
             self.logger.info("ReleaseResources completed.")
             return [ResultCode.OK], [""]
-        else:
-            return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command."
-            ]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
+        ]
 
 
 # ----------

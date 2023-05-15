@@ -1,3 +1,6 @@
+"""
+This module provdevice_id es us the information about the devices
+"""
 import json
 import threading
 from typing import Any
@@ -9,37 +12,44 @@ from ska_tmc_common.enum import DishMode, PointingState
 
 
 def dev_state_2_str(value: DevState) -> str:
+    """
+    Converts device state to string datatype.
+    """
     if value == DevState.ON:
         return "DevState.ON"
-    elif value == DevState.OFF:
+    if value == DevState.OFF:
         return "DevState.OFF"
-    elif value == DevState.CLOSE:
+    if value == DevState.CLOSE:
         return "DevState.CLOSE"
-    elif value == DevState.OPEN:
+    if value == DevState.OPEN:
         return "DevState.OPEN"
-    elif value == DevState.INSERT:
+    if value == DevState.INSERT:
         return "DevState.INSERT"
-    elif value == DevState.EXTRACT:
+    if value == DevState.EXTRACT:
         return "DevState.EXTRACT"
-    elif value == DevState.MOVING:
+    if value == DevState.MOVING:
         return "DevState.MOVING"
-    elif value == DevState.STANDBY:
+    if value == DevState.STANDBY:
         return "DevState.STANDBY"
-    elif value == DevState.FAULT:
+    if value == DevState.FAULT:
         return "DevState.FAULT"
-    elif value == DevState.INIT:
+    if value == DevState.INIT:
         return "DevState.INIT"
-    elif value == DevState.RUNNING:
+    if value == DevState.RUNNING:
         return "DevState.RUNNING"
-    elif value == DevState.ALARM:
+    if value == DevState.ALARM:
         return "DevState.ALARM"
-    elif value == DevState.DISABLE:
+    if value == DevState.DISABLE:
         return "DevState.DISABLE"
-    else:
-        return "DevState.UNKNOWN"
+    return "DevState.UNKNOWN"
 
 
 class DeviceInfo:
+    """
+    Provdevice_ides different information about the device.
+    Such as HealthState, DevState
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         self.dev_name = dev_name
         self.state: DevState = DevState.UNKNOWN
@@ -51,6 +61,10 @@ class DeviceInfo:
         self.lock = threading.Lock()
 
     def from_dev_info(self, dev_info) -> None:
+        """
+        This method makes a copy of DeviceInfo object
+        from another DeviceInfo object.
+        """
         self.dev_name = dev_info.dev_name
         self.state = dev_info.state
         self.health_state = dev_info.health_state
@@ -102,13 +116,21 @@ class DeviceInfo:
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, DeviceInfo):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
+        """
+        This method returns the json encoded string.
+        :rtype:str
+        """
         return json.dumps(self.to_dict())
 
     def to_dict(self) -> dict:
+        """
+        Converts input to dictionary.
+        :return: result : device information
+        :rtype:dict
+        """
         result = {
             "dev_name": self.dev_name,
             "state": dev_state_2_str(DevState(self.state)),
@@ -122,26 +144,27 @@ class DeviceInfo:
 
 
 class SubArrayDeviceInfo(DeviceInfo):
+    """
+    Gives subarray devices information
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
-        super(SubArrayDeviceInfo, self).__init__(dev_name, _unresponsive)
-        self.id = -1
+        super().__init__(dev_name, _unresponsive)
+        self.device_id = -1
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
     def from_dev_info(self, subarray_device_info) -> None:
         super().from_dev_info(subarray_device_info)
         if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.id = subarray_device_info.id
+            self.device_id = subarray_device_info.device_id
             self.resources = subarray_device_info.resources
             self.obs_state = subarray_device_info.obs_state
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, SubArrayDeviceInfo) or isinstance(
-            other, DeviceInfo
-        ):
+        if isinstance(other, (DeviceInfo, SubArrayDeviceInfo)):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
@@ -154,12 +177,16 @@ class SubArrayDeviceInfo(DeviceInfo):
                 result.append(res)
             super_dict["resources"] = result
         super_dict["resources"] = result
-        super_dict["id"] = self.id
+        super_dict["device_id "] = self.device_id
         super_dict["obsState"] = str(ObsState(self.obs_state))
         return super_dict
 
 
 class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
+    """
+    Gives SDP subarray device information
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
@@ -170,12 +197,9 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
             self.receive_addresses = sdp_subarray_device_info.receive_addresses
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, SdpSubarrayDeviceInfo) or isinstance(
-            other, DeviceInfo
-        ):
+        if isinstance(other, (DeviceInfo, SdpSubarrayDeviceInfo)):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
@@ -187,9 +211,13 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
 
 
 class DishDeviceInfo(DeviceInfo):
+    """
+    Gives Dishes device information
+    """
+
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
-        self.id = -1
+        self.device_id = -1
         self.pointing_state = PointingState.NONE
         self._dish_mode = DishMode.UNKNOWN
         self.rx_capturing_data = 0
@@ -210,7 +238,7 @@ class DishDeviceInfo(DeviceInfo):
     def from_dev_info(self, dish_device_info) -> None:
         super().from_dev_info(dish_device_info)
         if isinstance(dish_device_info, DishDeviceInfo):
-            self.id = dish_device_info.id
+            self.device_id = dish_device_info.device_id
             self.pointing_state = dish_device_info.pointing_state
             self.dish_mode = dish_device_info._dish_mode
             self.rx_capturing_data = dish_device_info.rx_capturing_data
@@ -218,17 +246,16 @@ class DishDeviceInfo(DeviceInfo):
             self.desired_pointing = dish_device_info.desired_pointing
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, DishDeviceInfo) or isinstance(other, DeviceInfo):
+        if isinstance(other, (DishDeviceInfo, DeviceInfo)):
             return self.dev_name == other.dev_name
-        else:
-            return False
+        return False
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
 
     def to_dict(self) -> dict:
         super_dict = super().to_dict()
-        super_dict["id"] = self.id
+        super_dict["device_id"] = self.device_id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
         super_dict["dishMode"] = str(DishMode(self.dish_mode))
         super_dict["rxCapturingData"] = self.rx_capturing_data

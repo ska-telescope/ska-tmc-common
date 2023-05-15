@@ -1,3 +1,7 @@
+"""
+This module contains the fixtures, methods and variables required for testing.
+"""
+
 import logging
 import threading
 import time
@@ -45,6 +49,9 @@ class State(IntEnum):
 
 
 def count_faulty_devices(cm):
+    """
+    It counts the number of faulty devices present.
+    """
     result = 0
     for dev_info in cm.checked_devices:
         if dev_info.unresponsive:
@@ -57,6 +64,9 @@ def create_cm(
     p_liveliness_probe: LivelinessProbeType = LivelinessProbeType.MULTI_DEVICE,
     p_event_receiver: bool = True,
 ) -> Tuple[TmcComponentManager, float]:
+    """
+    It creates the instance of the component manager class.
+    """
     cm = TmcComponentManager(
         _input_parameter=_input_parameter,
         logger=logger,
@@ -74,6 +84,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
     def __init__(
         self,
         logger: Logger,
+        *args,
         _liveliness_probe: LivelinessProbeType = LivelinessProbeType.NONE,
         _event_receiver: bool = False,
         communication_state_callback: Callable[..., Any] | None = None,
@@ -81,7 +92,6 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        *args,
         **kwargs,
     ):
         super().__init__(
@@ -122,6 +132,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
     def invoke_command(
         self, argin, task_callback: Callable
     ) -> Tuple[TaskStatus, str]:
+        """Submits the command for execution."""
         self.command_id = f"{time.time()}-{DummyCommandClass.__name__}"
         self.logger.info(
             "Submitting the command in Queue. Command ID is %s",
@@ -149,16 +160,20 @@ class DummyCommandClass(TmcLeafNodeCommand):
         self._timeout_id = f"{time.time()}-{self.__class__.__name__}"
         self.timeout_callback = TimeoutCallback(self._timeout_id, self.logger)
         self._state_val = State.NORMAL
+        self.task_callback: Callable
 
     @property
     def state(self) -> IntEnum:
+        """Return the State value"""
         return self._state_val
 
     @state.setter
     def state(self, value: IntEnum) -> None:
+        """Sets the State Value"""
         self._state_val = value
 
     def get_state(self) -> IntEnum:
+        """Method to get the state value."""
         return self.state
 
     def invoke_do(
@@ -168,6 +183,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         task_callback: Callable,
         task_abort_event: Optional[threading.Event] = None,
     ) -> None:
+        """Invokes the do method and updates the task status."""
         self.logger.info("Starting timer for timeout")
         self.component_manager.start_timer(
             self._timeout_id, timeout, self.timeout_callback
@@ -189,16 +205,18 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.logger.error("Command Failed")
             self.update_task_status(result, msg)
 
+    # pylint: disable=signature-differs
     def do(self, argin: bool) -> Tuple[ResultCode, str]:
+        """Do method for command class."""
         time.sleep(2)
         if argin:
             return ResultCode.OK, ""
-        else:
-            return ResultCode.FAILED, ""
+        return ResultCode.FAILED, ""
 
     def update_task_status(
         self, result: ResultCode, message: str = ""
     ) -> None:
+        """Method to update the task status."""
         if result == ResultCode.OK:
             self.task_callback(result=result, status=TaskStatus.COMPLETED)
         else:
@@ -212,6 +230,9 @@ class DummyCommandClass(TmcLeafNodeCommand):
 def set_devices_state(
     devices: list, state: tango.DevState, devFactory: DevFactory
 ) -> None:
+    """
+    It sets the state of multiple devices
+    """
     for device in devices:
         proxy = devFactory.get_device(device)
         proxy.SetDirectState(state)
@@ -221,6 +242,9 @@ def set_devices_state(
 def set_device_state(
     device: str, state: tango.DevState, devFactory: DevFactory
 ) -> None:
+    """
+    It sets the state of the device
+    """
     proxy = devFactory.get_device(device)
     proxy.SetDirectState(state)
     assert proxy.State() == state

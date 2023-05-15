@@ -1,3 +1,7 @@
+"""
+Has different types of exceptions
+that may aries during the execution
+"""
 from marshmallow import ValidationError
 
 
@@ -14,14 +18,16 @@ class DeviceUnresponsive(Exception):
 
 
 class InvalidObsStateError(ValueError):
-    """Raised when the device obsState does not allow to invoke the command as per SKA state model"""
+    """Raised when the device obsState does not
+    allow to invoke the command as per SKA state model"""
 
 
 class ResourceReassignmentError(Exception):
     """Raised when the resource is already assigned to another subarray"""
 
     def __init__(self, message: str, resources=None) -> None:
-        super(ResourceReassignmentError, self).__init__(message)
+        # super(ResourceReassignmentError, self).__init__(message)
+        super().__init__(message)
         self.value = message
         self.resources_reallocation = resources
 

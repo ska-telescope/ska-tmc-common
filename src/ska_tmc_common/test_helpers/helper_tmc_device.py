@@ -1,3 +1,8 @@
+"""
+This module contains a dummy TMC device for testing the integrated TMC.
+"""
+# pylint: disable=unused-argument
+
 import logging
 from logging import Logger
 from typing import Any, Optional, Tuple
@@ -22,8 +27,9 @@ logger = logging.getLogger(__name__)
 
 
 class DummyComponent(TmcComponent):
-    def __init__(self, logger: Logger):
-        super().__init__(logger)
+    """
+    This is a Dummy Component class which monitors and update the device-info.
+    """
 
     def get_device(self, dev_name: str) -> Optional[DeviceInfo]:
         """
@@ -52,11 +58,15 @@ class DummyComponent(TmcComponent):
 
 
 class DummyComponentManager(TmcComponentManager):
+    """
+    A Dummy component manager for The TMC components.
+    """
+
     def __init__(
         self,
+        *args,
         _component: Optional[TmcComponent] = None,
         logger: Logger = logger,
-        *args,
         **kwargs
     ):
         super().__init__(_component=_component, logger=logger, *args, **kwargs)
@@ -64,6 +74,13 @@ class DummyComponentManager(TmcComponentManager):
         self._sample_data = "Default value"
 
     def set_data(self, value: str) -> Tuple[ResultCode, str]:
+        """
+        It invokes the SetData Command.
+
+        :param: value
+        :return: ResultCode, message
+        :rtype: Tuple
+        """
         self._sample_data = value
         return ResultCode.OK, ""
 
@@ -102,7 +119,12 @@ class DummyTmcDevice(HelperBaseDevice):
     """A dummy TMC device for triggering state changes with a command"""
 
     class SetDataCommand(SlowCommand):
+        """
+        This class contains do method which checks the sample data
+        """
+
         def __init__(self, target) -> None:
+            super().__init__(target)
             self._component_manager = target.component_manager
 
         def do(self, value: str) -> Tuple[ResultCode, str]:
@@ -110,6 +132,11 @@ class DummyTmcDevice(HelperBaseDevice):
             return ResultCode.OK, ""
 
     def is_SetData_allowed(self) -> bool:
+        """
+        It checks if the SetData is allowed or not.
+
+        :rtype : bool
+        """
         return True
 
     @command(
@@ -117,5 +144,8 @@ class DummyTmcDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def SetData(self, value: Any) -> None:
+        """
+        It invokes the SetData Command.
+        """
         handler = self.get_command_object("SetData")
         handler()
