@@ -11,6 +11,7 @@ from ska_tmc_common import (
     DummyTmcDevice,
     HelperBaseDevice,
     HelperSubArrayDevice,
+    HelperSubarrayLeafDevice,
 )
 
 """
@@ -64,6 +65,12 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": "helper/subarray/device"},
+            ],
+        },
+        {
+            "class": HelperSubarrayLeafDevice,
+            "devices": [
+                {"name": "helper/subarrayleaf/device"},
             ],
         },
     )

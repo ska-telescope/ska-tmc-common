@@ -20,6 +20,7 @@ class HelperBaseDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._defective = False
+        self.dev_name = self.get_name()
 
     class InitCommand(SKABaseDevice.InitCommand):
         def do(self) -> Tuple[ResultCode, str]:
