@@ -428,7 +428,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        availablity_callback=None,
         **kwargs,
     ):
         """
@@ -479,8 +478,8 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.exception = exception
             device_info.update_unresponsive(True, exception)
 
-            if self.availablity_callback is not None:
-                self.availablity_callback(False)
+            if self.update_availablity_callback is not None:
+                self.update_availablity_callback(False)
 
     def update_device_info(self, device_info: DeviceInfo) -> None:
         """
@@ -504,8 +503,8 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._device.ping = ping
-            if self.availablity_callback is not None:
-                self.availablity_callback(True)
+            if self.update_availablity_callback is not None:
+                self.update_availablity_callback(True)
 
     def update_event_failure(self) -> None:
         """
