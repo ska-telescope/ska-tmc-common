@@ -25,6 +25,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self._defective = False
         self.dev_name = self.get_name()
+        self._isSubsystemAvailable = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
@@ -36,6 +37,7 @@ class HelperBaseDevice(SKABaseDevice):
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -53,6 +55,9 @@ class HelperBaseDevice(SKABaseDevice):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
+    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+
+
     def read_defective(self) -> bool:
         """
         Returns defective status of devices
@@ -60,6 +65,16 @@ class HelperBaseDevice(SKABaseDevice):
         :rtype: bool
         """
         return self._defective
+
+
+    def read_isSubsystemAvailable(self) -> bool:
+        """
+        Returns avalability status for the leaf nodes devices
+
+        :rtype: bool
+        """
+        return self._isSubsystemAvailable
+    
 
     def always_executed_hook(self) -> None:
         pass
