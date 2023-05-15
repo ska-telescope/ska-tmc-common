@@ -1,6 +1,7 @@
 import logging
 import time
 
+import pytest
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskStatus
@@ -98,7 +99,6 @@ def test_command_propogation_success(task_callback, caplog):
         exception_msg="Exception has occured",
     )
     time.sleep(2)
-    caplog.set_level(logging.DEBUG, logger="ska-tango-testing.mock")
     task_callback.assert_against_call(
         status=TaskStatus.QUEUED,
     )
@@ -107,3 +107,6 @@ def test_command_propogation_success(task_callback, caplog):
         result=ResultCode.FAILED,
         exception="Exception has occured",
     )
+    time.sleep(0.5)
+    with pytest.raises(KeyError):
+        cm.lrcr_callback.command_data[cm.command_id]
