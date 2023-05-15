@@ -1,4 +1,3 @@
-import pytest
 from ska_tango_base.control_model import HealthState
 from tango import DevState
 
@@ -12,6 +11,7 @@ def test_ping():
     dev_info.update_unresponsive(False)
     dev_info.ping = 100
     assert dev_info.ping == 100
+
 
 def test_unresponsive():
     dev_name = "ska_mid/tm_leaf_node/csp_subarray01"  # testing device

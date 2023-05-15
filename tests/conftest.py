@@ -14,13 +14,13 @@ from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
     DevFactory,
+    DeviceInfo,
     DummyTmcDevice,
     HelperBaseDevice,
+    HelperDishDevice,
     HelperSubArrayDevice,
     HelperSubarrayLeafDevice,
     TmcLeafNodeComponentManager,
-    DeviceInfo,
-    HelperDishDevice
 )
 from tests.settings import logger
 
@@ -90,12 +90,14 @@ def devices_to_load():
         },
     )
 
+
 @pytest.fixture
 def component_manager():
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(logger)
     cm._device = dummy_device
     return cm
+
 
 @pytest.fixture(scope="module")
 def tango_context(devices_to_load, request):
