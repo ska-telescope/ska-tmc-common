@@ -23,8 +23,6 @@ from ska_tmc_common import (
     TmcLeafNodeComponentManager,
 )
 from tests.settings import logger
-  
-from tests.settings import logger
 
 """
 A module defining a list of fixtures that are shared across all ska_tmc_common tests.
@@ -97,14 +95,6 @@ def devices_to_load():
     )
 
 
-@pytest.fixture
-def component_manager():
-    dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = TmcLeafNodeComponentManager(logger)
-    cm._device = dummy_device
-    return cm
-
-
 @pytest.fixture(scope="module")
 def tango_context(devices_to_load, request):
     """
@@ -121,7 +111,11 @@ def tango_context(devices_to_load, request):
 
 
 @pytest.fixture
-def component_manager():
+def component_manager() -> TmcLeafNodeComponentManager:
+    """create a component manager instance for dummy device for testing
+    
+    git :rtype : TmcLeafNodeComponentManager
+    """
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(logger)
     cm._device = dummy_device
