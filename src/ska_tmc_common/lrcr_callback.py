@@ -20,7 +20,7 @@ class LRCRCallback:
         command_id: str,
         result_code: ResultCode,
         exception_msg: str = "",
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Optional[ValueError]:
         """Call method for the Callback class that sets the state of the
         exception.
@@ -33,6 +33,9 @@ class LRCRCallback:
 
         :return: Raises ValueError
         """
+        self.logger.debug(
+            f"Updating command data with command id {command_id} and result code {result_code}"
+        )
         if command_id in self.command_data:
             self.command_data[command_id]["result_code"] = result_code
             self.command_data[command_id]["exception_message"] = exception_msg

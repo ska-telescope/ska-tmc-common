@@ -13,7 +13,7 @@ import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
-from tango import AttrWriteType, DevState
+from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
 
@@ -27,14 +27,14 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         logger: Logger,
         communication_state_callback: Optional[Callable],
         component_state_callback: Optional[Callable],
-        **kwargs
+        **kwargs,
     ) -> None:
         self.logger = logger
         super().__init__(
             logger,
             communication_state_callback,
             component_state_callback,
-            **kwargs
+            **kwargs,
         )
         self._assigned_resources = []
 
@@ -156,6 +156,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._command_in_progress = ""
         self._defective = False
         self._delay = 2
+        self._raise_exception = False
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -247,6 +248,15 @@ class HelperSubArrayDevice(SKASubarray):
         """
         self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
+
+    @command(
+        dtype_in=bool,
+        doc_in="Raise Exception",
+    )
+    def SetRaiseException(self, value: bool) -> None:
+        """Set Raise Exception"""
+        self.logger.info("Setting the raise exception value to : %s", value)
+        self._raise_exception = value
 
     @command(
         dtype_in=int,
@@ -396,20 +406,39 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes AssignResources command on subarray devices
         """
-        if not self._defective:
-            if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.RESOURCING
-                self.push_change_event("obsState", self._obs_state)
-                thread = threading.Thread(
-                    target=self.update_device_obsstate, args=[ObsState.IDLE]
-                )
-                thread.start()
-            return [ResultCode.OK], [""]
-        self._obs_state = ObsState.RESOURCING
-        self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command completely."
-        ]
+        if self._defective:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command completely."
+            ]
+
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.thread = threading.Thread(
+                target=self.wait_and_update_exception, args=["AssignResources"]
+            )
+            self.thread.start()
+
+        elif self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            thread = threading.Thread(
+                target=self.update_device_obsstate, args=[ObsState.IDLE]
+            )
+            thread.start()
+        return [ResultCode.OK], [""]
+
+    def wait_and_update_exception(self, command_name):
+        """Waits for 5 secs before pushing a longRunningCommandResult event."""
+        with EnsureOmniThread():
+            time.sleep(5)
+            command_id = f"1000_{command_name}"
+            command_result = (
+                command_id,
+                f"Exception occured on device: {self.get_name()}",
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
