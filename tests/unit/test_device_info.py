@@ -3,7 +3,6 @@ from tango import DevState
 
 from ska_tmc_common import DeviceInfo
 
-
 def test_ping():
     dev_name = "ska_mid/tm_leaf_node/csp_subarray01"  # testing device
     dev_info = DeviceInfo(dev_name, True)
@@ -12,14 +11,12 @@ def test_ping():
     dev_info.ping = 100
     assert dev_info.ping == 100
 
-
 def test_unresponsive():
     dev_name = "ska_mid/tm_leaf_node/csp_subarray01"  # testing device
     dev_info = DeviceInfo(dev_name)
     assert dev_info.unresponsive is False
     dev_info.update_unresponsive(True)
     assert dev_info.unresponsive
-
 
 def test_update_responsiveness():
     dev_name = "ska_mid/tm_leaf_node/csp_subarray01"  # testing device
@@ -31,8 +28,7 @@ def test_update_responsiveness():
     assert dev_info.health_state == HealthState.UNKNOWN
     assert dev_info.ping == -1
     assert dev_info.exception == "Test exception"
-
-
+    
 def test_to_dict():
     dev_name = "ska_mid/tm_leaf_node/csp_subarray01"
     dev_info = DeviceInfo(dev_name)

@@ -32,7 +32,6 @@ def test_get_group_device_list():
     with mock.patch.object(
         TangoGroupClient, "get_tango_group", return_value=Mock()
     ):
-
         tango_client_obj = TangoGroupClient(
             dish_group, logging.getLogger("test")
         )
