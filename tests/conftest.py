@@ -1,3 +1,9 @@
+"""
+This module contains the fixtures, methods and devices required for testing.
+A module defining a list of fixtures that are shared across all ska_tmc_common tests.
+
+"""
+
 # pylint: disable=unused-argument
 import logging
 
@@ -7,10 +13,6 @@ from ska_tango_testing.mock import MockCallable
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import DevFactory, DummyTmcDevice
-
-"""
-A module defining a list of fixtures that are shared across all ska_tmc_common tests.
-"""
 
 
 def pytest_sessionstart(session):
@@ -43,6 +45,9 @@ def pytest_addoption(parser):
 
 @pytest.fixture()
 def devices_to_load():
+    """
+    This method contains the list of devices to load.
+    """
     return (
         {
             "class": DummyTmcDevice,
@@ -55,6 +60,9 @@ def devices_to_load():
 
 @pytest.fixture(scope="module")
 def tango_context(devices_to_load, request):
+    """
+    It provides the tango context to invoke any command.
+    """
     true_context = request.config.getoption("--true-context")
     if not true_context:
         with MultiDeviceTestContext(devices_to_load, process=False) as context:

@@ -12,6 +12,8 @@ This module implements a class
 TangoServerHelper which helps in operations like getting and
 setting attributes and properties of the Tango device.
 """
+# pylint: disable=inconsistent-return-statements
+
 # Tango imports
 import tango
 from tango import Database, DevFailed
@@ -29,9 +31,9 @@ class TangoServerHelper:
         :raises Exception
         """
         if TangoServerHelper.__instance is not None:
-            raise Exception("This is singletone class")
-        else:
-            TangoServerHelper.__instance = self
+            raise Exception("This is singleton class")
+
+        TangoServerHelper.__instance = self
         self.device = None
 
     @staticmethod
@@ -293,6 +295,7 @@ class TangoServerHelper:
         """
         try:
             return self.device.attr_map[attr_name]
+
         except ValueError as val_error:
             tango.Except.re_throw_exception(
                 val_error,

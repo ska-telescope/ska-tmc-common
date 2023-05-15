@@ -1,3 +1,7 @@
+"""It is a factory class which provide the ability to create an object of
+type DeviceProxy.
+"""
+
 import logging
 
 import tango
@@ -48,5 +52,5 @@ class DevFactory:
                     dev_name, green_mode=green_mode
                 )
             return self.dev_proxys[dev_name]
-        else:
-            return DevFactory._test_context.get_device(dev_name)
+
+        return DevFactory._test_context.get_device(dev_name)

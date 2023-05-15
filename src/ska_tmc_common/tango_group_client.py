@@ -10,6 +10,9 @@
 """ Tango Group Client Code
 
 """
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=unused-argument
+
 import logging
 from logging import Logger
 from typing import Optional

@@ -1,3 +1,7 @@
+"""
+This module monitors sub devices.
+Inherited from liveliness probe functionality
+"""
 import threading
 from concurrent import futures
 from logging import Logger
@@ -29,34 +33,46 @@ class BaseLivelinessProbe:
         self._thread = threading.Thread(target=self.run)
         self._stop = False
         self._logger = logger
-        self._thread.setDaemon(True)
+        self._thread.daemon = True
         self._component_manager = component_manager
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
 
     def start(self) -> None:
+        """
+        Starts the sub devices
+        """
         if not self._thread.is_alive():
             self._thread.start()
 
     def stop(self) -> None:
+        """
+        Stops the sub devices
+        """
         self._stop = True
 
     def run(self) -> NotImplementedError:
+        """
+        Runs the sub devices
+        """
         raise NotImplementedError("This method must be inherited")
 
     def device_task(self, dev_info: DeviceInfo) -> None:
+        """
+        Checks device status
+        """
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
             self._component_manager.update_ping_info(
                 proxy.ping(), dev_info.dev_name
             )
-        except Exception as e:
+        except Exception as exp_msg:
             self._logger.error(
-                "Device not working %s: %s", dev_info.dev_name, e
+                "Device not working %s: %s", dev_info.dev_name, exp_msg
             )
-            self._component_manager.device_failed(dev_info, e)
+            self._component_manager.device_failed(dev_info, exp_msg)
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
@@ -70,16 +86,16 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         sleep_time: int = 1,
     ):
+        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
         self._max_workers = max_workers
         self._monitoring_devices = Queue(0)
-
-        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
         self._monitoring_devices.put(dev_name)
 
     def run(self) -> None:
+        """A method to run device in the queue for monitoring"""
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:
@@ -96,43 +112,36 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                             executor.submit(self.device_task, dev_info)
                 except Empty:
                     pass
-                except Exception as e:
-                    self._logger.warning("Exception occured: %s", e)
+                except Exception as exp_msg:
+                    self._logger.warning("Exception occured: %s", exp_msg)
                 sleep(self._sleep_time)
 
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     """A class for monitoring a single device"""
 
-    def __init__(
-        self,
-        component_manager,
-        logger: Logger,
-        proxy_timeout: int = 500,
-        sleep_time: int = 1,
-    ):
-        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
-
     def run(self) -> None:
+        """A method to run single device in the Queue for monitoring"""
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=1
         ) as executor:
             while not self._stop:
                 try:
                     dev_info = self._component_manager.get_device()
-                except Exception as e:
+                except Exception as exp_msg:
                     self._logger.error(
-                        "Exception occured while getting device info: %s", e
+                        "Exception occured while getting device info: %s",
+                        exp_msg,
                     )
                 else:
                     try:
                         if dev_info is None:
                             continue
                         executor.submit(self.device_task, dev_info)
-                    except Exception as e:
+                    except Exception as exp_msg:
                         self._logger.error(
                             "Error in submitting the task for %s: %s",
                             dev_info.dev_name,
-                            e,
+                            exp_msg,
                         )
                 sleep(self._sleep_time)

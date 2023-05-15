@@ -1,3 +1,9 @@
+"""
+This module manages all the base classes and methods
+required for TMC commands
+"""
+# pylint: disable=unused-argument
+
 import threading
 import time
 from enum import IntEnum
@@ -25,6 +31,10 @@ from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
 class BaseTMCCommand:
+    """
+    Base class for managing all TMC commands.
+    """
+
     def __init__(
         self,
         component_manager: BaseTmcComponentManager,
@@ -36,7 +46,10 @@ class BaseTMCCommand:
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.component_manager = component_manager
         self.logger = logger
+        self.tracker_thread: threading.Thread
+        self._stop: bool
 
+    # pylint: disable=inconsistent-return-statements
     def adapter_creation_retry(
         self,
         device_name: str,
@@ -53,6 +66,9 @@ class BaseTMCCommand:
             BaseAdapter,
         ]
     ]:
+        """
+        Method to create adapters for device.
+        """
         elapsed_time = 0
 
         while elapsed_time <= timeout:
@@ -71,19 +87,26 @@ class BaseTMCCommand:
                 elapsed_time = time.time() - start_time
                 if elapsed_time > timeout:
                     raise
-            except Exception as e:
+            except Exception as exp_msg:
                 self.logger.error(
-                    "Unexpected error occured while creating the adapter: %s",
-                    e,
+                    "Unexpected error occurred while creating the adapter: %s",
+                    exp_msg,
                 )
                 raise
 
+    # pylint: enable=inconsistent-return-statements
     def do(self, argin=None) -> NotImplementedError:
+        """
+        Base method for do method for different nodes
+        """
         raise NotImplementedError(
             "This method must be implemented by command class"
         )
 
     def update_task_status(self, result: ResultCode) -> NotImplementedError:
+        """
+        Base method for update_task_status method for different nodes
+        """
         raise NotImplementedError(
             "This method must be implemented by command class"
         )
@@ -167,41 +190,82 @@ class BaseTMCCommand:
 
 
 class TMCCommand(BaseTMCCommand):
+    """
+    Class to add device adapters
+    """
+
     def init_adapters(self):
+        """
+        Base method for init_adapters method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_mid(self):
+        """
+        Base method for init_adapters_mid method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_low(self):
+        """
+        Base method for init_adapters_low method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
+        """
+        Base method for do_mid method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
+        """
+        Base method for do_low method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
 
 class TmcLeafNodeCommand(BaseTMCCommand):
+    """
+    Class to add adapters for LeafNode devices
+    """
+
     def init_adapter(self):
+        """
+        Base method for init_adapter method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
+        """
+        Base method for do_mid method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
+        """
+        Base method for do_low method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_mid(self):
+        """
+        Base method for init_adapter_mid method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_low(self):
+        """
+        Base method for init_adapter_low method for different nodes
+        """
         raise NotImplementedError("This method must be inherited!")
 
     def call_adapter_method(
         self, device: str, adapter, command_name: str, argin=None
     ) -> Tuple[ResultCode, str]:
+        """
+        Method to invoke commands on device adapters.
+        """
         if adapter is None:
             return ResultCode.FAILED, f"The proxy is missing for {device}"
 
@@ -216,13 +280,13 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 func = methodcaller(command_name)
                 func(adapter)
 
-        except Exception as e:
-            self.logger.exception("Command invocation failed: %s", e)
+        except Exception as exp_msg:
+            self.logger.exception("Command invocation failed: %s", exp_msg)
             return (
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"
-                + f"Reason: Followin exception occured - {e}.\n"
+                + f"Reason: Following exception occured - {exp_msg}.\n"
                 + "The command has NOT been executed.\n"
                 + "This device will continue with normal operation.",
             )
