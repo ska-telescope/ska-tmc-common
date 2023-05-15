@@ -24,10 +24,6 @@ from ska_tmc_common import (
 )
 from tests.settings import logger
 
-"""
-A module defining a list of fixtures that are shared across all ska_tmc_common tests.
-"""
-
 
 def pytest_sessionstart(session):
     """
@@ -113,7 +109,7 @@ def tango_context(devices_to_load, request):
 @pytest.fixture
 def component_manager() -> TmcLeafNodeComponentManager:
     """create a component manager instance for dummy device for testing
-    
+
     git :rtype : TmcLeafNodeComponentManager
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
