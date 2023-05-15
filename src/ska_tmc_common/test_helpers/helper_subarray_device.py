@@ -3,7 +3,9 @@ This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
 # pylint: disable=attribute-defined-outside-init
-
+import threading
+import time
+from enum import IntEnum
 from logging import Logger
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -153,6 +155,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._health_state = HealthState.OK
         self._command_in_progress = ""
         self._defective = False
+        self._delay = 2
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -185,6 +188,12 @@ class HelperSubArrayDevice(SKASubarray):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
+    delay = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_delay(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return self._delay
+
     def read_receiveAddresses(self) -> str:
         """
         This method is used to read receiveAddresses attribute
@@ -205,6 +214,14 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype:bool
         """
         return self._defective
+
+    def update_device_obsstate(self, value: IntEnum) -> None:
+        """Updates the given data after a delay."""
+        with tango.EnsureOmniThread():
+            time.sleep(self._delay)
+            self._obs_state = value
+            time.sleep(0.1)
+            self.push_change_event("obsState", self._obs_state)
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
@@ -230,6 +247,15 @@ class HelperSubArrayDevice(SKASubarray):
         """
         self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, value: int) -> None:
+        """Update delay value"""
+        self.logger.info("Setting the Delay value to : %s", value)
+        self._delay = value
 
     @command(
         dtype_in=int,
@@ -372,13 +398,16 @@ class HelperSubArrayDevice(SKASubarray):
         """
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
+                self._obs_state = ObsState.RESOURCING
                 self.push_change_event("obsState", self._obs_state)
+                thread = threading.Thread(
+                    target=self.update_device_obsstate, args=[ObsState.IDLE]
+                )
+                thread.start()
             return [ResultCode.OK], [""]
-
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.OK], [
+        return [ResultCode.FAILED], [
             "Device is Defective, cannot process command completely."
         ]
 
@@ -462,13 +491,16 @@ class HelperSubArrayDevice(SKASubarray):
         """
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
-                self._obs_state = ObsState.READY
+                self._obs_state = ObsState.CONFIGURING
                 self.push_change_event("obsState", self._obs_state)
+                thread = threading.Thread(
+                    target=self.update_device_obsstate, args=[ObsState.READY]
+                )
+                thread.start()
             return [ResultCode.OK], [""]
-
         self._obs_state = ObsState.CONFIGURING
         self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.OK], [
+        return [ResultCode.FAILED], [
             "Device is Defective, cannot process command completely."
         ]
 
@@ -497,6 +529,10 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
                 self.push_change_event("obsState", self._obs_state)
+                thread = threading.Thread(
+                    target=self.update_device_obsstate, args=[ObsState.READY]
+                )
+                thread.start()
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -634,8 +670,12 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
         if self._obs_state != ObsState.ABORTED:
-            self._obs_state = ObsState.ABORTED
+            self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
+            thread = threading.Thread(
+                target=self.update_device_obsstate, args=[ObsState.ABORTED]
+            )
+            thread.start()
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -658,8 +698,12 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
         if self._obs_state != ObsState.EMPTY:
-            self._obs_state = ObsState.EMPTY
+            self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
+            thread = threading.Thread(
+                target=self.update_device_obsstate, args=[ObsState.EMPTY]
+            )
+            thread.start()
         return [ResultCode.OK], [""]
 
 

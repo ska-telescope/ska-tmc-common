@@ -46,6 +46,7 @@ from .liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
 )
+from .lrcr_callback import LRCRCallback
 from .op_state_model import TMCOpStateMachine, TMCOpStateModel
 from .tango_client import TangoClient
 from .tango_group_client import TangoGroupClient
@@ -116,6 +117,7 @@ __all__ = [
     "TangoGroupClient",
     "TangoServerHelper",
     "TimeoutCallback",
+    "LRCRCallback",
     "TMCBaseDevice",
     "BaseTMCCommand",
     "TMCCommand",

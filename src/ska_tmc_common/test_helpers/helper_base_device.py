@@ -24,6 +24,7 @@ class HelperBaseDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self._defective = False
+        self.dev_name = self.get_name()
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
@@ -32,6 +33,9 @@ class HelperBaseDevice(SKABaseDevice):
             super().do()
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("healthState", True, False)
+            self._device.set_change_event(
+                "longRunningCommandResult", True, False
+            )
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:

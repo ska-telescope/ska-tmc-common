@@ -4,9 +4,12 @@ an integrated TMC
 """
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
+import threading
+import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
+from tango import EnsureOmniThread
 from tango.server import command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
@@ -38,10 +41,26 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("AssignResource completed.")
             return [ResultCode.OK], [""]
+        self.thread = threading.Thread(target=self.start_process)
+        self.thread.start()
+        self.logger.info("Starting Assign on device %s", self.dev_name)
+        return [ResultCode.QUEUED], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+    def stop_thread(self):
+        """Stops the thread."""
+        if self.thread.is_alive():
+            self.thread.join()
+
+    def start_process(self):
+        """Waits for 5 secs before pushing a longRunningCommandResult event."""
+        with EnsureOmniThread():
+            time.sleep(5)
+            command_id = "1000"
+            command_result = (
+                command_id,
+                f"Exception occured on device: {self.dev_name}",
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
 
     def is_Configure_allowed(self) -> bool:
         """
