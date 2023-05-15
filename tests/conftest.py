@@ -61,7 +61,7 @@ def devices_to_load():
 @pytest.fixture(scope="module")
 def tango_context(devices_to_load, request):
     """
-    It Provide the tango context to invoke any command
+    It provides the tango context to invoke any command.
     """
     true_context = request.config.getoption("--true-context")
     if not true_context:

@@ -1,7 +1,6 @@
 """
 This module implements the Helper Dish Device for testing an integrated TMC
 """
-# pylint: disable=unused-argument
 import threading
 import time
 from typing import List, Tuple
@@ -16,6 +15,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
+# pylint: disable=unused-argument
 class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 
@@ -561,7 +561,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_Reset_allowed(self) -> bool:
         """
-        This method checks if the Reset Command is allowed in current State.
+        This method checks if the Reset command is allowed in current State.
         :rtype:bool
         """
         return True

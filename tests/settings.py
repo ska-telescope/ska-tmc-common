@@ -80,7 +80,7 @@ def set_devices_state(
     devices: list, state: tango.DevState, devFactory: DevFactory
 ) -> None:
     """
-    It sets the state of multiple Device
+    It sets the state of multiple devices
     """
     for device in devices:
         proxy = devFactory.get_device(device)
@@ -92,7 +92,7 @@ def set_device_state(
     device: str, state: tango.DevState, devFactory: DevFactory
 ) -> None:
     """
-    It sets the state of the Device
+    It sets the state of the device
     """
     proxy = devFactory.get_device(device)
     proxy.SetDirectState(state)

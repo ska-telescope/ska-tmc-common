@@ -456,7 +456,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Configure command on ubarray devices
+        This method invokes Configure command on subarray devices
         :return: ResultCode, message
         :rtype: tuple
         """

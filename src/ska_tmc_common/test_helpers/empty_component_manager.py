@@ -8,7 +8,7 @@ from ska_tango_base.base.component_manager import BaseComponentManager
 
 class EmptyComponentManager(BaseComponentManager):
     """
-    This is a Dummy Component Manager created for the use of Helper devices.
+    This is a Dummy Component Manager created for the use of helper devices.
     """
 
     def __init__(self, *args, logger: Logger, max_workers: int = 1, **kwargs):

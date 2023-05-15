@@ -121,7 +121,7 @@ class DeviceInfo:
     def to_json(self) -> str:
         """
         This method returns the json encoded string.
-        rtype:str
+        :rtype:str
         """
         return json.dumps(self.to_dict())
 

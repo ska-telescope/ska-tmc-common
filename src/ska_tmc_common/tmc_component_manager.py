@@ -5,6 +5,7 @@ It is provided for explanatory purposes, and to support testing of this
 package.
 """
 # pylint: disable=unused-argument
+
 import json
 import threading
 import time
@@ -45,7 +46,8 @@ class TmcComponent:
 
     def get_device(self, dev_name):
         """
-        Base method for get_device method for different nodes
+        Retrieve information about a specific device.
+        This is a base method that should be implemented by derived classes.
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -331,8 +333,7 @@ class TmcComponentManager(BaseTmcComponentManager):
 
     def update_event_failure(self, dev_name: str) -> None:
         """
-        Update a device with correct device failure information
-        and call the relative callback if available
+        Update the failure status of an event for a specific device.
         """
         with self.lock:
             dev_info = self._component.get_device(dev_name)
@@ -451,7 +452,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def reset(self) -> None:
         """
-        Returns device reset info
+        Method for device reset information
         """
 
     def get_device(self) -> DeviceInfo:

@@ -40,7 +40,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Configure_allowed(self) -> bool:
@@ -68,7 +68,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Scan_allowed(self) -> bool:
@@ -96,7 +96,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_EndScan_allowed(self) -> bool:
@@ -122,7 +122,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_End_allowed(self) -> bool:
@@ -148,7 +148,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_GoToIdle_allowed(self) -> bool:
@@ -174,7 +174,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Abort_allowed(self) -> bool:
@@ -221,7 +221,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Restart_allowed(self) -> bool:
@@ -269,7 +269,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_ReleaseResources_allowed(self) -> bool:
@@ -300,7 +300,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
 

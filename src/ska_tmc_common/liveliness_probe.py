@@ -95,7 +95,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         self._monitoring_devices.put(dev_name)
 
     def run(self) -> None:
-        """A method to run device in the Queue for monitoring"""
+        """A method to run device in the queue for monitoring"""
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=self._max_workers
         ) as executor:

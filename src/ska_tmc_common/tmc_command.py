@@ -67,7 +67,7 @@ class BaseTMCCommand:
         ]
     ]:
         """
-        Method to create adaptors for device.
+        Method to create adapters for device.
         """
         elapsed_time = 0
 
@@ -191,7 +191,7 @@ class BaseTMCCommand:
 
 class TMCCommand(BaseTMCCommand):
     """
-    Class to add device adaptors
+    Class to add device adapters
     """
 
     def init_adapters(self):
@@ -227,7 +227,7 @@ class TMCCommand(BaseTMCCommand):
 
 class TmcLeafNodeCommand(BaseTMCCommand):
     """
-    Class to add adaptors for LeafNode devices
+    Class to add adapters for LeafNode devices
     """
 
     def init_adapter(self):
@@ -264,7 +264,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         self, device: str, adapter, command_name: str, argin=None
     ) -> Tuple[ResultCode, str]:
         """
-        Method to invoke commands on device adaptors.
+        Method to invoke commands on device adapters.
         """
         if adapter is None:
             return ResultCode.FAILED, f"The proxy is missing for {device}"

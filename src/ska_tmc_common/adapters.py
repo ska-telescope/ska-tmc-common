@@ -13,7 +13,7 @@ from ska_tmc_common.dev_factory import DevFactory
 
 class AdapterType(enum.IntEnum):
     """
-    This class assigns enum value to different adaptor.
+    This class assigns enum value to different adapters.
     """
 
     BASE = 0
@@ -26,7 +26,7 @@ class AdapterType(enum.IntEnum):
 
 class BaseAdapter:
     """
-    It is base class used in creating adaptor.
+    It is base class used in creating adapters.
     """
 
     def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
@@ -80,7 +80,7 @@ class BaseAdapter:
 
 class CspMasterAdapter(BaseAdapter):
     """
-    This class is used for creating and managing adaptors
+    This class is used for creating and managing adapterss
     for CSP master devices.
     """
 
@@ -105,7 +105,7 @@ class CspMasterAdapter(BaseAdapter):
 
 class SubArrayAdapter(BaseAdapter):
     """
-    This class is used for creating and managing adaptors
+    This class is used for creating and managing adapters
     for Subarray devices.
     """
 
@@ -176,7 +176,7 @@ class SubArrayAdapter(BaseAdapter):
 
 class MCCSAdapter(BaseAdapter):
     """
-    This class is used for creating and managing adaptors
+    This class is used for creating and managing adapterss
     for MCCS devices.
     """
 
@@ -199,7 +199,7 @@ class MCCSAdapter(BaseAdapter):
 
 class DishAdapter(BaseAdapter):
     """
-    This class is used for creating and managing adaptors
+    This class is used for creating and managing adapters
     for Dishes proxies.
     """
 
@@ -308,7 +308,7 @@ class DishAdapter(BaseAdapter):
 
 class CspSubarrayAdapter(SubArrayAdapter):
     """
-    This class is used for creating and managing adaptors
+    This class is used for creating and managing adapterss
     for CSP subarray devices proxies.
     """
 
@@ -321,7 +321,7 @@ class CspSubarrayAdapter(SubArrayAdapter):
 
 class AdapterFactory:
     """
-    This class is used for creating and managing adaptors
+    This class is used for creating and managing adapterss
     for CSP subarray devices .
     """
 
