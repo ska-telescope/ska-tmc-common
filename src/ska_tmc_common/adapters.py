@@ -113,13 +113,13 @@ class SubArrayAdapter(BaseAdapter):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes AssignResources on subarray device proxies.
+        Invokes AssignResources on subarray device proxy.
         """
         return self._proxy.AssignResources(argin)
 
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes ReleaseAllResources on subarray device proxies.
+        Invokes ReleaseAllResources on subarray device proxy.
         """
         return self._proxy.ReleaseAllResources()
 
@@ -127,49 +127,49 @@ class SubArrayAdapter(BaseAdapter):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes ReleaseResources on subarray device proxies.
+        Invokes ReleaseResources on subarray device proxy.
         """
         return self._proxy.ReleaseResources(argin)
 
-    def configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Configure on subarray device proxies.
+        Invokes Configure on subarray device proxy.
         """
-        return self._proxy.configure(argin)
+        return self._proxy.Configure(argin)
 
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Scan on subarray device proxies.
+        Invokes Scan on subarray device proxy.
         """
         return self._proxy.Scan(argin)
 
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes EndScan on subarray device proxies.
+        Invokes EndScan on subarray device proxy.
         """
         return self._proxy.EndScan()
 
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes End on subarray device proxies.
+        Invokes End on subarray device proxy.
         """
         return self._proxy.End()
 
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Abort on subarray device proxies.
+        Invokes Abort on subarray device proxy.
         """
         return self._proxy.Abort()
 
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Restart on subarray device proxies.
+        Invokes Restart on subarray device proxy.
         """
         return self._proxy.Restart()
 
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Reset on subarray device proxies.
+        Invokes Reset on subarray device proxy.
         """
         return self._proxy.ObsReset()
 
@@ -184,7 +184,7 @@ class MCCSAdapter(BaseAdapter):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes AssignResources on device proxies.
+        Invokes AssignResources on device proxy.
         """
         return self._proxy.AssignResources(argin)
 
@@ -192,7 +192,7 @@ class MCCSAdapter(BaseAdapter):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes ReleaseResources on device proxies.
+        Invokes ReleaseResources on device proxy.
         """
         return self._proxy.ReleaseResources(argin)
 
@@ -200,108 +200,108 @@ class MCCSAdapter(BaseAdapter):
 class DishAdapter(BaseAdapter):
     """
     This class is used for creating and managing adapters
-    for Dishes proxies.
+    for Dishes proxy.
     """
 
     def SetStandbyFPMode(self) -> None:
         """
-        Invokes StandBy on device proxies.
+        Invokes SetStandbyFPMode on device proxy.
         """
         self._proxy.SetStandbyFPMode()
 
     def SetOperateMode(self) -> None:
         """
-        Invokes Operator on device proxies.
+        Invokes SetOperateMode on device proxy.
         """
         self._proxy.SetOperateMode()
 
     def SetStandbyLPMode(self) -> None:
         """
-        Invokes Standby on device proxies.
+        Invokes SetStandbyLPMode on device proxy.
         """
         self._proxy.SetStandbyLPMode()
 
     def SetStowMode(self) -> None:
         """
-        Invokes Stow on device proxies.
+        Invokes SetStowMode on device proxy.
         """
         self._proxy.SetStowMode()
 
-    def configure(self, argin: str) -> None:
+    def Configure(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes Configure on device proxy.
         """
-        self._proxy.configure(argin)
+        self._proxy.Configure(argin)
 
-    def configure_band1(self, argin: str) -> None:
+    def ConfigureBand1(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes ConfigureBand1 on device proxy.
         """
-        self._proxy.configure_band1(argin)
+        self._proxy.ConfigureBand1(argin)
 
-    def configure_band2(self, argin: str) -> None:
+    def ConfigureBand2(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes ConfigureBand2 on device proxy.
         """
-        self._proxy.configure_band2(argin)
+        self._proxy.ConfigureBand2(argin)
 
-    def configure_band3(self, argin: str) -> None:
+    def ConfigureBand3(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes ConfigureBand3 on device proxy.
         """
-        self._proxy.configure_band3(argin)
+        self._proxy.ConfigureBand3(argin)
 
-    def configure_band4(self, argin: str) -> None:
+    def ConfigureBand4(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes ConfigureBand4 on device proxy.
         """
-        self._proxy.configure_band4(argin)
+        self._proxy.ConfigureBand4(argin)
 
-    def configure_band5a(self, argin: str) -> None:
+    def ConfigureBand5a(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes ConfigureBand5a on device proxy.
         """
-        self._proxy.configure_band5a(argin)
+        self._proxy.ConfigureBand5a(argin)
 
-    def configure_band5b(self, argin: str) -> None:
+    def ConfigureBand5b(self, argin: str) -> None:
         """
-        Invokes configure on device proxies.
+        Invokes ConfigureBand5b on device proxy.
         """
-        self._proxy.configure_band_5b(argin)
+        self._proxy.ConfigureBand5b(argin)
 
     def Track(self) -> None:
         """
-        Invokes Track on device proxies.
+        Invokes Track on device proxy.
         """
         self._proxy.Track()
 
     def TrackStop(self) -> None:
         """
-        Invokes TrackStop on device proxies.
+        Invokes TrackStop on device proxy.
         """
         self._proxy.TrackStop()
 
     def Scan(self) -> None:
         """
-        Invokes Scan on device proxies.
+        Invokes Scan on device proxy.
         """
         self._proxy.Scan()
 
     def Restart(self) -> None:
         """
-        Invokes Restart on device proxies.
+        Invokes Restart on device proxy.
         """
         self._proxy.Restart()
 
-    def Abort(self) -> None:
+    def AbortCommands(self) -> None:
         """
-        Invokes Abort on device proxies.
+        Invokes Abort on device proxy.
         """
         self._proxy.AbortCommands()
 
     def ObsReset(self) -> None:
         """
-        Invokes Reset on device proxies.
+        Invokes Reset on device proxy.
         """
         self._proxy.ObsReset()
 
@@ -309,12 +309,12 @@ class DishAdapter(BaseAdapter):
 class CspSubarrayAdapter(SubArrayAdapter):
     """
     This class is used for creating and managing adapterss
-    for CSP subarray devices proxies.
+    for CSP subarray devices proxy.
     """
 
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes End on device proxies.
+        Invokes End on device proxy.
         """
         return self._proxy.GoToIdle()
 
