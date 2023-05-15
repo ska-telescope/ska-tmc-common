@@ -47,3 +47,6 @@ def test_get_or_create_dish_adapter(tango_context):
         "test/dish/1", AdapterType.DISH
     )
     assert isinstance(dish_adapter, DishAdapter)
+
+def test_adapter():
+    pass
