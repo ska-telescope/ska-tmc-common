@@ -17,6 +17,7 @@ from ska_tmc_common import (
     DeviceInfo,
     DummyTmcDevice,
     HelperBaseDevice,
+    HelperCspMasterDevice,
     HelperDishDevice,
     HelperSubArrayDevice,
     HelperSubarrayLeafDevice,
@@ -86,6 +87,12 @@ def devices_to_load():
             "class": HelperDishDevice,
             "devices": [
                 {"name": "helper/dish/device"},
+            ],
+        },
+        {
+            "class": HelperCspMasterDevice,
+            "devices": [
+                {"name": "helper/csp/device"},
             ],
         },
     )

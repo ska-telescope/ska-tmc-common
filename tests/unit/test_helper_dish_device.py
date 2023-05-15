@@ -32,7 +32,7 @@ def test_dish_commands(tango_context, command):
 
 
 @pytest.mark.parametrize("command", commands)
-def test_set_operate_mode_defective(tango_context, command):
+def test_dish_command_defective(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(True)
