@@ -57,7 +57,6 @@ class HelperBaseDevice(SKABaseDevice):
 
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
 
-
     def read_defective(self) -> bool:
         """
         Returns defective status of devices
@@ -66,7 +65,6 @@ class HelperBaseDevice(SKABaseDevice):
         """
         return self._defective
 
-
     def read_isSubsystemAvailable(self) -> bool:
         """
         Returns avalability status for the leaf nodes devices
@@ -74,7 +72,6 @@ class HelperBaseDevice(SKABaseDevice):
         :rtype: bool
         """
         return self._isSubsystemAvailable
-    
 
     def always_executed_hook(self) -> None:
         pass
