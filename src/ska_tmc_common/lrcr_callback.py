@@ -55,9 +55,13 @@ class LRCRCallback:
             return False
 
         try:
-            for key, value in kwargs.items():
-                if self.command_data[command_id][key] != value:
-                    return False
+            if not all(
+                [
+                    self.command_data[command_id][key] == value
+                    for key, value in kwargs.items()
+                ]
+            ):
+                return False
         except KeyError as e:
             self.logger.debug(
                 "The assertion is invalid as one or more keyword arguments "

@@ -21,6 +21,22 @@ def test_lrcr_callback():
     assert not lrcr_callback.assert_against_call("123", ResultCode.STARTED)
 
 
+def test_lrcr_callback_get_data():
+    command_id = f"{time.time()}-{__name__}"
+    lrcr_callback = LRCRCallback(logger)
+    lrcr_callback(
+        command_id,
+        ResultCode.STARTED,
+        kwarg1="String",
+        kwarg2=24,
+        kwarg3=12.6,
+    )
+    data = lrcr_callback.get_data(command_id)
+    args = ["result_code", "kwarg1", "kwarg2", "kwarg3"]
+    for arg in args:
+        assert arg in data
+
+
 def test_kwargs_functionality_lrcr_callback():
     command_id = f"{time.time()}-{__name__}"
     lrcr_callback = LRCRCallback(logger)
