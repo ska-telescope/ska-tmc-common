@@ -198,7 +198,6 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
-                            del lrcr_callback.command_data[command_id]
                             self.stop_tracker_thread()
                 except Exception as e:
                     self.logger.error(

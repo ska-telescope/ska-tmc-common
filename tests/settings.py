@@ -5,7 +5,6 @@ from enum import IntEnum, unique
 from logging import Logger
 from typing import Any, Callable, Optional, Tuple
 
-import pytest
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
@@ -14,8 +13,6 @@ from ska_tmc_common import (
     DevFactory,
     DeviceInfo,
     DishDeviceInfo,
-    DummyTmcDevice,
-    HelperBaseDevice,
     InputParameter,
     LivelinessProbeType,
     LRCRCallback,
@@ -35,6 +32,7 @@ DishLeafNodePrefix = "ska_mid/tm_leaf_node/d0"
 NumDishes = 10
 
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
+SUBARRAY_DEVICE = "helper/subarray/device"
 
 
 @unique
@@ -43,20 +41,6 @@ class State(IntEnum):
 
     NORMAL = 1
     CHANGED = 2
-
-
-@pytest.fixture(scope="module")
-def devices_to_load():
-    return (
-        {
-            "class": DummyTmcDevice,
-            "devices": [{"name": "dummy/tmc/device"}],
-        },
-        {
-            "class": HelperBaseDevice,
-            "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
-        },
-    )
 
 
 def count_faulty_devices(cm):
