@@ -1,7 +1,7 @@
 from logging import Logger
 from typing import Any, Optional
 
-from ska_tmc_common.enum import ExceptionState
+from ska_tango_base.commands import ResultCode
 
 
 class LRCRCallback:
@@ -16,7 +16,7 @@ class LRCRCallback:
     def __call__(
         self,
         command_id: str,
-        exception_state: ExceptionState,
+        exception_state: ResultCode,
         exception_msg: str = "",
         **kwargs: Any
     ) -> Optional[ValueError]:
@@ -45,7 +45,7 @@ class LRCRCallback:
                 self.command_data[command_id][key] = value
 
     def assert_against_call(
-        self, command_id: str, exception_state: ExceptionState, **kwargs: Any
+        self, command_id: str, exception_state: ResultCode, **kwargs: Any
     ) -> bool:
         """Assertion method to check if the desired exception state change has occured."""
         if command_id not in self.command_data:

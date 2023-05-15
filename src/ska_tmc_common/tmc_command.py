@@ -18,7 +18,7 @@ from ska_tmc_common.adapters import (
     MCCSAdapter,
     SubArrayAdapter,
 )
-from ska_tmc_common.enum import ExceptionState, TimeoutState
+from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
@@ -187,7 +187,7 @@ class BaseTMCCommand:
 
                     if command_id:
                         if lrcr_callback.assert_against_call(
-                            command_id, ExceptionState.EXCEPTION_OCCURED
+                            command_id, ResultCode.FAILED
                         ):
                             self.logger.error(
                                 "Exception has occured, command failed"
@@ -198,6 +198,7 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
+                            del lrcr_callback.command_data[command_id]
                             self.stop_tracker_thread()
                 except Exception as e:
                     self.logger.error(
