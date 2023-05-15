@@ -6,7 +6,12 @@ import tango
 from ska_tango_testing.mock import MockCallable
 from tango.test_context import MultiDeviceTestContext
 
-from ska_tmc_common import DevFactory, DummyTmcDevice
+from ska_tmc_common import (
+    DevFactory,
+    DummyTmcDevice,
+    HelperBaseDevice,
+    HelperSubArrayDevice,
+)
 
 """
 A module defining a list of fixtures that are shared across all ska_tmc_common tests.
@@ -41,13 +46,24 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def devices_to_load():
     return (
         {
             "class": DummyTmcDevice,
             "devices": [
                 {"name": "src/tmc/common"},
+                {"name": "dummy/tmc/device"},
+            ],
+        },
+        {
+            "class": HelperBaseDevice,
+            "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
+        },
+        {
+            "class": HelperSubArrayDevice,
+            "devices": [
+                {"name": "helper/subarray/device"},
             ],
         },
     )
@@ -71,5 +87,5 @@ def task_callback() -> MockCallable:
 
     :rtype: MockCallable
     """
-    task_callback = MockCallable(5)
+    task_callback = MockCallable(15)
     return task_callback

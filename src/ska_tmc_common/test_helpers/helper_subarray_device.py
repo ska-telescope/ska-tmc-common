@@ -538,7 +538,7 @@ class HelperSubArrayDevice(SKASubarray):
         return [ResultCode.OK], [""]
 
     def start_restart(self) -> None:
-        """Update Obstate Mode to RESTARTING and then to EMPTY"""
+        """Update ObsState to RESTARTING and then to EMPTY"""
         self._obs_state = ObsState.RESTARTING
         self.push_change_event("obsState", self._obs_state)
         time.sleep(3)

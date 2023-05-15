@@ -2,13 +2,10 @@ import logging
 import time
 from typing import Tuple
 
-import pytest
 import tango
 
 from ska_tmc_common import (
     DevFactory,
-    DummyTmcDevice,
-    HelperBaseDevice,
     InputParameter,
     LivelinessProbeType,
     TmcComponentManager,
@@ -23,20 +20,7 @@ DishLeafNodePrefix = "ska_mid/tm_leaf_node/d0"
 NumDishes = 10
 
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
-
-
-@pytest.fixture(scope="module")
-def devices_to_load():
-    return (
-        {
-            "class": DummyTmcDevice,
-            "devices": [{"name": "dummy/tmc/device"}],
-        },
-        {
-            "class": HelperBaseDevice,
-            "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
-        },
-    )
+SUBARRAY_DEVICE = "helper/subarray/device"
 
 
 def count_faulty_devices(cm):
