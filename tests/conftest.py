@@ -18,7 +18,11 @@ from ska_tmc_common import (
     HelperBaseDevice,
     HelperSubArrayDevice,
     HelperSubarrayLeafDevice,
+    TmcLeafNodeComponentManager,
+    DeviceInfo,
+    HelperDishDevice
 )
+from tests.settings import logger
 
 
 def pytest_sessionstart(session):
@@ -78,8 +82,20 @@ def devices_to_load():
                 {"name": "helper/subarrayleaf/device"},
             ],
         },
+        {
+            "class": HelperDishDevice,
+            "devices": [
+                {"name": "helper/dish/device"},
+            ],
+        },
     )
 
+@pytest.fixture
+def component_manager():
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    return cm
 
 @pytest.fixture(scope="module")
 def tango_context(devices_to_load, request):
