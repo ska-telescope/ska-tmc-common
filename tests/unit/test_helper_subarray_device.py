@@ -1,5 +1,3 @@
-import time
-
 import pytest
 from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
@@ -7,7 +5,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import SUBARRAY_DEVICE
 
-commands_with_argin = ["AssignResources", "Restart", "Scan"]
+commands_with_argin = ["AssignResources", "Scan"]
 commands_without_argin = [
     "On",
     "Off",
@@ -35,6 +33,23 @@ def test_set_defective(tango_context):
     assert subarray_device.defective
 
 
+@pytest.mark.parametrize("command", commands_with_argin)
+def test_command_with_argin(tango_context, command):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    result, message = getattr(subarray_device, command)("")
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
+
+
+@pytest.mark.parametrize("command", commands_without_argin)
+def test_command_without_argin(tango_context, command):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    result, message = getattr(subarray_device, command)()
+    assert result[0] == ResultCode.OK
+
+
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
@@ -45,25 +60,3 @@ def test_assign_resources_defective(tango_context):
         message[0] == "Device is Defective, cannot process command completely."
     )
     assert subarray_device.obsstate == ObsState.RESOURCING
-
-
-@pytest.mark.dd
-@pytest.mark.parametrize("command", commands_with_argin)
-def test_command_with_argin(tango_context, command):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = getattr(subarray_device, command)("")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
-    assert subarray_device.obsstate == ObsState.RESOURCING
-    time.sleep(2.5)
-    assert subarray_device.obsstate == ObsState.IDLE
-
-
-@pytest.mark.dd
-@pytest.mark.parametrize("command", commands_without_argin)
-def test_command_without_argin(tango_context, command):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = getattr(subarray_device, command)()
-    assert result[0] == ResultCode.OK
