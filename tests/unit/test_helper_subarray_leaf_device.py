@@ -16,7 +16,6 @@ commands_without_argin = [
 ]
 
 
-@pytest.mark.dd
 @pytest.mark.parametrize("command", commands_with_argin)
 def test_assign_resources(tango_context, command):
     dev_factory = DevFactory()
@@ -26,7 +25,6 @@ def test_assign_resources(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.dd
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()

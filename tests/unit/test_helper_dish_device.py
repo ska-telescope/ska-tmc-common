@@ -47,3 +47,20 @@ def test_Abort_commands(tango_context):
     result, message = getattr(dish_device, "AbortCommands")()
     assert result[0] == ResultCode.OK
     assert message[0] == ""
+
+
+def test_Reset_commands(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    result, message = getattr(dish_device, "ConfigureBand2")("")
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
+
+
+def test_Configure_command_defective(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.SetDefective(True)
+    result, message = getattr(dish_device, "ConfigureBand2")("")
+    assert result[0] == ResultCode.FAILED
+    assert message[0] == "Device is Defective, cannot process command."

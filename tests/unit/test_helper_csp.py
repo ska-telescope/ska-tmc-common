@@ -4,10 +4,9 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import CSP_DEVICE
 
-commands = ["On", "Off"]
+commands = ["On", "Off", "Standby"]
 
 
-@pytest.mark.dd
 @pytest.mark.parametrize("command", commands)
 def test_csp_commands(tango_context, command):
     dev_factory = DevFactory()
@@ -17,7 +16,6 @@ def test_csp_commands(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.dd
 @pytest.mark.parametrize("command", commands)
 def test_csp_command_defective(tango_context, command):
     dev_factory = DevFactory()

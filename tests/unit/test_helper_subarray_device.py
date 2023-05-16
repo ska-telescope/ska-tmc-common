@@ -5,7 +5,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import SUBARRAY_DEVICE
 
-commands_with_argin = ["AssignResources", "Scan"]
+commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
 commands_without_argin = [
     "On",
     "Off",
@@ -14,6 +14,12 @@ commands_without_argin = [
     "ObsReset",
     "Restart",
     "Standby",
+    "End",
+    "Abort",
+    "Restart",
+    "GoToIdle",
+    "ReleaseAllResources",
+    "ReleaseResources",
 ]
 
 
@@ -33,6 +39,7 @@ def test_set_defective(tango_context):
     assert subarray_device.defective
 
 
+@pytest.mark.dd
 @pytest.mark.parametrize("command", commands_with_argin)
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
@@ -42,6 +49,7 @@ def test_command_with_argin(tango_context, command):
     assert message[0] == ""
 
 
+@pytest.mark.dd
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
@@ -50,6 +58,7 @@ def test_command_without_argin(tango_context, command):
     assert result[0] == ResultCode.OK
 
 
+@pytest.mark.dd
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
