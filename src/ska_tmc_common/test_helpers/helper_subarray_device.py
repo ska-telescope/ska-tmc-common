@@ -200,6 +200,13 @@ class HelperSubArrayDevice(SKASubarray):
         """This method is used to read the attribute value for delay."""
         return self._delay
 
+    def read_raiseException(self) -> bool:
+        """This method is used to read the attribute value for raise exception
+
+        :rtype: bool
+        """
+        return self._raise_exception
+
     def read_receiveAddresses(self) -> str:
         """
         This method is used to read receiveAddresses attribute
