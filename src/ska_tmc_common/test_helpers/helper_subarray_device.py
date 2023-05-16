@@ -181,6 +181,9 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event("commandInProgress", True, False)
             self._device.set_change_event("healthState", True, False)
             self._device.set_change_event("receiveAddresses", True, False)
+            self._device.set_change_event(
+                "longRunningCommandResult", True, False
+            )
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -190,6 +193,8 @@ class HelperSubArrayDevice(SKASubarray):
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
+
+    raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
