@@ -20,7 +20,7 @@ class LRCRCallback:
         command_id: str,
         result_code: ResultCode,
         exception_msg: str = "",
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Optional[ValueError]:
         """Call method for the Callback class that sets the state of the
         exception.
@@ -33,6 +33,10 @@ class LRCRCallback:
 
         :return: Raises ValueError
         """
+        self.logger.debug(
+            f"Updating command data with command id {command_id} and result "
+            f"code {result_code} and kwargs {kwargs}"
+        )
         if command_id in self.command_data:
             self.command_data[command_id]["result_code"] = result_code
             self.command_data[command_id]["exception_message"] = exception_msg
@@ -76,3 +80,8 @@ class LRCRCallback:
     def get_data(self, command_id: str) -> dict:
         """Returns the data for given command id"""
         return self.command_data[command_id]
+
+    def remove_data(self, command_id: str) -> None:
+        """Remove command id from command data"""
+        removed_data = self.command_data.pop(command_id, None)
+        self.logger.info(f"Removed command data {removed_data}")
