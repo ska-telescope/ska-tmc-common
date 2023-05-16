@@ -80,3 +80,8 @@ class LRCRCallback:
     def get_data(self, command_id: str) -> dict:
         """Returns the data for given command id"""
         return self.command_data[command_id]
+
+    def remove_data(self, command_id: str) -> None:
+        """Remove command id from command data"""
+        removed_data = self.command_data.pop(command_id, None)
+        self.logger.info(f"Removed command data {removed_data}")
