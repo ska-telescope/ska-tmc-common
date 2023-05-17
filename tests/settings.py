@@ -38,6 +38,8 @@ NumDishes = 10
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
 SUBARRAY_DEVICE = "helper/subarray/device"
 SUBARRAY_LEAF_DEVICE = "helper/subarrayleaf/device"
+DISH_DEVICE = "helper/dish/device"
+CSP_DEVICE = "helper/csp/device"
 
 
 @unique

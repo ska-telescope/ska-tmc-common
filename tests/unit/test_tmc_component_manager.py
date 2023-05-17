@@ -1,3 +1,7 @@
+import time
+
+import pytest
+import tango
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
@@ -9,6 +13,7 @@ from ska_tmc_common import (
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
+from ska_tmc_common.enum import LivelinessProbeType
 from tests.settings import logger
 
 
@@ -94,3 +99,63 @@ def test_update_device_obs_state_leafnode():
 
     cm.update_device_obs_state(ObsState.IDLE)
     assert dummy_device_info.obs_state == ObsState.IDLE
+
+
+def test_start_liveliness_probe_single_device(component_manager):
+    component_manager.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
+    assert component_manager.liveliness_probe_object is not None
+
+
+def test_device_failed(component_manager):
+    # Test if device_failed sets the device's exception and does not raise an exception
+    exception = "test exception"
+    component_manager.device_failed(exception)
+    assert component_manager.get_device().exception == exception
+
+
+def test_update_device_info(component_manager):
+    # Test if update_device_info sets the device info and does not raise an exception
+    device_info = DeviceInfo("dummy/monitored/device")
+    component_manager.update_device_info(device_info)
+    assert component_manager.get_device() == device_info
+
+
+def test_update_ping_info(component_manager):
+    # Test if update_ping_info sets the device's ping and does not raise an exception
+    ping = 123
+    dev_name = "test device"
+    component_manager.update_ping_info(ping, dev_name)
+    assert component_manager.get_device().ping == ping
+
+
+def test_update_device_health_state(component_manager):
+    # Test if update_device_health_state updates the device's health state and does not raise an exception
+    health_state = HealthState.OK
+    component_manager.update_device_health_state(health_state)
+    assert component_manager.get_device().health_state == health_state
+    assert component_manager.get_device().last_event_arrived == pytest.approx(
+        time.time(), abs=1e-3
+    )
+    assert not component_manager.get_device().unresponsive
+
+
+def test_update_device_state(component_manager):
+    # Test if update_device_state updates the device's state and does not raise an exception
+    state = tango.DevState.ON
+    component_manager.update_device_state(state)
+    assert component_manager.get_device().state == state
+    assert component_manager.get_device().last_event_arrived == pytest.approx(
+        time.time(), abs=1e-3
+    )
+    assert not component_manager.get_device().unresponsive
+
+
+def test_update_device_obs_state(component_manager):
+    # Test if update_device_obs_state updates the device's obs state and does not raise an exception
+    obs_state = ObsState.READY
+    component_manager.update_device_obs_state(obs_state)
+    assert component_manager.get_device().obs_state == obs_state
+    assert component_manager.get_device().last_event_arrived == pytest.approx(
+        time.time(), abs=1e-3
+    )
+    assert not component_manager.get_device().unresponsive

@@ -14,11 +14,16 @@ from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
     DevFactory,
+    DeviceInfo,
     DummyTmcDevice,
     HelperBaseDevice,
+    HelperCspMasterDevice,
+    HelperDishDevice,
     HelperSubArrayDevice,
     HelperSubarrayLeafDevice,
+    TmcLeafNodeComponentManager,
 )
+from tests.settings import logger
 
 
 def pytest_sessionstart(session):
@@ -78,6 +83,18 @@ def devices_to_load():
                 {"name": "helper/subarrayleaf/device"},
             ],
         },
+        {
+            "class": HelperDishDevice,
+            "devices": [
+                {"name": "helper/dish/device"},
+            ],
+        },
+        {
+            "class": HelperCspMasterDevice,
+            "devices": [
+                {"name": "helper/csp/device"},
+            ],
+        },
     )
 
 
@@ -94,6 +111,18 @@ def tango_context(devices_to_load, request):
             yield context
     else:
         yield None
+
+
+@pytest.fixture
+def component_manager() -> TmcLeafNodeComponentManager:
+    """create a component manager instance for dummy device for testing
+
+    git :rtype : TmcLeafNodeComponentManager
+    """
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    return cm
 
 
 @pytest.fixture
