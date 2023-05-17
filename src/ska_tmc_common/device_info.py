@@ -46,14 +46,15 @@ def dev_state_2_str(value: DevState) -> str:
 
 class DeviceInfo:
     """
-    Provdevice_ides different information about the device.
-    Such as HealthState, DevState
+    Provides different information about the device.
+    Such as HealthState, DevState, availability
     """
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         self.dev_name = dev_name
         self.state: DevState = DevState.UNKNOWN
         self.health_state: HealthState = HealthState.UNKNOWN
+        self.device_availability = False
         self._ping: int = -1
         self.last_event_arrived = None
         self.exception = None
@@ -83,6 +84,7 @@ class DeviceInfo:
         if self._unresponsive:
             self.state = DevState.UNKNOWN
             self.health_state = HealthState.UNKNOWN
+            self.device_availability = False
             self.ping = -1
 
     @property
@@ -139,6 +141,7 @@ class DeviceInfo:
             "last_event_arrived": str(self.last_event_arrived),
             "unresponsive": str(self.unresponsive),
             "exception": str(self.exception),
+            "isSubarrayAvailable": self.device_availability,
         }
         return result
 

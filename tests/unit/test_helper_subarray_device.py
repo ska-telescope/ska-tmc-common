@@ -23,6 +23,14 @@ def test_set_defective(tango_context):
     assert subarray_device.defective
 
 
+def test_set_raise_exception(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    assert not subarray_device.raiseException
+    subarray_device.SetRaiseException(True)
+    assert subarray_device.raiseException
+
+
 def test_assign_resources(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)

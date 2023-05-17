@@ -225,8 +225,9 @@ class BaseTMCCommand:
                         "Exception occured in Tracker thread: %s", e
                     )
                 time.sleep(0.1)
+
             if command_id:
-                del lrcr_callback.command_data[command_id]
+                lrcr_callback.remove_data(command_id)
 
     def stop_tracker_thread(self) -> None:
         """External stop method for stopping the timer thread as well as the

@@ -477,7 +477,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.exception = exception
             device_info.update_unresponsive(True, exception)
-
             if self.update_availablity_callback is not None:
                 self.update_availablity_callback(False)
 
