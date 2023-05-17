@@ -42,7 +42,7 @@ def test_set_defective(tango_context):
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = getattr(subarray_device, command)("")
+    result, message = subarray_device.command_inout(command, "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -51,7 +51,7 @@ def test_command_with_argin(tango_context, command):
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = getattr(subarray_device, command)()
+    result, message = subarray_device.command_inout(command)
     assert result[0] == ResultCode.OK
 
 

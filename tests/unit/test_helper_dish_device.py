@@ -36,7 +36,7 @@ def test_set_defective(tango_context):
 def test_dish_commands(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = getattr(dish_device, command)()
+    result, message = dish_device.command_inout(command)
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -46,7 +46,7 @@ def test_dish_command_defective(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(True)
-    result, message = getattr(dish_device, command)()
+    result, message = dish_device.command_inout(command)
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Device is Defective, cannot process command."
 
@@ -54,7 +54,7 @@ def test_dish_command_defective(tango_context, command):
 def test_Abort_commands(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = getattr(dish_device, "AbortCommands")()
+    result, message = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -62,7 +62,7 @@ def test_Abort_commands(tango_context):
 def test_Configure_commands(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = getattr(dish_device, "ConfigureBand2")("")
+    result, message = dish_device.command_inout("ConfigureBand2", "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -71,7 +71,7 @@ def test_Configure_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(True)
-    result, message = getattr(dish_device, "ConfigureBand2")("")
+    result, message = dish_device.command_inout("ConfigureBand2", "")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Device is Defective, cannot process command."
 
