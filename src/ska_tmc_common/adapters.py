@@ -131,7 +131,7 @@ class SubArrayAdapter(BaseAdapter):
         """
         return self._proxy.ReleaseResources(argin)
 
-    def configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Configure on subarray device proxies.
         """
