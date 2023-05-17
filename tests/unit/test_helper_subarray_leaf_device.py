@@ -19,7 +19,6 @@ commands_without_argin = [
 ]
 
 
-@pytest.mark.dd1
 @pytest.mark.parametrize("command", commands_with_argin)
 def test_assign_resources(tango_context, command):
     dev_factory = DevFactory()
@@ -29,7 +28,6 @@ def test_assign_resources(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.dd1
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
@@ -39,7 +37,6 @@ def test_command_without_argin(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.dd1
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SUBARRAY_LEAF_DEVICE)

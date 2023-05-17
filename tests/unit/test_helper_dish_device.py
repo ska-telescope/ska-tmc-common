@@ -1,7 +1,10 @@
+import time
+
 import pytest
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import DevFactory
+from ska_tmc_common.enum import DishMode
 from tests.settings import DISH_DEVICE
 
 commands = [
@@ -66,10 +69,19 @@ def test_Configure_command_defective(tango_context):
     assert message[0] == "Device is Defective, cannot process command."
 
 
-@pytest.mark.reset1
+@pytest.mark.dd1
 def test_Reset_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(True)
     result, message = dish_device.Reset()
     assert result[0] == ResultCode.OK
+
+
+@pytest.mark.dd1
+def test_Configure5_command(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.ConfigureBand5b("")
+    time.sleep(0.5)
+    assert dish_device.dishmode == DishMode.CONFIG
