@@ -25,3 +25,17 @@ class DishMode(IntEnum):
     MAINTENANCE = 9
     FORBIDDEN = 10
     ERROR = 11
+
+
+@unique
+class TimeoutState(IntEnum):
+    """Enum class for keeping track of timeout state.
+    Has 2 values according to the state of timer.
+
+    :NOT_OCCURED: Specifics timer is either running or has been canceled.
+    :OCCURED: Specifies the timeout has occured and corresponding method was
+        called.
+    """
+
+    NOT_OCCURED = 0
+    OCCURED = 1
