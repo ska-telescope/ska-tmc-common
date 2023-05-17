@@ -37,7 +37,6 @@ def devices_to_load():
     )
 
 
-@pytest.mark.dd1
 def test_get_or_create_base_adapter(tango_context):
     factory = AdapterFactory()
     base_adapter = factory.get_or_create_adapter(
@@ -46,7 +45,6 @@ def test_get_or_create_base_adapter(tango_context):
     assert isinstance(base_adapter, BaseAdapter)
 
 
-@pytest.mark.dd1
 def test_get_or_create_subarray_adapter(tango_context):
     factory = AdapterFactory()
     subarray_adapter = factory.get_or_create_adapter(
@@ -55,7 +53,6 @@ def test_get_or_create_subarray_adapter(tango_context):
     assert isinstance(subarray_adapter, SubArrayAdapter)
 
 
-@pytest.mark.dd1
 def test_get_or_create_dish_adapter(tango_context):
     factory = AdapterFactory()
     dish_adapter = factory.get_or_create_adapter(
@@ -64,7 +61,6 @@ def test_get_or_create_dish_adapter(tango_context):
     assert isinstance(dish_adapter, DishAdapter)
 
 
-@pytest.mark.dd1
 def test_get_or_create_mccs_adapter(tango_context):
     factory = AdapterFactory()
     mccs_adapter = factory.get_or_create_adapter(
@@ -73,7 +69,6 @@ def test_get_or_create_mccs_adapter(tango_context):
     assert isinstance(mccs_adapter, MCCSAdapter)
 
 
-@pytest.mark.dd1
 def test_get_or_create_csp_adapter(tango_context):
     factory = AdapterFactory()
     csp_master_adapter = factory.get_or_create_adapter(
