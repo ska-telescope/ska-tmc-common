@@ -45,6 +45,7 @@ def test_set_raise_exception(tango_context):
     subarray_device.SetRaiseException(True)
     assert subarray_device.raiseException
 
+
 @pytest.mark.parametrize("command", commands_with_argin)
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()

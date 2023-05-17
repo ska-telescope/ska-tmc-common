@@ -105,6 +105,7 @@ def test_start_liveliness_probe_single_device(component_manager):
     component_manager.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     assert component_manager.liveliness_probe_object is not None
 
+
 @pytest.mark.dd
 def test_device_failed(component_manager):
     # Test if device_failed sets the device's exception and does not raise an exception
@@ -118,6 +119,7 @@ def test_update_device_info(component_manager):
     device_info = DeviceInfo("dummy/monitored/device")
     component_manager.update_device_info(device_info)
     assert component_manager.get_device() == device_info
+
 
 @pytest.mark.dd
 def test_update_ping_info(component_manager):
