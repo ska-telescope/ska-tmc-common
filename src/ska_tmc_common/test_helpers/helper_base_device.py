@@ -109,6 +109,22 @@ class HelperBaseDevice(SKABaseDevice):
                 self.push_change_event("State", self.dev_state())
 
     @command(
+        dtype_in=bool,
+        doc_in="Set Availability of the device",
+    )
+    def SetisSubsystemAvailable(self, value: bool) -> None:
+        """
+        Sets Availability of the device
+        :rtype: bool
+        """
+        self.logger.info("Setting the avalability value to : %s", value)
+        if self._isSubsystemAvailable != value:
+            self._isSubsystemAvailable = value
+            self.push_change_event(
+                "isSubsystemAvailable", self._isSubsystemAvailable
+            )
+
+    @command(
         dtype_in=int,
         doc_in="state to assign",
     )
