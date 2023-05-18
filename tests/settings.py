@@ -40,6 +40,13 @@ SUBARRAY_DEVICE = "helper/subarray/device"
 SUBARRAY_LEAF_DEVICE = "helper/subarrayleaf/device"
 DISH_DEVICE = "helper/dish/device"
 CSP_DEVICE = "helper/csp/device"
+HELPER_SUBARRAY_DEVICE = "test/subarray/1"
+HELPER_MCCS_STATE_DEVICE = "test/mccs/1"
+HELPER_BASE_DEVICE = "test/base/1"
+HELPER_DISH_DEVICE = "test/dish/1"
+HELPER_CSP_MASTER_DEVICE = "test/csp_master/1"
+DISH_FQDN = "ska_mid/tm_leaf_node/d0001"
+TMC_COMMON_DEVICE = "src/tmc/common"
 
 
 @unique

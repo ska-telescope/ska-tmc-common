@@ -23,7 +23,15 @@ from ska_tmc_common import (
     HelperSubarrayLeafDevice,
     TmcLeafNodeComponentManager,
 )
-from tests.settings import logger
+from tests.settings import (
+    CSP_DEVICE,
+    DEVICE_LIST,
+    DISH_DEVICE,
+    SUBARRAY_DEVICE,
+    SUBARRAY_LEAF_DEVICE,
+    TMC_COMMON_DEVICE,
+    logger,
+)
 
 
 def pytest_sessionstart(session):
@@ -63,36 +71,36 @@ def devices_to_load():
         {
             "class": DummyTmcDevice,
             "devices": [
-                {"name": "src/tmc/common"},
-                {"name": "dummy/tmc/device"},
+                {"name": TMC_COMMON_DEVICE},
+                {"name": DEVICE_LIST[0]},
             ],
         },
         {
             "class": HelperBaseDevice,
-            "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
+            "devices": [{"name": DEVICE_LIST[1]}, {"name": DEVICE_LIST[2]}],
         },
         {
             "class": HelperSubArrayDevice,
             "devices": [
-                {"name": "helper/subarray/device"},
+                {"name": SUBARRAY_DEVICE},
             ],
         },
         {
             "class": HelperSubarrayLeafDevice,
             "devices": [
-                {"name": "helper/subarrayleaf/device"},
+                {"name": SUBARRAY_LEAF_DEVICE},
             ],
         },
         {
             "class": HelperDishDevice,
             "devices": [
-                {"name": "helper/dish/device"},
+                {"name": DISH_DEVICE},
             ],
         },
         {
             "class": HelperCspMasterDevice,
             "devices": [
-                {"name": "helper/csp/device"},
+                {"name": CSP_DEVICE},
             ],
         },
     )
@@ -133,3 +141,13 @@ def task_callback() -> MockCallable:
     """
     task_callback = MockCallable(15)
     return task_callback
+
+
+@pytest.fixture
+def csp_sln_dev_name() -> str:
+    """
+    Fixture for returning csp subarray FQDN
+    rtype: str
+    """
+    # testing device
+    return "ska_mid/tm_leaf_node/csp_subarray01"
