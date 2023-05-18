@@ -322,23 +322,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             "Device is defective, cannot process command."
         ]
 
-    @command(
-        dtype_in=bool,
-        doc_in="Set Availability of the device",
-    )
-    def SetisSubsystemAvailable(self, value: bool) -> None:
-        """
-        Sets Availability of the device
-        :rtype: bool
-        """
-        self.logger.info("Setting the avalability value to : %s", value)
-        if self._isSubsystemAvailable != value:
-            self._isSubsystemAvailable = value
-            self.push_change_event(
-                "isSubsystemAvailable", self._isSubsystemAvailable
-            )
-
-
 # ----------
 # Run server
 # ----------
