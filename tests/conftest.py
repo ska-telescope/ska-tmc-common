@@ -14,10 +14,23 @@ from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
     DevFactory,
+    DeviceInfo,
     DummyTmcDevice,
     HelperBaseDevice,
+    HelperCspMasterDevice,
+    HelperDishDevice,
     HelperSubArrayDevice,
     HelperSubarrayLeafDevice,
+    TmcLeafNodeComponentManager,
+)
+from tests.settings import (
+    CSP_DEVICE,
+    DEVICE_LIST,
+    DISH_DEVICE,
+    SUBARRAY_DEVICE,
+    SUBARRAY_LEAF_DEVICE,
+    TMC_COMMON_DEVICE,
+    logger,
 )
 
 
@@ -58,24 +71,36 @@ def devices_to_load():
         {
             "class": DummyTmcDevice,
             "devices": [
-                {"name": "src/tmc/common"},
-                {"name": "dummy/tmc/device"},
+                {"name": TMC_COMMON_DEVICE},
+                {"name": DEVICE_LIST[0]},
             ],
         },
         {
             "class": HelperBaseDevice,
-            "devices": [{"name": "test/device/1"}, {"name": "test/device/2"}],
+            "devices": [{"name": DEVICE_LIST[1]}, {"name": DEVICE_LIST[2]}],
         },
         {
             "class": HelperSubArrayDevice,
             "devices": [
-                {"name": "helper/subarray/device"},
+                {"name": SUBARRAY_DEVICE},
             ],
         },
         {
             "class": HelperSubarrayLeafDevice,
             "devices": [
-                {"name": "helper/subarrayleaf/device"},
+                {"name": SUBARRAY_LEAF_DEVICE},
+            ],
+        },
+        {
+            "class": HelperDishDevice,
+            "devices": [
+                {"name": DISH_DEVICE},
+            ],
+        },
+        {
+            "class": HelperCspMasterDevice,
+            "devices": [
+                {"name": CSP_DEVICE},
             ],
         },
     )
@@ -97,6 +122,18 @@ def tango_context(devices_to_load, request):
 
 
 @pytest.fixture
+def component_manager() -> TmcLeafNodeComponentManager:
+    """create a component manager instance for dummy device for testing
+
+    git :rtype : TmcLeafNodeComponentManager
+    """
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    return cm
+
+
+@pytest.fixture
 def task_callback() -> MockCallable:
     """Creates a mock callable for asynchronous testing
 
@@ -104,3 +141,13 @@ def task_callback() -> MockCallable:
     """
     task_callback = MockCallable(15)
     return task_callback
+
+
+@pytest.fixture
+def csp_sln_dev_name() -> str:
+    """
+    Fixture for returning csp subarray FQDN
+    rtype: str
+    """
+    # testing device
+    return "ska_mid/tm_leaf_node/csp_subarray01"

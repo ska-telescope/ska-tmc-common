@@ -305,6 +305,12 @@ class DishAdapter(BaseAdapter):
         """
         self._proxy.ObsReset()
 
+    def Reset(self) -> None:
+        """
+        Invokes Reset on device proxy.
+        """
+        self._proxy.Reset()
+
 
 class CspSubarrayAdapter(SubArrayAdapter):
     """

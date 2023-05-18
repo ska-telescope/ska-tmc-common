@@ -7,6 +7,7 @@ from mock import Mock
 
 # Additional import
 from ska_tmc_common import TangoGroupClient
+from tests.settings import DISH_FQDN
 
 
 def test_get_tango_group():
@@ -32,11 +33,9 @@ def test_get_group_device_list():
     with mock.patch.object(
         TangoGroupClient, "get_tango_group", return_value=Mock()
     ):
-
         tango_client_obj = TangoGroupClient(
             dish_group, logging.getLogger("test")
         )
-        dish_device = "ska_mid/tm_leaf_node/d0001"
-        tango_client_obj.add_device(dish_device)
+        tango_client_obj.add_device(DISH_FQDN)
         result_list = tango_client_obj.get_group_device_list()
-        assert result_list is dish_device
+        assert result_list is DISH_FQDN
