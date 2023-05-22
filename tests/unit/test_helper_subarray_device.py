@@ -75,7 +75,6 @@ def test_assign_resources_defective(tango_context):
     assert subarray_device.obsstate == ObsState.RESOURCING
 
 
-@pytest.mark.kk
 def test_scan_command(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
