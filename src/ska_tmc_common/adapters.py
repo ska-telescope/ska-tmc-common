@@ -1,6 +1,10 @@
+# pylint: disable = C0114, C0115, C0116, R0903, W0246, W0221, W0231
 import enum
+import logging
 
 from ska_tmc_common.dev_factory import DevFactory
+
+logger = logging.getLogger(__name__)
 
 
 class AdapterType(enum.IntEnum):
@@ -10,11 +14,12 @@ class AdapterType(enum.IntEnum):
     MCCS = 3
     CSPSUBARRAY = 4
     CSPMASTER = 5
+    SDPSUBARRAY = 6
 
 
 class AdapterFactory:
     def __init__(self) -> None:
-        self._adapters = []
+        self.adapters = []
         self._dev_factory = DevFactory()
 
     def get_or_create_adapter(self, dev_name, adapter_type=AdapterType.BASE):
@@ -27,7 +32,7 @@ class AdapterFactory:
         :type str
         """
 
-        for adapter in self._adapters:
+        for adapter in self.adapters:
             if adapter.dev_name == dev_name:
                 return adapter
 
@@ -52,12 +57,16 @@ class AdapterFactory:
             new_adapter = CspMasterAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
+        elif adapter_type == AdapterType.SDPSUBARRAY:
+            new_adapter = SdpSubArrayAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
         else:
             new_adapter = BaseAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
 
-        self._adapters.append(new_adapter)
+        self.adapters.append(new_adapter)
         return new_adapter
 
 
@@ -191,3 +200,39 @@ class CspSubarrayAdapter(SubArrayAdapter):
 
     def End(self):
         return self._proxy.GoToIdle()
+
+
+class SdpSubArrayAdapter(BaseAdapter):
+    def __init__(self, dev_name, proxy) -> None:
+        self._proxy = proxy
+        self._dev_name = dev_name
+
+    def AssignResources(self, argin, callback=None):
+        self._proxy.command_inout_asynch("AssignResources", argin, callback)
+
+    def ReleaseAllResources(self):
+        return self._proxy.ReleaseAllResources()
+
+    def ReleaseResources(self, argin):
+        return self._proxy.ReleaseAllResources(argin)
+
+    def Configure(self, argin):
+        return self._proxy.Configure(argin)
+
+    def Scan(self, argin):
+        return self._proxy.Scan(argin)
+
+    def EndScan(self):
+        return self._proxy.EndScan()
+
+    def End(self):
+        return self._proxy.End()
+
+    def Abort(self):
+        return self._proxy.Abort()
+
+    def Restart(self):
+        return self._proxy.Restart()
+
+    def ObsReset(self):
+        return self._proxy.ObsReset()
