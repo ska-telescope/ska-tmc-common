@@ -3,6 +3,12 @@
 # In this case we use the latest python docker image to build and test this project.
 image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.10
 
+python-test:
+  image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
+
+python-lint:
+  image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32 
+
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
