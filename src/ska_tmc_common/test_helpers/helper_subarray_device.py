@@ -254,7 +254,7 @@ class HelperSubArrayDevice(SKASubarray):
         if "eb_id" not in input["execution_block"]:
             self.logger.info("eb_id is not present in Assign input json")
             raise tango.Except.throw_exception(
-                "eb_id not found in the input json string",
+                "Incorrect input json string",
                 "eb_id not found in the input json string",
                 "SdpSubarry.AssignResources",
                 tango.ErrSeverity.ERR,
