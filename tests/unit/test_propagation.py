@@ -110,3 +110,27 @@ def test_command_propogation_success(task_callback):
     time.sleep(0.5)
     with pytest.raises(KeyError):
         cm.lrcr_callback.command_data[cm.command_id]
+
+
+def test_command_propogation_success_without_timeout(task_callback):
+    cm = DummyComponentManager(logger)
+    cm.command_obj.timeout_callback = None
+    cm.command_obj._timeout_id = None
+    cm.invoke_command(True, task_callback)
+    cm.lrcr_callback(
+        cm.command_id,
+        ResultCode.FAILED,
+        exception_msg="Exception has occured",
+    )
+    time.sleep(2)
+    task_callback.assert_against_call(
+        status=TaskStatus.QUEUED,
+    )
+    task_callback.assert_against_call(
+        status=TaskStatus.COMPLETED,
+        result=ResultCode.FAILED,
+        exception="Exception has occured",
+    )
+    time.sleep(0.5)
+    with pytest.raises(KeyError):
+        cm.lrcr_callback.command_data[cm.command_id]
