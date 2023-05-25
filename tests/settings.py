@@ -194,9 +194,10 @@ class DummyCommandClass(TmcLeafNodeCommand):
     ) -> None:
         """Invokes the do method and updates the task status."""
         self.logger.info("Starting timer for timeout")
-        self.component_manager.start_timer(
-            self._timeout_id, timeout, self.timeout_callback
-        )
+        if self._timeout_id:
+            self.component_manager.start_timer(
+                self._timeout_id, timeout, self.timeout_callback
+            )
         self.task_callback = task_callback
         self.logger.info("Invoking do with argin: %s", argin)
         result, msg = self.do(argin)
@@ -212,6 +213,8 @@ class DummyCommandClass(TmcLeafNodeCommand):
             )
         else:
             self.logger.error("Command Failed")
+            if self._timeout_id:
+                self.component_manager.stop_timer()
             self.update_task_status(result, msg)
 
     # pylint: disable=signature-differs
