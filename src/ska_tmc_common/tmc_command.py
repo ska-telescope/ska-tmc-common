@@ -191,7 +191,7 @@ class BaseTMCCommand:
                             "State change has occured, command succeded"
                         )
                         self.update_task_status(result=ResultCode.OK)
-                        self.stop_tracker_thread()
+                        self.stop_tracker_thread(timeout_id)
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
@@ -204,7 +204,7 @@ class BaseTMCCommand:
                                 result=ResultCode.FAILED,
                                 message="Timeout has occured, command failed",
                             )
-                            self.stop_tracker_thread()
+                            self.stop_tracker_thread(timeout_id)
 
                     if command_id:
                         if lrcr_callback.assert_against_call(
@@ -219,7 +219,7 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
-                            self.stop_tracker_thread()
+                            self.stop_tracker_thread(timeout_id)
                 except Exception as e:
                     self.logger.error(
                         "Exception occured in Tracker thread: %s", e
@@ -229,13 +229,14 @@ class BaseTMCCommand:
             if command_id:
                 lrcr_callback.remove_data(command_id)
 
-    def stop_tracker_thread(self) -> None:
+    def stop_tracker_thread(self, timeout_id) -> None:
         """External stop method for stopping the timer thread as well as the
         tracker thread."""
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
             self._stop = True
-            self.component_manager.stop_timer()
+            if timeout_id:
+                self.component_manager.stop_timer()
 
 
 class TMCCommand(BaseTMCCommand):

@@ -219,10 +219,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
     def stop_timer(self) -> None:
         """Stops the timer for command execution"""
         self.logger.info("Stopping timer")
-        try:
-            self.timer_object.cancel()
-        except AttributeError:
-            self.logger.info("Timer was not started for this thread")
+        self.timer_object.cancel()
 
 
 class TmcComponentManager(BaseTmcComponentManager):
