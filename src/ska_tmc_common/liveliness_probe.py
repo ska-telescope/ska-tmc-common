@@ -65,7 +65,7 @@ class BaseLivelinessProbe:
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
-            self._component_manager.update_ping_info(proxy.ping())
+            self._component_manager.update_ping_info(proxy.ping(),dev_info.dev_name)
         except Exception as err:
             self._logger.exception(f"Error on {dev_info.dev_name}: {err} ")
             self._component_manager.device_failed(
