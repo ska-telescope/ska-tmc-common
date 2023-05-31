@@ -1,0 +1,6 @@
+obsState == '1' and pointingState.to_ary == [2, 3]
+name[:3] == 'alc' and writer == 'paul'
+name == "alchemist" ? true : writer == "paul" ? true : false
+name == "alc" or name == "krishna"
+devices.length == 3
+state.to_int == 1 
