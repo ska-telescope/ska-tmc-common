@@ -157,6 +157,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._defective = False
         self._delay = 2
         self._raise_exception = False
+        self._is_subarray_available = False
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -184,6 +185,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
+            self._device.set_change_event("isSubarrayAvailable", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -195,6 +197,10 @@ class HelperSubArrayDevice(SKASubarray):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
+
+    isSubarrayAvailable = attribute(
+        dtype="DevBoolean", access=AttrWriteType.READ
+    )
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
@@ -228,6 +234,10 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._defective
 
+    def read_isSubarrayAvailable(self) -> bool:
+        """Returns subarray availability in boolean format."""
+        return self._is_subarray_available
+
     def update_device_obsstate(self, value: IntEnum) -> None:
         """Updates the given data after a delay."""
         with tango.EnsureOmniThread():
@@ -248,6 +258,23 @@ class HelperSubArrayDevice(SKASubarray):
             component_state_callback=None,
         )
         return cm
+
+    @command(
+        dtype_in="DevBoolean",
+        doc_in="Set subarray's availability",
+    )
+    def SetisSubarrayAvailable(self, value: bool) -> None:
+        """This method sets subarray availability in boolean format."""
+        if self._is_subarray_available != value:
+            self.logger.info("Setting the subarray availability : %s", value)
+            self._is_subarray_available = value
+            try:
+                self.push_change_event(
+                    "isSubarrayAvailable", self._is_subarray_available
+                )
+            except Exception as e:
+                self.logger.exception("Error pushing the event: %s", e)
+            self.logger.info("isSubarrayAvailable event pushed...")
 
     @command(
         dtype_in=bool,
