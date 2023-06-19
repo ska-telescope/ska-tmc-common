@@ -206,7 +206,7 @@ class HelperBaseDevice(SKABaseDevice):
     )
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        It sets the DevState to disable
+        It sets the DevState to disable.
         :rtype: Tuple
         """
         if not self._defective:
