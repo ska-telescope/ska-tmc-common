@@ -158,6 +158,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._delay = 2
         self._raise_exception = False
         self._is_subarray_available = False
+        self._resources_assigned = []
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -186,6 +187,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubarrayAvailable", True, False)
+            self._device.set_change_event("assignedResources", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -200,6 +202,12 @@ class HelperSubArrayDevice(SKASubarray):
 
     isSubarrayAvailable = attribute(
         dtype="DevBoolean", access=AttrWriteType.READ
+    )
+
+    assignedResources = attribute(
+        dtype=("str",),
+        max_dim_x=100,
+        doc="The list of resources assigned to the subarray.",
     )
 
     def read_delay(self) -> int:
@@ -237,6 +245,14 @@ class HelperSubArrayDevice(SKASubarray):
     def read_isSubarrayAvailable(self) -> bool:
         """Returns subarray availability in boolean format."""
         return self._is_subarray_available
+
+    def read_assignedResources(self):
+        """
+        Read the resources assigned to the device.
+
+        :return: Resources assigned to the device.
+        """
+        return self._resources_assigned
 
     def update_device_obsstate(self, value: IntEnum) -> None:
         """Updates the given data after a delay."""
