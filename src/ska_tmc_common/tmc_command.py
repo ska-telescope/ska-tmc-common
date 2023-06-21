@@ -141,6 +141,7 @@ class BaseTMCCommand:
                     as a callable functions to call when longRunningCommandResult
                     event is recieved.
         """
+
         self.tracker_thread = threading.Thread(
             target=self.track_transitions,
             args=[
@@ -183,9 +184,17 @@ class BaseTMCCommand:
                     as a callable function to call when an event from the
                     attribute longRunningCommandResult arrives.
         """
+        self.logger.info("In track transitions method ........")
         with EnsureOmniThread():
+            self.logger.info("In track transitions omnithread ........")
             while not self._stop:
                 try:
+                    self.logger.info(
+                        f"state_function is .......: {state_function()}"
+                    )
+                    self.logger.info(
+                        f"expected_state is .......: {expected_state}"
+                    )
                     if state_function() == expected_state:
                         self.logger.info(
                             "State change has occured, command succeded"
