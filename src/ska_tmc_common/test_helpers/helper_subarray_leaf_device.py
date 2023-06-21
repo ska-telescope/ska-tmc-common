@@ -43,7 +43,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
@@ -93,7 +93,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
@@ -127,7 +127,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
@@ -159,7 +159,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
@@ -191,7 +191,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
@@ -318,7 +318,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
@@ -355,7 +355,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_id = "1000"
             command_result = (
                 command_id,
-                str(ResultCode.OK),
+                str(int(ResultCode.OK)),
             )
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
