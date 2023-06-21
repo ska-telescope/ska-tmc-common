@@ -195,6 +195,8 @@ class BaseTMCCommand:
                     self.logger.info(
                         f"expected_state is .......: {expected_state}"
                     )
+                    self.logger.info(f"timeout_id is .......: {timeout_id}")
+                    self.logger.info(f"command_id is .......: {command_id}")
                     if state_function() == expected_state:
                         self.logger.info(
                             "State change has occured, command succeded"
@@ -206,7 +208,7 @@ class BaseTMCCommand:
                         if timeout_callback.assert_against_call(
                             timeout_id, TimeoutState.OCCURED
                         ):
-                            self.logger.error(
+                            self.logger.info(
                                 "Timeout has occured, command failed"
                             )
                             self.update_task_status(
@@ -219,7 +221,7 @@ class BaseTMCCommand:
                         if lrcr_callback.assert_against_call(
                             command_id, ResultCode.FAILED
                         ):
-                            self.logger.error(
+                            self.logger.info(
                                 "Exception has occured, command failed"
                             )
                             self.update_task_status(
@@ -230,7 +232,7 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread(timeout_id)
                 except Exception as e:
-                    self.logger.error(
+                    self.logger.info(
                         "Exception occured in Tracker thread: %s", e
                     )
                 time.sleep(0.1)
