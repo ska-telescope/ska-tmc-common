@@ -40,6 +40,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("AssignResource completed.")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                ResultCode.OK,
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
         self.thread = threading.Thread(target=self.start_process)
         self.thread.start()

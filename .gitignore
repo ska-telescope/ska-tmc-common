@@ -47,3 +47,4 @@ unit-tests.xml
 
 # Miscellaneous
 .DS_Store
+venv
