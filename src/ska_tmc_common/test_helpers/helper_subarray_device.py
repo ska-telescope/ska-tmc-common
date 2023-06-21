@@ -3,6 +3,7 @@ This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
 # pylint: disable=attribute-defined-outside-init
+import json
 import threading
 import time
 from enum import IntEnum
@@ -425,6 +426,15 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command completely."
             ]
 
+        input = json.loads(argin)
+        if "eb_id" not in input["execution_block"]:
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "eb_id not found in the input json string",
+                "SdpSubarry.AssignResources",
+                tango.ErrSeverity.ERR,
+            )
+
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
@@ -440,7 +450,9 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.IDLE]
             )
             thread.start()
-        return [ResultCode.OK], [""]
+        return [ResultCode.OK], [
+            "AssignResources invoked successfully on SdpSubarray."
+        ]
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
