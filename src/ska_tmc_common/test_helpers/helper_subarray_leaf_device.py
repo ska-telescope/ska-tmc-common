@@ -90,6 +90,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("Configure completed.")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                str(ResultCode.OK),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -118,6 +124,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("Scan completed.")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                str(ResultCode.OK),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -144,6 +156,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("EndScan completed.")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                str(ResultCode.OK),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -170,6 +188,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("End completed.")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                str(ResultCode.OK),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -291,6 +315,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("ReleaseAllResources completed")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                str(ResultCode.OK),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -322,6 +352,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         if not self._defective:
             self.logger.info("ReleaseResources completed.")
+            command_id = "1000"
+            command_result = (
+                command_id,
+                str(ResultCode.OK),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
