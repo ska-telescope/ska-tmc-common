@@ -12,15 +12,16 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
-from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, EnsureOmniThread
 from tango.server import attribute, command, run
 
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
-class HelperSubarrayLeafDevices(SKASubarray):
+
+class HelperSubarrayLeafDevices(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
-    class InitCommand(SKASubarray.InitCommand):
+    class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
 
         def do(self) -> Tuple[ResultCode, str]:
