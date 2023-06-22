@@ -58,6 +58,18 @@ class HelperSubarrayLeafDevices(SKASubarray):
             self.push_change_event("sdpSubarrayObsState", self._obs_state)
             self.push_change_event("cspSubarrayObsState", self._obs_state)
 
+    @command(
+        dtype_in=bool,
+        doc_in="Set Defective",
+    )
+    def SetDefective(self, value: bool) -> None:
+        """
+        Trigger defective change
+        :rtype: bool
+        """
+        self.logger.info("Setting the defective value to : %s", value)
+        self._defective = value
+
     def read_sdpSubarrayObsState(self):
         """Reads the current observation state of the SDP subarray"""
         return self._sdp_subarray_obs_state
