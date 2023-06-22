@@ -21,12 +21,15 @@ from ska_tmc_common import (
     HelperDishDevice,
     HelperSubArrayDevice,
     HelperSubarrayLeafDevice,
+    HelperSubarrayLeafDevices,
     TmcLeafNodeComponentManager,
 )
 from tests.settings import (
     CSP_DEVICE,
+    CSP_LEAF_NODE_DEVICE,
     DEVICE_LIST,
     DISH_DEVICE,
+    SDP_LEAF_NODE_DEVICE,
     SUBARRAY_DEVICE,
     SUBARRAY_LEAF_DEVICE,
     TMC_COMMON_DEVICE,
@@ -101,6 +104,13 @@ def devices_to_load():
             "class": HelperCspMasterDevice,
             "devices": [
                 {"name": CSP_DEVICE},
+            ],
+        },
+        {
+            "class": HelperSubarrayLeafDevices,
+            "devices": [
+                {"name": CSP_LEAF_NODE_DEVICE},
+                {"name": SDP_LEAF_NODE_DEVICE},
             ],
         },
     )

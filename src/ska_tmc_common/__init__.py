@@ -55,6 +55,9 @@ from .test_helpers.empty_component_manager import EmptyComponentManager
 from .test_helpers.helper_adapter_factory import HelperAdapterFactory
 from .test_helpers.helper_base_device import HelperBaseDevice
 from .test_helpers.helper_csp_master_device import HelperCspMasterDevice
+from .test_helpers.helper_csp_sdp_subarray_leaf_device import (
+    HelperSubarrayLeafDevices,
+)
 from .test_helpers.helper_dish_device import HelperDishDevice
 from .test_helpers.helper_state_mccsdevice import HelperMCCSStateDevice
 from .test_helpers.helper_subarray_device import (
@@ -133,6 +136,7 @@ __all__ = [
     "HelperMCCSStateDevice",
     "HelperSubArrayDevice",
     "HelperCspMasterDevice",
+    "HelperSubarrayLeafDevices",
     "EmptySubArrayComponentManager",
     "HelperSubarrayLeafDevice",
     "DummyComponent",
