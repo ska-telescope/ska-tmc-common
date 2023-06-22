@@ -46,8 +46,7 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
 
     def init_device(self):
         super().init_device()
-        self._sdp_subarray_obs_state = ObsState.EMPTY
-        self._csp_subarray_obs_state = ObsState.EMPTY
+        self._obs_state = ObsState.EMPTY
 
     def update_device_obsstate(self, value: IntEnum) -> None:
         """Updates the given data after a delay."""
@@ -57,6 +56,20 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("sdpSubarrayObsState", self._obs_state)
             self.push_change_event("cspSubarrayObsState", self._obs_state)
+
+    @command(
+        dtype_in=int,
+        doc_in="Set ObsState",
+    )
+    def SetDirectObsState(self, argin: ObsState) -> None:
+        """
+        Trigger a ObsState change
+        """
+        # import debugpy; debugpy.debug_this_thread()
+        value = ObsState(argin)
+        if self._obs_state != value:
+            self._obs_state = value
+            self.push_change_event("obsState", self._obs_state)
 
     @command(
         dtype_in=bool,
@@ -72,11 +85,11 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
 
     def read_sdpSubarrayObsState(self):
         """Reads the current observation state of the SDP subarray"""
-        return self._sdp_subarray_obs_state
+        return self._obs_state
 
     def read_cspSubarrayObsState(self):
         """Reads the current observation state of the SDP subarray"""
-        return self._sdp_subarray_obs_state
+        return self._obs_state
 
     def is_AssignResources_allowed(self) -> bool:
         """
