@@ -55,7 +55,6 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
             time.sleep(self._delay)
             self._obs_state = value
             time.sleep(0.1)
-            self.push_change_event("obsState", self._obs_state)
             self.push_change_event("sdpSubarrayObsState", self._obs_state)
             self.push_change_event("cspSubarrayObsState", self._obs_state)
 
@@ -99,14 +98,16 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
         """
         if self._defective:
             self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
+            self.push_change_event("sdpSubarrayObsState", self._obs_state)
+            self.push_change_event("cspSubarrayObsState", self._obs_state)
             return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command completely."
             ]
 
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
+            self.push_change_event("sdpSubarrayObsState", self._obs_state)
+            self.push_change_event("cspSubarrayObsState", self._obs_state)
             self.thread = threading.Thread(
                 target=self.wait_and_update_exception, args=["AssignResources"]
             )
@@ -114,7 +115,8 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
 
         elif self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
+            self.push_change_event("sdpSubarrayObsState", self._obs_state)
+            self.push_change_event("cspSubarrayObsState", self._obs_state)
             thread = threading.Thread(
                 target=self.update_device_obsstate, args=[ObsState.IDLE]
             )
@@ -155,14 +157,16 @@ class HelperSubarrayLeafDevices(HelperBaseDevice):
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
-                self.push_change_event("obsState", self._obs_state)
+                self.push_change_event("sdpSubarrayObsState", self._obs_state)
+                self.push_change_event("cspSubarrayObsState", self._obs_state)
                 thread = threading.Thread(
                     target=self.update_device_obsstate, args=[ObsState.READY]
                 )
                 thread.start()
             return [ResultCode.OK], [""]
         self._obs_state = ObsState.CONFIGURING
-        self.push_change_event("obsState", self._obs_state)
+        self.push_change_event("sdpSubarrayObsState", self._obs_state)
+        self.push_change_event("cspSubarrayObsState", self._obs_state)
         return [ResultCode.FAILED], [
             "Device is Defective, cannot process command completely."
         ]
