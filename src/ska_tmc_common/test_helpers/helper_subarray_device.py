@@ -3,7 +3,6 @@ This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
 # pylint: disable=attribute-defined-outside-init
-import json
 import threading
 import time
 from enum import IntEnum
