@@ -22,6 +22,8 @@ from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
 
 
 class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
+    """A device exposing commands and attributes of the CSP Subarray Leaf Nodes devices."""
+
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
 
@@ -53,10 +55,10 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def AssignResources(
-        self, argin: str
+        self, argin: str = ""
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes AssignResources command on subarray devices
+        This method invokes AssignResources command on csp subarray devices
         """
         if self._defective:
             self._obs_state = ObsState.RESOURCING
