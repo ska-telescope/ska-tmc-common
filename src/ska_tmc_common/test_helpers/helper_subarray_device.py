@@ -426,14 +426,13 @@ class HelperSubArrayDevice(SKASubarray):
                 "Device is Defective, cannot process command completely."
             ]
 
-        input = json.loads(argin)
-        if "eb_id" not in input["execution_block"]:
-            raise tango.Except.throw_exception(
-                "Incorrect input json string",
-                "eb_id not found in the input json string",
-                "SdpSubarry.AssignResources",
-                tango.ErrSeverity.ERR,
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            self.thread = threading.Thread(
+                target=self.wait_and_update_exception, args=["AssignResources"]
             )
+            self.thread.start()
 
         elif self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.RESOURCING
