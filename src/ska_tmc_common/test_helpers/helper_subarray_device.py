@@ -440,9 +440,7 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.IDLE]
             )
             thread.start()
-        return [ResultCode.OK], [
-            "AssignResources invoked successfully on SdpSubarray."
-        ]
+        return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
