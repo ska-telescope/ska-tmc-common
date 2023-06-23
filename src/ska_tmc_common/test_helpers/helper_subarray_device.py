@@ -435,14 +435,6 @@ class HelperSubArrayDevice(SKASubarray):
                 tango.ErrSeverity.ERR,
             )
 
-        if self._raise_exception:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["AssignResources"]
-            )
-            self.thread.start()
-
         elif self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
