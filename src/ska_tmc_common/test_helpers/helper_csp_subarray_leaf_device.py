@@ -42,11 +42,11 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def init_device(self):
         super().init_device()
-        self._csp_subarray_obs_state = ObsState.EMPTY
+        self._obs_state = ObsState.EMPTY
 
     def read_cspSubarrayObsState(self):
         """Reads the current observation state of the CSP subarray"""
-        return self._csp_subarray_obs_state
+        return self._obs_state
 
     @command(
         dtype_in=("str"),

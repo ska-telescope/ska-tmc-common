@@ -42,11 +42,11 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def init_device(self):
         super().init_device()
-        self._sdp_subarray_obs_state = ObsState.EMPTY
+        self._obs_state = ObsState.EMPTY
 
     def read_sdpSubarrayObsState(self):
         """Reads the current observation state of the SDP subarray"""
-        return self._sdp_subarray_obs_state
+        return self._obs_state
 
     @command(
         dtype_in=("str"),
