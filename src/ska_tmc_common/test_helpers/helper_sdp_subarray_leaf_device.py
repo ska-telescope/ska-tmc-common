@@ -12,7 +12,7 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
-from tango import AttrWriteType, EnsureOmniThread
+from tango import AttrWriteType
 from tango.server import attribute, command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
@@ -84,30 +84,19 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
             thread.start()
         return [ResultCode.OK], [""]
 
-    def wait_and_update_exception(self, command_name):
-        """Waits for 5 secs before pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            time.sleep(5)
-            command_id = f"1000_{command_name}"
-            command_result = (
-                command_id,
-                f"Exception occurred on device: {self.get_name()}",
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-
     def update_device_obsstate(self, value: IntEnum) -> None:
         """Updates the given data after a delay."""
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
             self._obs_state = value
             time.sleep(0.1)
-            self.push_change_event("obsState", self._obs_state)
+            self.push_change_event("sdpSubarrayObsState", self._obs_state)
 
     @command(
         dtype_in=int,
         doc_in="Set ObsState",
     )
-    def SetDirectObsState(self, argin: ObsState) -> None:
+    def SetSdpSubarrayObsState(self, argin: ObsState) -> None:
         """
         Trigger a ObsState change
         """
@@ -115,7 +104,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         value = ObsState(argin)
         if self._obs_state != value:
             self._obs_state = value
-            self.push_change_event("obsState", self._obs_state)
+            self.push_change_event("sdpSubarrayObsState", self._obs_state)
 
 
 def main(args=None, **kwargs):

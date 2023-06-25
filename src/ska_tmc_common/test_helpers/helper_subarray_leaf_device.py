@@ -62,6 +62,17 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             )
             self.push_change_event("longRunningCommandResult", command_result)
 
+    def wait_and_update_exception(self, command_name):
+        """Waits for 5 secs before pushing a longRunningCommandResult event."""
+        with EnsureOmniThread():
+            time.sleep(5)
+            command_id = f"1000_{command_name}"
+            command_result = (
+                command_id,
+                f"Exception occurred on device: {self.get_name()}",
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
+
     def is_Configure_allowed(self) -> bool:
         """
         This method checks the Configure is allowed in the current device
@@ -216,32 +227,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         self.logger.info("Abort completed.")
         return [ResultCode.OK], [""]
-
-    def is_ObsReset_allowed(self) -> bool:
-        """
-        This method checks if the ObsReset command is allowed in the current
-        device state.
-        :rtype:bool
-        """
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This is the method to invoke ObsReset command.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        if not self._defective:
-            self.logger.info("ObsReset completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
 
     def is_Restart_allowed(self) -> bool:
         """
