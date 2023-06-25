@@ -100,7 +100,6 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         """
         Trigger a ObsState change
         """
-        # import debugpy; debugpy.debug_this_thread()
         value = ObsState(argin)
         if self._obs_state != value:
             self._obs_state = value
