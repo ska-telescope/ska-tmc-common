@@ -10,7 +10,6 @@ commands_without_argin = [
     "Off",
     "ReleaseAllResources",
     "EndScan",
-    "ObsReset",
     "Restart",
     "Standby",
     "End",
