@@ -22,6 +22,7 @@ class AdapterType(enum.IntEnum):
     MCCS = 3
     CSPSUBARRAY = 4
     CSPMASTER = 5
+    SDPSUBARRAY = 6
 
 
 class BaseAdapter:
@@ -172,6 +173,23 @@ class SubArrayAdapter(BaseAdapter):
         Invokes Reset on subarray device proxy.
         """
         return self._proxy.ObsReset()
+
+
+class SdpSubArrayAdapter(SubArrayAdapter):
+    """
+    This class is used for creating and managing adapters
+    for SdpSubarray devices.
+    """
+
+    def AssignResources(
+        self, argin: str, callback
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes AssignResources on subarray device proxy.
+        """
+        return self._proxy.command_inout_asynch(
+            "AssignResources", argin, callback
+        )
 
 
 class MCCSAdapter(BaseAdapter):
@@ -342,6 +360,7 @@ class AdapterFactory:
         SubArrayAdapter,
         CspMasterAdapter,
         CspSubarrayAdapter,
+        SdpSubArrayAdapter,
         MCCSAdapter,
         BaseAdapter,
     ]:
@@ -369,6 +388,10 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.CSPSUBARRAY:
             new_adapter = CspSubarrayAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.SDPSUBARRAY:
+            new_adapter = SdpSubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.MCCS:
