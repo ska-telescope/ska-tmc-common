@@ -18,6 +18,7 @@ from .adapters import (
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
+    SdpSubArrayAdapter,
     SubArrayAdapter,
 )
 from .aggregators import Aggregator
@@ -84,6 +85,7 @@ __all__ = [
     "CspMasterAdapter",
     "CspSubarrayAdapter",
     "SubArrayAdapter",
+    "SdpSubArrayAdapter",
     "BaseAdapter",
     "MCCSAdapter",
     "Aggregator",
