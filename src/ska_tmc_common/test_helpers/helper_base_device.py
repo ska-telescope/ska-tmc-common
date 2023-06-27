@@ -57,6 +57,15 @@ class HelperBaseDevice(SKABaseDevice):
 
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
 
+    raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
+
+    def read_raiseException(self) -> bool:
+        """This method is used to read the attribute value for raise exception
+
+        :rtype: bool
+        """
+        return self._raise_exception
+
     def read_defective(self) -> bool:
         """
         Returns defective status of devices
@@ -139,6 +148,15 @@ class HelperBaseDevice(SKABaseDevice):
             if self._health_state != value:
                 self._health_state = HealthState(argin)
                 self.push_change_event("healthState", self._health_state)
+
+    @command(
+        dtype_in=bool,
+        doc_in="Raise Exception",
+    )
+    def SetRaiseException(self, value: bool) -> None:
+        """Set Raise Exception"""
+        self.logger.info("Setting the raise exception value to : %s", value)
+        self._raise_exception = value
 
     def is_On_allowed(self) -> bool:
         return True
