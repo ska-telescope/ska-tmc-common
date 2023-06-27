@@ -26,6 +26,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._defective = False
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
+        self._raise_exception = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
