@@ -104,7 +104,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         value = ObsState(argin)
         if self._obs_state != value:
             self._obs_state = value
-            self.push_change_event("cspsubarrayobsState", self._obs_state)
+            self.push_change_event("cspSubarrayObsState", self._obs_state)
 
 
 def main(args=None, **kwargs):
