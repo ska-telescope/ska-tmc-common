@@ -10,7 +10,8 @@ from tango.server import Device, attribute, command, run
 
 
 class SdpSubarrayDevice(Device):
-    """A  helper SdpSubarray device for triggering state changes with a command.
+    """A  helper SdpSubarray device for triggering state changes with a
+    command.
     It can be used to mock SdpSubarray's bahavior to test error propagation
     from SdpSubarray to SdpSubarrayLeafNode in case of command failure"""
 
@@ -156,7 +157,8 @@ class SdpSubarrayDevice(Device):
 
     def is_AssignResources_allowed(self):
         """
-        Check if command `AssignResources` is allowed in the current device state.
+        Check if command `AssignResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -168,7 +170,8 @@ class SdpSubarrayDevice(Device):
         doc_in="The input string in JSON format.",
     )
     def AssignResources(self, argin):
-        """This method invokes AssignResources command on SdpSubarray device."""
+        """This method invokes AssignResources command on SdpSubarray
+        device."""
         if self._defective:
             self.raise_exception_for_defective_device()
 
@@ -190,7 +193,8 @@ class SdpSubarrayDevice(Device):
 
     def is_ReleaseResources_allowed(self):
         """
-        Check if command `ReleaseResources` is allowed in the current device state.
+        Check if command `ReleaseResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -199,7 +203,8 @@ class SdpSubarrayDevice(Device):
 
     @command()
     def ReleaseResources(self):
-        """This method invokes ReleaseResources command on SdpSubarray device."""
+        """This method invokes ReleaseResources command on SdpSubarray
+        device."""
         if self._defective:
             self.raise_exception_for_defective_device()
 
@@ -210,7 +215,8 @@ class SdpSubarrayDevice(Device):
 
     def is_ReleaseAllResources_allowed(self):
         """
-        Check if command `ReleaseAllResources` is allowed in the current device state.
+        Check if command `ReleaseAllResources` is allowed in the current
+        device state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -219,7 +225,8 @@ class SdpSubarrayDevice(Device):
 
     @command()
     def ReleaseAllResources(self):
-        """This method invokes ReleaseAllResources command on SdpSubarray device."""
+        """This method invokes ReleaseAllResources command on SdpSubarray
+        device."""
         if self._defective:
             self.raise_exception_for_defective_device()
 
@@ -375,7 +382,8 @@ class SdpSubarrayDevice(Device):
             self.push_change_event("obsState", self._obs_state)
 
     def raise_exception_for_defective_device(self):
-        """This method raises an exception if SdpSubarray device is defective."""
+        """This method raises an exception if SdpSubarray device is
+        defective."""
         self.logger.info(
             "Device is Defective, cannot process command completely."
         )

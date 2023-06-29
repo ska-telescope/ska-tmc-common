@@ -42,7 +42,8 @@ class HelperMCCSStateDevice(HelperBaseDevice):
 
     def is_AssignResources_allowed(self) -> bool:
         """
-        Check if command `AssignResources` is allowed in the current device state.
+        Check if command `AssignResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -64,12 +65,14 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
+        # pylint:disable=line-too-long
         tmpDict = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [1],
             "station_ids": [[1, 2]],
             "channel_blocks": [3],
         }
+        # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(tmpDict)
         return [ResultCode.OK], [""]
 
@@ -85,7 +88,8 @@ class HelperMCCSStateDevice(HelperBaseDevice):
 
     @command(
         dtype_in="DevString",
-        doc_in="JSON-encoded string with the resources to remove from the subarray",
+        doc_in="JSON-encoded string with the resources to remove from the \
+            subarray",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -98,11 +102,13 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: a tuple conataining Resultcose and Message
         :rtype: Tuple
         """
+        # pylint:disable=line-too-long
         tmpDict = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [],
             "station_ids": [],
             "channel_blocks": [],
         }
+        # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(tmpDict)
         return [ResultCode.OK], [""]

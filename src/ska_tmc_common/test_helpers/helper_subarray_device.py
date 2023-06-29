@@ -166,6 +166,7 @@ class HelperSubArrayDevice(SKASubarray):
             Stateless hook for device initialisation.
             """
             super().do()
+            # pylint:disable=line-too-long
             self._device._receive_addresses = (
                 '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
                 '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
@@ -176,6 +177,7 @@ class HelperSubArrayDevice(SKASubarray):
                 '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
                 '"port":[[0,9000,1]]}}}'
             )
+            # pylint:enable=line-too-long
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
@@ -399,7 +401,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_AssignResources_allowed(self) -> bool:
         """
-        Check if command `AssignResources` is allowed in the current device state.
+        Check if command `AssignResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -455,7 +458,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseResources` is allowed in the current device state.
+        Check if command `ReleaseResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -482,7 +486,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseAllResources` is allowed in the current device state.
+        Check if command `ReleaseAllResources` is allowed in the current
+        device state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean

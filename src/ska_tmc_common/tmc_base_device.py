@@ -23,7 +23,8 @@ class TMCBaseDevice(SKABaseDevice):
 
     @attribute(
         dtype="DevString",
-        doc="Json String representing the last device info changed in the internal model.",
+        doc="Json String representing the last device info changed in the \
+            internal model.",
     )
     def lastDeviceInfoChanged(self):
         """
@@ -33,7 +34,8 @@ class TMCBaseDevice(SKABaseDevice):
 
     @attribute(
         dtype="DevString",
-        doc="Json String representing the entire internal model transformed for better reading.",
+        doc="Json String representing the entire internal model transformed \
+            for better reading.",
     )
     def transformedInternalModel(self) -> str:
         """
@@ -49,8 +51,9 @@ class TMCBaseDevice(SKABaseDevice):
         Returns json string with device data.
 
         Sample Output:
-        {'mccs':{'state':'DevState.UNKNOWN','healthState':'HealthState.UNKNOWN',
-        'ping':'-1','last_event_arrived':'None','unresponsive':'False','exception':'None',
+        {'mccs':{'state':'DevState.UNKNOWN','healthState':
+        'HealthState.UNKNOWN', 'ping':'-1','last_event_arrived':'None',
+        'unresponsive':'False','exception':'None',
         'id':-1,'pointingState':'PointingState.NONE'}}
         """
         json_model = json.loads(self.component_manager.component.to_json())
@@ -82,9 +85,10 @@ class TMCBaseDevice(SKABaseDevice):
 
     def internalModel_read(self) -> str:
         """
-        This method consists of basic  read implementation of InternalModel and
-        must be overloaded to add additional attribute values to internal model.
-        Returns json string representing internal model with basic attributes only.
+        This method consists of basic  read implementation of InternalModel
+        and must be overloaded to add additional attribute values to internal
+        model. Returns json string representing internal model with basic
+        attributes only.
 
         Sample Output:
         {"subarray_health_state":"HealthState.UNKNOWN",
