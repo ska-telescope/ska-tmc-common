@@ -80,18 +80,27 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("cspSubarrayObsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.IDLE]
+                target=self.update_device_obsstate,
+                args=[ObsState.IDLE, "AssignResources"],
             )
             thread.start()
         return [ResultCode.OK], [""]
 
-    def update_device_obsstate(self, value: IntEnum) -> None:
+    def update_device_obsstate(
+        self, value: IntEnum, command_name: str = ""
+    ) -> None:
         """Updates the given data after a delay."""
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
             self._obs_state = value
             time.sleep(0.1)
             self.push_change_event("cspSubarrayObsState", self._obs_state)
+            command_id = f"1000_{command_name}"
+            command_result = (
+                command_id,
+                str(int(ResultCode.OK)),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
 
     @command(
         dtype_in=int,
@@ -104,7 +113,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         value = ObsState(argin)
         if self._obs_state != value:
             self._obs_state = value
-            self.push_change_event("cspsubarrayobsState", self._obs_state)
+            self.push_change_event("cspSubarrayObsState", self._obs_state)
 
 
 def main(args=None, **kwargs):
