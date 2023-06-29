@@ -175,7 +175,7 @@ class SdpSubarrayDevice(Device):
         if self._defective:
             self.raise_exception_for_defective_device()
 
-        # self.logger.info(f"Argin on SdpSubarray helper: {argin}")
+        self.logger.info(f"Argin on SdpSubarray helper: {argin}")
         input = json.loads(argin)
 
         if "eb_id" not in input["execution_block"]:
