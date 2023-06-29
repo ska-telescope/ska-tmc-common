@@ -1,6 +1,7 @@
 # pylint: disable=attribute-defined-outside-init
 """Helper device for SdpSubarray device"""
 import json
+import logging
 
 import tango
 from ska_tango_base.control_model import HealthState, ObsState
@@ -9,8 +10,9 @@ from tango.server import Device, attribute, command, run
 
 
 class HelperSdpSubarrayDevice(Device):
-    """A generic subarray device for triggering state changes with a command.
-    It can be used as helper device for element subarray node"""
+    """A  helper SdpSubarray device for triggering state changes with a command.
+    It can be used to mock SdpSubarray's bahavior to test error propagation
+    from SdpSubarray to SdpSubarrayLeafNode in case of command failure"""
 
     def init_device(self):
         super().init_device()
@@ -24,6 +26,7 @@ class HelperSdpSubarrayDevice(Device):
         self.set_change_event("obsState", True, False)
         self.set_change_event("healthState", True, False)
         self.set_change_event("receiveAddresses", True, False)
+        self.logger = logging.getLogger(__name__)
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
@@ -76,7 +79,7 @@ class HelperSdpSubarrayDevice(Device):
         Trigger defective change
         :rtype: bool
         """
-        self.logger.info("Setting the defective value to : %s", value)
+        # self.logger.info("Setting the defective value to : %s", value)
         self._defective = value
 
     @command(
@@ -167,16 +170,16 @@ class HelperSdpSubarrayDevice(Device):
     def AssignResources(self, argin):
         """This method invokes AssignResources command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
-        self.logger.info(f"Argin on SdpSubarray helper: {argin}")
+        # self.logger.info(f"Argin on SdpSubarray helper: {argin}")
         input = json.loads(argin)
 
         if "eb_id" not in input["execution_block"]:
-            self.logger.info("eb_id is not present in Assign input json")
+            self.logger.info("Missing eb_id in the AssignResources input json")
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
-                "eb_id not found in the input json string",
+                "Missing eb_id in the AssignResources input json",
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
@@ -198,7 +201,7 @@ class HelperSdpSubarrayDevice(Device):
     def ReleaseResources(self):
         """This method invokes ReleaseResources command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
@@ -218,7 +221,7 @@ class HelperSdpSubarrayDevice(Device):
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
@@ -241,16 +244,16 @@ class HelperSdpSubarrayDevice(Device):
     def Configure(self, argin):
         """This method invokes Configure command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         input = json.loads(argin)
         if "scan_type" not in input:
             self.logger.info(
-                "scan_type is not present in Configure input json"
+                "Missing scan_type in the AssignResources input json"
             )
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
-                "scan_type not found in the input json string",
+                "Missing scan_type in the AssignResources input json",
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
@@ -275,7 +278,19 @@ class HelperSdpSubarrayDevice(Device):
     def Scan(self, argin):
         """This method invokes Scan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
+
+        input = json.loads(argin)
+        if "scan_id" not in input:
+            self.logger.info(
+                "Missing scan_id in the AssignResources input json"
+            )
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing scan_id in the AssignResources input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
 
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
@@ -294,7 +309,7 @@ class HelperSdpSubarrayDevice(Device):
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         if not self._defective:
             if self._obs_state != ObsState.READY:
@@ -314,7 +329,7 @@ class HelperSdpSubarrayDevice(Device):
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
@@ -334,7 +349,7 @@ class HelperSdpSubarrayDevice(Device):
     def Abort(self):
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTED
@@ -353,13 +368,13 @@ class HelperSdpSubarrayDevice(Device):
     def Restart(self):
         """This method invokes Restart command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defecive_device()
+            self.raise_exception_for_defective_device()
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
 
-    def raise_exception_for_defecive_device(self):
+    def raise_exception_for_defective_device(self):
         """This method raises an exception if SdpSubarray device is defective."""
         self.logger.info(
             "Device is Defective, cannot process command completely."
@@ -374,7 +389,7 @@ class HelperSdpSubarrayDevice(Device):
 
 def main(args=None, **kwargs):
     """
-    Runs the HelperSubarrayLeafDevice Tango device.
+    Runs the HelperSdpSubarrayDevice Tango device.
     :param args: Arguments internal to TANGO
 
     :param kwargs: Arguments internal to TANGO

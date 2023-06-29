@@ -37,12 +37,14 @@ NumDishes = 10
 
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
 SUBARRAY_DEVICE = "helper/subarray/device"
+SDP_SUBARRAY_DEVICE = "helper/sdpsubarray/device"
 SUBARRAY_LEAF_DEVICE = "helper/subarrayleaf/device"
 DISH_DEVICE = "helper/dish/device"
 CSP_DEVICE = "helper/csp/device"
 CSP_LEAF_NODE_DEVICE = "helper/cspsubarrayleafnode/device"
 SDP_LEAF_NODE_DEVICE = "helper/sdpsubarrayleafnode/device"
 HELPER_SUBARRAY_DEVICE = "test/subarray/1"
+HELPER_SDP_SUBARRAY_DEVICE = "test/sdpsubarray/1"
 HELPER_MCCS_STATE_DEVICE = "test/mccs/1"
 HELPER_BASE_DEVICE = "test/base/1"
 HELPER_DISH_DEVICE = "test/dish/1"
