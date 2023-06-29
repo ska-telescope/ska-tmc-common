@@ -5,7 +5,7 @@ import pytest
 from ska_tango_base.control_model import ObsState
 from tango import DevFailed, DevState
 
-from ska_tmc_common import DevFactory, HelperSdpSubarrayDevice
+from ska_tmc_common import DevFactory, SdpSubarrayDevice
 from tests.settings import SDP_SUBARRAY_DEVICE
 
 commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
@@ -36,7 +36,7 @@ def get_scan_input_str(scan_input_file="tmc-sdp_Scan.json"):
 def devices_to_load():
     return (
         {
-            "class": HelperSdpSubarrayDevice,
+            "class": SdpSubarrayDevice,
             "devices": [{"name": SDP_SUBARRAY_DEVICE}],
         },
     )

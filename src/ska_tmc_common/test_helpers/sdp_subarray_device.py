@@ -9,7 +9,7 @@ from tango import AttrWriteType, DevState
 from tango.server import Device, attribute, command, run
 
 
-class HelperSdpSubarrayDevice(Device):
+class SdpSubarrayDevice(Device):
     """A  helper SdpSubarray device for triggering state changes with a command.
     It can be used to mock SdpSubarray's bahavior to test error propagation
     from SdpSubarray to SdpSubarrayLeafNode in case of command failure"""
@@ -389,14 +389,14 @@ class HelperSdpSubarrayDevice(Device):
 
 def main(args=None, **kwargs):
     """
-    Runs the HelperSdpSubarrayDevice Tango device.
+    Runs the SdpSubarrayDevice Tango device.
     :param args: Arguments internal to TANGO
 
     :param kwargs: Arguments internal to TANGO
 
     :return: integer. Exit code of the run method.
     """
-    return run((HelperSdpSubarrayDevice,), args=args, **kwargs)
+    return run((SdpSubarrayDevice,), args=args, **kwargs)
 
 
 if __name__ == "__main__":

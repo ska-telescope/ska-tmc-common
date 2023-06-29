@@ -60,7 +60,6 @@ from .test_helpers.helper_csp_subarray_leaf_device import (
     HelperCspSubarrayLeafDevice,
 )
 from .test_helpers.helper_dish_device import HelperDishDevice
-from .test_helpers.helper_sdp_subarray_device import HelperSdpSubarrayDevice
 from .test_helpers.helper_sdp_subarray_leaf_device import (
     HelperSdpSubarrayLeafDevice,
 )
@@ -75,6 +74,7 @@ from .test_helpers.helper_tmc_device import (
     DummyComponentManager,
     DummyTmcDevice,
 )
+from .test_helpers.sdp_subarray_device import SdpSubarrayDevice
 from .timeout_callback import TimeoutCallback
 from .tmc_base_device import TMCBaseDevice
 from .tmc_command import BaseTMCCommand, TMCCommand, TmcLeafNodeCommand
@@ -149,5 +149,5 @@ __all__ = [
     "DummyComponent",
     "DummyComponentManager",
     "DummyTmcDevice",
-    "HelperSdpSubarrayDevice",
+    "SdpSubarrayDevice",
 ]
