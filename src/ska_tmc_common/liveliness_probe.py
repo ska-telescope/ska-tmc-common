@@ -38,6 +38,9 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
+        self._logger.info(
+            f"self._component_manager in BaseLivelinessProbe ...... {self._component_manager}"
+        )
 
     def start(self) -> None:
         """
