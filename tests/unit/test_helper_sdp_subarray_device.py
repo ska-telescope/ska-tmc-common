@@ -114,7 +114,6 @@ def test_assign_resources_valid_input(tango_context):
     assert sdp_subarray_device.obsState == ObsState.IDLE
 
 
-@pytest.mark.test
 def test_assign_resources_invalid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
