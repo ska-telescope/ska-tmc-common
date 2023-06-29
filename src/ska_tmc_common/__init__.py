@@ -69,6 +69,7 @@ from .test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
 from .test_helpers.helper_subarray_leaf_device import HelperSubarrayLeafDevice
+from .test_helpers.helper_sdp_subarray_device import HelperSdpSubarrayDevice
 from .test_helpers.helper_tmc_device import (
     DummyComponent,
     DummyComponentManager,
@@ -148,4 +149,5 @@ __all__ = [
     "DummyComponent",
     "DummyComponentManager",
     "DummyTmcDevice",
+    "HelperSdpSubarrayDevice"
 ]
