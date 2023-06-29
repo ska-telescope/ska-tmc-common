@@ -102,8 +102,8 @@ def test_abort_command(tango_context):
 def test_restart_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
-    sdp_subarray_device.Abort()
-    assert sdp_subarray_device.obsState == ObsState.RESTARTED
+    sdp_subarray_device.Restart()
+    assert sdp_subarray_device.obsState == ObsState.EMPTY
 
 
 def test_assign_resources_valid_input(tango_context):
@@ -114,6 +114,7 @@ def test_assign_resources_valid_input(tango_context):
     assert sdp_subarray_device.obsState == ObsState.IDLE
 
 
+@pytest.mark.test
 def test_assign_resources_invalid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
@@ -121,7 +122,7 @@ def test_assign_resources_invalid_input(tango_context):
     input_string = json.loads(assign_input_str)
     del input_string["execution_block"]["eb_id"]
     with pytest.raises(
-        DevFailed, match="eb_id not found in the input json string"
+        DevFailed, match="Missing eb_id in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.EMPTY
