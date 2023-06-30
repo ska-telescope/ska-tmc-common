@@ -2,26 +2,142 @@
 This module implements the Helper devices for subarray leaf nodes for testing
 an integrated TMC
 """
+import json
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import threading
 import time
-from typing import List, Tuple
+from enum import IntEnum
+from typing import List, Optional, Tuple
 
+import tango
 from ska_tango_base.commands import ResultCode
-from tango import EnsureOmniThread
-from tango.server import command, run
+from ska_tango_base.control_model import ObsState
+from tango.server import AttrWriteType, attribute, command, run
 
+from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
 
+    def init_device(self) -> None:
+        super().init_device()
+        self._delay = 2
+        self._obs_state = ObsState.EMPTY
+        self._defective = json.dumps(
+            {
+                "value": False,
+                "fault_type": FaultType.NONE,
+                "error_message": "",
+                "result": ResultCode.FAILED,
+            }
+        )
+        self.defective_params = json.loads(self._defective)
+
+    defective = attribute(dtype=str, access=AttrWriteType.READ)
+
+    delay = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_defective(self) -> str:
+        """
+        Returns defective status of devices
+
+        :rtype: dict
+        """
+        return self._defective
+
+    def read_delay(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return self._delay
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Defective parameters",
+    )
+    def SetDefective(self, values: str) -> None:
+        """
+        Trigger defective change
+        :param: values
+        :type: str
+        """
+        input_dict = json.loads(values)
+        for key, value in input_dict.items():
+            self.defective_params[key] = value
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, value: int) -> None:
+        """Update delay value"""
+        self.logger.info("Setting the Delay value to : %s", value)
+        self._delay = value
+
+    def inducing_fault(
+        self,
+        command_name: str,
+        fault_type: IntEnum,
+        fault_message: str,
+        result: ResultCode,
+        intermediate_state: Optional[ObsState] = ObsState.RESOURCING,
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """Induces fault into device according to given parameters"""
+        if fault_type == FaultType.FAILED_RESULT:
+            return [result], [fault_message]
+
+        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            thread = threading.Timer(
+                5,
+                function=self.push_command_result,
+                args=[result, command_name, fault_message],
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            self._obs_state = intermediate_state
+            self.push_obs_state_event(intermediate_state)
+            return [ResultCode.QUEUED], [""]
+
+        return [ResultCode.OK], [""]
+
+    def push_command_result(
+        self, result: ResultCode, command: str, exception: str = ""
+    ):
+        """Push long running command result event for given command."""
+        command_id = f"{time.time()}-{command}"
+        if exception:
+            command_result = (command_id, exception)
+            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (command_id, result)
+        self.push_change_event("longRunningCommandResult", command_result)
+
+    def push_obs_state_event(self, obs_state: ObsState) -> None:
+        """Place holder method. This method will be implemented in the child
+        classes."""
+
+    def update_device_obsstate(self, obs_state: ObsState):
+        """Updates the device obsState"""
+        with tango.EnsureOmniThread():
+            self._obs_state = obs_state
+            time.sleep(0.1)
+            self.push_obs_state_event(self._obs_state)
+
     def is_AssignResources_allowed(self) -> bool:
         """
         This method checks if the AssignResources command is allowed or not
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -38,46 +154,23 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("AssignResource completed.")
-            command_id = "1000_AssignResources"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "AssignResources",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
-        self.thread = threading.Thread(target=self.start_process)
-        self.thread.start()
-        self.logger.info("Starting Assign on device %s", self.dev_name)
-        return [ResultCode.QUEUED], [""]
 
-    def stop_thread(self):
-        """Stops the thread."""
-        if self.thread.is_alive():
-            self.thread.join()
-
-    def start_process(self):
-        """Waits for 5 secs before pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            time.sleep(5)
-            command_id = "1000_AssignResources"
-            command_result = (
-                command_id,
-                f"Exception occured on device: {self.dev_name}",
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-
-    def wait_and_update_exception(self, command_name):
-        """Waits for 5 secs before pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            time.sleep(5)
-            command_id = f"1000_{command_name}"
-            command_result = (
-                command_id,
-                f"Exception occurred on device: {self.get_name()}",
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
+        self._obs_state = ObsState.RESOURCING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "AssignResources")
+        return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -85,6 +178,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -99,19 +200,23 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("Configure completed.")
-            command_id = "1000_Configure"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "Configure",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.CONFIGURING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.READY]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "Configure")
+        return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -119,6 +224,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -133,19 +246,19 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("Scan completed.")
-            command_id = "1000_Scan"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "Scan",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.SCANNING
+        self.push_obs_state_event(self._obs_state)
+        self.push_command_result(ResultCode.OK, "Scan")
+        return [ResultCode.OK], [""]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -153,6 +266,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -165,19 +286,19 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("EndScan completed.")
-            command_id = "1000_EndScan"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "EndScan",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.READY
+        self.push_obs_state_event(self._obs_state)
+        self.push_command_result(ResultCode.OK, "EndScan")
+        return [ResultCode.OK], [""]
 
     def is_End_allowed(self) -> bool:
         """
@@ -185,6 +306,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -197,19 +326,23 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("End completed.")
-            command_id = "1000_End"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "End",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.CONFIGURING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "End")
+        return [ResultCode.OK], [""]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -217,6 +350,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -229,13 +370,19 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("GoToIdle completed.")
-            return [ResultCode.OK], [""]
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "GoToIdle",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
+            )
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.IDLE
+        self.push_obs_state_event(self._obs_state)
+        self.push_command_result(ResultCode.OK, "GoToIdle")
+        return [ResultCode.OK], [""]
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -243,6 +390,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -255,7 +410,22 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.logger.info("Abort completed.")
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "Abort",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
+            )
+
+        self._obs_state = ObsState.ABORTING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.ABORTED]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "Abort")
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -264,6 +434,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -276,7 +454,22 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.logger.info("Restart completed.")
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "Restart",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
+            )
+
+        self._obs_state = ObsState.RESTARTING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "Restart")
         return [ResultCode.OK], [""]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
@@ -286,6 +479,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -298,19 +499,23 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("ReleaseAllResources completed")
-            command_id = "1000_ReleaseAllResources"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "ReleaseAllResources",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.RESOURCING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -319,6 +524,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
         return True
 
     @command(
@@ -335,19 +548,23 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            self.logger.info("ReleaseResources completed.")
-            command_id = "1000_ReleaseResources"
-            command_result = (
-                command_id,
-                str(int(ResultCode.OK)),
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "ReleaseResources",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
             )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self._obs_state = ObsState.RESOURCING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "ReleaseResources")
+        return [ResultCode.OK], [""]
 
 
 # ----------

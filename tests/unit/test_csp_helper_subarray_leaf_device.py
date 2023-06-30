@@ -1,14 +1,22 @@
+import json
+
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 
-from ska_tmc_common import DevFactory
+from ska_tmc_common import DevFactory, FaultType
 from tests.settings import CSP_LEAF_NODE_DEVICE
 
 
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(CSP_LEAF_NODE_DEVICE)
-    subarray_device.SetDefective(True)
+    defect = {
+        "value": False,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is Defective, cannot process command completely.",
+        "result": ResultCode.FAILED,
+    }
+    subarray_device.SetisDefective(json.dumps(defect))
     result, message = subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert (

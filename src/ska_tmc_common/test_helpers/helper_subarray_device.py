@@ -5,7 +5,6 @@ an integrated TMC
 # pylint: disable=attribute-defined-outside-init
 import threading
 import time
-from enum import IntEnum
 from logging import Logger
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -228,7 +227,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._defective
 
-    def update_device_obsstate(self, value: IntEnum) -> None:
+    def update_device_obsstate(self, value: ObsState) -> None:
         """Updates the given data after a delay."""
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
