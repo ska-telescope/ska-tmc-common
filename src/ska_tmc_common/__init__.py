@@ -26,7 +26,7 @@ from .dev_factory import DevFactory
 from .device_info import (
     DeviceInfo,
     DishDeviceInfo,
-    HelperSdpSubarrayInfo,
+    SdpSubarrayDeviceInfo,
     SubArrayDeviceInfo,
 )
 from .dish_utils import AntennaLocation, AntennaParams, DishHelper
@@ -100,7 +100,7 @@ __all__ = [
     "DeviceInfo",
     "SubArrayDeviceInfo",
     "DishDeviceInfo",
-    "HelperSdpSubarrayInfo",
+    "SdpSubarrayDeviceInfo",
     "AntennaLocation",
     "AntennaParams",
     "DishHelper",
