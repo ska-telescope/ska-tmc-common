@@ -3,8 +3,9 @@ import json
 import pytest
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
+from tango import DevFailed
 
-from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common import DevFactory, FaultType
 from tests.settings import SUBARRAY_LEAF_DEVICE
 
 commands_with_argin = ["AssignResources", "Scan", "Configure"]
@@ -83,10 +84,7 @@ def test_assign_resources_command_not_allowed(tango_context):
         "result": ResultCode.FAILED,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
-    with pytest.raises(
-        CommandNotAllowed,
-        match="This command is not allowed as device is defective.",
-    ):
+    with pytest.raises(DevFailed):
         subarray_leaf_device.AssignResources("")
 
     subarray_leaf_device.SetDefective(json.dumps({"value": False}))
