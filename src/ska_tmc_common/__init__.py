@@ -74,7 +74,7 @@ from .test_helpers.helper_tmc_device import (
     DummyComponentManager,
     DummyTmcDevice,
 )
-from .test_helpers.sdp_subarray_device import HelperSdpSubarray
+from .test_helpers.helper_sdp_subarray import HelperSdpSubarray
 from .timeout_callback import TimeoutCallback
 from .tmc_base_device import TMCBaseDevice
 from .tmc_command import BaseTMCCommand, TMCCommand, TmcLeafNodeCommand
