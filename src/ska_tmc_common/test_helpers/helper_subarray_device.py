@@ -571,6 +571,12 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
                 self.push_change_event("obsState", self._obs_state)
+
+                thread = threading.Thread(
+                    target=self.update_device_obsstate, args=[ObsState.READY]
+                )
+                thread.start()
+
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
