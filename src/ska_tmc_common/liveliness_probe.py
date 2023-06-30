@@ -41,6 +41,9 @@ class BaseLivelinessProbe:
         self._logger.info(
             f"self._component_manager in BaseLivelinessProbe ...... {self._component_manager}"
         )
+        self._logger.info(
+            f"self._component_manager _device in BaseLivelinessProbe ...... {self._component_manager._device}"
+        )
 
     def start(self) -> None:
         """
