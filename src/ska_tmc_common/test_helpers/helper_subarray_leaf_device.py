@@ -14,6 +14,7 @@ from typing import List, Optional, Tuple
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
+from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -125,6 +126,96 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._obs_state = obs_state
             time.sleep(0.1)
             self.push_obs_state_event(self._obs_state)
+
+    def is_On_allowed(self) -> bool:
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "On",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
+            )
+
+        self.set_state(DevState.ON)
+        self.push_change_event("State", self.dev_state())
+        self.push_command_result(ResultCode.OK, "On")
+        return [ResultCode.OK], [""]
+
+    def is_Off_allowed(self) -> bool:
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "Off",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
+            )
+
+        self.set_state(DevState.OFF)
+        self.push_change_event("State", self.dev_state())
+        self.push_command_result(ResultCode.OK, "Off")
+        return [ResultCode.OK], [""]
+
+    def is_Standby_allowed(self) -> bool:
+        if self.defective_params["value"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(
+                    "This command is not allowed as device is defective."
+                )
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        if self.defective_params["value"]:
+            return self.inducing_fault(
+                "Standby",
+                self.defective_params["fault_type"],
+                self.defective_params["error_message"],
+                self.defective_params["result"],
+                self.defective_params.get("intermidiate_state"),
+            )
+
+        self.set_state(DevState.STANDBY)
+        self.push_change_event("State", self.dev_state())
+        self.push_command_result(ResultCode.OK, "Standby")
+        return [ResultCode.OK], [""]
 
     def is_AssignResources_allowed(self) -> bool:
         """
