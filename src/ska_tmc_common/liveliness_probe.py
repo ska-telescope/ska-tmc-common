@@ -14,6 +14,7 @@ from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
 
 
+# pylint: disable=line-too-long
 class BaseLivelinessProbe:
     """
     The BaseLivelinessProbe class has the responsibility to monitor the sub devices.
@@ -136,7 +137,13 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                     self._logger.info(
                         f"self._component_manager ...... {self._component_manager}"
                     )
+                    self._logger.info(
+                        f"self._component_manager._device in liveliness probe ...... {self._component_manager._device}"
+                    )
                     dev_info = self._component_manager.get_device()
+                    self._logger.info(
+                        f"dev_info in liveliness probe ...... {dev_info}"
+                    )
                 except Exception as exp_msg:
                     self._logger.error(
                         "Exception occured while getting device info: %s",
