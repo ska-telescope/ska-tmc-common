@@ -69,6 +69,10 @@ class BaseLivelinessProbe:
         """
         Checks device status and logs error messages on state change
         """
+        self._logger.info(f"dev_info in device_task ...... {dev_info}")
+        self._logger.info(
+            f"dev_info.dev_name in device_task ...... {dev_info.dev_name}"
+        )
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
