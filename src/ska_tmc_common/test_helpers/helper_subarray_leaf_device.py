@@ -42,6 +42,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
+    obsState = attribute(dtype=ObsState, access=AttrWriteType.READ)
+
     def read_defective(self) -> str:
         """
         Returns defective status of devices
@@ -53,6 +55,23 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
         return self._delay
+
+    def read_obsState(self) -> ObsState:
+        """This method is used to read the attribute value for obsState."""
+        return self._obs_state
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Defective parameters",
+    )
+    def SetDirectObsState(self, value: ObsState) -> None:
+        """
+        Trigger defective change
+        :param: values
+        :type: str
+        """
+        self.logger.info("Setting device obsState to %s", value.name)
+        self._obs_state = value
 
     @command(
         dtype_in=str,
@@ -149,7 +168,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self.set_state(DevState.ON)
@@ -179,7 +198,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self.set_state(DevState.OFF)
@@ -209,7 +228,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self.set_state(DevState.STANDBY)
@@ -251,7 +270,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESOURCING
@@ -297,7 +316,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.CONFIGURING
@@ -343,7 +362,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.SCANNING
@@ -383,7 +402,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.READY
@@ -423,7 +442,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.CONFIGURING
@@ -467,7 +486,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.IDLE
@@ -507,7 +526,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.ABORTING
@@ -551,7 +570,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESTARTING
@@ -596,7 +615,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESOURCING
@@ -645,7 +664,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"],
                 self.defective_params["error_message"],
                 self.defective_params["result"],
-                self.defective_params.get("intermidiate_state"),
+                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESOURCING
