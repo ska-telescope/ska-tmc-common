@@ -112,7 +112,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, result)
+        command_result = (command_id, str(result))
         self.push_change_event("longRunningCommandResult", command_result)
 
     def push_obs_state_event(self, obs_state: ObsState) -> None:

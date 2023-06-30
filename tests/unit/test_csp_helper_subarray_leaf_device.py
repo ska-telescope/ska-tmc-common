@@ -16,7 +16,7 @@ def test_assign_resources_defective(tango_context):
         "error_message": "Device is Defective, cannot process command completely.",
         "result": ResultCode.FAILED,
     }
-    subarray_device.SetisDefective(json.dumps(defect))
+    subarray_device.SetDefective(json.dumps(defect))
     result, message = subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert (
