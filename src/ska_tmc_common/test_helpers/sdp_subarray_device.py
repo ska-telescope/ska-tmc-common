@@ -1,12 +1,12 @@
 # pylint: disable=attribute-defined-outside-init
 """Helper device for SdpSubarray device"""
 import json
-import logging
 
 import tango
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType, DevState
-from tango.server import Device, attribute, command, run
+from tango.server import attribute, command, run
+
 from ska_tmc_common import HelperSubArrayDevice
 
 
@@ -16,115 +16,23 @@ class SdpSubarrayDevice(HelperSubArrayDevice):
     It can be used to mock SdpSubarray's bahavior to test error propagation
     from SdpSubarray to SdpSubarrayLeafNode in case of command failure"""
 
-    # def init_device(self):
-    #     super().init_device()
-    #     self._health_state = HealthState.OK
-    #     self._obs_state = ObsState.EMPTY
-    #     self._defective = False
-    #     self._state = DevState.OFF
-    #     self._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"], \
-    #     [2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]}}'
-    #     self.set_change_event("State", True, False)
-    #     self.set_change_event("obsState", True, False)
-    #     self.set_change_event("healthState", True, False)
-    #     self.set_change_event("receiveAddresses", True, False)
-    #     self.logger = logging.getLogger(__name__)
+    def init_device(self):
+        super().init_device()
+        self._state = DevState.OFF
+        self._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"], \
+        [2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]}}'
+        self.set_change_event("receiveAddresses", True, False)
 
-    # defective = attribute(dtype=bool, access=AttrWriteType.READ)
+    receiveAddresses = attribute(
+        label="Receive addresses",
+        dtype=str,
+        access=AttrWriteType.READ,
+        doc="Host addresses for visibility receive as a JSON string.",
+    )
 
-    # healthState = attribute(
-    #     label="Health state",
-    #     dtype=HealthState,
-    #     access=AttrWriteType.READ,
-    #     doc="Device health state",
-    # )
-
-    # obsState = attribute(
-    #     label="Observing state",
-    #     dtype=ObsState,
-    #     access=AttrWriteType.READ,
-    #     doc="The device observing state.",
-    # )
-
-    # receiveAddresses = attribute(
-    #     label="Receive addresses",
-    #     dtype=str,
-    #     access=AttrWriteType.READ,
-    #     doc="Host addresses for visibility receive as a JSON string.",
-    # )
-
-    # def read_defective(self) -> bool:
-    #     """
-    #     This method is used to read the value of the attribute defective
-    #     :rtype:bool
-    #     """
-    #     return self._defective
-
-    # def read_receiveAddresses(self):
-    #     """Returns receive addresses."""
-    #     return self._receive_addresses
-
-    # def read_healthState(self):
-    #     """Returns health state of SdpSubarray."""
-    #     return self._health_state
-
-    # def read_obsState(self):
-    #     """Returns obsState of SdpSubarray."""
-    #     return self._obs_state
-
-    # @command(
-    #     dtype_in=bool,
-    #     doc_in="Set Defective",
-    # )
-    # def SetDefective(self, value: bool) -> None:
-    #     """
-    #     Trigger defective change
-    #     :rtype: bool
-    #     """
-    #     # self.logger.info("Setting the defective value to : %s", value)
-    #     self._defective = value
-
-    # @command(
-    #     dtype_in=int,
-    #     doc_in="Set ObsState",
-    # )
-    # def SetDirectObsState(self, argin):
-    #     """
-    #     Trigger a ObsState change
-    #     """
-    #     # import debugpy; debugpy.debug_this_thread()
-    #     value = ObsState(argin)
-    #     if self._obs_state != value:
-    #         self._obs_state = value
-    #         self.push_change_event("obsState", self._obs_state)
-
-    # @command(
-    #     dtype_in="DevState",
-    #     doc_in="state to assign",
-    # )
-    # def SetDirectState(self, argin):
-    #     """
-    #     Trigger a DevState change
-    #     """
-    #     # import debugpy; debugpy.debug_this_thread()
-    #     if self.dev_state() != argin:
-    #         self.set_state(argin)
-    #         self.push_change_event("State", self.dev_state())
-
-    # @command(
-    #     dtype_in=int,
-    #     doc_in="state to assign",
-    # )
-    # def SetDirectHealthState(self, argin):
-    #     """
-    #     Trigger a HealthState change
-    #     """
-    #     # import debugpy; debugpy.debug_this_thread()
-    #     # # pylint: disable=E0203
-    #     value = HealthState(argin)
-    #     if self._health_state != value:
-    #         self._health_state = HealthState(argin)
-    #         self.push_change_event("healthState", self._health_state)
+    def read_receiveAddresses(self):
+        """Returns receive addresses."""
+        return self._receive_addresses
 
     def is_On_allowed(self):
         """
