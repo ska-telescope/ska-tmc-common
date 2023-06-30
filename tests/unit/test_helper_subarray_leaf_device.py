@@ -83,7 +83,10 @@ def test_assign_resources_command_not_allowed(tango_context):
         "result": ResultCode.FAILED,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
-    with pytest.raises(CommandNotAllowed):
+    with pytest.raises(
+        CommandNotAllowed,
+        match="This command is not allowed as device is defective.",
+    ):
         subarray_leaf_device.AssignResources("")
 
     subarray_leaf_device.SetDefective(json.dumps({"value": False}))
