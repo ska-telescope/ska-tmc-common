@@ -1,4 +1,4 @@
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init, too-many-ancestors
 """Helper device for SdpSubarray device"""
 import json
 
