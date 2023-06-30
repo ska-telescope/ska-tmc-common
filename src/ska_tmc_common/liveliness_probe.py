@@ -148,6 +148,9 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                     self._logger.info(
                         f"dev_info in liveliness probe ...... {dev_info}"
                     )
+                    self._logger.info(
+                        f"dev_info.dev_name in liveliness probe ...... {dev_info.dev_name}"
+                    )
                 except Exception as exp_msg:
                     self._logger.error(
                         "Exception occured while getting device info: %s",
