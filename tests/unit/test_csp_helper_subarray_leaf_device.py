@@ -1,7 +1,6 @@
 import json
 
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import CSP_LEAF_NODE_DEVICE
