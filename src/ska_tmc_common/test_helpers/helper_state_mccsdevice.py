@@ -29,6 +29,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
             """
             super().do()
             self._device._assigned_resources = "{ }"
+            self._device.set_change_event("assignedResources", True, False)
             return (ResultCode.OK, "")
 
     assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -66,14 +67,15 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :rtype: Tuple
         """
         # pylint:disable=line-too-long
-        tmpDict = {
+        assigned_resources = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [1],
             "station_ids": [[1, 2]],
             "channel_blocks": [3],
         }
         # pylint:enable=line-too-long
-        self._assigned_resources = json.dumps(tmpDict)
+        self._assigned_resources = json.dumps(assigned_resources)
+        self.push_change_event("assignedResources", self._assigned_resources)
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
