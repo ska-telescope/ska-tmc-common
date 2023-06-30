@@ -42,7 +42,7 @@ def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SUBARRAY_LEAF_DEVICE)
     defect = {
-        "value": False,
+        "value": True,
         "fault_type": FaultType.FAILED_RESULT,
         "error_message": "Device is Defective, cannot process command completely.",
         "result": ResultCode.FAILED,
@@ -53,3 +53,4 @@ def test_assign_resources_defective(tango_context):
     assert (
         message[0] == "Device is Defective, cannot process command completely."
     )
+    subarray_leaf_device.SetDefective(json.dumps({"value": False}))
