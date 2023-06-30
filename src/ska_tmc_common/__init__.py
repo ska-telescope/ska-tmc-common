@@ -26,7 +26,7 @@ from .dev_factory import DevFactory
 from .device_info import (
     DeviceInfo,
     DishDeviceInfo,
-    SdpSubarrayDeviceInfo,
+    HelperSdpSubarrayInfo,
     SubArrayDeviceInfo,
 )
 from .dish_utils import AntennaLocation, AntennaParams, DishHelper
@@ -74,7 +74,7 @@ from .test_helpers.helper_tmc_device import (
     DummyComponentManager,
     DummyTmcDevice,
 )
-from .test_helpers.sdp_subarray_device import SdpSubarrayDevice
+from .test_helpers.sdp_subarray_device import HelperSdpSubarray
 from .timeout_callback import TimeoutCallback
 from .tmc_base_device import TMCBaseDevice
 from .tmc_command import BaseTMCCommand, TMCCommand, TmcLeafNodeCommand
@@ -100,7 +100,7 @@ __all__ = [
     "DeviceInfo",
     "SubArrayDeviceInfo",
     "DishDeviceInfo",
-    "SdpSubarrayDeviceInfo",
+    "HelperSdpSubarrayInfo",
     "AntennaLocation",
     "AntennaParams",
     "DishHelper",
@@ -149,5 +149,5 @@ __all__ = [
     "DummyComponent",
     "DummyComponentManager",
     "DummyTmcDevice",
-    "SdpSubarrayDevice",
+    "HelperSdpSubarray",
 ]

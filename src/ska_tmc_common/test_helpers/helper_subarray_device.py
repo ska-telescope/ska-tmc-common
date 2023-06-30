@@ -166,31 +166,16 @@ class HelperSubArrayDevice(SKASubarray):
             Stateless hook for device initialisation.
             """
             super().do()
-            # pylint:disable=line-too-long
-            self._device._receive_addresses = (
-                '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-                '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-                '"function":"visibilities","host":[[0,'
-                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-                '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-                '"function":"visibilities","host":[[0,'
-                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-                '"port":[[0,9000,1]]}}}'
-            )
-            # pylint:enable=line-too-long
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
             self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
-
-    receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
@@ -208,13 +193,6 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: bool
         """
         return self._raise_exception
-
-    def read_receiveAddresses(self) -> str:
-        """
-        This method is used to read receiveAddresses attribute
-        :rtype:str
-        """
-        return self._receive_addresses
 
     def read_commandInProgress(self) -> str:
         """

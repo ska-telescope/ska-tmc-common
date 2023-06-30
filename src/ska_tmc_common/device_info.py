@@ -185,7 +185,7 @@ class SubArrayDeviceInfo(DeviceInfo):
         return super_dict
 
 
-class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
+class HelperSdpSubarrayInfo(SubArrayDeviceInfo):
     """
     Gives SDP subarray device information
     """
@@ -196,11 +196,11 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
 
     def from_dev_info(self, sdp_subarray_device_info) -> None:
         super().from_dev_info(sdp_subarray_device_info)
-        if isinstance(sdp_subarray_device_info, SdpSubarrayDeviceInfo):
+        if isinstance(sdp_subarray_device_info, HelperSdpSubarrayInfo):
             self.receive_addresses = sdp_subarray_device_info.receive_addresses
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, (DeviceInfo, SdpSubarrayDeviceInfo)):
+        if isinstance(other, (DeviceInfo, HelperSdpSubarrayInfo)):
             return self.dev_name == other.dev_name
         return False
 

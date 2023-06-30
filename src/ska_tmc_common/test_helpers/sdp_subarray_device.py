@@ -10,7 +10,7 @@ from tango.server import attribute, command, run
 from ska_tmc_common import HelperSubArrayDevice
 
 
-class SdpSubarrayDevice(HelperSubArrayDevice):
+class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
     command.
     It can be used to mock SdpSubarray's bahavior to test error propagation
@@ -19,9 +19,18 @@ class SdpSubarrayDevice(HelperSubArrayDevice):
     def init_device(self):
         super().init_device()
         self._state = DevState.OFF
-        self._receive_addresses = '{"science_A":{"host":[[0,"192.168.0.1"], \
-        [2000,"192.168.0.1"]],"port":[[0,9000,1],[2000,9000,1]]}}'
-        self.set_change_event("receiveAddresses", True, False)
+        # pylint:disable=line-too-long
+        self._receive_addresses = (
+            '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
+            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
+            '"function":"visibilities","host":[[0,'
+            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
+            '"function":"visibilities","host":[[0,'
+            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+            '"port":[[0,9000,1]]}}}'
+        )
+        # pylint:enable=line-too-long
 
     receiveAddresses = attribute(
         label="Receive addresses",
@@ -306,14 +315,14 @@ class SdpSubarrayDevice(HelperSubArrayDevice):
 
 def main(args=None, **kwargs):
     """
-    Runs the SdpSubarrayDevice Tango device.
+    Runs the HelperSdpSubarray Tango device.
     :param args: Arguments internal to TANGO
 
     :param kwargs: Arguments internal to TANGO
 
     :return: integer. Exit code of the run method.
     """
-    return run((SdpSubarrayDevice,), args=args, **kwargs)
+    return run((HelperSdpSubarray,), args=args, **kwargs)
 
 
 if __name__ == "__main__":

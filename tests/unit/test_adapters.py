@@ -9,10 +9,10 @@ from ska_tmc_common import (
     HelperBaseDevice,
     HelperCspMasterDevice,
     HelperMCCSStateDevice,
+    HelperSdpSubarray,
     HelperSubArrayDevice,
     MCCSAdapter,
     SdpSubArrayAdapter,
-    SdpSubarrayDevice,
     SubArrayAdapter,
 )
 from tests.settings import (
@@ -48,7 +48,7 @@ def devices_to_load():
             "devices": [{"name": HELPER_CSP_MASTER_DEVICE}],
         },
         {
-            "class": SdpSubarrayDevice,
+            "class": HelperSdpSubarray,
             "devices": [{"name": HELPER_SDP_SUBARRAY_DEVICE}],
         },
     )
