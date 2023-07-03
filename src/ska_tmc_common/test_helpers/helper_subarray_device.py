@@ -384,7 +384,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
-        return False
+        return True
 
     @command(
         dtype_in=("str"),
