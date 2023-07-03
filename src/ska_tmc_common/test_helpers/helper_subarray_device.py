@@ -421,7 +421,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
+            return [ResultCode.QUEUED], [
                 "Device is Defective, cannot process command completely."
             ]
 
@@ -503,7 +503,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
+            return [ResultCode.QUEUED], [
                 "Device is Defective, cannot process command completely."
             ]
 
@@ -516,7 +516,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             self.thread.start()
 
-        elif self._obs_state != ObsState.EMPTY:
+        if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(

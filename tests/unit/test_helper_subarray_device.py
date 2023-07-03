@@ -68,7 +68,7 @@ def test_assign_resources_defective(tango_context):
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.SetDefective(True)
     result, message = subarray_device.AssignResources("")
-    assert result[0] == ResultCode.FAILED
+    assert result[0] == ResultCode.QUEUED
     assert (
         message[0] == "Device is Defective, cannot process command completely."
     )
@@ -88,7 +88,7 @@ def test_release_resources_defective(tango_context):
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.SetDefective(True)
     result, message = subarray_device.ReleaseAllResources()
-    assert result[0] == ResultCode.FAILED
+    assert result[0] == ResultCode.QUEUED
     assert (
         message[0] == "Device is Defective, cannot process command completely."
     )
