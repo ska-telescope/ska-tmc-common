@@ -159,9 +159,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_result = (command_id, str(result))
         self.push_change_event("longRunningCommandResult", command_result)
 
-    def push_obs_state_event(self, obs_state: ObsState) -> None:
+    def push_obs_state_event(self, obs_state: ObsState) -> NotImplementedError:
         """Place holder method. This method will be implemented in the child
         classes."""
+        raise NotImplementedError(
+            "This method needs to be implemented in the child class"
+        )
 
     def update_device_obsstate(self, obs_state: ObsState):
         """Updates the device obsState"""
