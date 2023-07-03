@@ -81,3 +81,33 @@ def test_scan_command(tango_context):
     result, message = subarray_device.Scan("")
     assert result[0] == ResultCode.OK
     assert subarray_device.obsstate == ObsState.SCANNING
+
+
+def test_release_resources_defective(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.SetDefective(True)
+    result, message = subarray_device.ReleaseAllResources()
+    assert result[0] == ResultCode.FAILED
+    assert (
+        message[0] == "Device is Defective, cannot process command completely."
+    )
+    assert subarray_device.obsstate == ObsState.RESOURCING
+
+
+def test_assign_resources_raise_exception(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.SetRaiseException(True)
+    result, message = subarray_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert subarray_device.obsstate == ObsState.RESOURCING
+
+
+def test_release_resources_raise_exception(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.SetRaiseException(True)
+    result, message = subarray_device.ReleaseAllResources()
+    assert result[0] == ResultCode.QUEUED
+    assert subarray_device.obsstate == ObsState.RESOURCING

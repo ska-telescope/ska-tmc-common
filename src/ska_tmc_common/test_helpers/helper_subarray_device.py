@@ -412,14 +412,14 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.wait_and_update_exception, args=["AssignResources"]
             )
             self.thread.start()
+            return [ResultCode.QUEUED], [""]
 
-        elif self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.IDLE]
-            )
-            thread.start()
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -482,15 +482,30 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
+        if self._defective:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command completely."
+            ]
 
-        return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
-        ]
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            self.thread = threading.Thread(
+                target=self.wait_and_update_exception,
+                args=["ReleaseAllResources"],
+            )
+            self.thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.EMPTY]
+        )
+        thread.start()
+        return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
         """
