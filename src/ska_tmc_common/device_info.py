@@ -2,7 +2,6 @@
 This module provdevice_id es us the information about the devices
 """
 import json
-import logging
 import threading
 from typing import Any
 
@@ -10,8 +9,6 @@ from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
 from ska_tmc_common.enum import DishMode, PointingState
-
-logger = logging.getLogger(__name__)
 
 
 def dev_state_2_str(value: DevState) -> str:
