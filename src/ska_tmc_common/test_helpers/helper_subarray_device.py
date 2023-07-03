@@ -432,15 +432,17 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.wait_and_update_exception, args=["AssignResources"]
             )
             self.thread.start()
+            return [ResultCode.QUEUED], [""]
+        
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
+        return [ResultCode.OK], [""]
 
-        elif self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.IDLE]
-            )
-            thread.start()
-        return [ResultCode.QUEUED], [""]
+       
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -515,16 +517,17 @@ class HelperSubArrayDevice(SKASubarray):
                 args=["ReleaseAllResources"],
             )
             self.thread.start()
+            return [ResultCode.QUEUED], [""]
 
-        if self._obs_state != ObsState.EMPTY:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.EMPTY]
-            )
-            thread.start()
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.EMPTY]
+        )
+        thread.start()
+        return [ResultCode.OK], [""]
 
-        return [ResultCode.QUEUED], [""]
+        
 
     def is_Configure_allowed(self) -> bool:
         """
