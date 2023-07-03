@@ -39,12 +39,6 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
-        self._logger.info(
-            f"self._component_manager in BaseLivelinessProbe ...... {self._component_manager}"
-        )
-        self._logger.info(
-            f"self._component_manager _device in BaseLivelinessProbe ...... {self._component_manager._device}"
-        )
 
     def start(self) -> None:
         """
@@ -138,19 +132,7 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         ) as executor:
             while not self._stop:
                 try:
-                    self._logger.info(
-                        f"self._component_manager ...... {self._component_manager}"
-                    )
-                    self._logger.info(
-                        f"self._component_manager._device in liveliness probe ...... {self._component_manager._device}"
-                    )
                     dev_info = self._component_manager.get_device()
-                    self._logger.info(
-                        f"dev_info in liveliness probe ...... {dev_info}"
-                    )
-                    self._logger.info(
-                        f"dev_info.dev_name in liveliness probe ...... {dev_info.dev_name}"
-                    )
                 except Exception as exp_msg:
                     self._logger.error(
                         "Exception occured while getting device info: %s",

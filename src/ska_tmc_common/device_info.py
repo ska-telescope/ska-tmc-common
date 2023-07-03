@@ -155,7 +155,6 @@ class SubArrayDeviceInfo(DeviceInfo):
     """
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
-        logger.info(f"dev_name in SubarrayDeviceInfo ..... {dev_name}")
         super().__init__(dev_name, _unresponsive)
         self.device_id = -1
         self.resources = []

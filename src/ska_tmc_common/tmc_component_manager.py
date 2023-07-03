@@ -138,9 +138,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         :param lp: enum of class LivelinessProbeType
         """
         if lp == LivelinessProbeType.SINGLE_DEVICE:
-            self.logger.info(
-                f"Component Manager _device is: ............ {self._device}"
-            )
             self.liveliness_probe_object = SingleDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
