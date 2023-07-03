@@ -233,7 +233,7 @@ class HelperSubArrayDevice(SKASubarray):
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
             self._obs_state = value
-            time.sleep(5)
+            time.sleep(0.1)
             self.logger.info("Pushing obsState event %s.", value)
             self.push_change_event("obsState", self._obs_state)
 
@@ -540,10 +540,14 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.CONFIGURING
                 self.logger.info("Pushing obsState event CONFIGURING.")
                 self.push_change_event("obsState", self._obs_state)
-                thread = threading.Thread(
-                    target=self.update_device_obsstate, args=[ObsState.READY]
-                )
-                thread.start()
+                # thread = threading.Thread(
+                #     target=self.update_device_obsstate, args=[ObsState.READY]
+                # )
+                # thread.start()
+                time.sleep(1)
+                self._obs_state = ObsState.READY
+                self.logger.info("Pushing obsState event %s.", self._obs_state)
+                self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
         self._obs_state = ObsState.CONFIGURING
         self.logger.info("Pushing obsState event CONFIGURING.")
