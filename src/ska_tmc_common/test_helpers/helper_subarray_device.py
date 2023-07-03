@@ -449,7 +449,7 @@ class HelperSubArrayDevice(SKASubarray):
             command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
-                f"Exception occurred on device: {self.get_name()}",
+                f"Exception occured on device: {self.get_name()}",
             )
             self.push_change_event("longRunningCommandResult", command_result)
 
@@ -469,6 +469,36 @@ class HelperSubArrayDevice(SKASubarray):
     def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseResources command on subarray device
+        """
+        if not self._defective:
+            if self._obs_state != ObsState.EMPTY:
+                self._obs_state = ObsState.EMPTY
+                self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.OK], [""]
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
+
+    def is_ReleaseAllResources_allowed(self) -> bool:
+        """
+        Check if command `ReleaseAllResources` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseAllResources command on
+        subarray device
+        :return: ResultCode, message
+        :rtype: tuple
         """
         if self._defective:
             self._obs_state = ObsState.RESOURCING
@@ -495,36 +525,6 @@ class HelperSubArrayDevice(SKASubarray):
             thread.start()
 
         return [ResultCode.OK], [""]
-
-    def is_ReleaseAllResources_allowed(self) -> bool:
-        """
-        Check if command `ReleaseAllResources` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes ReleaseAllResources command on
-        subarray device
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
-        ]
 
     def is_Configure_allowed(self) -> bool:
         """
