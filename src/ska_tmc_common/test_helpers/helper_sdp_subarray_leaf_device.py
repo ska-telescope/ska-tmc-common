@@ -44,7 +44,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         dtype_in=int,
         doc_in="Set ObsState",
     )
-    def SetSdpSubarrayObsState(self, argin: ObsState) -> None:
+    def SetSdpSubarrayLeafNodeObsState(self, argin: ObsState) -> None:
         """
         Trigger a ObsState change
         """

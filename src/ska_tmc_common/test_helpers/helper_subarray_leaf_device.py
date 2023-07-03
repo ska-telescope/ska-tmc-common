@@ -8,8 +8,7 @@ import json
 # pylint: disable=unused-argument
 import threading
 import time
-from enum import IntEnum
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
@@ -105,6 +104,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """Induces fault into device according to given parameters
 
         :params:
+
         command_name: Name of the command for which fault is being induced
         dtype: str
         rtype: Tuple[List[ResultCode], List[str]]
@@ -142,6 +142,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """Push long running command result event for given command.
 
         :params:
+
         result: The result code to be pushed as an event
         dtype: ResultCode
 
