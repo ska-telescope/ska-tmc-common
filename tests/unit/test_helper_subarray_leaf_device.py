@@ -44,7 +44,7 @@ def test_assign_resources_failed_result(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SUBARRAY_LEAF_DEVICE)
     defect = {
-        "value": True,
+        "enabled": True,
         "fault_type": FaultType.FAILED_RESULT,
         "error_message": "Device is Defective, cannot process command completely.",
         "result": ResultCode.FAILED,
@@ -55,14 +55,14 @@ def test_assign_resources_failed_result(tango_context):
     assert (
         message[0] == "Device is Defective, cannot process command completely."
     )
-    subarray_leaf_device.SetDefective(json.dumps({"value": False}))
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_assign_resources_stuck_in_intermediate_state(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SUBARRAY_LEAF_DEVICE)
     defect = {
-        "value": True,
+        "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
         "result": ResultCode.FAILED,
         "intermediate_state": ObsState.RESOURCING,
@@ -71,14 +71,14 @@ def test_assign_resources_stuck_in_intermediate_state(tango_context):
     result, _ = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.QUEUED
     assert subarray_leaf_device.obsState == ObsState.RESOURCING
-    subarray_leaf_device.SetDefective(json.dumps({"value": False}))
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_assign_resources_command_not_allowed(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SUBARRAY_LEAF_DEVICE)
     defect = {
-        "value": True,
+        "enabled": True,
         "fault_type": FaultType.COMMAND_NOT_ALLOWED,
         "error_message": "Device is stuck in Resourcing state",
         "result": ResultCode.FAILED,
@@ -87,4 +87,4 @@ def test_assign_resources_command_not_allowed(tango_context):
     with pytest.raises(DevFailed):
         subarray_leaf_device.AssignResources("")
 
-    subarray_leaf_device.SetDefective(json.dumps({"value": False}))
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))

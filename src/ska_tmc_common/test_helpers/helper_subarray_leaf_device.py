@@ -30,9 +30,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.EMPTY
         self._defective = json.dumps(
             {
-                "value": False,
-                "fault_type": FaultType.NONE,
-                "error_message": "",
+                "enabled": False,
+                "fault_type": FaultType.FAILED_RESULT,
+                "error_message": "Default exception.",
                 "result": ResultCode.FAILED,
             }
         )
@@ -84,6 +84,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :type: str
         """
         input_dict = json.loads(values)
+        self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
             self.defective_params[key] = value
 
@@ -110,7 +111,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
-                5,
+                self._delay,
                 function=self.push_command_result,
                 args=[result, command_name, fault_message],
             )
@@ -147,14 +148,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self.push_obs_state_event(self._obs_state)
 
     def is_On_allowed(self) -> bool:
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -162,7 +161,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "On",
                 self.defective_params["fault_type"],
@@ -177,14 +176,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -192,7 +189,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "Off",
                 self.defective_params["fault_type"],
@@ -207,14 +204,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -222,7 +217,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "Standby",
                 self.defective_params["fault_type"],
@@ -240,14 +235,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the AssignResources command is allowed or not
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -264,7 +257,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "AssignResources",
                 self.defective_params["fault_type"],
@@ -288,14 +281,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -310,7 +301,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "Configure",
                 self.defective_params["fault_type"],
@@ -334,14 +325,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -356,7 +345,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "Scan",
                 self.defective_params["fault_type"],
@@ -376,14 +365,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -396,7 +383,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "EndScan",
                 self.defective_params["fault_type"],
@@ -416,14 +403,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -436,7 +421,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "End",
                 self.defective_params["fault_type"],
@@ -460,14 +445,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -480,7 +463,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "GoToIdle",
                 self.defective_params["fault_type"],
@@ -500,14 +483,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -520,7 +501,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "Abort",
                 self.defective_params["fault_type"],
@@ -544,14 +525,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         device state.
         :rtype:bool
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -564,7 +543,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "Restart",
                 self.defective_params["fault_type"],
@@ -589,14 +568,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -609,7 +586,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "ReleaseAllResources",
                 self.defective_params["fault_type"],
@@ -634,14 +611,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                raise CommandNotAllowed(
-                    "This command is not allowed as device is defective."
-                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -658,7 +633,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self.defective_params["value"]:
+        if self.defective_params["enabled"]:
             return self.inducing_fault(
                 "ReleaseResources",
                 self.defective_params["fault_type"],
