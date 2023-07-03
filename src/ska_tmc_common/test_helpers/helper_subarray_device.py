@@ -534,6 +534,8 @@ class HelperSubArrayDevice(SKASubarray):
         """
         self.logger.info("Configure command invoked.")
         if not self._defective:
+            self.logger.info("Not defective.")
+            self.logger.info("ObsState is: %s", self._obs_state)
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
                 self.logger.info("Pushing obsState event CONFIGURING.")
@@ -544,6 +546,7 @@ class HelperSubArrayDevice(SKASubarray):
                 thread.start()
             return [ResultCode.OK], [""]
         self._obs_state = ObsState.CONFIGURING
+        self.logger.info("Pushing obsState event CONFIGURING.")
         self.push_change_event("obsState", self._obs_state)
         return [ResultCode.FAILED], [
             "Device is Defective, cannot process command completely."
