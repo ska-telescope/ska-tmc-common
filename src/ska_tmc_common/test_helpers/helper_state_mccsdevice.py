@@ -29,6 +29,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
             """
             super().do()
             self._device._assigned_resources = "{ }"
+            self._device.set_change_event("assignedResources", True, False)
             return (ResultCode.OK, "")
 
     assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -42,7 +43,8 @@ class HelperMCCSStateDevice(HelperBaseDevice):
 
     def is_AssignResources_allowed(self) -> bool:
         """
-        Check if command `AssignResources` is allowed in the current device state.
+        Check if command `AssignResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -64,13 +66,16 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        tmpDict = {
+        # pylint:disable=line-too-long
+        assigned_resources = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [1],
             "station_ids": [[1, 2]],
             "channel_blocks": [3],
         }
-        self._assigned_resources = json.dumps(tmpDict)
+        # pylint:enable=line-too-long
+        self._assigned_resources = json.dumps(assigned_resources)
+        self.push_change_event("assignedResources", self._assigned_resources)
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
@@ -85,7 +90,8 @@ class HelperMCCSStateDevice(HelperBaseDevice):
 
     @command(
         dtype_in="DevString",
-        doc_in="JSON-encoded string with the resources to remove from the subarray",
+        doc_in="JSON-encoded string with the resources to remove from the \
+            subarray",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -98,11 +104,13 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: a tuple conataining Resultcose and Message
         :rtype: Tuple
         """
+        # pylint:disable=line-too-long
         tmpDict = {
             "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
             "subarray_beam_ids": [],
             "station_ids": [],
             "channel_blocks": [],
         }
+        # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(tmpDict)
         return [ResultCode.OK], [""]

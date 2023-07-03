@@ -11,13 +11,16 @@ from ska_tmc_common import (
     HelperMCCSStateDevice,
     HelperSubArrayDevice,
     MCCSAdapter,
+    SdpSubArrayAdapter,
     SubArrayAdapter,
 )
+from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
 from tests.settings import (
     HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_DEVICE,
     HELPER_DISH_DEVICE,
     HELPER_MCCS_STATE_DEVICE,
+    HELPER_SDP_SUBARRAY_DEVICE,
     HELPER_SUBARRAY_DEVICE,
 )
 
@@ -43,6 +46,10 @@ def devices_to_load():
         {
             "class": HelperCspMasterDevice,
             "devices": [{"name": HELPER_CSP_MASTER_DEVICE}],
+        },
+        {
+            "class": HelperSdpSubarray,
+            "devices": [{"name": HELPER_SDP_SUBARRAY_DEVICE}],
         },
     )
 
@@ -85,3 +92,11 @@ def test_get_or_create_csp_adapter(tango_context):
         HELPER_CSP_MASTER_DEVICE, AdapterType.CSPMASTER
     )
     assert isinstance(csp_master_adapter, CspMasterAdapter)
+
+
+def test_get_or_create_sdp_adapter(tango_context):
+    factory = AdapterFactory()
+    sdp_subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SDP_SUBARRAY_DEVICE, AdapterType.SDPSUBARRAY
+    )
+    assert isinstance(sdp_subarray_adapter, SdpSubArrayAdapter)

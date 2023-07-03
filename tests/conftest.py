@@ -1,6 +1,7 @@
 """
 This module contains the fixtures, methods and devices required for testing.
-A module defining a list of fixtures that are shared across all ska_tmc_common tests.
+A module defining a list of fixtures that are shared across all ska_tmc_common
+tests.
 
 """
 

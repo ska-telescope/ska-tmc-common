@@ -17,7 +17,8 @@ from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
 
 
 class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
-    """A device exposing commands and attributes of the CSP Subarray Leaf Nodes devices."""
+    """A device exposing commands and attributes of the CSP Subarray Leaf
+    Node devices."""
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
