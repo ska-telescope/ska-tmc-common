@@ -5,7 +5,8 @@ import pytest
 from ska_tango_base.control_model import ObsState
 from tango import DevFailed, DevState
 
-from ska_tmc_common import DevFactory, HelperSdpSubarray
+from ska_tmc_common import DevFactory
+from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
 from tests.settings import SDP_SUBARRAY_DEVICE
 
 commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]

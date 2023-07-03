@@ -9,12 +9,12 @@ from ska_tmc_common import (
     HelperBaseDevice,
     HelperCspMasterDevice,
     HelperMCCSStateDevice,
-    HelperSdpSubarray,
     HelperSubArrayDevice,
     MCCSAdapter,
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
+from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
 from tests.settings import (
     HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_DEVICE,
