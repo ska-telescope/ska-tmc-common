@@ -83,7 +83,6 @@ def test_scan_command(tango_context):
     assert subarray_device.obsstate == ObsState.SCANNING
 
 
-@pytest.mark.u1
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
