@@ -88,8 +88,8 @@ def test_release_resources_raise_exception(tango_context):
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.SetRaiseException(True)
     result, message = subarray_device.ReleaseAllResources()
-    assert result[0].endswith("ReleaseAllResources")
-    assert message[0] == f"Exception occurred on device: {SUBARRAY_DEVICE}"
+    assert result[0] == "1000_ReleaseAllResources"
+    assert message[0] == f"Exception occured on device: {SUBARRAY_DEVICE}"
     assert subarray_device.obsstate == ObsState.RESOURCING
 
 
