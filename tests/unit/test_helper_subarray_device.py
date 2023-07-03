@@ -5,11 +5,10 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import SUBARRAY_DEVICE
 
-commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
+commands_with_argin = ["Scan", "Configure", "Scan"]
 commands_without_argin = [
     "On",
     "Off",
-    "ReleaseAllResources",
     "EndScan",
     "ObsReset",
     "Restart",
@@ -17,7 +16,6 @@ commands_without_argin = [
     "End",
     "Abort",
     "Restart",
-    "GoToIdle",
     "ReleaseResources",
 ]
 
@@ -55,6 +53,13 @@ def test_command_with_argin(tango_context, command):
     assert message[0] == ""
 
 
+def test_assign_resource_command_with_argin(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    result, message = subarray_device.command_inout("AssignResources", "")
+    assert result[0] == ResultCode.QUEUED
+    assert message[0] == ""
+
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
@@ -62,13 +67,20 @@ def test_command_without_argin(tango_context, command):
     result, message = subarray_device.command_inout(command)
     assert result[0] == ResultCode.OK
 
+def test_release_all_resources_command_without_argin(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    result, message = subarray_device.command_inout("ReleaseAllResources")
+    assert result[0] == ResultCode.QUEUED
+
+
 
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.SetDefective(True)
     result, message = subarray_device.AssignResources("")
-    assert result[0] == ResultCode.QUEUED
+    assert result[0] == ResultCode.FAILED
     assert (
         message[0] == "Device is Defective, cannot process command completely."
     )
@@ -82,13 +94,12 @@ def test_scan_command(tango_context):
     assert result[0] == ResultCode.OK
     assert subarray_device.obsstate == ObsState.SCANNING
 
-
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.SetDefective(True)
     result, message = subarray_device.ReleaseAllResources()
-    assert result[0] == ResultCode.QUEUED
+    assert result[0] == ResultCode.FAILED
     assert (
         message[0] == "Device is Defective, cannot process command completely."
     )

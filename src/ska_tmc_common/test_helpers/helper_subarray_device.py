@@ -421,7 +421,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.QUEUED], [
+            return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command completely."
             ]
 
@@ -440,7 +440,7 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.IDLE]
             )
             thread.start()
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [""]
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -503,7 +503,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.QUEUED], [
+            return [ResultCode.FAILED], [
                 "Device is Defective, cannot process command completely."
             ]
 
@@ -524,7 +524,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
 
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [""]
 
     def is_Configure_allowed(self) -> bool:
         """
