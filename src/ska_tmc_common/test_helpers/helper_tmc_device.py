@@ -46,7 +46,8 @@ class DummyComponent(TmcComponent):
 
     def update_device(self, dev_info: DeviceInfo) -> None:
         """
-        Update (or add if missing) Device Information into the list of the component.
+        Update (or add if missing) Device Information into the list of the
+        component.
 
         :param dev_info: a DeviceInfo object
         """

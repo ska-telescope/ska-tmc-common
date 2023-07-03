@@ -16,7 +16,8 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 class HelperSubarrayLeafDevice(HelperBaseDevice):
-    """A device exposing commands and attributes of the Subarray Leaf Nodes devices."""
+    """A device exposing commands and attributes of the Subarray Leaf Nodes
+    devices."""
 
     def is_AssignResources_allowed(self) -> bool:
         """
