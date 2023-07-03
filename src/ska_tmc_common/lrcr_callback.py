@@ -41,15 +41,13 @@ class LRCRCallback:
         if command_id in self.command_data:
             self.command_data[command_id]["result_code"] = result_code
             self.command_data[command_id]["exception_message"] = exception_msg
-            for key, value in kwargs.items():
-                self.command_data[command_id][key] = value
         else:
             self.command_data[command_id] = {
                 "result_code": result_code,
                 "exception_message": exception_msg,
             }
-            for key, value in kwargs.items():
-                self.command_data[command_id][key] = value
+        for key, value in kwargs.items():
+            self.command_data[command_id][key] = value
 
     def assert_against_call(
         self, command_id: str, result_code: ResultCode, **kwargs: Any

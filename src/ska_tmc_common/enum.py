@@ -63,3 +63,16 @@ class TimeoutState(IntEnum):
 
     NOT_OCCURED = 0
     OCCURED = 1
+
+
+@unique
+class FaultType(IntEnum):
+    """Enum class for raising various exceptions from helper devices."""
+
+    NONE = 0
+    COMMAND_NOT_ALLOWED = 1
+    FAILED_RESULT = 2
+    LONG_RUNNING_EXCEPTION = 3
+    STUCK_IN_INTERMEDIATE_STATE = 4
+    # UNRESPONSIVE = 5
+    # COMMAND_REJECTED = 6

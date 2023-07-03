@@ -23,7 +23,6 @@ from ska_tmc_common import (
     HelperDishDevice,
     HelperSdpSubarrayLeafDevice,
     HelperSubArrayDevice,
-    HelperSubarrayLeafDevice,
     TmcLeafNodeComponentManager,
 )
 from tests.settings import (
@@ -33,7 +32,6 @@ from tests.settings import (
     DISH_DEVICE,
     SDP_LEAF_NODE_DEVICE,
     SUBARRAY_DEVICE,
-    SUBARRAY_LEAF_DEVICE,
     TMC_COMMON_DEVICE,
     logger,
 )
@@ -88,12 +86,6 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": SUBARRAY_DEVICE},
-            ],
-        },
-        {
-            "class": HelperSubarrayLeafDevice,
-            "devices": [
-                {"name": SUBARRAY_LEAF_DEVICE},
             ],
         },
         {
