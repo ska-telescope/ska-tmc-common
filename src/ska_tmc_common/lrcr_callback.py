@@ -7,7 +7,8 @@ from ska_tango_base.commands import ResultCode
 
 
 class LRCRCallback:
-    """Callback class for keeping track of raised exceptions during command executions"""
+    """Callback class for keeping track of raised exceptions during command
+    executions"""
 
     def __init__(self, logger: Logger) -> None:
         """Initialises the variables Command Data and the kwargs."""
@@ -53,7 +54,8 @@ class LRCRCallback:
     def assert_against_call(
         self, command_id: str, result_code: ResultCode, **kwargs: Any
     ) -> bool:
-        """Assertion method to check if the desired result code change has occured."""
+        """Assertion method to check if the desired result code change has
+        occured."""
         if command_id not in self.command_data:
             return False
 

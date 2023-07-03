@@ -138,8 +138,8 @@ class BaseTMCCommand:
         :param command_id: Id for LRCRCallback class object.
 
         :param lrcr_callback: An instance of LRCRCallback class that acts
-                    as a callable functions to call when longRunningCommandResult
-                    event is recieved.
+                    as a callable functions to call when
+                    longRunningCommandResult event is recieved.
         """
         self.tracker_thread = threading.Thread(
             target=self.track_transitions,
@@ -341,6 +341,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 + "This device will continue with normal operation.",
             )
         self.logger.info(
-            f"{command_name} command successfully invoked on:{adapter.dev_name}"
+            f"{command_name} command successfully invoked on: \
+                {adapter.dev_name}"
         )
         return ResultCode.OK, ""

@@ -129,7 +129,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         :rtype: boolean
         """
         raise NotImplementedError(
-            "is_command_allowed is abstract; method must be implemented in a subclass!"
+            "is_command_allowed is abstract; method must be implemented in \
+            a subclass!"
         )
 
     def start_liveliness_probe(self, lp: LivelinessProbeType) -> None:
@@ -243,7 +244,9 @@ class TmcComponentManager(BaseTmcComponentManager):
         logger: Logger,
         *args,
         _component: Optional[TmcComponent] = None,
-        _liveliness_probe: LivelinessProbeType = LivelinessProbeType.MULTI_DEVICE,
+        _liveliness_probe: LivelinessProbeType = (
+            LivelinessProbeType.MULTI_DEVICE
+        ),
         _event_receiver: bool = True,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
