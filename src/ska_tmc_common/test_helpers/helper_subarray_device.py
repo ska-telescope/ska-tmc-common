@@ -233,7 +233,7 @@ class HelperSubArrayDevice(SKASubarray):
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
             self._obs_state = value
-            time.sleep(0.1)
+            time.sleep(5)
             self.push_change_event("obsState", self._obs_state)
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
