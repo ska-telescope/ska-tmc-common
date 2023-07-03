@@ -98,15 +98,25 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("Setting the Delay value to : %s", value)
         self._delay = value
 
-    def inducing_fault(
+    def induce_fault(
         self,
         command_name: str,
-        fault_type: IntEnum,
-        fault_message: str,
-        result: ResultCode,
-        intermediate_state: Optional[ObsState] = ObsState.RESOURCING,
     ) -> Tuple[List[ResultCode], List[str]]:
-        """Induces fault into device according to given parameters"""
+        """Induces fault into device according to given parameters
+
+        :params:
+        command_name: Name of the command for which fault is being induced
+        dtype: str
+        rtype: Tuple[List[ResultCode], List[str]]
+        """
+        fault_type = self.defective_params["fault_type"]
+        result = self.defective_params["result"]
+        fault_message = self.defective_params["error_message"]
+        intermediate_state = (
+            self.defective_params.get("intermediate_state")
+            or ObsState.RESOURCING
+        )
+
         if fault_type == FaultType.FAILED_RESULT:
             return [result], [fault_message]
 
@@ -128,8 +138,19 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
-    ):
-        """Push long running command result event for given command."""
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command: The command name for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
         command_id = f"{time.time()}-{command}"
         if exception:
             command_result = (command_id, exception)
@@ -163,12 +184,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "On",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self.set_state(DevState.ON)
@@ -191,12 +208,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "Off",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self.set_state(DevState.OFF)
@@ -219,12 +232,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "Standby",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self.set_state(DevState.STANDBY)
@@ -259,12 +268,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "AssignResources",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESOURCING
@@ -303,12 +308,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "Configure",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.CONFIGURING
@@ -347,12 +348,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "Scan",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.SCANNING
@@ -385,12 +382,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "EndScan",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.READY
@@ -423,12 +416,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "End",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.CONFIGURING
@@ -465,12 +454,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "GoToIdle",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.IDLE
@@ -503,12 +488,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "Abort",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.ABORTING
@@ -545,12 +526,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "Restart",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESTARTING
@@ -588,12 +565,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "ReleaseAllResources",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESOURCING
@@ -635,12 +608,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            return self.inducing_fault(
+            return self.induce_fault(
                 "ReleaseResources",
-                self.defective_params["fault_type"],
-                self.defective_params["error_message"],
-                self.defective_params["result"],
-                self.defective_params.get("intermediate_state"),
             )
 
         self._obs_state = ObsState.RESOURCING
