@@ -63,7 +63,6 @@ def test_command_without_argin(tango_context, command):
     assert result[0] == ResultCode.OK
 
 
-
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
@@ -75,12 +74,14 @@ def test_assign_resources_defective(tango_context):
     )
     assert subarray_device.obsstate == ObsState.RESOURCING
 
+
 def test_scan_command(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     result, message = subarray_device.Scan("")
     assert result[0] == ResultCode.OK
     assert subarray_device.obsstate == ObsState.SCANNING
+
 
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
@@ -93,6 +94,7 @@ def test_release_resources_defective(tango_context):
     )
     assert subarray_device.obsstate == ObsState.RESOURCING
 
+
 def test_assign_resources_raise_exception(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
@@ -100,6 +102,7 @@ def test_assign_resources_raise_exception(tango_context):
     result, message = subarray_device.AssignResources("")
     assert result[0] == ResultCode.QUEUED
     assert subarray_device.obsstate == ObsState.RESOURCING
+
 
 def test_release_resources_raise_exception(tango_context):
     dev_factory = DevFactory()

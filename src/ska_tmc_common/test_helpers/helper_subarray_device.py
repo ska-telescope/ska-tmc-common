@@ -433,7 +433,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             self.thread.start()
             return [ResultCode.QUEUED], [""]
-        
+
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Thread(
@@ -441,8 +441,6 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
         return [ResultCode.OK], [""]
-
-       
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -526,8 +524,6 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
         return [ResultCode.OK], [""]
-
-        
 
     def is_Configure_allowed(self) -> bool:
         """
