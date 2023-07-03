@@ -186,6 +186,8 @@ class BaseTMCCommand:
         with EnsureOmniThread():
             while not self._stop:
                 try:
+                    self.logger.info("Current obsState: %s", state_function())
+                    self.logger.info("Expected obsState: %s", expected_state)
                     if state_function() == expected_state:
                         self.logger.info(
                             "State change has occured, command succeded"
