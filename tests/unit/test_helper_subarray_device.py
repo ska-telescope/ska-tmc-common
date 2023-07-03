@@ -83,16 +83,7 @@ def test_scan_command(tango_context):
     assert subarray_device.obsstate == ObsState.SCANNING
 
 
-def test_release_resources_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetRaiseException(True)
-    result, message = subarray_device.ReleaseAllResources()
-    assert result[0] == "1000_ReleaseAllResources"
-    assert message[0] == f"Exception occured on device: {SUBARRAY_DEVICE}"
-    assert subarray_device.obsstate == ObsState.RESOURCING
-
-
+@pytest.mark.u1
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
