@@ -185,17 +185,17 @@ class SdpSubArrayAdapter(SubArrayAdapter):
         self, argin: str, callback
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes AssignResources on subarray device proxy.
+        Invokes AssignResources on SdpSubarray device proxy.
         """
         return self._proxy.command_inout_asynch(
             "AssignResources", argin, callback
         )
 
     def ReleaseAllResources(
-        self, argin: str, callback
+        self, callback
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes ReleaseAllResources on subarray device proxy.
+        Invokes ReleaseAllResources on SdpSubarray device proxy.
         """
         return self._proxy.command_inout_asynch(
             "ReleaseAllResources", callback
