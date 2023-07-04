@@ -295,7 +295,7 @@ class HelperSubArrayDevice(SKASubarray):
             CONFIGURE: 2,
             RELEASE_RESOURCES: 2,
             ABORT: 2,
-            RESTART: 2
+            RESTART: 2,
         }
 
     @command(
