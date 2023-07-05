@@ -92,7 +92,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.AssignResources"
+                command_name="SdpSubarray.AssignResources"
             )
 
         self.logger.info("Argin on SdpSubarray helper: %s", argin)
@@ -127,7 +127,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.ReleaseResources"
+                command_name="SdpSubarray.ReleaseResources"
             )
 
         if not self._defective:
@@ -151,7 +151,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.ReleaseAllResources"
+                command_name="SdpSubarray.ReleaseAllResources"
             )
 
         if not self._defective:
@@ -176,7 +176,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Configure command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.Configure"
+                command_name="SdpSubarray.Configure"
             )
 
         input = json.loads(argin)
@@ -212,7 +212,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Scan command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.Scan"
+                command_name="SdpSubarray.Scan"
             )
 
         input = json.loads(argin)
@@ -244,7 +244,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device(command_name="EndScan")
+            self.raise_exception_for_defective_device(command_name="SdpSubarray.EndScan")
 
         if not self._defective:
             if self._obs_state != ObsState.READY:
@@ -265,7 +265,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.End"
+                command_name="SdpSubarray.End"
             )
 
         if not self._defective:
@@ -287,7 +287,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.Abort"
+                command_name="SdpSubarray.Abort"
             )
 
         if self._obs_state != ObsState.ABORTED:
@@ -308,7 +308,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Restart command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarry.Restart"
+                command_name="SdpSubarray.Restart"
             )
 
         if self._obs_state != ObsState.EMPTY:
