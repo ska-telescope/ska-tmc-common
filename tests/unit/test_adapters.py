@@ -116,7 +116,7 @@ def test_call_adapter_method(tango_context):
     subarray_adapter = factory.get_or_create_adapter(
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
-    call = TmcLeafNodeCommand(
+    tmc_leaf_node_command_obj = TmcLeafNodeCommand(
         EmptySubArrayComponentManager(
             logger=logger,
             communication_state_callback=None,
@@ -124,7 +124,7 @@ def test_call_adapter_method(tango_context):
         ),
         logger,
     )
-    result_code, message = call.call_adapter_method(
+    result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
         HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources", ""
     )
     assert result_code == ResultCode.OK
@@ -136,7 +136,7 @@ def test_call_adapter_method_exception(tango_context):
     subarray_adapter = factory.get_or_create_adapter(
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
-    call = TmcLeafNodeCommand(
+    tmc_leaf_node_command_obj = TmcLeafNodeCommand(
         EmptySubArrayComponentManager(
             logger=logger,
             communication_state_callback=None,
@@ -144,7 +144,14 @@ def test_call_adapter_method_exception(tango_context):
         ),
         logger,
     )
-    result_code, message = call.call_adapter_method(
-        HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "scan"
+    result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
+        HELPER_SUBARRAY_DEVICE, subarray_adapter, "AssignResources"
     )
     assert result_code == ResultCode.FAILED
+    assert (
+        message
+        == "The invocation of the AssignResources command is failed on "
+        + "test/subarray/1 device test/subarray/1.\n"
+        + "The following exception occured - SubArrayAdapter.AssignResources() "
+        + "missing 1 required positional argument: 'argin'."
+    )
