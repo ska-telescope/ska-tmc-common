@@ -285,6 +285,7 @@ class HelperSubArrayDevice(SKASubarray):
         command_delay_info_dict = json.loads(command_delay_info)
         for key, value in command_delay_info_dict.items():
             self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
 
     @command(
         doc_in="Reset Delay",
