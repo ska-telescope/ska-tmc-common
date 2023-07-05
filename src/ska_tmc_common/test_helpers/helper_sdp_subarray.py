@@ -91,7 +91,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes AssignResources command on SdpSubarray
         device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.AssignResources"
+            )
 
         self.logger.info("Argin on SdpSubarray helper: %s", argin)
         input = json.loads(argin)
@@ -124,7 +126,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.ReleaseResources"
+            )
 
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
@@ -146,7 +150,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.ReleaseAllResources"
+            )
 
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
@@ -169,7 +175,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def Configure(self, argin):
         """This method invokes Configure command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.Configure"
+            )
 
         input = json.loads(argin)
         if "scan_type" not in input:
@@ -203,7 +211,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def Scan(self, argin):
         """This method invokes Scan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.Scan"
+            )
 
         input = json.loads(argin)
         if "scan_id" not in input:
@@ -234,7 +244,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.EndScan"
+            )
 
         if not self._defective:
             if self._obs_state != ObsState.READY:
@@ -254,7 +266,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.End"
+            )
 
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
@@ -274,7 +288,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def Abort(self):
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.Abort"
+            )
 
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTED
@@ -293,13 +309,15 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def Restart(self):
         """This method invokes Restart command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device()
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.Restart"
+            )
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
 
-    def raise_exception_for_defective_device(self):
+    def raise_exception_for_defective_device(self, command_name: str):
         """This method raises an exception if SdpSubarray device is
         defective."""
         self.logger.info(
@@ -308,7 +326,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         raise tango.Except.throw_exception(
             "Device is Defective.",
             "Device is Defective, cannot process command completely.",
-            "SdpSubarry.AssignResources",
+            command_name,
             tango.ErrSeverity.ERR,
         )
 
