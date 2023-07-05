@@ -196,13 +196,13 @@ class HelperSubArrayDevice(SKASubarray):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    delay = attribute(dtype=int, access=AttrWriteType.READ)
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    def read_delay(self) -> int:
+    def read_commandDelayInfo(self) -> int:
         """This method is used to read the attribute value for delay."""
-        return self._delay
+        return json.dumps(self._command_delay_info)
 
     def read_raiseException(self) -> bool:
         """This method is used to read the attribute value for raise exception
@@ -229,13 +229,14 @@ class HelperSubArrayDevice(SKASubarray):
         self, value: ObsState, command_name: str = ""
     ) -> None:
         """Updates the given data after a delay."""
+        delay_value = 0
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-                self.logger.info(
-                    "Sleep %s for command %s ", delay_value, command_name
-                )
                 time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
             self._obs_state = value
             time.sleep(0.1)
             self.push_change_event("obsState", self._obs_state)
@@ -578,6 +579,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
                 self.push_change_event("obsState", self._obs_state)
+                self.logger.info("Starting Thread for configure")
                 thread = threading.Thread(
                     target=self.update_device_obsstate,
                     args=[ObsState.READY, CONFIGURE],
