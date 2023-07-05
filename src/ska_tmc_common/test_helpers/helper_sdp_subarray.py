@@ -31,7 +31,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             '"port":[[0,9000,1]]}}}'
         )
         # pylint:enable=line-too-long
-        self._device.set_change_event("receiveAddresses", True, False)
+        self.set_change_event("receiveAddresses", True, False)
 
     receiveAddresses = attribute(
         label="Receive addresses",
