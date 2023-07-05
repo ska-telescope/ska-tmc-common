@@ -8,7 +8,9 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import HelperSubArrayDevice
+from ska_tango_base.commands import ResultCode
 
+from typing import Tuple
 
 class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
@@ -20,18 +22,40 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         super().init_device()
         self._state = DevState.OFF
         # pylint:disable=line-too-long
-        self._receive_addresses = (
-            '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}}}'
-        )
+        # self._receive_addresses = (
+        #     '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
+        #     '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
+        #     '"function":"visibilities","host":[[0,'
+        #     '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+        #     '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
+        #     '"function":"visibilities","host":[[0,'
+        #     '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+        #     '"port":[[0,9000,1]]}}}'
+        # )
         # pylint:enable=line-too-long
-        self.set_change_event("receiveAddresses", True, False)
+
+
+    class InitCommand(HelperSubArrayDevice.InitCommand):
+        """A class for the HelperSubarrayDevice's init_device() "command"."""
+
+        def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialisation.
+            """
+            super().do()
+            self._device._receive_addresses = (
+                '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
+                '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
+                '"function":"visibilities","host":[[0,'
+                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+                '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
+                '"function":"visibilities","host":[[0,'
+                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+                '"port":[[0,9000,1]]}}}'
+            )
+
+            self._device.set_change_event("receiveAddresses", True, False)
+            return ResultCode.OK, ""
 
     receiveAddresses = attribute(
         label="Receive addresses",
