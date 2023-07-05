@@ -244,7 +244,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device(command_name="SdpSubarray.EndScan")
+            self.raise_exception_for_defective_device(
+                command_name="SdpSubarray.EndScan"
+            )
 
         if not self._defective:
             if self._obs_state != ObsState.READY:
