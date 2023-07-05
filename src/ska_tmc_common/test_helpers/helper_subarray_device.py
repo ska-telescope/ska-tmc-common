@@ -2,10 +2,11 @@
 This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
+import json
+
 # pylint: disable=attribute-defined-outside-init
 import threading
 import time
-from enum import IntEnum
 from logging import Logger
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -15,6 +16,14 @@ from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
+
+from .constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    RELEASE_RESOURCES,
+    RESTART,
+)
 
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
@@ -156,6 +165,13 @@ class HelperSubArrayDevice(SKASubarray):
         self._command_in_progress = ""
         self._defective = False
         self._delay = 2
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
         self._raise_exception = False
 
     class InitCommand(SKASubarray.InitCommand):
@@ -192,13 +208,13 @@ class HelperSubArrayDevice(SKASubarray):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    delay = attribute(dtype=int, access=AttrWriteType.READ)
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    def read_delay(self) -> int:
+    def read_commandDelayInfo(self) -> int:
         """This method is used to read the attribute value for delay."""
-        return self._delay
+        return json.dumps(self._command_delay_info)
 
     def read_raiseException(self) -> bool:
         """This method is used to read the attribute value for raise exception
@@ -206,13 +222,6 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: bool
         """
         return self._raise_exception
-
-    def read_receiveAddresses(self) -> str:
-        """
-        This method is used to read receiveAddresses attribute
-        :rtype:str
-        """
-        return self._receive_addresses
 
     def read_commandInProgress(self) -> str:
         """
@@ -228,10 +237,25 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._defective
 
-    def update_device_obsstate(self, value: IntEnum) -> None:
+    def read_receiveAddresses(self) -> str:
+        """
+        This method is used to read receiveAddresses attribute
+        :rtype:str
+        """
+        return self._receive_addresses
+
+    def update_device_obsstate(
+        self, value: ObsState, command_name: str = ""
+    ) -> None:
         """Updates the given data after a delay."""
+        delay_value = 0
         with tango.EnsureOmniThread():
-            time.sleep(self._delay)
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+                time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
             self._obs_state = value
             time.sleep(0.1)
             self.push_change_event("obsState", self._obs_state)
@@ -271,13 +295,32 @@ class HelperSubArrayDevice(SKASubarray):
         self._raise_exception = value
 
     @command(
-        dtype_in=int,
+        dtype_in=str,
         doc_in="Set Delay",
     )
-    def SetDelay(self, value: int) -> None:
+    def SetDelay(self, command_delay_info: str) -> None:
         """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
-        self._delay = value
+        self.logger.info("Setting the Delay value to : %s", command_delay_info)
+        # set command info
+        command_delay_info_dict = json.loads(command_delay_info)
+        for key, value in command_delay_info_dict.items():
+            self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
+
+    @command(
+        doc_in="Reset Delay",
+    )
+    def ResetDelay(self) -> None:
+        """Reset Delay to it's default values"""
+        self.logger.info("Resetting Command Delay")
+        # Reset command info
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
 
     @command(
         dtype_in=int,
@@ -399,7 +442,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_AssignResources_allowed(self) -> bool:
         """
-        Check if command `AssignResources` is allowed in the current device state.
+        Check if command `AssignResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -432,14 +476,15 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.wait_and_update_exception, args=["AssignResources"]
             )
             self.thread.start()
+            return [ResultCode.QUEUED], [""]
 
-        elif self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.IDLE]
-            )
-            thread.start()
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate,
+            args=[ObsState.IDLE, ASSIGN_RESOURCES],
+        )
+        thread.start()
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -455,7 +500,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseResources` is allowed in the current device state.
+        Check if command `ReleaseResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -482,7 +528,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseAllResources` is allowed in the current device state.
+        Check if command `ReleaseAllResources` is allowed in the current
+        device state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -500,15 +547,31 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
+        if self._defective:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command completely."
+            ]
 
-        return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
-        ]
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            self.thread = threading.Thread(
+                target=self.wait_and_update_exception,
+                args=["ReleaseAllResources"],
+            )
+            self.thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_RESOURCES],
+        )
+        thread.start()
+        return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -535,8 +598,10 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
                 self.push_change_event("obsState", self._obs_state)
+                self.logger.info("Starting Thread for configure")
                 thread = threading.Thread(
-                    target=self.update_device_obsstate, args=[ObsState.READY]
+                    target=self.update_device_obsstate,
+                    args=[ObsState.READY, CONFIGURE],
                 )
                 thread.start()
             return [ResultCode.OK], [""]
@@ -711,7 +776,8 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.ABORTED]
+                target=self.update_device_obsstate,
+                args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
         return [ResultCode.OK], [""]
@@ -739,7 +805,8 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.EMPTY]
+                target=self.update_device_obsstate,
+                args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
         return [ResultCode.OK], [""]
