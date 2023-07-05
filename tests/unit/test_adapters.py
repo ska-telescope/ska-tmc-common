@@ -1,4 +1,7 @@
+import logging
+
 import pytest
+from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import (
     AdapterFactory,
@@ -13,8 +16,12 @@ from ska_tmc_common import (
     MCCSAdapter,
     SdpSubArrayAdapter,
     SubArrayAdapter,
+    TmcLeafNodeCommand,
 )
 from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
+from ska_tmc_common.test_helpers.helper_subarray_device import (
+    EmptySubArrayComponentManager,
+)
 from tests.settings import (
     HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_DEVICE,
@@ -23,6 +30,8 @@ from tests.settings import (
     HELPER_SDP_SUBARRAY_DEVICE,
     HELPER_SUBARRAY_DEVICE,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="module")
@@ -100,3 +109,63 @@ def test_get_or_create_sdp_adapter(tango_context):
         HELPER_SDP_SUBARRAY_DEVICE, AdapterType.SDPSUBARRAY
     )
     assert isinstance(sdp_subarray_adapter, SdpSubArrayAdapter)
+
+
+@pytest.mark.kk
+def test_call_adapter_method(tango_context):
+    factory = AdapterFactory()
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+    call = TmcLeafNodeCommand(
+        EmptySubArrayComponentManager(
+            logger=logger,
+            communication_state_callback=None,
+            component_state_callback=None,
+        ),
+        logger,
+    )
+    result_code, message = call.call_adapter_method(
+        HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources" ,""
+    )
+    assert result_code == ResultCode.OK
+    assert message[0]==""
+
+def test_call_adapter_method(tango_context):
+    factory = AdapterFactory()
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+    call = TmcLeafNodeCommand(
+        EmptySubArrayComponentManager(
+            logger=logger,
+            communication_state_callback=None,
+            component_state_callback=None,
+        ),
+        logger,
+    )
+    result_code, message = call.call_adapter_method(
+        HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources" ,""
+    )
+    assert result_code == ResultCode.OK
+    assert message[0]==""
+
+def test_call_adapter_method_exception(tango_context):
+    factory = AdapterFactory()
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+    call = TmcLeafNodeCommand(
+        EmptySubArrayComponentManager(
+            logger=logger,
+            communication_state_callback=None,
+            component_state_callback=None,
+        ),
+        logger,
+    )
+    result_code, message = call.call_adapter_method(
+        HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "scan" 
+    )
+    assert result_code == ResultCode.FAILED
+
+
