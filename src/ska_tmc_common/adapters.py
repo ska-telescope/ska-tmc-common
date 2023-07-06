@@ -365,7 +365,7 @@ class AdapterFactory:
     for CSP subarray devices .
     """
 
-    def __init__(self) -> Tuple[List[ResultCode], List[str]]:
+    def __init__(self) -> None:
         self.adapters = []
         self._dev_factory = DevFactory()
 
