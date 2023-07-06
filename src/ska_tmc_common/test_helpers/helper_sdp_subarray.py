@@ -21,18 +21,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def init_device(self):
         super().init_device()
         self._state = DevState.OFF
-        # pylint:disable=line-too-long
-        # self._receive_addresses = (
-        #     '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-        #     '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-        #     '"function":"visibilities","host":[[0,'
-        #     '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-        #     '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-        #     '"function":"visibilities","host":[[0,'
-        #     '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-        #     '"port":[[0,9000,1]]}}}'
-        # )
-        # pylint:enable=line-too-long
 
     class InitCommand(HelperSubArrayDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
