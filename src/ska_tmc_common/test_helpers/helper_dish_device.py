@@ -325,11 +325,8 @@ class HelperDishDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("Processing Track Command")
             if self._pointing_state != PointingState.TRACK:
-                thread = threading.Thread(
-                    target=self.update_pointing_state,
-                    args=[PointingState.TRACK, CONFIGURE],
-                )
-                thread.start()
+                self._pointing_state = PointingState.TRACK
+                self.push_change_event("pointingState", self._pointing_state)
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
