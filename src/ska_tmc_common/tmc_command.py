@@ -221,6 +221,7 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread(timeout_id)
                 except Exception as e:
+                    self.stop_tracker_thread(timeout_id)
                     self.logger.error(
                         "Exception occured in Tracker thread: %s", e
                     )
