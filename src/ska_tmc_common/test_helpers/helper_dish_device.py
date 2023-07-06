@@ -1,10 +1,12 @@
 """
 This module implements the Helper Dish Device for testing an integrated TMC
 """
+import json
 import threading
 import time
 from typing import List, Tuple
 
+import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType, DevEnum, DevState
@@ -13,9 +15,11 @@ from tango.server import attribute, command, run
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
+from .constants import ABORT, CONFIGURE, RESTART
+
 
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,too-many-public-methods
 class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 
@@ -23,6 +27,11 @@ class HelperDishDevice(HelperBaseDevice):
         super().init_device()
         self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.STANDBY_LP
+        self._command_delay_info = {
+            CONFIGURE: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -38,6 +47,25 @@ class HelperDishDevice(HelperBaseDevice):
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
+
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+
+    def read_commandDelayInfo(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return json.dumps(self._command_delay_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, command_delay_info: str) -> None:
+        """Update delay value"""
+        self.logger.info("Setting the Delay value to : %s", command_delay_info)
+        # set command info
+        command_delay_info_dict = json.loads(command_delay_info)
+        for key, value in command_delay_info_dict.items():
+            self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
 
     def read_pointingState(self) -> PointingState:
         """
@@ -86,8 +114,16 @@ class HelperDishDevice(HelperBaseDevice):
         if not self._defective:
             if self._dish_mode != dishMode:
                 self._dish_mode = dishMode
-                time.sleep(0.1)
                 self.push_change_event("dishMode", self._dish_mode)
+
+    def set_pointing_state(self, pointingState: PointingState) -> None:
+        """
+        This method set the Pointing State
+        """
+        if not self._defective:
+            if self._pointing_state != pointingState:
+                self._pointing_state = pointingState
+                self.push_change_event("pointingState", self._pointing_state)
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -276,8 +312,11 @@ class HelperDishDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("Processing Track Command")
             if self._pointing_state != PointingState.TRACK:
-                self._pointing_state = PointingState.TRACK
-                self.push_change_event("pointingState", self._pointing_state)
+                thread = threading.Thread(
+                    target=self.update_pointing_state,
+                    args=[PointingState.TRACK, CONFIGURE],
+                )
+                thread.start()
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
@@ -310,6 +349,11 @@ class HelperDishDevice(HelperBaseDevice):
                 self.logger.info("Pointing State: %s", self._pointing_state)
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
+            return ([ResultCode.OK], [""])
+
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_AbortCommands_allowed(self) -> bool:
         """
@@ -399,7 +443,7 @@ class HelperDishDevice(HelperBaseDevice):
             self.set_dish_mode(DishMode.CONFIG)
             thread = threading.Thread(
                 target=self.update_dish_mode,
-                args=[current_dish_mode],
+                args=[current_dish_mode, CONFIGURE],
             )
             thread.start()
             return ([ResultCode.OK], [""])
@@ -408,10 +452,27 @@ class HelperDishDevice(HelperBaseDevice):
             "Device is Defective, cannot process command."
         ]
 
-    def update_dish_mode(self, value):
+    def update_dish_mode(self, value, command_name):
         """Sets the dish mode back to original state."""
-        time.sleep(2)
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+                time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
         self.set_dish_mode(value)
+
+    def update_pointing_state(self, value, command_name):
+        """Sets the dish mode back to original state."""
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+                time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+        self.set_pointing_state(value)
 
     def is_ConfigureBand3_allowed(self) -> bool:
         """

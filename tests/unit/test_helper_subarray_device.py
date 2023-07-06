@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
@@ -25,9 +27,9 @@ commands_without_argin = [
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    assert subarray_device.delay == 2
-    subarray_device.SetDelay(5)
-    assert subarray_device.delay == 5
+    subarray_device.SetDelay('{"Configure": 3}')
+    command_delay_info = json.loads(subarray_device.commandDelayInfo)
+    assert command_delay_info["Configure"] == 3
 
 
 def test_set_defective(tango_context):
