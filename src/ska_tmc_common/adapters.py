@@ -32,7 +32,7 @@ class BaseAdapter:
 
     def __init__(
         self, dev_name: str, proxy: tango.DeviceProxy
-    ) -> Tuple[List[ResultCode], List[str]]:
+    ) -> None:
         self._proxy = proxy
         self._dev_name = dev_name
 
