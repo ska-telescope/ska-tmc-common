@@ -89,19 +89,19 @@ class CspMasterAdapter(BaseAdapter):
         """
         Sets device proxies to ON state
         """
-        self._proxy.On(argin)
+        return self._proxy.On(argin)
 
     def Standby(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxiesto Standby state
         """
-        self._proxy.Standby(argin)
+        return self._proxy.Standby(argin)
 
     def Off(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Off state
         """
-        self._proxy.Off(argin)
+        return self._proxy.Off(argin)
 
 
 class SubArrayAdapter(BaseAdapter):
