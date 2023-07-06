@@ -52,31 +52,31 @@ class BaseAdapter:
         """
         Sets device proxies to ON state.
         """
-        self.proxy.On()
+        return self.proxy.On()
 
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to OFF state.
         """
-        self.proxy.Off()
+        return self.proxy.Off()
 
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Standby state.
         """
-        self.proxy.Standby()
+        return self.proxy.Standby()
 
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Reset state.
         """
-        self.proxy.Reset()
+        return self.proxy.Reset()
 
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Disable state.
         """
-        self.proxy.Disable()
+        return self.proxy.Disable()
 
 
 class CspMasterAdapter(BaseAdapter):
