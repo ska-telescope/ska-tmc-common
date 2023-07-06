@@ -1,16 +1,16 @@
 # pylint: disable=attribute-defined-outside-init, too-many-ancestors
 """Helper device for SdpSubarray device"""
 import json
+from typing import Tuple
 
 import tango
+from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import HelperSubArrayDevice
-from ska_tango_base.commands import ResultCode
 
-from typing import Tuple
 
 class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
@@ -34,7 +34,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # )
         # pylint:enable=line-too-long
 
-
     class InitCommand(HelperSubArrayDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
 
@@ -43,6 +42,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             Stateless hook for device initialisation.
             """
             super().do()
+            # pylint:disable=line-too-long
             self._device._receive_addresses = (
                 '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
                 '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
@@ -53,7 +53,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
                 '"port":[[0,9000,1]]}}}'
             )
-
+            # pylint:enable=line-too-long
             self._device.set_change_event("receiveAddresses", True, False)
             return ResultCode.OK, ""
 
