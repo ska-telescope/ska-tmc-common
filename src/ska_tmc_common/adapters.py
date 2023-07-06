@@ -30,9 +30,7 @@ class BaseAdapter:
     It is base class used in creating adapters.
     """
 
-    def __init__(
-        self, dev_name: str, proxy: tango.DeviceProxy
-    ) -> None:
+    def __init__(self, dev_name: str, proxy: tango.DeviceProxy) -> None:
         self._proxy = proxy
         self._dev_name = dev_name
 
