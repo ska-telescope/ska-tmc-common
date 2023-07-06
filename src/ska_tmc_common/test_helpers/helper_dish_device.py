@@ -67,6 +67,19 @@ class HelperDishDevice(HelperBaseDevice):
             self._command_delay_info[key] = value
         self.logger.info("Command Delay Info Set %s", self._command_delay_info)
 
+    @command(
+        doc_in="Reset Delay",
+    )
+    def ResetDelay(self) -> None:
+        """Reset Delay to it's default values"""
+        self.logger.info("Resetting Command Delay")
+        # Reset command info
+        self._command_delay_info = {
+            CONFIGURE: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
+
     def read_pointingState(self) -> PointingState:
         """
         This method reads the pointingState of dishes.
