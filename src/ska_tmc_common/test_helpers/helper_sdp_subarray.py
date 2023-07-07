@@ -1,8 +1,10 @@
 # pylint: disable=attribute-defined-outside-init, too-many-ancestors
 """Helper device for SdpSubarray device"""
 import json
+from typing import List, Tuple
 
 import tango
+from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -53,10 +55,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def On(self):
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes On command on SdpSubarray device."""
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
+            return ([ResultCode.OK], [""])
+        return ([ResultCode.FAILED], ["cannot process command."])
 
     def is_Off_allowed(self):
         """
@@ -68,10 +72,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def Off(self):
+    def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Off command on SdpSubarray device."""
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
+            return ([ResultCode.OK], [""])
+        return ([ResultCode.FAILED], ["cannot process command."])
 
     def is_AssignResources_allowed(self):
         """
@@ -86,8 +92,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def AssignResources(self, argin):
+    def AssignResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes AssignResources command on SdpSubarray
         device."""
         if self._defective:
@@ -110,6 +117,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_ReleaseResources_allowed(self):
         """
@@ -122,7 +130,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def ReleaseResources(self):
+    def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
         if self._defective:
@@ -134,6 +142,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_ReleaseAllResources_allowed(self):
         """
@@ -146,7 +155,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def ReleaseAllResources(self):
+    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         if self._defective:
@@ -158,6 +167,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_Configure_allowed(self):
         """
@@ -171,8 +181,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def Configure(self, argin):
+    def Configure(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Configure command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
@@ -194,6 +205,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
             self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_Scan_allowed(self):
         """
@@ -207,8 +219,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def Scan(self, argin):
+    def Scan(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Scan command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
@@ -230,6 +243,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_EndScan_allowed(self):
         """
@@ -241,7 +255,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def EndScan(self):
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
@@ -252,6 +266,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_End_allowed(self):
         """
@@ -263,7 +278,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def End(self):
+    def End(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
@@ -274,6 +289,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_Abort_allowed(self):
         """
@@ -285,7 +301,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def Abort(self):
+    def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
@@ -295,6 +311,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTED
             self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def is_Restart_allowed(self):
         """
@@ -306,7 +323,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return True
 
     @command()
-    def Restart(self):
+    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Restart command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
@@ -316,6 +333,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
+        return ([ResultCode.OK], [""])
 
     def raise_exception_for_defective_device(self, command_name: str):
         """This method raises an exception if SdpSubarray device is

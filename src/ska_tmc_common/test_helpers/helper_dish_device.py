@@ -98,7 +98,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -130,7 +130,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -164,7 +164,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -200,7 +200,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -236,7 +236,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -268,7 +268,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -298,7 +298,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in="DevVoid",
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def TrackStop(self) -> None:
         """
@@ -312,6 +312,11 @@ class HelperDishDevice(HelperBaseDevice):
                 self.logger.info("Pointing State: %s", self._pointing_state)
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
+            return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     def is_AbortCommands_allowed(self) -> bool:
         """
@@ -323,7 +328,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -366,9 +371,9 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def ConfigureBand1(self, argin: str) -> None:
+    def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
@@ -376,6 +381,12 @@ class HelperDishDevice(HelperBaseDevice):
             self.logger.info("Processing ConfigureBand1")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            return ([ResultCode.OK], [""])
+
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     def is_ConfigureBand2_allowed(self) -> bool:
         """
@@ -406,9 +417,10 @@ class HelperDishDevice(HelperBaseDevice):
             thread.start()
             return ([ResultCode.OK], [""])
 
-        return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
-        ]
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     def update_dish_mode(self, value):
         """Sets the dish mode back to original state."""
@@ -425,9 +437,10 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVoid')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def ConfigureBand3(self, argin: str) -> None:
+    def ConfigureBand3(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand3 command on  Dish Master
         """
@@ -435,6 +448,10 @@ class HelperDishDevice(HelperBaseDevice):
             self.logger.info("Processing ConfigureBand3")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            return ([ResultCode.OK], [""])
+        return [ResultCode.FAILED], [
+            "Device is Defective, cannot process command."
+        ]
 
     def is_ConfigureBand4_allowed(self) -> bool:
         """
@@ -446,7 +463,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVoid')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def ConfigureBand4(self, argin: str) -> None:
         """
@@ -456,6 +474,11 @@ class HelperDishDevice(HelperBaseDevice):
             self.logger.info("Processing ConfigureBand4")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     def is_ConfigureBand5a_allowed(self) -> bool:
         """
@@ -467,7 +490,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVoid')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def ConfigureBand5a(self, argin: str) -> None:
         """
@@ -477,6 +501,11 @@ class HelperDishDevice(HelperBaseDevice):
             self.logger.info("Processing ConfigureBand5a")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     def is_ConfigureBand5b_allowed(self) -> bool:
         """
@@ -488,9 +517,12 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVoid')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def ConfigureBand5b(self, argin: str) -> None:
+    def ConfigureBand5b(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5b command on Dish Master
         """
@@ -498,6 +530,11 @@ class HelperDishDevice(HelperBaseDevice):
             self.logger.info("Processing ConfigureBand5")
             # Set dish mode
             self.set_dish_mode(DishMode.CONFIG)
+            return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     def is_Slew_allowed(self) -> bool:
         """
@@ -507,10 +544,10 @@ class HelperDishDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_in=("DevVarDoubleArray"),
-        doc_out="(ReturnType, 'DevVoid')",
+        dtype_in=("DevVoid"),
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def Slew(self) -> None:
+    def Slew(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Slew command on Dish Master
         """
@@ -518,27 +555,33 @@ class HelperDishDevice(HelperBaseDevice):
             if self._pointing_state != PointingState.SLEW:
                 self._pointing_state = PointingState.SLEW
                 self.push_change_event("pointingState", self._pointing_state)
-            # TBD: Dish mode change
+                return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.FAILED],
+            ["Device is Defective, cannot process command."],
+        )
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def StartCapture(self) -> None:
+    def StartCapture(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes StartCapture command on Dish Master
         """
-        # TBD: Dish mode change
+        # TBD: Dish mode changedoc_out="(ReturnType, 'DevVoid')",
+        return ([ResultCode.OK], [""])
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def SetMaintenanceMode(self) -> None:
+    def SetMaintenanceMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method sets the Maintainance Mode for the dish
         """
         # TBD: Dish mode change
+        return ([ResultCode.OK], [""])
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -549,14 +592,15 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVoid')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def Scan(self) -> None:
+    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on Dish Master
         """
         # TBD: Dish mode change
         self.logger.info("Processing Scan")
+        return ([ResultCode.OK], [""])
 
     def is_Reset_allowed(self) -> bool:
         """
@@ -567,7 +611,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
+        doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
