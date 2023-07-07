@@ -5,7 +5,6 @@ an integrated TMC
 # pylint: disable=attribute-defined-outside-init
 import threading
 import time
-from enum import IntEnum
 from logging import Logger
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -166,16 +165,6 @@ class HelperSubArrayDevice(SKASubarray):
             Stateless hook for device initialisation.
             """
             super().do()
-            self._device._receive_addresses = (
-                '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-                '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-                '"function":"visibilities","host":[[0,'
-                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-                '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-                '"function":"visibilities","host":[[0,'
-                '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-                '"port":[[0,9000,1]]}}}'
-            )
             self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
@@ -187,8 +176,6 @@ class HelperSubArrayDevice(SKASubarray):
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
-
-    receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
@@ -207,13 +194,6 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._raise_exception
 
-    def read_receiveAddresses(self) -> str:
-        """
-        This method is used to read receiveAddresses attribute
-        :rtype:str
-        """
-        return self._receive_addresses
-
     def read_commandInProgress(self) -> str:
         """
         This method is used to read, which command is in progress
@@ -228,7 +208,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._defective
 
-    def update_device_obsstate(self, value: IntEnum) -> None:
+    def update_device_obsstate(self, value: ObsState) -> None:
         """Updates the given data after a delay."""
         with tango.EnsureOmniThread():
             time.sleep(self._delay)
@@ -399,7 +379,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_AssignResources_allowed(self) -> bool:
         """
-        Check if command `AssignResources` is allowed in the current device state.
+        Check if command `AssignResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -432,14 +413,14 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.wait_and_update_exception, args=["AssignResources"]
             )
             self.thread.start()
+            return [ResultCode.QUEUED], [""]
 
-        elif self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.IDLE]
-            )
-            thread.start()
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -455,7 +436,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseResources` is allowed in the current device state.
+        Check if command `ReleaseResources` is allowed in the current device
+        state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -482,7 +464,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseAllResources` is allowed in the current device state.
+        Check if command `ReleaseAllResources` is allowed in the current
+        device state.
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
@@ -500,15 +483,30 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
+        if self._defective:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            return [ResultCode.FAILED], [
+                "Device is Defective, cannot process command completely."
+            ]
 
-        return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
-        ]
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            self.thread = threading.Thread(
+                target=self.wait_and_update_exception,
+                args=["ReleaseAllResources"],
+            )
+            self.thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.EMPTY]
+        )
+        thread.start()
+        return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
         """

@@ -121,7 +121,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
-        This method checks if the is_SetStandbyFPMode_allowed Command is allowed in current
+        This method checks if the is_SetStandbyFPMode_allowed Command is
+        allowed in current
         State.
         :rtype:bool
         """
@@ -154,7 +155,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
-        This method checks if the is_SetStandbyLPMode_allowed Command is allowed in current
+        This method checks if the is_SetStandbyLPMode_allowed Command is
+        allowed in current
         State.
         :rtype: bool
         """

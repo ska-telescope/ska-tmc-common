@@ -16,7 +16,8 @@ from ska_tmc_common.device_info import DeviceInfo
 
 class BaseLivelinessProbe:
     """
-    The BaseLivelinessProbe class has the responsibility to monitor the sub devices.
+    The BaseLivelinessProbe class has the responsibility to monitor the sub
+    devices.
 
     It is inherited for basic liveliness probe functionality.
 

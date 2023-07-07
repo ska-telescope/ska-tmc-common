@@ -30,7 +30,13 @@ from .device_info import (
     SubArrayDeviceInfo,
 )
 from .dish_utils import AntennaLocation, AntennaParams, DishHelper
-from .enum import DishMode, LivelinessProbeType, PointingState, TimeoutState
+from .enum import (
+    DishMode,
+    FaultType,
+    LivelinessProbeType,
+    PointingState,
+    TimeoutState,
+)
 from .event_receiver import EventReceiver
 from .exceptions import (
     CommandNotAllowed,
@@ -107,6 +113,7 @@ __all__ = [
     "PointingState",
     "LivelinessProbeType",
     "TimeoutState",
+    "FaultType",
     "EventReceiver",
     "CommandNotAllowed",
     "InvalidJSONError",
