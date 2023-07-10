@@ -116,7 +116,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
@@ -150,7 +150,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
@@ -187,7 +187,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_SetOperateMode_allowed(self) -> bool:
@@ -223,7 +223,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_SetStowMode_allowed(self) -> bool:
@@ -255,7 +255,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Track_allowed(self) -> bool:
@@ -285,7 +285,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_TrackStop_allowed(self) -> bool:
@@ -315,7 +315,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     def is_AbortCommands_allowed(self) -> bool:
@@ -385,7 +385,7 @@ class HelperDishDevice(HelperBaseDevice):
 
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     def is_ConfigureBand2_allowed(self) -> bool:
@@ -419,7 +419,7 @@ class HelperDishDevice(HelperBaseDevice):
 
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     def update_dish_mode(self, value):
@@ -450,7 +450,7 @@ class HelperDishDevice(HelperBaseDevice):
             self.set_dish_mode(DishMode.CONFIG)
             return ([ResultCode.OK], [""])
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_ConfigureBand4_allowed(self) -> bool:
@@ -477,7 +477,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     def is_ConfigureBand5a_allowed(self) -> bool:
@@ -504,7 +504,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     def is_ConfigureBand5b_allowed(self) -> bool:
@@ -533,7 +533,7 @@ class HelperDishDevice(HelperBaseDevice):
             return ([ResultCode.OK], [""])
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     def is_Slew_allowed(self) -> bool:
@@ -558,7 +558,7 @@ class HelperDishDevice(HelperBaseDevice):
                 return ([ResultCode.OK], [""])
         return (
             [ResultCode.FAILED],
-            ["Device is Defective, cannot process command."],
+            ["Device is defective, cannot process command."],
         )
 
     @command(
