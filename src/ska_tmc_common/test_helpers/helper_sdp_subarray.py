@@ -54,7 +54,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes On command on SdpSubarray device."""
         if self.dev_state() != DevState.ON:
@@ -71,7 +74,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Off command on SdpSubarray device."""
         if self.dev_state() != DevState.OFF:
@@ -129,7 +135,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
@@ -154,7 +163,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
@@ -254,7 +266,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
@@ -277,7 +292,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
@@ -300,7 +318,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
@@ -322,7 +343,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return True
 
-    @command()
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """This method invokes Restart command on SdpSubarray device."""
         if self._defective:
@@ -339,11 +363,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method raises an exception if SdpSubarray device is
         defective."""
         self.logger.info(
-            "Device is Defective, cannot process command completely."
+            "Device is defective, cannot process command completely."
         )
         raise tango.Except.throw_exception(
-            "Device is Defective.",
-            "Device is Defective, cannot process command completely.",
+            "Device is defective.",
+            "Device is defective, cannot process command completely.",
             command_name,
             tango.ErrSeverity.ERR,
         )
