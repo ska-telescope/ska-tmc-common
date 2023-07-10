@@ -194,7 +194,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
-        dtype_type="DevVarLongStringArray",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Configure(self, argin) -> Tuple[List[ResultCode], List[str]]:
