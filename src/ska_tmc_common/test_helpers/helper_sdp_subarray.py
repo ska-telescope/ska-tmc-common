@@ -97,6 +97,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     @command(
         dtype_in=("str"),
+        dtype_out="DevVarLongStringArray",
         doc_in="The input string in JSON format.",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
@@ -193,6 +194,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
+        dtype_type="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Configure(self, argin) -> Tuple[List[ResultCode], List[str]]:
@@ -231,6 +233,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
     def Scan(self, argin) -> Tuple[List[ResultCode], List[str]]:
