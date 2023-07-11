@@ -22,6 +22,7 @@ from ska_tmc_common.adapters import (
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
+    SdpSubArrayAdapter,
     SubArrayAdapter,
 )
 from ska_tmc_common.enum import TimeoutState
@@ -65,6 +66,7 @@ class BaseTMCCommand:
             CspSubarrayAdapter,
             MCCSAdapter,
             BaseAdapter,
+            SdpSubArrayAdapter,
         ]
     ]:
         """
@@ -221,6 +223,10 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread(timeout_id)
                 except Exception as e:
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=lrcr_callback.command_data[command_id][e],
+                    )
                     self.stop_tracker_thread(timeout_id)
                     self.logger.error(
                         "Exception occured in Tracker thread: %s", e
