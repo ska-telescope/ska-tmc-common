@@ -23,12 +23,14 @@ from ska_tmc_common.adapters import (
     DishAdapter,
     MCCSAdapter,
     SubArrayAdapter,
+    SdpSubArrayAdapter,
 )
 from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
 from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
+
 
 
 class BaseTMCCommand:
@@ -65,6 +67,7 @@ class BaseTMCCommand:
             CspSubarrayAdapter,
             MCCSAdapter,
             BaseAdapter,
+            SdpSubArrayAdapter,
         ]
     ]:
         """
