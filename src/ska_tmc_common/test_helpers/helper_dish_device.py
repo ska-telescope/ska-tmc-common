@@ -616,7 +616,6 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
