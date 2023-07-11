@@ -98,7 +98,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -130,7 +130,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -164,7 +164,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -200,7 +200,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -236,7 +236,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -268,7 +268,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -298,7 +298,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in="DevVoid",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def TrackStop(self) -> None:
         """
@@ -328,7 +328,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -349,7 +349,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -371,7 +371,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -399,7 +399,7 @@ class HelperDishDevice(HelperBaseDevice):
     @command(
         dtype_in=("DevString"),
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -438,7 +438,7 @@ class HelperDishDevice(HelperBaseDevice):
     @command(
         dtype_in=("DevString"),
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand3(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -464,7 +464,7 @@ class HelperDishDevice(HelperBaseDevice):
     @command(
         dtype_in=("DevString"),
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand4(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -491,7 +491,7 @@ class HelperDishDevice(HelperBaseDevice):
     @command(
         dtype_in=("DevString"),
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand5a(
         self, argin: str
@@ -520,7 +520,7 @@ class HelperDishDevice(HelperBaseDevice):
     @command(
         dtype_in=("DevString"),
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand5b(
         self, argin: str
@@ -547,7 +547,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Slew(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -565,7 +565,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
     )
     def StartCapture(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -576,7 +577,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
     )
     def SetMaintenanceMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -594,7 +596,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevVoid"),
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Scan(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -613,7 +616,8 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'DevVarLongStringArray')",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
     )
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
