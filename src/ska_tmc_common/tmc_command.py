@@ -22,6 +22,7 @@ from ska_tmc_common.adapters import (
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
+    SdpSubArrayAdapter,
     SubArrayAdapter,
 )
 from ska_tmc_common.enum import TimeoutState
@@ -65,6 +66,7 @@ class BaseTMCCommand:
             CspSubarrayAdapter,
             MCCSAdapter,
             BaseAdapter,
+            SdpSubArrayAdapter,
         ]
     ]:
         """
@@ -221,6 +223,11 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread(timeout_id)
                 except Exception as e:
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=lrcr_callback.command_data[command_id][e],
+                    )
+                    self.stop_tracker_thread(timeout_id)
                     self.logger.error(
                         "Exception occured in Tracker thread: %s", e
                     )
@@ -325,10 +332,11 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         try:
             if argin is not None:
                 func = methodcaller(command_name, argin)
-                func(adapter)
+                result_code, message = func(adapter)
             else:
                 func = methodcaller(command_name)
-                func(adapter)
+                result_code, message = func(adapter)
+            return result_code, message
 
         except Exception as exp_msg:
             self.logger.exception("Command invocation failed: %s", exp_msg)
@@ -336,9 +344,5 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"
-                + f"The following exception occured - {exp_msg}.",
+                + f"The following exception occurred - {exp_msg}.",
             )
-        self.logger.info(
-            f"{command_name} successfully invoked on: {adapter.dev_name}"
-        )
-        return ResultCode.OK, ""
