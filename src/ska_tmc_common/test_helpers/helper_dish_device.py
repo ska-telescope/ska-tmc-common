@@ -466,7 +466,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def ConfigureBand4(self, argin: str) -> None:
+    def ConfigureBand4(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand4 command on Dish Master
         """
@@ -493,7 +493,9 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'DevVarLongStringArray')",
     )
-    def ConfigureBand5a(self, argin: str) -> None:
+    def ConfigureBand5a(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5a command on Dish Master
         """
