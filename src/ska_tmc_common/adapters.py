@@ -48,35 +48,35 @@ class BaseAdapter:
         """
         return self._dev_name
 
-    def On(self) -> None:
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state.
         """
-        self.proxy.On()
+        return self.proxy.On()
 
-    def Off(self) -> None:
+    def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to OFF state.
         """
-        self.proxy.Off()
+        return self.proxy.Off()
 
-    def Standby(self) -> None:
+    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Standby state.
         """
-        self.proxy.Standby()
+        return self.proxy.Standby()
 
-    def Reset(self) -> None:
+    def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Reset state.
         """
-        self.proxy.Reset()
+        return self.proxy.Reset()
 
-    def Disable(self) -> None:
+    def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Disable state.
         """
-        self.proxy.Disable()
+        return self.proxy.Disable()
 
 
 class CspMasterAdapter(BaseAdapter):
@@ -85,23 +85,23 @@ class CspMasterAdapter(BaseAdapter):
     for CSP master devices.
     """
 
-    def On(self, argin) -> None:
+    def On(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state
         """
-        self._proxy.On(argin)
+        return self._proxy.On(argin)
 
-    def Standby(self, argin) -> None:
+    def Standby(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxiesto Standby state
         """
-        self._proxy.Standby(argin)
+        return self._proxy.Standby(argin)
 
-    def Off(self, argin) -> None:
+    def Off(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Off state
         """
-        self._proxy.Off(argin)
+        return self._proxy.Off(argin)
 
 
 class SubArrayAdapter(BaseAdapter):
@@ -239,113 +239,117 @@ class DishAdapter(BaseAdapter):
     for Dishes proxy.
     """
 
-    def SetStandbyFPMode(self) -> None:
+    def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStandbyFPMode on device proxy.
         """
-        self._proxy.SetStandbyFPMode()
+        return self._proxy.SetStandbyFPMode()
 
-    def SetOperateMode(self) -> None:
+    def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetOperateMode on device proxy.
         """
-        self._proxy.SetOperateMode()
+        return self._proxy.SetOperateMode()
 
-    def SetStandbyLPMode(self) -> None:
+    def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStandbyLPMode on device proxy.
         """
-        self._proxy.SetStandbyLPMode()
+        return self._proxy.SetStandbyLPMode()
 
-    def SetStowMode(self) -> None:
+    def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStowMode on device proxy.
         """
-        self._proxy.SetStowMode()
+        return self._proxy.SetStowMode()
 
-    def Configure(self, argin: str) -> None:
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Configure on device proxy.
         """
-        self._proxy.Configure(argin)
+        return self._proxy.Configure(argin)
 
-    def ConfigureBand1(self, argin: str) -> None:
+    def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand1 on device proxy.
         """
-        self._proxy.ConfigureBand1(argin)
+        return self._proxy.ConfigureBand1(argin)
 
-    def ConfigureBand2(self, argin: str) -> None:
+    def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand2 on device proxy.
         """
-        self._proxy.ConfigureBand2(argin)
+        return self._proxy.ConfigureBand2(argin)
 
-    def ConfigureBand3(self, argin: str) -> None:
+    def ConfigureBand3(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand3 on device proxy.
         """
-        self._proxy.ConfigureBand3(argin)
+        return self._proxy.ConfigureBand3(argin)
 
-    def ConfigureBand4(self, argin: str) -> None:
+    def ConfigureBand4(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand4 on device proxy.
         """
-        self._proxy.ConfigureBand4(argin)
+        return self._proxy.ConfigureBand4(argin)
 
-    def ConfigureBand5a(self, argin: str) -> None:
+    def ConfigureBand5a(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand5a on device proxy.
         """
-        self._proxy.ConfigureBand5a(argin)
+        return self._proxy.ConfigureBand5a(argin)
 
-    def ConfigureBand5b(self, argin: str) -> None:
+    def ConfigureBand5b(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand5b on device proxy.
         """
-        self._proxy.ConfigureBand5b(argin)
+        return self._proxy.ConfigureBand5b(argin)
 
-    def Track(self) -> None:
+    def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Track on device proxy.
         """
-        self._proxy.Track()
+        return self._proxy.Track()
 
-    def TrackStop(self) -> None:
+    def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes TrackStop on device proxy.
         """
-        self._proxy.TrackStop()
+        return self._proxy.TrackStop()
 
-    def Scan(self) -> None:
+    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Scan on device proxy.
         """
-        self._proxy.Scan()
+        return self._proxy.Scan()
 
-    def Restart(self) -> None:
+    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Restart on device proxy.
         """
-        self._proxy.Restart()
+        return self._proxy.Restart()
 
-    def AbortCommands(self) -> None:
+    def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Abort on device proxy.
         """
-        self._proxy.AbortCommands()
+        return self._proxy.AbortCommands()
 
-    def ObsReset(self) -> None:
+    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Reset on device proxy.
         """
-        self._proxy.ObsReset()
+        return self._proxy.ObsReset()
 
-    def Reset(self) -> None:
+    def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Reset on device proxy.
         """
-        self._proxy.Reset()
+        return self._proxy.Reset()
 
 
 class CspSubarrayAdapter(SubArrayAdapter):

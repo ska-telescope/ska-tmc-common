@@ -193,7 +193,7 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Standby_allowed(self) -> bool:
@@ -212,7 +212,7 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_disable_allowed(self) -> bool:
@@ -236,7 +236,7 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.OK], ["Disable command invoked on SDP Master"]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
 

@@ -332,10 +332,11 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         try:
             if argin is not None:
                 func = methodcaller(command_name, argin)
-                func(adapter)
+                result_code, message = func(adapter)
             else:
                 func = methodcaller(command_name)
-                func(adapter)
+                result_code, message = func(adapter)
+            return result_code, message
 
         except Exception as exp_msg:
             self.logger.exception("Command invocation failed: %s", exp_msg)
@@ -343,9 +344,5 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"
-                + f"The following exception occured - {exp_msg}.",
+                + f"The following exception occurred - {exp_msg}.",
             )
-        self.logger.info(
-            f"{command_name} successfully invoked on: {adapter.dev_name}"
-        )
-        return ResultCode.OK, ""

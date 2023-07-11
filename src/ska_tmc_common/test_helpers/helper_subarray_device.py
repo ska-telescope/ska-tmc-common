@@ -333,7 +333,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Off_allowed(self) -> bool:
@@ -351,7 +351,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Standby_allowed(self) -> bool:
@@ -374,7 +374,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_AssignResources_allowed(self) -> bool:
@@ -403,7 +403,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command completely."
+                "Device is defective, cannot process command.completely."
             ]
 
         if self._raise_exception:
@@ -459,7 +459,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
@@ -487,7 +487,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             return [ResultCode.FAILED], [
-                "Device is Defective, cannot process command completely."
+                "Device is defective, cannot process command.completely."
             ]
 
         if self._raise_exception:
@@ -541,7 +541,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.CONFIGURING
         self.push_change_event("obsState", self._obs_state)
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command completely."
+            "Device is defective, cannot process command.completely."
         ]
 
     def is_Scan_allowed(self) -> bool:
@@ -572,7 +572,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_EndScan_allowed(self) -> bool:
@@ -601,7 +601,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_End_allowed(self) -> bool:
@@ -630,7 +630,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_GoToIdle_allowed(self) -> bool:
@@ -659,7 +659,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_ObsReset_allowed(self) -> bool:
@@ -683,7 +683,7 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Abort_allowed(self) -> bool:

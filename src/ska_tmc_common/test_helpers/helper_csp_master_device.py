@@ -34,7 +34,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Off_allowed(self) -> bool:
@@ -55,7 +55,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Standby_allowed(self) -> bool:
@@ -76,7 +76,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
 
