@@ -145,7 +145,7 @@ def test_configure_invalid_input(tango_context):
     input_string = json.loads(configure_input_str)
     del input_string["scan_type"]
     with pytest.raises(
-        DevFailed, match="Missing scan_type in the AssignResources input json"
+        DevFailed, match="Missing scan_type in the Configure input json"
     ):
         sdp_subarray_device.Configure(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.IDLE
@@ -170,7 +170,7 @@ def test_scan_invalid_input(tango_context):
     input_string = json.loads(scan_input_str)
     del input_string["scan_id"]
     with pytest.raises(
-        DevFailed, match="Missing scan_id in the AssignResources input json"
+        DevFailed, match="Missing scan_id in the Scan input json"
     ):
         sdp_subarray_device.Scan(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.READY
