@@ -181,9 +181,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         input = json.loads(argin)
         if "scan_type" not in input:
-            self.logger.info(
-                "Missing scan_type in the Configure input json"
-            )
+            self.logger.info("Missing scan_type in the Configure input json")
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing scan_type in the Configure input json",
@@ -217,9 +215,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         input = json.loads(argin)
         if "scan_id" not in input:
-            self.logger.info(
-                "Missing scan_id in the Scan input json"
-            )
+            self.logger.info("Missing scan_id in the Scan input json")
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing scan_id in the Scan input json",
