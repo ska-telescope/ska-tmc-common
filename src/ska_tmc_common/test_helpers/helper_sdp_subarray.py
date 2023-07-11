@@ -152,6 +152,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
+            return
 
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
@@ -162,6 +163,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 f"Exception occurred on device: {self.get_name()}",
             )
             self.push_change_event("longRunningCommandResult", command_result)
+            return
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
