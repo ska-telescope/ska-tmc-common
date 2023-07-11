@@ -169,7 +169,6 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
             self._device.set_change_event("healthState", True, False)
-            # self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
