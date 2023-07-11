@@ -38,3 +38,7 @@ class ResourceNotPresentError(ValueError):
 
 class SubarrayNotPresentError(ValueError):
     """Raised when a subarray is requested but not present."""
+
+
+class InvalidReceptorIdError(ValueError):
+    """Raised when a requested resource id is invalid."""
