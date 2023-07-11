@@ -93,7 +93,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.AssignResources",
-                exception="Device is Defective, cannot process command completely."
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         self.logger.info("Argin on SdpSubarray helper: %s", argin)
@@ -129,7 +130,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.ReleaseResources",
-                exception="Device is Defective, cannot process command completely."
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if not self._defective:
@@ -161,9 +163,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_change_event("obsState", self._obs_state)
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.ReleaseAllResources",
-                exception=f"Exception occurred on device: {self.get_name()}"
+                exception=f"Exception occurred on device: {self.get_name()}",
             )
-
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
@@ -187,7 +188,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.Configure",
-                exception="Device is Defective, cannot process command completely."
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         input = json.loads(argin)
@@ -222,7 +224,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.Scan",
-                exception="Device is Defective, cannot process command completely."
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         input = json.loads(argin)
@@ -254,7 +257,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.EndScan",
-                exception="Device is Defective, cannot process command completely."
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if not self._defective:
@@ -276,7 +280,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.End"
+                command_name="SdpSubarray.End",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if not self._defective:
@@ -298,7 +304,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.Abort"
+                command_name="SdpSubarray.Abort",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if self._obs_state != ObsState.ABORTED:
@@ -320,18 +328,22 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self._defective:
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.Restart",
-                exception="Device is Defective, cannot process command completely."
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
 
-    def raise_exception_for_defective_device(self, command_name: str, exception: str):
+    def raise_exception_for_defective_device(
+        self, command_name: str, exception: str
+    ):
         """This method raises an exception if SdpSubarray device is
         defective."""
         self.logger.info(
-            "Device is Defective, cannot process command completely."
+            "Device is Defective, \
+                cannot process command completely."
         )
         raise tango.Except.throw_exception(
             "Device is Defective.",
