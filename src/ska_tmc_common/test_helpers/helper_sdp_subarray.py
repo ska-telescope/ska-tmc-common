@@ -150,14 +150,22 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         if self._defective:
-            self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.ReleaseAllResources"
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+        
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            command_id = f"1000_ReleaseAllResources"
+            command_result = (
+                command_id,
+                f"Exception occurred on device: {self.get_name()}",
             )
-
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
+            self.push_change_event("longRunningCommandResult", command_result)
+        
+        if self._obs_state != ObsState.EMPTY:
+            self._obs_state = ObsState.EMPTY
+            self.push_change_event("obsState", self._obs_state)
 
     def is_Configure_allowed(self):
         """
@@ -240,9 +248,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
-            self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.EndScan"
-            )
+            
 
         if not self._defective:
             if self._obs_state != ObsState.READY:
