@@ -201,6 +201,14 @@ class SdpSubArrayAdapter(SubArrayAdapter):
             "ReleaseAllResources", callback
         )
 
+    def Configure(
+        self, argin: str, callback
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Configure on SdpSubarray device proxy.
+        """
+        return self._proxy.command_inout_asynch("Configure", argin, callback)
+
 
 class MCCSAdapter(BaseAdapter):
     """
