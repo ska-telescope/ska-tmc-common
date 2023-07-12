@@ -159,12 +159,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             return
 
         if self._raise_exception:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.ReleaseAllResources",
                 exception=f"Exception occurred on device: {self.get_name()}",
             )
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
@@ -341,10 +341,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     ):
         """This method raises an exception if SdpSubarray device is
         defective."""
-        self.logger.info(
-            "Device is Defective, \
-                cannot process command completely."
-        )
+        self.logger.info(exception)
         raise tango.Except.throw_exception(
             "Device is Defective.",
             exception,
