@@ -31,6 +31,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             '"port":[[0,9000,1]]}}}'
         )
         # pylint:enable=line-too-long
+        self.push_change_event("receiveAddresses", self._receive_addresses)
 
     receiveAddresses = attribute(
         label="Receive addresses",
@@ -92,7 +93,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.AssignResources"
+                command_name="SdpSubarray.AssignResources",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         self.logger.info("Argin on SdpSubarray helper: %s", argin)
@@ -127,7 +130,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.ReleaseResources"
+                command_name="SdpSubarray.ReleaseResources",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if not self._defective:
@@ -150,14 +155,21 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         if self._defective:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
+            return
+
+        if self._raise_exception:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.ReleaseAllResources"
+                command_name="SdpSubarray.ReleaseAllResources",
+                exception=f"Exception occurred on device: {self.get_name()}",
             )
 
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
+        if self._obs_state != ObsState.EMPTY:
+            self._obs_state = ObsState.EMPTY
+            self.push_change_event("obsState", self._obs_state)
 
     def is_Configure_allowed(self):
         """
@@ -176,7 +188,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Configure command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.Configure"
+                command_name="SdpSubarray.Configure",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         input = json.loads(argin)
@@ -210,7 +224,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Scan command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.Scan"
+                command_name="SdpSubarray.Scan",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         input = json.loads(argin)
@@ -241,7 +257,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes EndScan command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.EndScan"
+                command_name="SdpSubarray.EndScan",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if not self._defective:
@@ -263,7 +281,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes End command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.End"
+                command_name="SdpSubarray.End",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if not self._defective:
@@ -285,7 +305,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Abort command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.Abort"
+                command_name="SdpSubarray.Abort",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if self._obs_state != ObsState.ABORTED:
@@ -306,22 +328,24 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Restart command on SdpSubarray device."""
         if self._defective:
             self.raise_exception_for_defective_device(
-                command_name="SdpSubarray.Restart"
+                command_name="SdpSubarray.Restart",
+                exception="Device is Defective, \
+                    cannot process command completely.",
             )
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
 
-    def raise_exception_for_defective_device(self, command_name: str):
+    def raise_exception_for_defective_device(
+        self, command_name: str, exception: str
+    ):
         """This method raises an exception if SdpSubarray device is
         defective."""
-        self.logger.info(
-            "Device is Defective, cannot process command completely."
-        )
+        self.logger.info(exception)
         raise tango.Except.throw_exception(
             "Device is Defective.",
-            "Device is Defective, cannot process command completely.",
+            exception,
             command_name,
             tango.ErrSeverity.ERR,
         )

@@ -174,3 +174,24 @@ def test_scan_invalid_input(tango_context):
     ):
         sdp_subarray_device.Scan(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.READY
+
+
+def test_release_resources_raise_exception_defective(tango_context):
+    dev_factory = DevFactory()
+    sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    # Check ReleaseAllResources Defective
+    assert not sdp_subarray_device.defective
+    sdp_subarray_device.SetDefective(True)
+    sdp_subarray_device.ReleaseAllResources()
+    assert sdp_subarray_device.defective
+    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    sdp_subarray_device.SetDefective(False)
+    # Check ReleaseAllResources RaiseException
+    assert not sdp_subarray_device.raiseException
+    sdp_subarray_device.SetRaiseException(True)
+    assert sdp_subarray_device.raiseException
+    with pytest.raises(
+        DevFailed, match=f"Exception occurred on device: {SDP_SUBARRAY_DEVICE}"
+    ):
+        sdp_subarray_device.ReleaseAllResources()
+    assert sdp_subarray_device.obsState == ObsState.RESOURCING
