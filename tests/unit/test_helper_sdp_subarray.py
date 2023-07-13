@@ -3,7 +3,7 @@ from os.path import dirname, join
 
 import pytest
 from ska_tango_base.control_model import ObsState
-from tango import DevError, DevFailed, DevState
+from tango import DevFailed, DevState
 
 from ska_tmc_common import DevFactory
 from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
