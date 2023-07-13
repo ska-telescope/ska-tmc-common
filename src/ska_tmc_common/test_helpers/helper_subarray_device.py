@@ -173,6 +173,7 @@ class HelperSubArrayDevice(SKASubarray):
             RESTART: 2,
         }
         self._raise_exception = False
+        self._command_call_info = ()
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -200,6 +201,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
+            self._device.set_change_event("commandCallInfo", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -212,8 +214,14 @@ class HelperSubArrayDevice(SKASubarray):
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    def read_commandDelayInfo(self) -> int:
-        """This method is used to read the attribute value for delay."""
+    commandCallInfo = attribute(dtype=tuple, access=AttrWriteType.READ)
+
+    def read_commandCallInfo(self):
+
+        return self._command_call_info
+
+    def read_commandDelayInfo(self):
+
         return json.dumps(self._command_delay_info)
 
     def read_raiseException(self) -> bool:
@@ -597,6 +605,10 @@ class HelperSubArrayDevice(SKASubarray):
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
+                self._command_call_info = ("Configure", argin)
+                self.push_change_event(
+                    "commandCallInfo", self._command_call_info
+                )
                 self.push_change_event("obsState", self._obs_state)
                 self.logger.info("Starting Thread for configure")
                 thread = threading.Thread(
