@@ -214,7 +214,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    commandCallInfo = attribute(dtype=tuple, access=AttrWriteType.READ)
+    commandCallInfo = attribute(dtype=("str",), access=AttrWriteType.READ)
 
     def read_commandCallInfo(self):
         """This method is used to read the attribute value for commandCallInfo."""
