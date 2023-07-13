@@ -217,10 +217,12 @@ class HelperSubArrayDevice(SKASubarray):
     commandCallInfo = attribute(dtype=tuple, access=AttrWriteType.READ)
 
     def read_commandCallInfo(self):
+        """This method is used to read the attribute value for commandCallInfo."""
 
         return self._command_call_info
 
     def read_commandDelayInfo(self):
+        """This method is used to read the attribute value for delay."""
 
         return json.dumps(self._command_delay_info)
 
