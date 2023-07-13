@@ -167,7 +167,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 exception=f"Exception occurred on device: {self.get_name()}",
             )
             return
-            
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
