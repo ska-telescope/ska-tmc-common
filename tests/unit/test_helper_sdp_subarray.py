@@ -3,7 +3,7 @@ from os.path import dirname, join
 
 import pytest
 from ska_tango_base.control_model import ObsState
-from tango import DevFailed, DevState
+from tango import DevFailed, DevState, DevError
 
 from ska_tmc_common import DevFactory
 from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
@@ -49,7 +49,6 @@ def test_set_defective(tango_context):
     assert not sdp_subarray_device.defective
     sdp_subarray_device.SetDefective(True)
     assert sdp_subarray_device.defective
-
 
 def test_on_command(tango_context):
     dev_factory = DevFactory()
@@ -174,3 +173,26 @@ def test_scan_invalid_input(tango_context):
     ):
         sdp_subarray_device.Scan(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.READY
+   
+
+@pytest.mark.SDP
+def test_release_resources_raise_exception_defective(tango_context):
+    dev_factory = DevFactory()
+    sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    #Check ReleaseAllResources Defective
+    assert not sdp_subarray_device.defective
+    sdp_subarray_device.SetDefective(True)
+    sdp_subarray_device.ReleaseAllResources()
+    assert sdp_subarray_device.defective
+    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    sdp_subarray_device.SetDefective(False)
+    #Check ReleaseAllResources RaiseException
+    assert not sdp_subarray_device.raiseException
+    sdp_subarray_device.SetRaiseException(True)
+    assert sdp_subarray_device.raiseException
+    with pytest.raises(
+        DevFailed, match=f"Exception occurred on device: {SDP_SUBARRAY_DEVICE}"
+    ):
+        sdp_subarray_device.ReleaseAllResources()
+    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    
