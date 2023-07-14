@@ -1,9 +1,17 @@
 """Constants
 """
 
+ON = "On"
+OFF = "Off"
+STAND_BY = "Standby"
 ASSIGN_RESOURCES = "AssignResources"
 CONFIGURE = "Configure"
 RELEASE_RESOURCES = "ReleaseResources"
 ABORT = "Abort"
 RESTART = "Restart"
 END = "End"
+OBS_RESET = "ObsReset"
+SCAN = "Scan"
+END_SCAN = "EndScan"
+RELEASE_ALL_RESOURCES = "ReleaseAllResources"
+GO_TO_IDLE = "GO"
