@@ -604,14 +604,17 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+
+        # to record the command data
+        self.logger.info("Recording the command data")
+        self._command_call_info = ("Configure", argin)
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
+
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
                 self.push_change_event("obsState", self._obs_state)
-                self._command_call_info = ("Configure", argin)
-                self.push_change_event(
-                    "commandCallInfo", self._command_call_info
-                )
                 self.logger.info("Starting Thread for configure")
                 thread = threading.Thread(
                     target=self.update_device_obsstate,

@@ -32,6 +32,7 @@ class HelperDishDevice(HelperBaseDevice):
             ABORT: 2,
             RESTART: 2,
         }
+        self._command_call_info = ()
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -43,12 +44,21 @@ class HelperDishDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
+            self._device.set_change_event("commandCallInfo", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
+
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+
+    commandCallInfo = attribute(dtype=("str",), access=AttrWriteType.READ)
+
+    def read_commandCallInfo(self):
+        """This method is used to read the attribute value for commandCallInfo."""
+
+        return self._command_call_info
 
     def read_commandDelayInfo(self) -> int:
         """This method is used to read the attribute value for delay."""
@@ -403,6 +413,12 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Configure command on  Dish Master
         :rtype: tuple
         """
+        # to record the command data
+        self.logger.info("Recording the command data")
+        self._command_call_info = ("Configure", argin)
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
+
         if not self._defective:
             self.logger.info("Processing Configure command")
             return [ResultCode.OK], ["Configure completed"]
