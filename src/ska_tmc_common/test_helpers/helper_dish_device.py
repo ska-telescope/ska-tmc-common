@@ -15,7 +15,19 @@ from tango.server import attribute, command, run
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
-from .constants import ABORT, CONFIGURE, RESTART
+from .constants import (
+    ABORT,
+    ABORT_COMMANDS,
+    CONFIGURE,
+    RESTART,
+    SET_OPERATE_MODE,
+    SET_STANDBY_FP_MODE,
+    SET_STANDBY_LP_MODE,
+    SET_STOW_MODE,
+    STAND_BY,
+    TRACK,
+    TRACK_STOP,
+)
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -167,7 +179,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Standby command on Dish Master
         :rtype: Tuple
         """
-        self.update_command_info("Standby", None)
+        self.update_command_info(None, STAND_BY)
 
         # Set the device state
         if not self._defective:
@@ -200,7 +212,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyFPMode command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info("SetStandbyFPMode", None)
+        self.update_command_info(None, SET_STANDBY_FP_MODE)
 
         # import debugpy; debugpy.debug_this_thread()'
         if not self._defective:
@@ -235,7 +247,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyLPMode command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info("SetStandbyLPMode", None)
+        self.update_command_info(None, SET_STANDBY_LP_MODE)
 
         if not self._defective:
             self.logger.info("Processing SetStandbyLPMode Command")
@@ -273,7 +285,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetOperateMode command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info("SetOperateMode", None)
+        self.update_command_info(None, SET_OPERATE_MODE)
 
         if not self._defective:
             self.logger.info("Processing SetOperateMode Command")
@@ -311,7 +323,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStowMode command on  Dish Master
         :rtype : tuple
         """
-        self.update_command_info("SetStowMode", None)
+        self.update_command_info(None, SET_STOW_MODE)
 
         if not self._defective:
             self.logger.info("Processing SetStowMode Command")
@@ -345,7 +357,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Track command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info("Track", None)
+        self.update_command_info(None, TRACK)
 
         if not self._defective:
             self.logger.info("Processing Track Command")
@@ -376,7 +388,7 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes TrackStop command on  Dish Master
         """
-        self.update_command_info("TrackStop", None)
+        self.update_command_info(None, TRACK_STOP)
 
         if not self._defective:
             self.logger.info("Processing TrackStop Command")
@@ -409,7 +421,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes AbortCommands command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info("AbortCommands", None)
+        self.update_command_info(None, ABORT_COMMANDS)
 
         self.logger.info("Abort Completed")
         # Dish Mode Not Applicable.
@@ -433,7 +445,7 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: tuple
         """
         # to record the command data
-        self.update_command_info("Configure", argin)
+        self.update_command_info(argin, CONFIGURE)
 
         if not self._defective:
             self.logger.info("Processing Configure command")
@@ -515,6 +527,22 @@ class HelperDishDevice(HelperBaseDevice):
                 "Sleep %s for command %s ", delay_value, command_name
             )
         self.set_pointing_state(value)
+
+    def update_command_info(
+        self, command_input, command_name: str = ""
+    ) -> None:
+        """This method updates the commandCallInfo attribute,
+        with the respective command information.
+
+        Args:
+            command_name (str): command name
+            command_input (str): Input argin for command
+        """
+        self.logger.info("Recording the command data")
+        self._command_info = (command_name, command_input)
+        self._command_call_info.append(self._command_info)
+        self.push_change_event("commandCallInfo", *self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
 
     def is_ConfigureBand3_allowed(self) -> bool:
         """
@@ -677,20 +705,6 @@ class HelperDishDevice(HelperBaseDevice):
         """
         # TBD: Dish mode change
         return ([ResultCode.OK], [""])
-
-    def update_command_info(self, command_name: str, command_input):
-        """This method updates the commandCallInfo attribute,
-        aith the respective command information.
-
-        Args:
-            command_name (str): command name
-            command_input (str): Input argin for command
-        """
-        self.logger.info("Recording the command data")
-        self._command_info = (command_name, command_input)
-        self._command_call_info.append(self._command_info)
-        self.push_change_event("commandCallInfo", self._command_call_info)
-        self.logger.info("CommandCallInfo updates are pushed")
 
 
 # ----------
