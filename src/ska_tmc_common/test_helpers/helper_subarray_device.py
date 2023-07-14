@@ -285,6 +285,22 @@ class HelperSubArrayDevice(SKASubarray):
             time.sleep(0.1)
             self.push_change_event("obsState", self._obs_state)
 
+    def update_command_info(
+        self, command_input, command_name: str = ""
+    ) -> None:
+        """This method updates the commandCallInfo attribute,
+        with the respective command information.
+
+        Args:
+            command_name (str): command name
+            command_input (str): Input argin for command
+        """
+        self.logger.info("Recording the command data")
+        self._command_info = (command_name, command_input)
+        self._command_call_info.append(self._command_info)
+        self.push_change_event("commandCallInfo", *self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
+
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
         This method is used to create an instance of
@@ -862,20 +878,6 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         return [ResultCode.OK], [""]
-
-    def update_command_info(self, command_input, command_name: str = ""):
-        """This method updates the commandCallInfo attribute,
-        aith the respective command information.
-
-        Args:
-            command_name (str): command name
-            command_input (str): Input argin for command
-        """
-        self.logger.info("Recording the command data")
-        self._command_info = (command_name, command_input)
-        self._command_call_info.append(self._command_info)
-        self.push_change_event("commandCallInfo", self._command_call_info)
-        self.logger.info("CommandCallInfo updates are pushed")
 
 
 # ----------
