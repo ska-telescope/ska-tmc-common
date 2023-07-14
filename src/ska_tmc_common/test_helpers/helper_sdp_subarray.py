@@ -1,9 +1,12 @@
 # pylint: disable=attribute-defined-outside-init, too-many-ancestors
 """Helper device for SdpSubarray device"""
 import json
+from typing import Tuple
 
 import tango
+from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
+from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
@@ -32,6 +35,17 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
         # pylint:enable=line-too-long
         self.push_change_event("receiveAddresses", self._receive_addresses)
+
+    class InitCommand(SKASubarray.InitCommand):
+        """A class for the HelperSubarrayDevice's init_device() "command"."""
+
+        def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialisation.
+            """
+            super().do()
+            self._device.set_change_event("receiveAddresses", True, False)
+            return ResultCode.OK, ""
 
     receiveAddresses = attribute(
         label="Receive addresses",
