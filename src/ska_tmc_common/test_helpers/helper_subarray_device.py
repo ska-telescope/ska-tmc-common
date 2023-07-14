@@ -25,6 +25,8 @@ from .constants import (
     RESTART,
 )
 
+MAX_REPORTED_COMMANDS = 15
+
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
@@ -173,7 +175,9 @@ class HelperSubArrayDevice(SKASubarray):
             RESTART: 2,
         }
         self._raise_exception = False
-        self._command_call_info = ()
+        # tuple of list
+        self._command_call_info = []
+        self._command_info = ()
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -401,6 +405,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+
+        self.update_command_info("On", None)
+
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
@@ -419,6 +426,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+
+        self.update_command_info("Off", None)
+
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
@@ -442,6 +452,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("Standby", None)
+
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
@@ -474,6 +486,8 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes AssignResources command on subarray devices
         """
+        self.update_command_info("AssignResources", argin)
+
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
@@ -528,6 +542,8 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes ReleaseResources command on subarray device
         """
+        self.update_command_info("ReleaseResources", None)
+
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
@@ -559,6 +575,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("ReleaseAllResources", None)
+
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
@@ -607,11 +625,7 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
 
-        # to record the command data
-        self.logger.info("Recording the command data")
-        self._command_call_info = ("Configure", argin)
-        self.push_change_event("commandCallInfo", self._command_call_info)
-        self.logger.info("CommandCallInfo updates are pushed")
+        self.update_command_info("Configure", argin)
 
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
@@ -651,6 +665,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("Scan", argin)
         if not self._defective:
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
@@ -680,6 +695,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("EndScan", None)
         if not self._defective:
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
@@ -709,6 +725,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("End", None)
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -738,6 +755,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("GoToIdle", None)
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -762,6 +780,8 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+
+        self.update_command_info("ObsReset", None)
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -791,6 +811,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("Abort", None)
+
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
@@ -820,6 +842,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info("Restart", None)
+
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
@@ -829,6 +853,20 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         return [ResultCode.OK], [""]
+
+    def update_command_info(self, command_name: str, command_input):
+        """This method updates the commandCallInfo attribute,
+        aith the respective command information.
+
+        Args:
+            command_name (str): command name
+            command_input (str): Input argin for command
+        """
+        self.logger.info("Recording the command data")
+        self._command_info = (command_name, command_input)
+        self._command_call_info.append(self._command_info)
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
 
 
 # ----------
