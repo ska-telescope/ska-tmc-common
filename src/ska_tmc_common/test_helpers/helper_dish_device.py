@@ -67,7 +67,7 @@ class HelperDishDevice(HelperBaseDevice):
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandCallInfo = attribute(
-        dtype=("str",), access=AttrWriteType.READ, max_dim_x=100
+        dtype=("DevString",), access=AttrWriteType.READ, max_dim_x=100
     )
 
     def read_commandCallInfo(self):
