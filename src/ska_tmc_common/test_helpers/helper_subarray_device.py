@@ -286,7 +286,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
 
     def update_command_info(
-        self, command_input, command_name: str = ""
+        self, command_input=None, command_name: str = ""
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
@@ -298,7 +298,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Recording the command data")
         self._command_info = (command_name, command_input)
         self._command_call_info.append(self._command_info)
-        self.push_change_event("commandCallInfo", *self._command_call_info)
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
