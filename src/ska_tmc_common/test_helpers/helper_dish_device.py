@@ -179,7 +179,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Standby command on Dish Master
         :rtype: Tuple
         """
-        self.update_command_info(None, STAND_BY)
+        self.update_command_info(STAND_BY, "")
 
         # Set the device state
         if not self._defective:
@@ -212,7 +212,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyFPMode command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info(None, SET_STANDBY_FP_MODE)
+        self.update_command_info(SET_STANDBY_FP_MODE, "")
 
         # import debugpy; debugpy.debug_this_thread()'
         if not self._defective:
@@ -247,7 +247,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyLPMode command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info(None, SET_STANDBY_LP_MODE)
+        self.update_command_info(SET_STANDBY_LP_MODE, "")
 
         if not self._defective:
             self.logger.info("Processing SetStandbyLPMode Command")
@@ -285,7 +285,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetOperateMode command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info(None, SET_OPERATE_MODE)
+        self.update_command_info(SET_OPERATE_MODE, "")
 
         if not self._defective:
             self.logger.info("Processing SetOperateMode Command")
@@ -323,7 +323,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStowMode command on  Dish Master
         :rtype : tuple
         """
-        self.update_command_info(None, SET_STOW_MODE)
+        self.update_command_info(SET_STOW_MODE, "")
 
         if not self._defective:
             self.logger.info("Processing SetStowMode Command")
@@ -357,7 +357,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Track command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info(None, TRACK)
+        self.update_command_info(TRACK, "")
 
         if not self._defective:
             self.logger.info("Processing Track Command")
@@ -388,7 +388,7 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes TrackStop command on  Dish Master
         """
-        self.update_command_info(None, TRACK_STOP)
+        self.update_command_info(TRACK_STOP, "")
 
         if not self._defective:
             self.logger.info("Processing TrackStop Command")
@@ -421,7 +421,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes AbortCommands command on  Dish Master
         :rtype: tuple
         """
-        self.update_command_info(None, ABORT_COMMANDS)
+        self.update_command_info(ABORT_COMMANDS, "")
 
         self.logger.info("Abort Completed")
         # Dish Mode Not Applicable.
@@ -445,7 +445,7 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: tuple
         """
         # to record the command data
-        self.update_command_info(argin, CONFIGURE)
+        self.update_command_info(CONFIGURE, argin)
 
         if not self._defective:
             self.logger.info("Processing Configure command")
@@ -529,7 +529,7 @@ class HelperDishDevice(HelperBaseDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_input, command_name: str = ""
+        self, command_name: str = "", command_input: str = ""
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
@@ -541,7 +541,7 @@ class HelperDishDevice(HelperBaseDevice):
         self.logger.info("Recording the command data")
         self._command_info = (command_name, command_input)
         self._command_call_info.append(self._command_info)
-        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.push_change_event("commandCallInfo", *self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
     def is_ConfigureBand3_allowed(self) -> bool:
