@@ -113,7 +113,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
-        self._command_call_info = []
+        self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
