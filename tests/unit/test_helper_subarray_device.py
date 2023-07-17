@@ -27,7 +27,11 @@ commands_without_argin = [
 def test_command_call_info(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    command_call_info_len = len(subarray_device.commandCallInfo)
+    _, _ = subarray_device.command_inout("AssignResources", "")
+    assert command_call_info_len == 1
     _, _ = subarray_device.command_inout("Configure", "")
+    assert command_call_info_len == command_call_info_len + 1
     command_call_info = subarray_device.commandCallInfo
     assert command_call_info[0] == ("Configure", "")
 
