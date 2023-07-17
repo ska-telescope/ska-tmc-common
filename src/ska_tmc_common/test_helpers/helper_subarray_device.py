@@ -378,7 +378,10 @@ class HelperSubArrayDevice(SKASubarray):
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
         self.logger.info("Clearing commandCallInfo")
-        self._command_call_info = []
+        if self._command_call_info != []:
+            self._command_call_info = []
+            self.push_change_event("commandCallInfo", self._command_call_info)
+            self.logger.info("CommandCallInfo updates are pushed")
 
     @command(
         dtype_in=int,
