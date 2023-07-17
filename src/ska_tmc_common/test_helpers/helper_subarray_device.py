@@ -228,7 +228,7 @@ class HelperSubArrayDevice(SKASubarray):
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
     commandCallInfo = attribute(
-        dtype=("DevString",), access=AttrWriteType.READ, max_dim_x=100
+        dtype="DevVarLongStringArray", access=AttrWriteType.READ, max_dim_x=100
     )
 
     def read_commandCallInfo(self):
