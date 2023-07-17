@@ -231,7 +231,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype=(("str",),),
         access=AttrWriteType.READ,
         max_dim_x=100,
-        max_dim_y=1024,
+        max_dim_y=100,
     )
 
     def read_commandCallInfo(self):
@@ -300,8 +300,17 @@ class HelperSubArrayDevice(SKASubarray):
         """
         self.logger.info("Recording the command data")
         self._command_info = (command_name, command_input)
+        self.logger.info(
+            "Updated _command_info value is %s", self._command_info
+        )
         self._command_call_info.append(self._command_info)
-        self.push_change_event("commandCallInfo", *self._command_call_info)
+        self.logger.info(
+            "Updated _command_call_info value is %s", self._command_call_info
+        )
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info(
+            "Updated *_command_call_info value is %s", *self._command_call_info
+        )
         self.logger.info("CommandCallInfo updates are pushed")
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
