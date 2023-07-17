@@ -44,6 +44,16 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
+def test_clear_commandCallInfo(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    _, _ = subarray_device.command_inout("Configure", "")
+    command_call_info = subarray_device.commandCallInfo
+    assert command_call_info[0] == ("Configure", "")
+    subarray_device.ClearCommandCallInfo()
+    assert command_call_info == []
+
+
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)

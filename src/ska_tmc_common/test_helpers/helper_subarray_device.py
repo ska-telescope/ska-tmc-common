@@ -373,6 +373,14 @@ class HelperSubArrayDevice(SKASubarray):
         }
 
     @command(
+        doc_in="Clears commandCallInfo",
+    )
+    def ClearCommandCallInfo(self) -> None:
+        """Clears commandCallInfo to empty list"""
+        self.logger.info("Clearing commandCallInfo")
+        self._command_call_info = []
+
+    @command(
         dtype_in=int,
         doc_in="Set ObsState",
     )

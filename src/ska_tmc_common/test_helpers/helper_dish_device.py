@@ -108,6 +108,14 @@ class HelperDishDevice(HelperBaseDevice):
             RESTART: 2,
         }
 
+    @command(
+        doc_in="Clears commandCallInfo",
+    )
+    def ClearCommandCallInfo(self) -> None:
+        """Clears commandCallInfo to empty list"""
+        self.logger.info("Clearing commandCallInfo")
+        self._command_call_info = []
+
     def read_pointingState(self) -> PointingState:
         """
         This method reads the pointingState of dishes.
