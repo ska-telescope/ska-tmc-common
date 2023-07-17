@@ -30,7 +30,8 @@ def test_command_call_info(tango_context):
     _, _ = subarray_device.command_inout("AssignResources", "")
     command_call_info_len = len(subarray_device.commandCallInfo)
     _, _ = subarray_device.command_inout("Configure", "")
-    assert command_call_info_len == command_call_info_len + 1
+    command_call_info_len = command_call_info_len + 1
+    assert command_call_info_len == 2
     command_call_info = subarray_device.commandCallInfo
     assert command_call_info[command_call_info_len - 1] == ("Configure", "")
 
