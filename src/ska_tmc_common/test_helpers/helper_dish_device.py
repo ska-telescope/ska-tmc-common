@@ -45,7 +45,7 @@ class HelperDishDevice(HelperBaseDevice):
             RESTART: 2,
         }
         self._command_call_info = []
-        self._command_info = ()
+        self._command_info = ("", "")
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -67,7 +67,10 @@ class HelperDishDevice(HelperBaseDevice):
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandCallInfo = attribute(
-        dtype=("DevString",), access=AttrWriteType.READ, max_dim_x=100
+        dtype=(("str",),),
+        access=AttrWriteType.READ,
+        max_dim_x=100,
+        max_dim_y=100,
     )
 
     def read_commandCallInfo(self):
@@ -540,8 +543,14 @@ class HelperDishDevice(HelperBaseDevice):
         """
         self.logger.info("Recording the command data")
         self._command_info = (command_name, command_input)
+        self.logger.info(
+            "Updated command_info value is %s", self._command_info
+        )
         self._command_call_info.append(self._command_info)
-        self.push_change_event("commandCallInfo", *self._command_call_info)
+        self.logger.info(
+            "Updated command_call_info value is %s", self._command_call_info
+        )
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
     def is_ConfigureBand3_allowed(self) -> bool:

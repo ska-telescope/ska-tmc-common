@@ -186,7 +186,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._raise_exception = False
         # tuple of list
         self._command_call_info = []
-        self._command_info = ()
+        self._command_info = ("", "")
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -301,11 +301,11 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Recording the command data")
         self._command_info = (command_name, command_input)
         self.logger.info(
-            "Updated _command_info value is %s", self._command_info
+            "Updated command_info value is %s", self._command_info
         )
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Updated _command_call_info value is %s", self._command_call_info
+            "Updated command_call_info value is %s", self._command_call_info
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")

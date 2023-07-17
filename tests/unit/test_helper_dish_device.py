@@ -46,6 +46,8 @@ def test_dish_commands(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     result, message = dish_device.command_inout(command)
+    command_call_info = dish_device.commandCallInfo
+    assert command_call_info[0] == (command, "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
