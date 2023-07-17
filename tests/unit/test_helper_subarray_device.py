@@ -29,7 +29,7 @@ def test_command_call_info(tango_context):
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     _, _ = subarray_device.command_inout("Configure", "")
     command_call_info = subarray_device.commandCallInfo
-    assert command_call_info == ("Configure", "")
+    assert command_call_info[0] == ("Configure", "")
 
 
 def test_set_delay(tango_context):
