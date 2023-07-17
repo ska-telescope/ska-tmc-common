@@ -24,6 +24,14 @@ commands_without_argin = [
 ]
 
 
+def test_command_call_info(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    _, _ = subarray_device.command_inout("Configure", "")
+    command_call_info = subarray_device.commandCallInfo
+    assert command_call_info == ("Configure", "")
+
+
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
@@ -53,6 +61,7 @@ def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     result, message = subarray_device.command_inout(command, "")
+
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
