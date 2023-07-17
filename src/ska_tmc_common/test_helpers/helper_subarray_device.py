@@ -289,7 +289,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
 
     def update_command_info(
-        self, command_name: str = "", command_input: str = ""
+        self, command_name: str = "", command_input=None
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
@@ -309,7 +309,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
-            "Updated *_command_call_info value is %s", *self._command_call_info
+            "Updated *_command_call_info value is %s", self._command_call_info
         )
         self.logger.info("CommandCallInfo updates are pushed")
 
@@ -443,7 +443,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
 
-        self.update_command_info(ON, "")
+        self.update_command_info(ON, None)
 
         if not self._defective:
             if self.dev_state() != DevState.ON:
@@ -464,7 +464,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
 
-        self.update_command_info(OFF, "")
+        self.update_command_info(OFF, None)
 
         if not self._defective:
             if self.dev_state() != DevState.OFF:
@@ -489,7 +489,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(STAND_BY, "")
+        self.update_command_info(STAND_BY, None)
 
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
@@ -579,7 +579,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes ReleaseResources command on subarray device
         """
-        self.update_command_info(RELEASE_RESOURCES, "")
+        self.update_command_info(RELEASE_RESOURCES, None)
 
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
@@ -612,7 +612,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(RELEASE_ALL_RESOURCES, "")
+        self.update_command_info(RELEASE_ALL_RESOURCES, None)
 
         if self._defective:
             self._obs_state = ObsState.RESOURCING
@@ -732,7 +732,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(END_SCAN, "")
+        self.update_command_info(END_SCAN, None)
         if not self._defective:
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
@@ -762,7 +762,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(END, "")
+        self.update_command_info(END, None)
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -792,7 +792,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(GO_TO_IDLE, "")
+        self.update_command_info(GO_TO_IDLE, None)
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -818,7 +818,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
 
-        self.update_command_info(OBS_RESET, "")
+        self.update_command_info(OBS_RESET, None)
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
@@ -848,7 +848,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(ABORT, "")
+        self.update_command_info(ABORT, None)
 
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
@@ -879,7 +879,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.update_command_info(RESTART, "")
+        self.update_command_info(RESTART, None)
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
