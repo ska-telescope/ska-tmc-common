@@ -17,8 +17,6 @@ from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
-from ska_tmc_common.test_helpers.helper_tmc_device import MockExtraBehaviour
-
 from .constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -168,15 +166,14 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         return self._assigned_resources
 
 
-class HelperSubArrayDevice(
-    SKASubarray, MockExtraBehaviour
-):  # pylint: disable=too-many-ancestors
+# pylint: disable=too-many-instance-attributes
+class HelperSubArrayDevice(SKASubarray):
     """A generic subarray device for triggering state changes with a command.
     It can be used as helper device for element subarray node"""
 
     def init_device(self):
         super().init_device()
-        super(SKASubarray, self).init_device()
+        # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
         self._defective = False
@@ -192,6 +189,7 @@ class HelperSubArrayDevice(
         # tuple of list
         self._command_call_info = []
         self._command_info = ("", "")
+        self._state_duration_info = {}
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -238,6 +236,35 @@ class HelperSubArrayDevice(
         max_dim_x=100,
         max_dim_y=100,
     )
+
+    obsStateTransitionDuration = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+
+    def read_obsStateTransitionDuration(self):
+        """Read transition"""
+        return json.dumps(self._state_duration_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Obs State Duration",
+    )
+    def SetObsStateDuration(self, state_duration_info: str) -> None:
+        """This command will set duration for obs state such that when
+        respective command for obs state is triggered then it change obs state
+        after provided duration
+        """
+        state_duration_dict = json.loads(state_duration_info)
+        for obs_state, value in state_duration_dict.items():
+            self._state_duration_info[ObsState[obs_state]] = value
+
+    @command(
+        doc_in="Reset Obs State Duration",
+    )
+    def ResetObsStateDuration(self) -> None:
+        """This command will reset ObsState duration which is set"""
+        # self.logger.info("Resetting Obs State")
+        self._state_duration_info = {}
 
     def read_commandCallInfo(self):
         """This method is used to read the attribute value for commandCallInfo."""

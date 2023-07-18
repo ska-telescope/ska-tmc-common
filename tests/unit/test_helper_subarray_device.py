@@ -36,6 +36,13 @@ def test_command_call_info(tango_context):
     assert command_call_info[command_call_info_len - 1] == ("Configure", "")
 
 
+def test_obs_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.SetObsStateDuration(json.dumps({"CONFIGURING": 0.1}))
+    assert subarray_device.obsStateTransitionDuration == '{"3": 0.1}'
+
+
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
