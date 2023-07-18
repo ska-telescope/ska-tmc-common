@@ -691,9 +691,6 @@ class HelperSubArrayDevice(
 
         self.update_command_info(CONFIGURE, argin)
 
-        if ObsState.CONFIGURING in self._state_duration_info:
-            return self.perform_operation()
-
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 if ObsState.CONFIGURING in self._state_duration_info:
