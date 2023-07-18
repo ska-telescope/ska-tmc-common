@@ -17,6 +17,8 @@ from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
+from ska_tmc_common.test_helpers.helper_tmc_device import MockExtraBehaviour
+
 from .constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -166,12 +168,15 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         return self._assigned_resources
 
 
-class HelperSubArrayDevice(SKASubarray):
+class HelperSubArrayDevice(
+    SKASubarray, MockExtraBehaviour
+):  # pylint: disable=too-many-ancestors
     """A generic subarray device for triggering state changes with a command.
     It can be used as helper device for element subarray node"""
 
     def init_device(self):
         super().init_device()
+        super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
         self._defective = False
@@ -280,7 +285,12 @@ class HelperSubArrayDevice(SKASubarray):
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-                time.sleep(delay_value)
+            elif value in self._state_duration_info:
+                delay_value = self._state_duration_info[value]
+                self.logger.info(
+                    "Found delay value %s for obs state %s", value, delay_value
+                )
+            time.sleep(delay_value)
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
             )
@@ -656,6 +666,16 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return True
 
+    def _start_thread(self, args: list) -> None:
+        """This method start thread which is required for
+        changing obs state after certain duration
+        """
+        thread = threading.Thread(
+            target=self.update_device_obsstate,
+            args=args,
+        )
+        thread.start()
+
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
@@ -671,16 +691,18 @@ class HelperSubArrayDevice(SKASubarray):
 
         self.update_command_info(CONFIGURE, argin)
 
+        if ObsState.CONFIGURING in self._state_duration_info:
+            return self.perform_operation()
+
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
-                self._obs_state = ObsState.CONFIGURING
-                self.push_change_event("obsState", self._obs_state)
-                self.logger.info("Starting Thread for configure")
-                thread = threading.Thread(
-                    target=self.update_device_obsstate,
-                    args=[ObsState.READY, CONFIGURE],
-                )
-                thread.start()
+                if ObsState.CONFIGURING in self._state_duration_info:
+                    self._start_thread([ObsState.CONFIGURING])
+                else:
+                    self._obs_state = ObsState.CONFIGURING
+                    self.push_change_event("obsState", self._obs_state)
+                    self.logger.info("Starting Thread for configure")
+                    self._start_thread([ObsState.READY, CONFIGURE])
             return [ResultCode.OK], [""]
         self._obs_state = ObsState.CONFIGURING
         self.push_change_event("obsState", self._obs_state)
