@@ -703,6 +703,15 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
 
+    def _follow_state_duration(self):
+        """This method will update obs state as per state duration"""
+        if ObsState.CONFIGURING in self._state_duration_info:
+            self._start_thread([ObsState.CONFIGURING])
+        if ObsState.READY in self._state_duration_info:
+            self._start_thread([ObsState.READY])
+        if ObsState.FAULT in self._state_duration_info:
+            self._start_thread([ObsState.FAULT])
+
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
@@ -720,8 +729,8 @@ class HelperSubArrayDevice(SKASubarray):
 
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
-                if ObsState.CONFIGURING in self._state_duration_info:
-                    self._start_thread([ObsState.CONFIGURING])
+                if self._state_duration_info:
+                    self._follow_state_duration()
                 else:
                     self._obs_state = ObsState.CONFIGURING
                     self.push_change_event("obsState", self._obs_state)
