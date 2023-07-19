@@ -189,7 +189,8 @@ class HelperSubArrayDevice(SKASubarray):
         # tuple of list
         self._command_call_info = []
         self._command_info = ("", "")
-        self._state_duration_info = {}
+        self._state_duration_info = []
+        self._state_duration_info_dict = {}
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -254,17 +255,18 @@ class HelperSubArrayDevice(SKASubarray):
         respective command for obs state is triggered then it change obs state
         after provided duration
         """
-        state_duration_dict = json.loads(state_duration_info)
-        for obs_state, value in state_duration_dict.items():
-            self._state_duration_info[ObsState[obs_state]] = value
+        self._state_duration_info = json.loads(state_duration_info)
+        for obs_state, value in self._state_duration_info:
+            self._state_duration_info_dict[ObsState[obs_state]] = value
 
     @command(
         doc_in="Reset Obs State Duration",
     )
     def ResetObsStateDuration(self) -> None:
         """This command will reset ObsState duration which is set"""
-        # self.logger.info("Resetting Obs State")
-        self._state_duration_info = {}
+        self.logger.info("Resetting Obs State Duration")
+        self._state_duration_info = []
+        self._state_duration_info_dict = {}
 
     def read_commandCallInfo(self):
         """This method is used to read the attribute value for commandCallInfo."""
@@ -312,8 +314,8 @@ class HelperSubArrayDevice(SKASubarray):
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-            elif value in self._state_duration_info:
-                delay_value = self._state_duration_info[value]
+            elif value in self._state_duration_info_dict:
+                delay_value = self._state_duration_info_dict[value]
                 self.logger.info(
                     "Found delay value %s for obs state %s", value, delay_value
                 )
@@ -705,12 +707,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     def _follow_state_duration(self):
         """This method will update obs state as per state duration"""
-        if ObsState.CONFIGURING in self._state_duration_info:
-            self._start_thread([ObsState.CONFIGURING])
-        if ObsState.READY in self._state_duration_info:
-            self._start_thread([ObsState.READY])
-        if ObsState.FAULT in self._state_duration_info:
-            self._start_thread([ObsState.FAULT])
+        for obs_state, _ in self._state_duration_info:
+            self._start_thread([ObsState[obs_state]])
 
     @command(
         dtype_in=("str"),
