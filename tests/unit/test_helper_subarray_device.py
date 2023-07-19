@@ -39,7 +39,7 @@ def test_command_call_info(tango_context):
 def test_obs_state_transition(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetObsStateDuration(json.dumps([["CONFIGURING", 0.1]]))
+    subarray_device.AddTransition(json.dumps([["CONFIGURING", 0.1]]))
     assert (
         subarray_device.obsStateTransitionDuration == '[["CONFIGURING", 0.1]]'
     )

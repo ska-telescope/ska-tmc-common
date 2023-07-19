@@ -250,7 +250,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=str,
         doc_in="Set Obs State Duration",
     )
-    def SetObsStateDuration(self, state_duration_info: str) -> None:
+    def AddTransition(self, state_duration_info: str) -> None:
         """This command will set duration for obs state such that when
         respective command for obs state is triggered then it change obs state
         after provided duration
@@ -262,7 +262,7 @@ class HelperSubArrayDevice(SKASubarray):
     @command(
         doc_in="Reset Obs State Duration",
     )
-    def ResetObsStateDuration(self) -> None:
+    def ResetTransitions(self) -> None:
         """This command will reset ObsState duration which is set"""
         self.logger.info("Resetting Obs State Duration")
         self._state_duration_info = []
