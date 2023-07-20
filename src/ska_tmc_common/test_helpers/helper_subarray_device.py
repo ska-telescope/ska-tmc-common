@@ -190,7 +190,6 @@ class HelperSubArrayDevice(SKASubarray):
         self._command_call_info = []
         self._command_info = ("", "")
         self._state_duration_info = []
-        self._state_duration_info_dict = {}
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -256,8 +255,6 @@ class HelperSubArrayDevice(SKASubarray):
         after provided duration
         """
         self._state_duration_info = json.loads(state_duration_info)
-        for obs_state, value in self._state_duration_info:
-            self._state_duration_info_dict[ObsState[obs_state]] = value
 
     @command(
         doc_in="Reset Obs State Duration",
@@ -266,7 +263,6 @@ class HelperSubArrayDevice(SKASubarray):
         """This command will reset ObsState duration which is set"""
         self.logger.info("Resetting Obs State Duration")
         self._state_duration_info = []
-        self._state_duration_info_dict = {}
 
     def read_commandCallInfo(self):
         """This method is used to read the attribute value for commandCallInfo."""
@@ -314,11 +310,6 @@ class HelperSubArrayDevice(SKASubarray):
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-            elif value in self._state_duration_info_dict:
-                delay_value = self._state_duration_info_dict[value]
-                self.logger.info(
-                    "Found delay value %s for obs state %s", value, delay_value
-                )
             time.sleep(delay_value)
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
@@ -348,6 +339,37 @@ class HelperSubArrayDevice(SKASubarray):
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
+
+    def _update_obs_state_in_sequence(self):
+        """Update Obs state in sequence as per state duration info"""
+        with tango.EnsureOmniThread():
+            for obs_state, duration in self._state_duration_info:
+                obs_state_enum = ObsState[obs_state]
+                self.logger.info(
+                    "Sleep %s for obs state %s", duration, obs_state
+                )
+                time.sleep(duration)
+                self._obs_state = obs_state_enum
+                self.push_change_event("obsState", self._obs_state)
+
+    def _start_thread(self, args: list) -> None:
+        """This method start thread which is required for
+        changing obs state after certain duration
+        """
+        thread = threading.Thread(
+            target=self.update_device_obsstate,
+            args=args,
+        )
+        thread.start()
+
+    def _follow_state_duration(self):
+        """This method will update obs state as per state duration
+        in separate thread
+        """
+        thread = threading.Thread(
+            target=self._update_obs_state_in_sequence,
+        )
+        thread.start()
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
@@ -695,21 +717,6 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return True
 
-    def _start_thread(self, args: list) -> None:
-        """This method start thread which is required for
-        changing obs state after certain duration
-        """
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
-            args=args,
-        )
-        thread.start()
-
-    def _follow_state_duration(self):
-        """This method will update obs state as per state duration"""
-        for obs_state, _ in self._state_duration_info:
-            self._start_thread([ObsState[obs_state]])
-
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
@@ -825,8 +832,11 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(END, "")
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
-                self.push_change_event("obsState", self._obs_state)
+                if self._state_duration_info:
+                    self._follow_state_duration()
+                else:
+                    self._obs_state = ObsState.IDLE
+                    self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [

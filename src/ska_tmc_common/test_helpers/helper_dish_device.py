@@ -47,7 +47,6 @@ class HelperDishDevice(HelperBaseDevice):
         self._command_call_info = []
         self._command_info = ("", "")
         self._state_duration_info = []
-        self._state_duration_info_dict = {}
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -93,17 +92,14 @@ class HelperDishDevice(HelperBaseDevice):
         after provided duration
         """
         self._state_duration_info = json.loads(state_duration_info)
-        for dish_mode, value in self._state_duration_info:
-            self._state_duration_info_dict[DishMode[dish_mode]] = value
 
     @command(
         doc_in="Reset Obs State Duration",
     )
     def ResetTransitions(self) -> None:
         """This command will reset ObsState duration which is set"""
-        self.logger.info("Resetting Obs State Duration")
+        self.logger.info("Resetting Pointing State Duration")
         self._state_duration_info = []
-        self._state_duration_info_dict = {}
 
     def read_commandCallInfo(self):
         """This method is used to read the attribute value for commandCallInfo."""
@@ -163,20 +159,27 @@ class HelperDishDevice(HelperBaseDevice):
         """
         return self._dish_mode
 
-    def _start_thread(self, args: list) -> None:
-        """This method start thread which is required for
-        changing obs state after certain duration
+    def _update_poiniting_state_in_sequence(self) -> None:
+        """This method update pointing state in sequence as per
+        state duration info
         """
-        thread = threading.Thread(
-            target=self.update_dish_mode,
-            args=args,
-        )
-        thread.start()
+        with tango.EnsureOmniThread():
+            for poiniting_state, duration in self._state_duration_info:
+                pointing_state_enum = PointingState[poiniting_state]
+                self.logger.info(
+                    "Sleep %s sec for pointing state %s",
+                    duration,
+                    poiniting_state,
+                )
+                time.sleep(duration)
+                self.set_pointing_state(pointing_state_enum)
 
     def _follow_state_duration(self):
-        """This method will update dish Mode as per state duration"""
-        for dish_mode, _ in self._state_duration_info:
-            self._start_thread([DishMode[dish_mode]])
+        """This method will update pointing state as per state duration"""
+        thread = threading.Thread(
+            target=self._update_poiniting_state_in_sequence,
+        )
+        thread.start()
 
     @command(
         dtype_in=DevEnum,
@@ -221,6 +224,7 @@ class HelperDishDevice(HelperBaseDevice):
             if self._pointing_state != pointingState:
                 self._pointing_state = pointingState
                 self.push_change_event("pointingState", self._pointing_state)
+                self.logger.info("Pointing State: %s", self._pointing_state)
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -421,8 +425,13 @@ class HelperDishDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("Processing Track Command")
             if self._pointing_state != PointingState.TRACK:
-                self._pointing_state = PointingState.TRACK
-                self.push_change_event("pointingState", self._pointing_state)
+                if self._state_duration_info:
+                    self._follow_state_duration()
+                else:
+                    self._pointing_state = PointingState.TRACK
+                    self.push_change_event(
+                        "pointingState", self._pointing_state
+                    )
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
@@ -452,9 +461,16 @@ class HelperDishDevice(HelperBaseDevice):
         if not self._defective:
             self.logger.info("Processing TrackStop Command")
             if self._pointing_state != PointingState.READY:
-                self._pointing_state = PointingState.READY
-                self.push_change_event("pointingState", self._pointing_state)
-                self.logger.info("Pointing State: %s", self._pointing_state)
+                if self._state_duration_info:
+                    self._follow_state_duration()
+                else:
+                    self._pointing_state = PointingState.READY
+                    self.push_change_event(
+                        "pointingState", self._pointing_state
+                    )
+                    self.logger.info(
+                        "Pointing State: %s", self._pointing_state
+                    )
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
             return ([ResultCode.OK], [""])
@@ -553,15 +569,12 @@ class HelperDishDevice(HelperBaseDevice):
         current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self.set_dish_mode(DishMode.CONFIG)
-                thread = threading.Thread(
-                    target=self.update_dish_mode,
-                    args=[current_dish_mode, CONFIGURE],
-                )
-                thread.start()
+            self.set_dish_mode(DishMode.CONFIG)
+            thread = threading.Thread(
+                target=self.update_dish_mode,
+                args=[current_dish_mode, CONFIGURE],
+            )
+            thread.start()
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
@@ -573,9 +586,6 @@ class HelperDishDevice(HelperBaseDevice):
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-            elif value in self._state_duration_info:
-                self.logger.info("Found %s value for dish mode", value)
-                delay_value = self._state_duration_info[value]
             time.sleep(delay_value)
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
