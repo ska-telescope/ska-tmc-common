@@ -46,6 +46,8 @@ class HelperDishDevice(HelperBaseDevice):
         }
         self._command_call_info = []
         self._command_info = ("", "")
+        self._state_duration_info = []
+        self._state_duration_info_dict = {}
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -72,6 +74,36 @@ class HelperDishDevice(HelperBaseDevice):
         max_dim_x=100,
         max_dim_y=100,
     )
+
+    obsStateTransitionDuration = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+
+    def read_obsStateTransitionDuration(self):
+        """Read transition"""
+        return json.dumps(self._state_duration_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Obs State Duration",
+    )
+    def AddTransition(self, state_duration_info: str) -> None:
+        """This command will set duration for dish mode such that when
+        respective command for obs state is triggered then it change obs state
+        after provided duration
+        """
+        self._state_duration_info = json.loads(state_duration_info)
+        for dish_mode, value in self._state_duration_info:
+            self._state_duration_info_dict[DishMode[dish_mode]] = value
+
+    @command(
+        doc_in="Reset Obs State Duration",
+    )
+    def ResetTransitions(self) -> None:
+        """This command will reset ObsState duration which is set"""
+        self.logger.info("Resetting Obs State Duration")
+        self._state_duration_info = []
+        self._state_duration_info_dict = {}
 
     def read_commandCallInfo(self):
         """This method is used to read the attribute value for commandCallInfo."""
@@ -130,6 +162,21 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: DishMode
         """
         return self._dish_mode
+
+    def _start_thread(self, args: list) -> None:
+        """This method start thread which is required for
+        changing obs state after certain duration
+        """
+        thread = threading.Thread(
+            target=self.update_dish_mode,
+            args=args,
+        )
+        thread.start()
+
+    def _follow_state_duration(self):
+        """This method will update dish Mode as per state duration"""
+        for dish_mode, _ in self._state_duration_info:
+            self._start_thread([DishMode[dish_mode]])
 
     @command(
         dtype_in=DevEnum,
@@ -506,24 +553,30 @@ class HelperDishDevice(HelperBaseDevice):
         current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
-            self.set_dish_mode(DishMode.CONFIG)
-            thread = threading.Thread(
-                target=self.update_dish_mode,
-                args=[current_dish_mode, CONFIGURE],
-            )
-            thread.start()
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self.set_dish_mode(DishMode.CONFIG)
+                thread = threading.Thread(
+                    target=self.update_dish_mode,
+                    args=[current_dish_mode, CONFIGURE],
+                )
+                thread.start()
             return ([ResultCode.OK], [""])
 
         return [ResultCode.FAILED], [
             "Device is Defective, cannot process command."
         ]
 
-    def update_dish_mode(self, value, command_name):
+    def update_dish_mode(self, value, command_name: str = ""):
         """Sets the dish mode back to original state."""
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-                time.sleep(delay_value)
+            elif value in self._state_duration_info:
+                self.logger.info("Found %s value for dish mode", value)
+                delay_value = self._state_duration_info[value]
+            time.sleep(delay_value)
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
             )

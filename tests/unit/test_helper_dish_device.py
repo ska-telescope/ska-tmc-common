@@ -41,6 +41,13 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
+def test_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(DISH_DEVICE)
+    subarray_device.AddTransition('[["CONFIG", 0.1]]')
+    assert subarray_device.obsStateTransitionDuration == '[["CONFIG", 0.1]]'
+
+
 @pytest.mark.parametrize("command", commands)
 def test_dish_commands(tango_context, command):
     dev_factory = DevFactory()
