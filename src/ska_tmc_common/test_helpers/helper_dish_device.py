@@ -566,6 +566,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes ConfigureBand2 command on Dish Master
         :rtype: tuple
         """
+        # to record the command data
+        self.update_command_info(CONFIGURE, argin)
+
         current_dish_mode = self._dish_mode
         if not self._defective:
             self.logger.info("Processing ConfigureBand2")
