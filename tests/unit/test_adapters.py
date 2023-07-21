@@ -1,4 +1,7 @@
+import logging
+
 import pytest
+from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import (
     AdapterFactory,
@@ -11,15 +14,24 @@ from ska_tmc_common import (
     HelperMCCSStateDevice,
     HelperSubArrayDevice,
     MCCSAdapter,
+    SdpSubArrayAdapter,
     SubArrayAdapter,
+    TmcLeafNodeCommand,
+)
+from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
+from ska_tmc_common.test_helpers.helper_subarray_device import (
+    EmptySubArrayComponentManager,
 )
 from tests.settings import (
     HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_DEVICE,
     HELPER_DISH_DEVICE,
     HELPER_MCCS_STATE_DEVICE,
+    HELPER_SDP_SUBARRAY_DEVICE,
     HELPER_SUBARRAY_DEVICE,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="module")
@@ -43,6 +55,10 @@ def devices_to_load():
         {
             "class": HelperCspMasterDevice,
             "devices": [{"name": HELPER_CSP_MASTER_DEVICE}],
+        },
+        {
+            "class": HelperSdpSubarray,
+            "devices": [{"name": HELPER_SDP_SUBARRAY_DEVICE}],
         },
     )
 
@@ -85,3 +101,57 @@ def test_get_or_create_csp_adapter(tango_context):
         HELPER_CSP_MASTER_DEVICE, AdapterType.CSPMASTER
     )
     assert isinstance(csp_master_adapter, CspMasterAdapter)
+
+
+def test_get_or_create_sdp_adapter(tango_context):
+    factory = AdapterFactory()
+    sdp_subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SDP_SUBARRAY_DEVICE, AdapterType.SDPSUBARRAY
+    )
+    assert isinstance(sdp_subarray_adapter, SdpSubArrayAdapter)
+
+
+def test_call_adapter_method(tango_context):
+    factory = AdapterFactory()
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+    tmc_leaf_node_command_obj = TmcLeafNodeCommand(
+        EmptySubArrayComponentManager(
+            logger=logger,
+            communication_state_callback=None,
+            component_state_callback=None,
+        ),
+        logger,
+    )
+    result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
+        HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources", ""
+    )
+    assert result_code == ResultCode.OK
+    assert message[0] == ""
+
+
+def test_call_adapter_method_exception(tango_context):
+    factory = AdapterFactory()
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+    tmc_leaf_node_command_obj = TmcLeafNodeCommand(
+        EmptySubArrayComponentManager(
+            logger=logger,
+            communication_state_callback=None,
+            component_state_callback=None,
+        ),
+        logger,
+    )
+    result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
+        HELPER_SUBARRAY_DEVICE, subarray_adapter, "AssignResources"
+    )
+    assert result_code == ResultCode.FAILED
+    assert (
+        message
+        == "The invocation of the AssignResources command is failed on "
+        + "test/subarray/1 device test/subarray/1.\n"
+        + "The following exception occurred - SubArrayAdapter.AssignResources() "
+        + "missing 1 required positional argument: 'argin'."
+    )

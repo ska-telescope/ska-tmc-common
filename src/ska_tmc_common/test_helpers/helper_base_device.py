@@ -26,6 +26,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._defective = False
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
+        self._raise_exception = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
@@ -56,6 +57,15 @@ class HelperBaseDevice(SKABaseDevice):
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+
+    raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
+
+    def read_raiseException(self) -> bool:
+        """This method is used to read the attribute value for raise exception
+
+        :rtype: bool
+        """
+        return self._raise_exception
 
     def read_defective(self) -> bool:
         """
@@ -140,6 +150,15 @@ class HelperBaseDevice(SKABaseDevice):
                 self._health_state = HealthState(argin)
                 self.push_change_event("healthState", self._health_state)
 
+    @command(
+        dtype_in=bool,
+        doc_in="Raise Exception",
+    )
+    def SetRaiseException(self, value: bool) -> None:
+        """Set Raise Exception"""
+        self.logger.info("Setting the raise exception value to : %s", value)
+        self._raise_exception = value
+
     def is_On_allowed(self) -> bool:
         return True
 
@@ -174,7 +193,7 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
         ]
 
     def is_Standby_allowed(self) -> bool:
@@ -193,7 +212,31 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
-            "Device is Defective, cannot process command."
+            "Device is defective, cannot process command."
+        ]
+
+    def is_disable_allowed(self) -> bool:
+        "Checks if disable command is allowed"
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Disable(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        It sets the DevState to disable.
+        :rtype: Tuple
+        """
+        if not self._defective:
+            if self.dev_state() != DevState.DISABLE:
+                self.set_state(DevState.DISABLE)
+                time.sleep(0.1)
+                self.push_change_event("State", self.dev_state())
+            return [ResultCode.OK], ["Disable command invoked on SDP Master"]
+
+        return [ResultCode.FAILED], [
+            "Device is defective, cannot process command."
         ]
 
 

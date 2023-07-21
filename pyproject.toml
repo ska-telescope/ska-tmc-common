@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.4.9"
+version = "0.5.13"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -14,41 +14,38 @@ name = 'ska-nexus'
 url = 'https://artefact.skao.int/repository/pypi-internal/simple'
 
 [tool.poetry.dependencies]
-python = "^3.8"
-numpy = [
-    {version = "1.21.1", python = ">=3.7,<3.10"},
-    {version = "1.23.0", python = "3.10"}
-]
+python = "~3.10"
+numpy = "^1.23.0"
 pytango = "9.3.3"
 jsonschema = "^4.0.1"
 marshmallow = "^3.14.1"
 fire = "^0.4.0"
-black = "^22.1.0"
+black = "^23.3.0"
 ska-ser-logging = "^0.4.1"
-ska-tango-base = "0.17.0"
+ska-tango-base = "0.18.1"
 ska-tango-testing = "0.4.1"
 katpoint = "1.0a2"
 ska-telmodel = "1.5.0"
 mock = "^4.0.3"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.1"
-pytest-cov = "^2.10.1"
-pytest-mock = "^3.6.1"
+pytest = "^7.3.1"
+pytest-cov = "^4.0.0"
+pytest-mock = "^3.10.0"
 pytest-xdist = "^2.4.0"
 coverage = "^6.2"
-pylint = "^2.12.2"
+pylint = "^2.17.2"
 pylint2junit = "^1.0.1"
 junitparser = "^2.2.0"
 flake8-formatter-junit-xml = "^0.0.6"
-flake8-rst-docstrings = "^0.2.5"
+flake8-rst-docstrings = "^0.3.0"
 docstr-coverage = "^2.1.1"
 darglint = "^1.8.1"
 pylint-junit = "^0.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
+black = "^23.3.0"
 isort = "^5.10.1"
 flake8 = "^5.0.4"
 

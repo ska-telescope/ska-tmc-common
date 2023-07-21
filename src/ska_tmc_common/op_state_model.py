@@ -1,5 +1,6 @@
 """
-This module specifies the operational state ("opState") model for SKA LMC Tango devices.
+This module specifies the operational state ("opState") model for SKA LMC
+Tango devices.
 
 It consists of:
 
@@ -104,7 +105,8 @@ class TMCOpStateMachine(Machine):
                 "trigger": "init_completed",
                 "dest": "FAULT",
             },
-            # Changes in the state of the monitored component post-initialisation
+            # Changes in the state of the monitored component
+            # post-initialisation
             {
                 "source": ["ON", "FAULT"],
                 "trigger": "component_on",
@@ -138,7 +140,8 @@ class TMCOpStateMachine(Machine):
 
 class TMCOpStateModel(OpStateModel):
     """
-    This class implements the state model for device operational state ("opState").
+    This class implements the state model for device operational state
+    ("opState").
 
     The model supports the following states, represented as values of
     the `tango.DevState` enum.

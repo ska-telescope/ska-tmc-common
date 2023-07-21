@@ -66,7 +66,7 @@ def test_dish_command_defective(tango_context, command):
     dish_device.SetDefective(True)
     result, message = dish_device.command_inout(command)
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Device is Defective, cannot process command."
+    assert message[0] == "Device is defective, cannot process command."
 
 
 def test_Abort_commands(tango_context):
@@ -91,7 +91,7 @@ def test_Configure_command_defective(tango_context):
     dish_device.SetDefective(True)
     result, message = dish_device.command_inout("ConfigureBand2", "")
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Device is Defective, cannot process command."
+    assert message[0] == "Device is defective, cannot process command."
 
 
 def test_Reset_command_defective(tango_context):

@@ -1,6 +1,7 @@
 """
 This module contains the fixtures, methods and devices required for testing.
-A module defining a list of fixtures that are shared across all ska_tmc_common tests.
+A module defining a list of fixtures that are shared across all ska_tmc_common
+tests.
 
 """
 
@@ -18,17 +19,19 @@ from ska_tmc_common import (
     DummyTmcDevice,
     HelperBaseDevice,
     HelperCspMasterDevice,
+    HelperCspSubarrayLeafDevice,
     HelperDishDevice,
+    HelperSdpSubarrayLeafDevice,
     HelperSubArrayDevice,
-    HelperSubarrayLeafDevice,
     TmcLeafNodeComponentManager,
 )
 from tests.settings import (
     CSP_DEVICE,
+    CSP_LEAF_NODE_DEVICE,
     DEVICE_LIST,
     DISH_DEVICE,
+    SDP_LEAF_NODE_DEVICE,
     SUBARRAY_DEVICE,
-    SUBARRAY_LEAF_DEVICE,
     TMC_COMMON_DEVICE,
     logger,
 )
@@ -86,12 +89,6 @@ def devices_to_load():
             ],
         },
         {
-            "class": HelperSubarrayLeafDevice,
-            "devices": [
-                {"name": SUBARRAY_LEAF_DEVICE},
-            ],
-        },
-        {
             "class": HelperDishDevice,
             "devices": [
                 {"name": DISH_DEVICE},
@@ -101,6 +98,18 @@ def devices_to_load():
             "class": HelperCspMasterDevice,
             "devices": [
                 {"name": CSP_DEVICE},
+            ],
+        },
+        {
+            "class": HelperCspSubarrayLeafDevice,
+            "devices": [
+                {"name": CSP_LEAF_NODE_DEVICE},
+            ],
+        },
+        {
+            "class": HelperSdpSubarrayLeafDevice,
+            "devices": [
+                {"name": SDP_LEAF_NODE_DEVICE},
             ],
         },
     )

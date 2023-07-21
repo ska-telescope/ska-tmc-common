@@ -22,6 +22,7 @@ from ska_tmc_common.adapters import (
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
+    SdpSubArrayAdapter,
     SubArrayAdapter,
 )
 from ska_tmc_common.enum import TimeoutState
@@ -65,6 +66,7 @@ class BaseTMCCommand:
             CspSubarrayAdapter,
             MCCSAdapter,
             BaseAdapter,
+            SdpSubArrayAdapter,
         ]
     ]:
         """
@@ -138,8 +140,8 @@ class BaseTMCCommand:
         :param command_id: Id for LRCRCallback class object.
 
         :param lrcr_callback: An instance of LRCRCallback class that acts
-                    as a callable functions to call when longRunningCommandResult
-                    event is recieved.
+                    as a callable functions to call when
+                    longRunningCommandResult event is recieved.
         """
         self.tracker_thread = threading.Thread(
             target=self.track_transitions,
@@ -191,7 +193,7 @@ class BaseTMCCommand:
                             "State change has occured, command succeded"
                         )
                         self.update_task_status(result=ResultCode.OK)
-                        self.stop_tracker_thread()
+                        self.stop_tracker_thread(timeout_id)
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
@@ -204,7 +206,7 @@ class BaseTMCCommand:
                                 result=ResultCode.FAILED,
                                 message="Timeout has occured, command failed",
                             )
-                            self.stop_tracker_thread()
+                            self.stop_tracker_thread(timeout_id)
 
                     if command_id:
                         if lrcr_callback.assert_against_call(
@@ -219,8 +221,13 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
-                            self.stop_tracker_thread()
+                            self.stop_tracker_thread(timeout_id)
                 except Exception as e:
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=lrcr_callback.command_data[command_id][e],
+                    )
+                    self.stop_tracker_thread(timeout_id)
                     self.logger.error(
                         "Exception occured in Tracker thread: %s", e
                     )
@@ -229,13 +236,14 @@ class BaseTMCCommand:
             if command_id:
                 lrcr_callback.remove_data(command_id)
 
-    def stop_tracker_thread(self) -> None:
+    def stop_tracker_thread(self, timeout_id) -> None:
         """External stop method for stopping the timer thread as well as the
         tracker thread."""
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
             self._stop = True
-            self.component_manager.stop_timer()
+            if timeout_id:
+                self.component_manager.stop_timer()
 
 
 class TMCCommand(BaseTMCCommand):
@@ -324,10 +332,11 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         try:
             if argin is not None:
                 func = methodcaller(command_name, argin)
-                func(adapter)
+                result_code, message = func(adapter)
             else:
                 func = methodcaller(command_name)
-                func(adapter)
+                result_code, message = func(adapter)
+            return result_code, message
 
         except Exception as exp_msg:
             self.logger.exception("Command invocation failed: %s", exp_msg)
@@ -335,11 +344,5 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 ResultCode.FAILED,
                 f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"
-                + f"Reason: Following exception occured - {exp_msg}.\n"
-                + "The command has NOT been executed.\n"
-                + "This device will continue with normal operation.",
+                + f"The following exception occurred - {exp_msg}.",
             )
-        self.logger.info(
-            f"{command_name} command successfully invoked on:{adapter.dev_name}"
-        )
-        return ResultCode.OK, ""
