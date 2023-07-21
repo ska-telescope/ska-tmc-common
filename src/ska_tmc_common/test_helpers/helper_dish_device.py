@@ -298,6 +298,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in="DevVoid",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
