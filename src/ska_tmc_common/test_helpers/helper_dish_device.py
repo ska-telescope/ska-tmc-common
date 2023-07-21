@@ -300,7 +300,7 @@ class HelperDishDevice(HelperBaseDevice):
         dtype_in="DevVoid",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TrackStop(self) -> None:
+    def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
         """
