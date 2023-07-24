@@ -298,9 +298,10 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in="DevVoid",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TrackStop(self) -> None:
+    def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
         """
@@ -349,6 +350,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
@@ -371,6 +373,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevString"),
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
@@ -422,7 +425,7 @@ class HelperDishDevice(HelperBaseDevice):
             ["Device is defective, cannot process command."],
         )
 
-    def update_dish_mode(self, value):
+    def update_dish_mode(self, value) -> None:
         """Sets the dish mode back to original state."""
         time.sleep(2)
         self.set_dish_mode(value)
@@ -547,6 +550,7 @@ class HelperDishDevice(HelperBaseDevice):
 
     @command(
         dtype_in=("DevVoid"),
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Slew(self) -> Tuple[List[ResultCode], List[str]]:

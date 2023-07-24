@@ -10,5 +10,5 @@ license="""BSD-3-Clause"""
 url="""https://www.skao.int/"""
 copyright=""""""
 
-release=0.5.13
-tag=0.5.13
+release=0.5.14
+tag=0.5.14
