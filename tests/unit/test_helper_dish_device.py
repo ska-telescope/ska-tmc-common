@@ -29,7 +29,6 @@ defective_commands = [
     "SetStowMode",
     "SetStandbyFPMode",
     "SetStandbyLPMode",
-    "Track",
     "ConfigureBand1",
     "ConfigureBand3",
     "ConfigureBand4",

@@ -168,6 +168,12 @@ class HelperDishDevice(HelperBaseDevice):
         This method checks if the Standby Command is allowed in current State.
         :rtype: bool
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -179,19 +185,18 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Standby command on Dish Master
         :rtype: Tuple
         """
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Standby")
         # Set the device state
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
-            # Set the Dish Mode
-            self.set_dish_mode(DishMode.STANDBY_LP)
-            return ([ResultCode.OK], [""])
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.STANDBY_LP)
+        self.push_command_result(ResultCode.OK, "Standby")
+        return ([ResultCode.OK], [""])
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
