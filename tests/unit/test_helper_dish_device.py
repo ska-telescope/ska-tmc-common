@@ -1,9 +1,11 @@
+import json
 import time
 
 import pytest
 from ska_tango_base.commands import ResultCode
+from tango import DevFailed
 
-from ska_tmc_common import DevFactory
+from ska_tmc_common import DevFactory, FaultType
 from ska_tmc_common.enum import DishMode
 from tests.settings import DISH_DEVICE
 
@@ -16,6 +18,18 @@ commands = [
     "Track",
 ]
 configure_commands = [
+    "ConfigureBand1",
+    "ConfigureBand3",
+    "ConfigureBand4",
+    "ConfigureBand5a",
+    "ConfigureBand5b",
+]
+defective_commands = [
+    "SetOperateMode",
+    "SetStowMode",
+    "SetStandbyFPMode",
+    "SetStandbyLPMode",
+    "Track",
     "ConfigureBand1",
     "ConfigureBand3",
     "ConfigureBand4",
@@ -91,3 +105,25 @@ def test_Configure_command(tango_context, command):
     dish_device.command_inout(command, "")
     time.sleep(0.5)
     assert dish_device.dishmode == DishMode.CONFIG
+
+
+@pytest.mark.parametrize("command_to_check", defective_commands)
+def test_dish_commands_command_not_allowed(tango_context, command_to_check):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+        "error_message": "Device is stuck in Resourcing state",
+        "result": ResultCode.FAILED,
+    }
+    # Set the device to the defective state with COMMAND_NOT_ALLOWED fault
+    dish_device.SetDefective(json.dumps(defect))
+    # Attempt to execute the command and expect the DevFailed exception
+    with pytest.raises(DevFailed):
+        dish_device.command_inout(command_to_check, "")
+    # Clear the defect and ensure the command can be executed when not defective
+    dish_device.SetDefective(json.dumps({"enabled": False}))
+    result, message = dish_device.command_inout(command_to_check, "")
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
