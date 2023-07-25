@@ -8,7 +8,7 @@ from ska_tmc_common import DevFactory
 from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_DEVICE,
-    RESET_DEFECT,
+    FAILED_RESULT_DEFECT,
 )
 
 commands = [
@@ -44,10 +44,11 @@ defective_commands = [
 ]
 
 
+@pytest.mark.MS
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(json.dumps(RESET_DEFECT))
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout("SetStandbyFPMode")
     assert result[0] == ResultCode.FAILED
     assert (
@@ -72,7 +73,7 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     # dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(json.dumps(RESET_DEFECT))
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
     assert (
@@ -88,7 +89,7 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     # dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(json.dumps(RESET_DEFECT))
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command_to_check, "")
     assert result[0] == ResultCode.FAILED
     assert (
@@ -109,7 +110,7 @@ def test_Abort_commands(tango_context):
 def test_Configure_command_defective(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(json.dumps(RESET_DEFECT))
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command, "")
     assert result[0] == ResultCode.FAILED
     assert (
@@ -121,7 +122,7 @@ def test_Configure_command_defective(tango_context, command):
 def test_Reset_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(json.dumps(RESET_DEFECT))
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.Reset()
     assert result[0] == ResultCode.FAILED
     assert (
