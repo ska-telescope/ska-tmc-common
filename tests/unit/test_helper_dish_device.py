@@ -61,8 +61,30 @@ def test_dish_commands(tango_context, command):
     assert message[0] == ""
 
 
+@pytest.mark.parametrize("command_to_check", commands)
+def test_command_without_argin_failed_result(tango_context, command_to_check):
+    # import pdb
+    # pdb.set_trace()
+    dev_factory = DevFactory()
+    # dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is Defective, cannot process command completely.",
+        "result": ResultCode.FAILED,
+    }
+    dish_device.SetDefective(json.dumps(defect))
+    result, message = dish_device.command_inout(command_to_check)
+    assert result[0] == ResultCode.FAILED
+    assert (
+        message[0] == "Device is Defective, cannot process command completely."
+    )
+    dish_device.SetDefective(json.dumps({"enabled": False}))
+
+
 @pytest.mark.parametrize("command_to_check", configure_commands)
-def test_configure_command_failed_result(tango_context, command_to_check):
+def test_command_with_argin_failed_result(tango_context, command_to_check):
     # import pdb
     # pdb.set_trace()
     dev_factory = DevFactory()
