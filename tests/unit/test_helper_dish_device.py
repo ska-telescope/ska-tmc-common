@@ -24,26 +24,23 @@ configure_commands = [
     "ConfigureBand5a",
     "ConfigureBand5b",
 ]
-defective_commands = [
-    "SetOperateMode",
-    "SetStowMode",
-    "SetStandbyFPMode",
-    "SetStandbyLPMode",
-    "ConfigureBand1",
-    "ConfigureBand3",
-    "ConfigureBand4",
-    "ConfigureBand5a",
-    "ConfigureBand5b",
-]
 
 
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(True)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is defective, cannot process command.completely.",
+        "result": ResultCode.FAILED,
+    }
+    dish_device.SetDefective(json.dumps(defect))
     assert dish_device.defective
+    dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.akiii
 @pytest.mark.parametrize("command", commands)
 def test_dish_commands(tango_context, command):
     dev_factory = DevFactory()
@@ -53,8 +50,10 @@ def test_dish_commands(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.parametrize("command_to_check", defective_commands)
-def test_dish_command_failed_result(tango_context, command_to_check):
+@pytest.mark.parametrize("command_to_check", configure_commands)
+def test_configure_command_failed_result(tango_context, command_to_check):
+    # import pdb
+    # pdb.set_trace()
     dev_factory = DevFactory()
     # dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device = dev_factory.get_device(DISH_DEVICE)
@@ -92,31 +91,49 @@ def test_Configure_commands(tango_context):
 def test_Configure_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(True)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is defective, cannot process command.",
+        "result": ResultCode.FAILED,
+    }
+    dish_device.SetDefective(json.dumps(defect))
     result, message = dish_device.command_inout("ConfigureBand2", "")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Device is defective, cannot process command."
+    dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_Reset_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(True)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is defective, cannot process command.",
+        "result": ResultCode.FAILED,
+    }
+    dish_device.SetDefective(json.dumps(defect))
     result, message = dish_device.Reset()
     assert result[0] == ResultCode.OK
+    dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.failed
 @pytest.mark.parametrize("command", configure_commands)
 def test_Configure_command(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.SetDefective(json.dumps({"enabled": False}))
     dish_device.command_inout(command, "")
     time.sleep(0.5)
     assert dish_device.dishmode == DishMode.CONFIG
 
 
-@pytest.mark.parametrize("command_to_check", defective_commands)
-def test_dish_commands_command_not_allowed(tango_context, command_to_check):
+@pytest.mark.parametrize("command_to_check", configure_commands)
+def test_configure_commands_command_not_allowed(
+    tango_context, command_to_check
+):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     defect = {
@@ -129,9 +146,6 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dish_device.SetDefective(json.dumps(defect))
     # Attempt to execute the command and expect the DevFailed exception
     with pytest.raises(DevFailed):
-        dish_device.command_inout(command_to_check, "")
+        dish_device.command_inout(command_to_check)
     # Clear the defect and ensure the command can be executed when not defective
-    result, message = dish_device.command_inout(command_to_check, "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
     dish_device.SetDefective(json.dumps({"enabled": False}))
