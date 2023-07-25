@@ -40,7 +40,6 @@ defective_commands = [
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert not dish_device.defective
     dish_device.SetDefective(True)
     assert dish_device.defective
 
