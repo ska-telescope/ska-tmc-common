@@ -5,6 +5,7 @@ from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory
+from ska_tmc_common.enum import DishMode
 from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_DEVICE,
@@ -138,6 +139,7 @@ def test_Configure_commands(tango_context, command):
     result, message = dish_device.command_inout(command, "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
+    assert dish_device.dishmode == DishMode.CONFIG
 
 
 @pytest.mark.parametrize("command_to_check", defective_commands)

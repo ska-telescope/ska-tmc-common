@@ -18,6 +18,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
+# pylint: disable=too-many-public-methods
 class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 
@@ -51,6 +52,11 @@ class HelperDishDevice(HelperBaseDevice):
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
+    delay = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_delay(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return self._delay
 
     def read_defective(self) -> str:
         """
@@ -112,6 +118,15 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != value:
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, value: int) -> None:
+        """Update delay value"""
+        self.logger.info("Setting the Delay value to : %s", value)
+        self._delay = value
 
     def set_dish_mode(self, dishMode: DishMode) -> None:
         """
@@ -736,15 +751,10 @@ class HelperDishDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Slew")
 
-        if not self.defective_params["enabled"]:
-            if self._pointing_state != PointingState.SLEW:
-                self._pointing_state = PointingState.SLEW
-                self.push_change_event("pointingState", self._pointing_state)
-                return ([ResultCode.OK], [""])
-        return (
-            [ResultCode.FAILED],
-            ["Device is defective, cannot process command."],
-        )
+        if self._pointing_state != PointingState.SLEW:
+            self._pointing_state = PointingState.SLEW
+            self.push_change_event("pointingState", self._pointing_state)
+        return ([ResultCode.OK], [""])
 
     @command(
         dtype_in=("DevVoid"),
