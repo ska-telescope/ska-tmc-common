@@ -45,7 +45,6 @@ defective_commands = [
 ]
 
 
-@pytest.mark.MS
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
