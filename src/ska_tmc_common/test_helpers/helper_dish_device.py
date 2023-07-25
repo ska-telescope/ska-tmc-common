@@ -117,11 +117,10 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method set the Dish Mode
         """
-        if not self.defective_params["enabled"]:
-            if self._dish_mode != dishMode:
-                self._dish_mode = dishMode
-                time.sleep(0.1)
-                self.push_change_event("dishMode", self._dish_mode)
+        if self._dish_mode != dishMode:
+            self._dish_mode = dishMode
+            time.sleep(0.1)
+            self.push_change_event("dishMode", self._dish_mode)
 
     def induce_fault(
         self,
@@ -234,10 +233,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyFPMode command on  Dish Master
         :rtype: tuple
         """
-
+        self.logger.info("Processing SetStandbyFPMode Command")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyFPMode")
-        self.logger.info("Processing SetStandbyFPMode Command")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
@@ -271,10 +269,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyLPMode command on  Dish Master
         :rtype: tuple
         """
-        if self.defective_params["enabled"]:
-            return self.induce_fault("SetStandbyLPMode")
         self.logger.info("Processing SetStandbyLPMode Command")
 
+        if self.defective_params["enabled"]:
+            return self.induce_fault("SetStandbyLPMode")
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
@@ -312,9 +310,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetOperateMode command on  Dish Master
         :rtype: tuple
         """
+        self.logger.info("Processing SetOperateMode Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode")
-        self.logger.info("Processing SetOperateMode Command")
 
         # Set the device state
         if self.dev_state() != DevState.ON:
@@ -353,9 +352,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStowMode command on  Dish Master
         :rtype : tuple
         """
+        self.logger.info("Processing SetStowMode Command")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode")
-        self.logger.info("Processing SetStowMode Command")
 
         # Set device state
         if self.dev_state() != DevState.DISABLE:
@@ -389,9 +388,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Track command on  Dish Master
         :rtype: tuple
         """
+        self.logger.info("Processing Track Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Track")
-        self.logger.info("Processing Track Command")
 
         if self._pointing_state != PointingState.TRACK:
             self._pointing_state = PointingState.TRACK
@@ -424,9 +424,10 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes TrackStop command on  Dish Master
         """
+        self.logger.info("Processing TrackStop Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop")
-        self.logger.info("Processing TrackStop Command")
 
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
@@ -490,10 +491,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Configure command on  Dish Master
         :rtype: tuple
         """
+        self.logger.info("Processing Configure command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
-
-        self.logger.info("Processing Configure command")
         return [ResultCode.OK], ["Configure completed"]
 
     def is_ConfigureBand1_allowed(self) -> bool:
@@ -519,9 +520,10 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
+        self.logger.info("Processing ConfigureBand1 Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand1")
-        self.logger.info("Processing ConfigureBand1 Command")
 
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
@@ -552,9 +554,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes ConfigureBand2 command on Dish Master
         :rtype: tuple
         """
+        self.logger.info("Processing ConfigureBand2 Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand2")
-        self.logger.info("Processing ConfigureBand2 Command")
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.CONFIG)
@@ -595,9 +598,10 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand3 command on  Dish Master
         """
+        self.logger.info("Processing ConfigureBand3 Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand3")
-        self.logger.info("Processing ConfigureBand3 Command")
 
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
@@ -627,6 +631,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand4 command on Dish Master
         """
+        self.logger.info("Processing ConfigureBand4 Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand4")
 
@@ -660,6 +666,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand5a command on Dish Master
         """
+        self.logger.info("Processing ConfigureBand5a Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand5a")
         # Set dish mode
@@ -692,6 +700,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand5b command on Dish Master
         """
+        self.logger.info("Processing ConfigureBand5b Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand5b")
         # Set dish mode
@@ -721,8 +731,10 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes Slew command on Dish Master
         """
+        self.logger.info("Processing Slew Command")
+
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand5b")
+            return self.induce_fault("Slew")
 
         if not self.defective_params["enabled"]:
             if self._pointing_state != PointingState.SLEW:
@@ -780,6 +792,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes Scan command on Dish Master
         """
+        self.logger.info("Processing Scan Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
 
@@ -814,6 +828,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Reset command on Dish Master
         :rtype:tuple
         """
+        self.logger.info("Processing Reset Command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Reset")
 

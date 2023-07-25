@@ -53,7 +53,7 @@ HELPER_CSP_MASTER_DEVICE = "test/csp_master/1"
 DISH_FQDN = "ska_mid/tm_leaf_node/d0001"
 TMC_COMMON_DEVICE = "src/tmc/common"
 
-RESET_DEFECT = {
+FAILED_RESULT_DEFECT = {
     "enabled": True,
     "fault_type": FaultType.FAILED_RESULT,
     "error_message": "Device is Defective, cannot process command completely.",
