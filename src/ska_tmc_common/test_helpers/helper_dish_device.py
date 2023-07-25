@@ -19,6 +19,7 @@ from .constants import (
     ABORT,
     ABORT_COMMANDS,
     CONFIGURE,
+    CONFIGURE_BAND_2,
     RESTART,
     SET_OPERATE_MODE,
     SET_STANDBY_FP_MODE,
@@ -567,7 +568,7 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: tuple
         """
         # to record the command data
-        self.update_command_info(CONFIGURE, argin)
+        self.update_command_info(CONFIGURE_BAND_2, argin)
 
         current_dish_mode = self._dish_mode
         if not self._defective:
