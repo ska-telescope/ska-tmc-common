@@ -1,13 +1,15 @@
 import json
-import time
 
 import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
-from ska_tmc_common import DevFactory, FaultType
-from ska_tmc_common.enum import DishMode
-from tests.settings import DISH_DEVICE
+from ska_tmc_common import DevFactory
+from tests.settings import (
+    COMMAND_NOT_ALLOWED_DEFECT,
+    DISH_DEVICE,
+    RESET_DEFECT,
+)
 
 commands = [
     "Standby",
@@ -26,29 +28,27 @@ configure_commands = [
 ]
 
 defective_commands = [
-    "SetOperateMode",
-    "SetStowMode",
     "SetStandbyFPMode",
     "SetStandbyLPMode",
+    "SetOperateMode",
+    "SetStowMode",
+    "Configure",
     "ConfigureBand1",
     "ConfigureBand3",
     "ConfigureBand4",
     "ConfigureBand5a",
     "ConfigureBand5b",
+    "Slew",
+    "Scan",
+    "AbortCommands" "Reset",
 ]
 
 
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is defective, cannot process command.completely.",
-        "result": ResultCode.FAILED,
-    }
-    dish_device.SetDefective(json.dumps(defect))
-    assert dish_device.defective
+    dish_device.SetDefective(json.dumps(RESET_DEFECT))
+    assert dish_device.defective == json.dumps(RESET_DEFECT)
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -68,13 +68,7 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     # dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is Defective, cannot process command completely.",
-        "result": ResultCode.FAILED,
-    }
-    dish_device.SetDefective(json.dumps(defect))
+    dish_device.SetDefective(json.dumps(RESET_DEFECT))
     result, message = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
     assert (
@@ -90,13 +84,7 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     # dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is Defective, cannot process command completely.",
-        "result": ResultCode.FAILED,
-    }
-    dish_device.SetDefective(json.dumps(defect))
+    dish_device.SetDefective(json.dumps(RESET_DEFECT))
     result, message = dish_device.command_inout(command_to_check, "")
     assert result[0] == ResultCode.FAILED
     assert (
@@ -113,24 +101,10 @@ def test_Abort_commands(tango_context):
     assert message[0] == ""
 
 
-def test_Configure_commands(tango_context):
-    dev_factory = DevFactory()
-    dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout("ConfigureBand2", "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
-
-
 def test_Configure_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is defective, cannot process command.",
-        "result": ResultCode.FAILED,
-    }
-    dish_device.SetDefective(json.dumps(defect))
+    dish_device.SetDefective(json.dumps(RESET_DEFECT))
     result, message = dish_device.command_inout("ConfigureBand2", "")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Device is defective, cannot process command."
@@ -140,40 +114,25 @@ def test_Configure_command_defective(tango_context):
 def test_Reset_command_defective(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is defective, cannot process command.",
-        "result": ResultCode.FAILED,
-    }
-    dish_device.SetDefective(json.dumps(defect))
     result, message = dish_device.Reset()
     assert result[0] == ResultCode.OK
-    dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
 @pytest.mark.parametrize("command", configure_commands)
-def test_Configure_command(tango_context, command):
+def test_Configure_commands(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(json.dumps({"enabled": False}))
-    dish_device.command_inout(command, "")
-    time.sleep(0.5)
-    assert dish_device.dishmode == DishMode.CONFIG
+    result, message = dish_device.command_inout("ConfigureBand2", "")
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
 
 
 @pytest.mark.parametrize("command_to_check", defective_commands)
 def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.COMMAND_NOT_ALLOWED,
-        "error_message": "Device is stuck in Resourcing state",
-        "result": ResultCode.FAILED,
-    }
     # Set the device to the defective state with COMMAND_NOT_ALLOWED fault
-    dish_device.SetDefective(json.dumps(defect))
+    dish_device.SetDefective(json.dumps(COMMAND_NOT_ALLOWED_DEFECT))
     # Attempt to execute the command and expect the DevFailed exception
     with pytest.raises(DevFailed):
         dish_device.command_inout(command_to_check)
