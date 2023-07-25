@@ -18,7 +18,6 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
-# pylint: disable=too-many-public-methods
 class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 
@@ -79,15 +78,6 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: DishMode
         """
         return self._dish_mode
-
-    @command(
-        dtype_in=int,
-        doc_in="Set Delay",
-    )
-    def SetDelay(self, value: int) -> None:
-        """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
-        self._delay = value
 
     @command(
         dtype_in=DevEnum,
