@@ -19,8 +19,7 @@ from ska_telmodel.data import TMData
 
 LAYOUT_PATH = "instrument/ska1_mid/layout/mid-layout.json"
 GITLAB_MAIN_PATH = "gitlab://gitlab.com/ska-telescope/"
-GITLAB_SUB_PATH = "sdp/ska-sdp-tmlite-repository?main#tmdata"
-
+GITLAB_SUB_PATH = "ska-telmodel-data?main#tmdata"
 logger = logging.getLogger(__name__)
 
 

@@ -17,6 +17,7 @@ from ska_tmc_common import (
     DevFactory,
     DeviceInfo,
     DishDeviceInfo,
+    FaultType,
     InputParameter,
     LivelinessProbeType,
     LRCRCallback,
@@ -51,6 +52,20 @@ HELPER_DISH_DEVICE = "test/dish/1"
 HELPER_CSP_MASTER_DEVICE = "test/csp_master/1"
 DISH_FQDN = "ska_mid/tm_leaf_node/d0001"
 TMC_COMMON_DEVICE = "src/tmc/common"
+
+FAILED_RESULT_DEFECT = {
+    "enabled": True,
+    "fault_type": FaultType.FAILED_RESULT,
+    "error_message": "Device is defective, cannot process command completely.",
+    "result": ResultCode.FAILED,
+}
+
+COMMAND_NOT_ALLOWED_DEFECT = {
+    "enabled": True,
+    "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+    "error_message": "Device is stuck in Resourcing state",
+    "result": ResultCode.FAILED,
+}
 
 
 @unique
