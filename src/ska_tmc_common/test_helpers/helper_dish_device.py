@@ -63,7 +63,7 @@ class HelperDishDevice(HelperBaseDevice):
 
         :rtype: str
         """
-        return self.defective_params
+        return self._defective
 
     def read_pointingState(self) -> PointingState:
         """
@@ -78,6 +78,15 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: DishMode
         """
         return self._dish_mode
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, value: int) -> None:
+        """Update delay value"""
+        self.logger.info("Setting the Delay value to : %s", value)
+        self._delay = value
 
     @command(
         dtype_in=DevEnum,
@@ -117,15 +126,6 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != value:
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
-
-    @command(
-        dtype_in=int,
-        doc_in="Set Delay",
-    )
-    def SetDelay(self, value: int) -> None:
-        """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
-        self._delay = value
 
     def set_dish_mode(self, dishMode: DishMode) -> None:
         """
@@ -509,7 +509,7 @@ class HelperDishDevice(HelperBaseDevice):
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
-        return [ResultCode.OK], ["Configure completed"]
+        return [ResultCode.OK], [""]
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
