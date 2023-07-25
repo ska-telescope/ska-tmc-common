@@ -64,7 +64,8 @@ disable=abstract-method,broad-exception-raised,broad-exception-caught,
         arguments-renamed,redefined-builtin,
         redefined-outer-name,arguments-differ,
         protected-access,invalid-name,
-        no-member,unused-argument
+        no-member,unused-argument,
+        too-many-public-methods,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
