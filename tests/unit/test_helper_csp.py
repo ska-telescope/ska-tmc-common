@@ -23,4 +23,4 @@ def test_csp_command_defective(tango_context, command):
     csp_device.SetDefective(True)
     result, message = csp_device.command_inout(command, "")
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Device is Defective, cannot process command."
+    assert message[0] == "Device is defective, cannot process command."

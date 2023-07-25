@@ -46,14 +46,14 @@ def test_assign_resources_failed_result(tango_context):
     defect = {
         "enabled": True,
         "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is Defective, cannot process command completely.",
+        "error_message": "Device is defective, cannot process command.completely.",
         "result": ResultCode.FAILED,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
     result, message = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert (
-        message[0] == "Device is Defective, cannot process command completely."
+        message[0] == "Device is defective, cannot process command.completely."
     )
     subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
