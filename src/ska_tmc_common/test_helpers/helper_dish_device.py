@@ -783,14 +783,9 @@ class HelperDishDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
 
-        if not self._defective:
             # TBD: Add your dish mode change logic here if required
-            self.logger.info("Processing Scan")
-            return ([ResultCode.OK], [""])
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self.logger.info("Processing Scan")
+        return ([ResultCode.OK], [""])
 
     def is_Reset_allowed(self) -> bool:
         """
@@ -817,13 +812,8 @@ class HelperDishDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Reset")
 
-        if not self._defective:
             # TBD: Add your dish mode change logic here if required
-            return ([ResultCode.OK], [""])
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return ([ResultCode.OK], [""])
 
 
 # ----------

@@ -56,7 +56,7 @@ TMC_COMMON_DEVICE = "src/tmc/common"
 RESET_DEFECT = {
     "enabled": True,
     "fault_type": FaultType.FAILED_RESULT,
-    "error_message": "Device is Defective, cannot process command completely.",
+    "error_message": "Device is defective, cannot process command completely.",
     "result": ResultCode.FAILED,
 }
 
