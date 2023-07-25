@@ -51,6 +51,11 @@ class HelperDishDevice(HelperBaseDevice):
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
+    delay = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_delay(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return self._delay
 
     def read_defective(self) -> str:
         """
@@ -73,6 +78,15 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: DishMode
         """
         return self._dish_mode
+
+    @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, value: int) -> None:
+        """Update delay value"""
+        self.logger.info("Setting the Delay value to : %s", value)
+        self._delay = value
 
     @command(
         dtype_in=DevEnum,
