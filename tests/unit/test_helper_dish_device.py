@@ -54,14 +54,24 @@ def test_dish_commands(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.parametrize("command", commands)
-def test_dish_command_defective(tango_context, command):
+@pytest.mark.parametrize("command_to_check", defective_commands)
+def test_dish_command_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
+    # dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDefective(True)
-    result, message = dish_device.command_inout(command)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is Defective, cannot process command completely.",
+        "result": ResultCode.FAILED,
+    }
+    dish_device.SetDefective(json.dumps(defect))
+    result, message = dish_device.command_inout(command_to_check, "")
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Device is defective, cannot process command."
+    assert (
+        message[0] == "Device is Defective, cannot process command completely."
+    )
+    dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_Abort_commands(tango_context):
@@ -122,7 +132,7 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     with pytest.raises(DevFailed):
         dish_device.command_inout(command_to_check, "")
     # Clear the defect and ensure the command can be executed when not defective
-    dish_device.SetDefective(json.dumps({"enabled": False}))
     result, message = dish_device.command_inout(command_to_check, "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
+    dish_device.SetDefective(json.dumps({"enabled": False}))
