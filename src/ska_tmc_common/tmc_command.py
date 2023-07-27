@@ -195,6 +195,11 @@ class BaseTMCCommand:
                     obsstate_sequence_set = OrderedSet(self.obsstate_sequence)
                     achieved_obsstate_sequence = obsstate_sequence_set[-2::1]
                     if achieved_obsstate_sequence == expected_state:
+                        self.logger.info(
+                            f"Achieved ObsState is: \
+                            {achieved_obsstate_sequence}"
+                        )
+                        self.logger.info(f"expected_state: {expected_state}")
                         self.obsstate_sequence.clear()
                         self.logger.info(
                             "State change has occured, command succeded"
