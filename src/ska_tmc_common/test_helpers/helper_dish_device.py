@@ -189,6 +189,34 @@ class HelperDishDevice(HelperBaseDevice):
         command_result = (command_id, json.dumps(result))
         self.push_change_event("longRunningCommandResult", command_result)
 
+    def post_command_failed(self, command_name: str) -> None:
+        """
+        This method executes the instructions after failure of given
+        command
+        :params:
+
+        command_name: Name of the command
+        dtype: str
+        rtype: None
+        """
+        self.logger.info(" %s command failed", command_name)
+        self.push_command_result(ResultCode.FAILED, command_name)
+        return ([ResultCode.FAILED], [f"{command_name} command failed"])
+
+    def post_command_success(self, command_name: str) -> None:
+        """
+        This method executes the instructions after success of given
+        command
+        :params:
+
+        command_name: Name of the command
+        dtype: str
+        rtype: None
+        """
+        self.push_command_result(ResultCode.OK, command_name)
+        self.logger.info("Successfully processed %s command", command_name)
+        return ([ResultCode.OK], [""])
+
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby Command is allowed in current State.
@@ -218,10 +246,12 @@ class HelperDishDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(ResultCode.OK, "Standby")
-        return ([ResultCode.OK], [""])
+        if self.dev_state() == DevState.STANDBY:
+            # Set the Dish Mode
+            self.set_dish_mode(DishMode.STANDBY_LP)
+            return self.post_command_success(command_name="Standby")
+
+        return self.post_command_failed(command_name="Standby")
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -254,10 +284,12 @@ class HelperDishDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+        if self.dev_state() == DevState.STANDBY:
             # Set the Dish Mode
             self.set_dish_mode(DishMode.STANDBY_FP)
-        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
-        return ([ResultCode.OK], [""])
+            return self.post_command_success(command_name="SetStandbyFPMode")
+
+        return self.post_command_failed(command_name="SetStandbyFPMode")
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
@@ -293,13 +325,15 @@ class HelperDishDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set the Pointing state
-        if self._pointing_state == PointingState.NONE:
+        if self._pointing_state != PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
+        if self._pointing_state == PointingState.NONE:
             # Set the Dish ModeLP
             self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
-        return ([ResultCode.OK], [""])
+            return self.post_command_success(command_name="SetStandbyLPMode")
+
+        return self.post_command_failed(command_name="SetStandbyLPMode")
 
     def is_SetOperateMode_allowed(self) -> bool:
         """
@@ -338,10 +372,12 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
+        if self._pointing_state == PointingState.READY:
             # Set the Dish Mode
             self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "SetOperateMode")
-        return ([ResultCode.OK], [""])
+            return self.post_command_success(command_name="SetOperateMode")
+
+        return self.post_command_failed(command_name="SetOperateMode")
 
     def is_SetStowMode_allowed(self) -> bool:
         """
@@ -373,11 +409,13 @@ class HelperDishDevice(HelperBaseDevice):
         # Set device state
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            self.push_change_event("State", self.dev_state())
             time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
+        if self.dev_state() == DevState.DISABLE:
             self.set_dish_mode(DishMode.STOW)
-        self.push_command_result(ResultCode.OK, "SetStowMode")
-        return ([ResultCode.OK], [""])
+            return self.post_command_success(command_name="SetStowMode")
+
+        return self.post_command_failed(command_name="SetStowMode")
 
     def is_Track_allowed(self) -> bool:
         """
@@ -410,10 +448,13 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.TRACK:
             self._pointing_state = PointingState.TRACK
             self.push_change_event("pointingState", self._pointing_state)
+
+        if self._pointing_state == PointingState.TRACK:
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "Track")
-        return ([ResultCode.OK], [""])
+            return self.post_command_success(command_name="Track")
+
+        return self.post_command_failed(command_name="Track")
 
     def is_TrackStop_allowed(self) -> bool:
         """
@@ -446,11 +487,13 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
-            self.logger.info("Pointing State: %s", self._pointing_state)
+
+        if self._pointing_state == PointingState.READY:
             # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "TrackStop")
-        return ([ResultCode.OK], [""])
+            return self.post_command_success(command_name="TrackStop")
+
+        return self.post_command_failed(command_name="TrackStop")
 
     def is_AbortCommands_allowed(self) -> bool:
         """
@@ -581,8 +624,7 @@ class HelperDishDevice(HelperBaseDevice):
             args=[current_dish_mode],
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "ConfigureBand2")
-        return ([ResultCode.OK], [""])
+        return self.post_command_success(command_name="ConfigureBand2")
 
     def update_dish_mode(self, value) -> None:
         """Sets the dish mode back to original state."""
