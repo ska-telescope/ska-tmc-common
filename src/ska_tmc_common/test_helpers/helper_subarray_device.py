@@ -213,6 +213,7 @@ class HelperSubArrayDevice(SKASubarray):
             time.sleep(self._delay)
             self._obs_state = value
             time.sleep(0.1)
+            self.logger.info("ObsState is: %s", self._obs_state)
             self.push_change_event("obsState", self._obs_state)
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
@@ -514,6 +515,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        self.logger.info("Configure command is allowed")
         return True
 
     @command(
@@ -528,9 +530,11 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Configure command invoked")
         if not self._defective:
             if self._obs_state in [ObsState.READY, ObsState.IDLE]:
                 self._obs_state = ObsState.CONFIGURING
+                self.logger.info("ObsState is: %s", self._obs_state)
                 self.push_change_event("obsState", self._obs_state)
                 thread = threading.Thread(
                     target=self.update_device_obsstate, args=[ObsState.READY]
