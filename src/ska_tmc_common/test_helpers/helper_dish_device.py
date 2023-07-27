@@ -293,7 +293,7 @@ class HelperDishDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set the Pointing state
-        if self._pointing_state != PointingState.NONE:
+        if self._pointing_state == PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
             # Set the Dish ModeLP
