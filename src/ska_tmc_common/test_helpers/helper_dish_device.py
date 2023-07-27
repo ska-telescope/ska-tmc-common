@@ -575,7 +575,7 @@ class HelperDishDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         current_dish_mode = self._dish_mode
-        self.set_dish_mode(DishMode.CONFIG)        
+        self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
             target=self.update_dish_mode,
             args=[current_dish_mode],
