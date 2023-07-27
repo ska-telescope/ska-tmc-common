@@ -11,6 +11,7 @@ from logging import Logger
 from operator import methodcaller
 from typing import Callable, Optional, Tuple, Union
 
+from ordered_set import OrderedSet
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
@@ -50,6 +51,7 @@ class BaseTMCCommand:
         self.logger = logger
         self.tracker_thread: threading.Thread
         self._stop: bool
+        self.obsstate_sequence = []
 
     # pylint: disable=inconsistent-return-statements
     def adapter_creation_retry(
@@ -188,7 +190,12 @@ class BaseTMCCommand:
         with EnsureOmniThread():
             while not self._stop:
                 try:
-                    if state_function() == expected_state:
+                    current_state = state_function()
+                    self.obsstate_sequence.append(current_state)
+                    obsstate_sequence_set = OrderedSet(self.obsstate_sequence)
+                    achieved_obsstate_sequence = obsstate_sequence_set[-2::1]
+                    if achieved_obsstate_sequence == expected_state:
+                        self.obsstate_sequence.clear()
                         self.logger.info(
                             "State change has occured, command succeded"
                         )

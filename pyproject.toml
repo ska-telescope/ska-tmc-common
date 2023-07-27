@@ -42,7 +42,7 @@ flake8-rst-docstrings = "^0.3.0"
 docstr-coverage = "^2.1.1"
 darglint = "^1.8.1"
 pylint-junit = "^0.3.2"
-
+ordered-set = "^4.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
