@@ -62,7 +62,7 @@ class DishHelper:
         )
         antenna_param.antenna_location = antenna_location
         antenna_param.dish_diameter = antenna_params["diameter"]
-        antenna_param.antenna_station_name = antenna_params["station_id"]
+        antenna_param.antenna_station_name = antenna_params["station_label"]
         return antenna_param
 
     def dd_to_dms(self, argin):
