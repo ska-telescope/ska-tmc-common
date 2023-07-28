@@ -182,6 +182,12 @@ class HelperDishDevice(HelperBaseDevice):
         exception: Exception message to be pushed as an event
         dtype: str
         """
+        if result == ResultCode.OK:
+            self.logger.info("Successfully processed %s command", command)
+        else:
+            self.logger.info(
+                "Command %s failed, ResultCode: %d", command, result
+            )
         command_id = f"{time.time()}-{command}"
         if exception:
             command_result = (command_id, exception)
@@ -254,8 +260,9 @@ class HelperDishDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            # Set the Dish Mode
-            self.set_dish_mode(DishMode.STANDBY_FP)
+
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.STANDBY_FP)
         self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
         return ([ResultCode.OK], [""])
 
@@ -296,8 +303,9 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.NONE:
             self._pointing_state = PointingState.NONE
             self.push_change_event("pointingState", self._pointing_state)
-            # Set the Dish ModeLP
-            self.set_dish_mode(DishMode.STANDBY_LP)
+
+        # Set the Dish ModeLP
+        self.set_dish_mode(DishMode.STANDBY_LP)
         self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
         return ([ResultCode.OK], [""])
 
@@ -338,8 +346,9 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
-            # Set the Dish Mode
-            self.set_dish_mode(DishMode.OPERATE)
+
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "SetOperateMode")
         return ([ResultCode.OK], [""])
 
@@ -373,9 +382,10 @@ class HelperDishDevice(HelperBaseDevice):
         # Set device state
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            self.push_change_event("State", self.dev_state())
             time.sleep(0.1)
-            self.set_dish_mode(DishMode.STOW)
+            self.push_change_event("State", self.dev_state())
+        # Set Dish Mode
+        self.set_dish_mode(DishMode.STOW)
         self.push_command_result(ResultCode.OK, "SetStowMode")
         return ([ResultCode.OK], [""])
 
@@ -410,8 +420,9 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.TRACK:
             self._pointing_state = PointingState.TRACK
             self.push_change_event("pointingState", self._pointing_state)
-            # Set dish mode
-            self.set_dish_mode(DishMode.OPERATE)
+
+        # Set dish mode
+        self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "Track")
         return ([ResultCode.OK], [""])
 
@@ -446,9 +457,9 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.READY:
             self._pointing_state = PointingState.READY
             self.push_change_event("pointingState", self._pointing_state)
-            self.logger.info("Pointing State: %s", self._pointing_state)
-            # Set dish mode
-            self.set_dish_mode(DishMode.OPERATE)
+
+        # Set dish mode
+        self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "TrackStop")
         return ([ResultCode.OK], [""])
 
@@ -574,8 +585,8 @@ class HelperDishDevice(HelperBaseDevice):
             return self.induce_fault("ConfigureBand2")
 
         # Set the Dish Mode
-        self.set_dish_mode(DishMode.CONFIG)
         current_dish_mode = self._dish_mode
+        self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
             target=self.update_dish_mode,
             args=[current_dish_mode],

@@ -112,11 +112,10 @@ class HelperBaseDevice(SKABaseDevice):
         :param tango.DevState
         """
         # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            if self.dev_state() != argin:
-                self.set_state(argin)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.dev_state() != argin:
+            self.set_state(argin)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
 
     @command(
         dtype_in=bool,
@@ -144,11 +143,10 @@ class HelperBaseDevice(SKABaseDevice):
         :param tango.DevState
         """
         # import debugpy; debugpy.debug_this_thread()
-        if not self._defective:
-            value = HealthState(argin)
-            if self._health_state != value:
-                self._health_state = HealthState(argin)
-                self.push_change_event("healthState", self._health_state)
+        value = HealthState(argin)
+        if self._health_state != value:
+            self._health_state = HealthState(argin)
+            self.push_change_event("healthState", self._health_state)
 
     @command(
         dtype_in=bool,

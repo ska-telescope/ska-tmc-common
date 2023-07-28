@@ -116,6 +116,20 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
         self.timer_object: threading.Timer
         self.liveliness_probe_object: BaseLivelinessProbe
+        self._command_id: str = ""
+
+    @property
+    def command_id(self) -> str:
+        """Read method for reading command id used for error propagation."""
+        with self.lock:
+            return self._command_id
+
+    @command_id.setter
+    def command_id(self, value: str) -> None:
+        """Sets the command id used for error propagation."""
+        with self.lock:
+            self.logger.info("Setting the command id as: %s", value)
+            self._command_id = value
 
     def is_command_allowed(self, command_name: str):
         """
