@@ -224,7 +224,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.logger.info("Starting tracker for timeout and exceptions.")
             self.start_tracker_thread(
                 self.get_state,
-                State.CHANGED,
+                [State.CHANGED],
                 self._timeout_id,
                 self.timeout_callback,
                 self.component_manager.command_id,

@@ -9,7 +9,7 @@ import time
 from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union, List
 
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
@@ -162,7 +162,7 @@ class BaseTMCCommand:
     def track_transitions(
         self,
         state_function: Callable,
-        expected_state: list,
+        expected_state: List[IntEnum],
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
