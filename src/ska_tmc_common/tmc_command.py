@@ -9,7 +9,7 @@ import time
 from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, Optional, Tuple, Union, List
+from typing import Callable, List, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
