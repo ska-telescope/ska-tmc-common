@@ -52,6 +52,16 @@ class BaseTMCCommand:
         self._stop: bool
         self.obsstate_sequence = []
 
+    def set_command_id(self, command_name: str):
+        """Sets the command id for error propagation."""
+        command_id = f"{time.time()}-{command_name}"
+        self.logger.info(
+            "Setting command id as %s for command: %s",
+            command_id,
+            command_name,
+        )
+        self.component_manager.command_id = command_id
+
     # pylint: disable=inconsistent-return-statements
     def adapter_creation_retry(
         self,
