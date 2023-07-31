@@ -118,7 +118,7 @@ class BaseTMCCommand:
     def start_tracker_thread(
         self,
         state_function: Callable,
-        expected_state: IntEnum,
+        expected_state: List[IntEnum],
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
