@@ -11,7 +11,6 @@ from logging import Logger
 from operator import methodcaller
 from typing import Callable, Optional, Tuple, Union
 
-from ordered_set import OrderedSet
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
@@ -163,7 +162,7 @@ class BaseTMCCommand:
     def track_transitions(
         self,
         state_function: Callable,
-        expected_state: IntEnum,
+        expected_state: list,
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -188,24 +187,24 @@ class BaseTMCCommand:
                     attribute longRunningCommandResult arrives.
         """
         with EnsureOmniThread():
+            index = 0
+            state_to_achieve = expected_state[index]
             while not self._stop:
                 try:
-                    current_state = state_function()
-                    self.obsstate_sequence.append(current_state)
-                    obsstate_sequence_set = OrderedSet(self.obsstate_sequence)
-                    achieved_obsstate_sequence = obsstate_sequence_set[-2::1]
-                    if achieved_obsstate_sequence == expected_state:
+                    if state_function() == state_to_achieve:
                         self.logger.info(
-                            f"Achieved ObsState is: \
-                            {achieved_obsstate_sequence}"
+                            "State change has occured, current state is %s",
+                            state_to_achieve,
                         )
-                        self.logger.info(f"expected_state: {expected_state}")
-                        self.obsstate_sequence.clear()
-                        self.logger.info(
-                            "State change has occured, command succeded"
-                        )
-                        self.update_task_status(result=ResultCode.OK)
-                        self.stop_tracker_thread(timeout_id)
+                        if len(expected_state) > index + 1:
+                            index += 1
+                            state_to_achieve = expected_state[index]
+                        else:
+                            self.logger.info(
+                                "State change has occured, command successful"
+                            )
+                            self.update_task_status(result=ResultCode.OK)
+                            self.stop_tracker_thread(timeout_id)
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
