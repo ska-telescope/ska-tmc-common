@@ -279,7 +279,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.RESOURCING, ObsState.IDLE],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "AssignResources")
@@ -319,7 +321,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.CONFIGURING
         self.push_obs_state_event(self._obs_state)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.READY]
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.CONFIGURING, ObsState.READY],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Configure")
@@ -499,7 +503,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.ABORTING
         self.push_obs_state_event(self._obs_state)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.ABORTED]
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.ABORTING, ObsState.ABORTED],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Abort")
@@ -537,7 +543,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.RESTARTING
         self.push_obs_state_event(self._obs_state)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.RESTARTING, ObsState.EMPTY],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Restart")
@@ -576,7 +584,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.RESOURCING, ObsState.EMPTY],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseAllResources")
@@ -619,7 +629,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.RESOURCING, ObsState.IDLE],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseResources")
