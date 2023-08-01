@@ -203,4 +203,3 @@ def test_release_resources_defective(tango_context):
     assert sdp_subarray_device.defective
     assert sdp_subarray_device.obsState == ObsState.RESOURCING
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
-   

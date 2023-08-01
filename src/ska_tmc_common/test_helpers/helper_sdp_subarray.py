@@ -71,8 +71,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
-    obsState = attribute(dtype=ObsState, access=AttrWriteType.READ)
-
     def read_receiveAddresses(self):
         """Returns receive addresses."""
         return self._receive_addresses
@@ -81,7 +79,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         Returns defective status of devices
 
-        :rtype: dict
+        :rtype: str
         """
         return self._defective
 
@@ -92,19 +90,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def read_obsState(self) -> ObsState:
         """This method is used to read the attribute value for obsState."""
         return self._obs_state
-
-    @command(
-        dtype_in=int,
-        doc_in="Set Defective parameters",
-    )
-    def SetDirectObsState(self, value: ObsState) -> None:
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
-        self.logger.info("Setting device obsState to %s", value.name)
-        self._obs_state = value
 
     @command(
         dtype_in=str,
@@ -289,10 +274,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "AssignResources")
 
-        # if self._obs_state != ObsState.IDLE:
-        #     self._obs_state = ObsState.IDLE
-        #     self.push_change_event("obsState", self._obs_state)
-
     def is_ReleaseResources_allowed(self):
         """
         Check if command `ReleaseResources` is allowed in the current device
@@ -403,16 +384,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "Configure")
 
-        # input = json.loads(argin)
-        # if "scan_type" not in input:
-        #     self.logger.info("Missing scan_type in the Configure input json")
-        #     raise tango.Except.throw_exception(
-        #         "Incorrect input json string",
-        #         "Missing scan_type in the Configure input json",
-        #         "SdpSubarry.Configure()",
-        #         tango.ErrSeverity.ERR,
-        #     )
-
     def is_Scan_allowed(self):
         """
         Check if command `Scan` is allowed in the current device state.
@@ -451,20 +422,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._obs_state = ObsState.SCANNING
         self.push_obs_state_event(self._obs_state)
         self.push_command_result(ResultCode.OK, "Scan")
-
-        # input = json.loads(argin)
-        # if "scan_id" not in input:
-        #     self.logger.info("Missing scan_id in the Scan input json")
-        #     raise tango.Except.throw_exception(
-        #         "Incorrect input json string",
-        #         "Missing scan_id in the Scan input json",
-        #         "SdpSubarry.Configure()",
-        #         tango.ErrSeverity.ERR,
-        #     )
-
-        # if self._obs_state != ObsState.SCANNING:
-        #     self._obs_state = ObsState.SCANNING
-        #     self.push_change_event("obsState", self._obs_state)
 
     def is_EndScan_allowed(self):
         """
