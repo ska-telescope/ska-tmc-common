@@ -204,10 +204,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "On",
             )
-
-        self.set_state(DevState.ON)
-        self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "On")
+        else:
+            self.set_state(DevState.ON)
+            self.push_change_event("State", self.dev_state())
+            self.push_command_result(ResultCode.OK, "On")
 
     def is_Off_allowed(self) -> bool:
         if self.defective_params["enabled"]:
@@ -224,10 +224,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "Off",
             )
-
-        self.set_state(DevState.OFF)
-        self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Off")
+        else:
+            self.set_state(DevState.OFF)
+            self.push_change_event("State", self.dev_state())
+            self.push_command_result(ResultCode.OK, "Off")
 
     def is_AssignResources_allowed(self):
         """
@@ -266,13 +266,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "AssignResources",
             )
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "AssignResources")
+        else:
+            self._obs_state = ObsState.RESOURCING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "AssignResources")
 
     def is_ReleaseResources_allowed(self):
         """
@@ -298,14 +299,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "ReleaseResources",
             )
-
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "ReleaseResources")
+        else:
+            self._obs_state = ObsState.RESOURCING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "ReleaseResources")
 
     def is_ReleaseAllResources_allowed(self):
         """
@@ -331,14 +332,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "ReleaseAllResources",
             )
-
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        else:
+            self._obs_state = ObsState.RESOURCING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "ReleaseAllResources")
 
     def is_Configure_allowed(self):
         """
@@ -375,14 +376,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "Configure",
             )
-
-        self._obs_state = ObsState.CONFIGURING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.READY]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "Configure")
+        else:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.READY]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "Configure")
 
     def is_Scan_allowed(self):
         """
@@ -418,10 +419,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "Scan",
             )
-
-        self._obs_state = ObsState.SCANNING
-        self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "Scan")
+        else:
+            self._obs_state = ObsState.SCANNING
+            self.push_obs_state_event(self._obs_state)
+            self.push_command_result(ResultCode.OK, "Scan")
 
     def is_EndScan_allowed(self):
         """
@@ -445,10 +446,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "EndScan",
             )
-
-        self._obs_state = ObsState.READY
-        self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "EndScan")
+        else:
+            self._obs_state = ObsState.READY
+            self.push_obs_state_event(self._obs_state)
+            self.push_command_result(ResultCode.OK, "EndScan")
 
     def is_End_allowed(self):
         """
@@ -472,14 +473,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "End",
             )
-
-        self._obs_state = ObsState.CONFIGURING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "End")
+        else:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "End")
 
     def is_Abort_allowed(self):
         """
@@ -503,14 +504,16 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "Abort",
             )
-
-        self._obs_state = ObsState.ABORTING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.ABORTED]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "Abort")
+        else:
+            self._obs_state = ObsState.ABORTING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay,
+                self.update_device_obsstate,
+                args=[ObsState.ABORTED],
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "Abort")
 
     def is_Restart_allowed(self):
         """
@@ -534,14 +537,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "Restart",
             )
-
-        self._obs_state = ObsState.RESTARTING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "Restart")
+        else:
+            self._obs_state = ObsState.RESTARTING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "Restart")
 
 
 def main(args=None, **kwargs):
