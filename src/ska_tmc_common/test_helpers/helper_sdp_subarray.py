@@ -250,29 +250,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "Off")
 
-    def is_Standby_allowed(self) -> bool:
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Standby(self):
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Standby",
-            )
-
-        self.set_state(DevState.STANDBY)
-        self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Standby")
-
     def is_AssignResources_allowed(self):
         """
         Check if command `AssignResources` is allowed in the current device
@@ -614,19 +591,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Restart")
-
-    # def raise_exception_for_defective_device(
-    #     self, command_name: str, exception: str
-    # ):
-    #     """This method raises an exception if SdpSubarray device is
-    #     defective."""
-    #     self.logger.info(exception)
-    #     raise tango.Except.throw_exception(
-    #         "Device is Defective.",
-    #         exception,
-    #         command_name,
-    #         tango.ErrSeverity.ERR,
-    #     )
 
 
 def main(args=None, **kwargs):

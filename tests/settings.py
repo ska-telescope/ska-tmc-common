@@ -10,6 +10,7 @@ from logging import Logger
 from typing import Any, Callable, Optional, Tuple
 
 import tango
+from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 
@@ -279,3 +280,29 @@ def set_device_state(
     proxy = devFactory.get_device(device)
     proxy.SetDirectState(state)
     assert proxy.State() == state
+
+
+def wait_for_obstate(device: tango.DeviceProxy, expected_obsstate: ObsState):
+    """
+    Waits for Device ObsState to transition to Expected ObsState.
+    Raises an Exception in case of failure."""
+    device_obsstate = device.read_attribute("obsState").value
+    start_time = time.time()
+    elapsed_time = 0
+    logger.info("Current %s ObsState is : %s", device, device_obsstate)
+    while device_obsstate != expected_obsstate:
+        device_obsstate = device.read_attribute("obsState").value
+        elapsed_time = time.time() - start_time
+        if elapsed_time > TIMEOUT:
+            logger.exception(
+                "Timeout occured while waiting for %s ObsState to transition\
+                    to %s",
+                device,
+                expected_obsstate,
+            )
+            raise Exception(
+                f"Timeout occured while waiting for {device} ObsState to \
+                    transition to {expected_obsstate}"
+            )
+    logger.info("ObsState of %s transitioned to %s", device, expected_obsstate)
+    assert device.read_attribute("obsState").value == expected_obsstate

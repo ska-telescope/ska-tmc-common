@@ -3,12 +3,13 @@ import time
 from os.path import dirname, join
 
 import pytest
+from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 from tango import DevFailed, DevState
 
-from ska_tmc_common import DevFactory
+from ska_tmc_common import DevFactory, FaultType
 from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
-from tests.settings import SDP_SUBARRAY_DEVICE
+from tests.settings import SDP_SUBARRAY_DEVICE, wait_for_obstate
 
 commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
 
@@ -47,11 +48,18 @@ def devices_to_load():
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
-    assert not sdp_subarray_device.defective
-    sdp_subarray_device.SetDefective(True)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is defective, cannot process command.completely.",
+        "result": ResultCode.FAILED,
+    }
+    sdp_subarray_device.SetDefective(json.dumps(defect))
     assert sdp_subarray_device.defective
+    sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.kk
 def test_on_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
@@ -70,42 +78,42 @@ def test_release_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     sdp_subarray_device.ReleaseResources()
-    assert sdp_subarray_device.obsState == ObsState.EMPTY
+    wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
 
 def test_release_all_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
-    sdp_subarray_device.ReleaseResources()
-    assert sdp_subarray_device.obsState == ObsState.EMPTY
+    sdp_subarray_device.ReleaseAllResources()
+    wait_for_obstate(sdp_subarray_device, ObsState.EMPTY)
 
 
 def test_endscan_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     sdp_subarray_device.EndScan()
-    assert sdp_subarray_device.obsState == ObsState.READY
+    wait_for_obstate(sdp_subarray_device, ObsState.READY)
 
 
 def test_end_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     sdp_subarray_device.End()
-    assert sdp_subarray_device.obsState == ObsState.IDLE
+    wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
 
 def test_abort_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     sdp_subarray_device.Abort()
-    assert sdp_subarray_device.obsState == ObsState.ABORTED
+    wait_for_obstate(sdp_subarray_device, ObsState.ABORTED)
 
 
 def test_restart_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     sdp_subarray_device.Restart()
-    assert sdp_subarray_device.obsState == ObsState.EMPTY
+    wait_for_obstate(sdp_subarray_device, ObsState.EMPTY)
 
 
 def test_assign_resources_valid_input(tango_context):
@@ -113,7 +121,7 @@ def test_assign_resources_valid_input(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
     sdp_subarray_device.AssignResources(assign_input_str)
-    assert sdp_subarray_device.obsState == ObsState.IDLE
+    wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
 
 def test_assign_resources_invalid_input(tango_context):
@@ -135,7 +143,7 @@ def test_configure_valid_input(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     configure_input_str = get_configure_input_str()
     sdp_subarray_device.Configure(configure_input_str)
-    assert sdp_subarray_device.obsState == ObsState.READY
+    wait_for_obstate(sdp_subarray_device, ObsState.READY)
 
 
 def test_configure_invalid_input(tango_context):
@@ -143,6 +151,7 @@ def test_configure_invalid_input(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
     sdp_subarray_device.AssignResources(assign_input_str)
+    wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
     configure_input_str = get_configure_input_str()
     input_string = json.loads(configure_input_str)
     del input_string["scan_type"]
@@ -158,7 +167,7 @@ def test_scan_valid_input(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     scan_input_str = get_scan_input_str()
     sdp_subarray_device.Scan(scan_input_str)
-    assert sdp_subarray_device.obsState == ObsState.SCANNING
+    wait_for_obstate(sdp_subarray_device, ObsState.SCANNING)
 
 
 def test_scan_invalid_input(tango_context):
@@ -166,8 +175,10 @@ def test_scan_invalid_input(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
     sdp_subarray_device.AssignResources(assign_input_str)
+    wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
     configure_input_str = get_configure_input_str()
     sdp_subarray_device.Configure(configure_input_str)
+    wait_for_obstate(sdp_subarray_device, ObsState.READY)
     scan_input_str = get_scan_input_str()
     input_string = json.loads(scan_input_str)
     del input_string["scan_id"]
