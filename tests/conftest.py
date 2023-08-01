@@ -12,7 +12,7 @@ import pytest
 import tango
 from ska_tango_testing.mock import MockCallable
 from tango.test_context import MultiDeviceTestContext
-
+from ska_tmc_common.test_helpers.helper_sdp_subarray import  HelperSdpSubarray
 from ska_tmc_common import (
     DevFactory,
     DeviceInfo,
@@ -33,6 +33,7 @@ from tests.settings import (
     SDP_LEAF_NODE_DEVICE,
     SUBARRAY_DEVICE,
     TMC_COMMON_DEVICE,
+    SDP_SUBARRAY_DEVICE,
     logger,
 )
 
