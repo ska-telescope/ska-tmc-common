@@ -187,6 +187,7 @@ def test_scan_invalid_input(tango_context):
         sdp_subarray_device.Scan(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.READY
 
+
 @pytest.mark.kk
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()

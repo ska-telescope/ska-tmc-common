@@ -82,7 +82,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :rtype: str
         """
         return self._defective
-    
 
     def read_obsState(self) -> ObsState:
         """This method is used to read the attribute value for obsState."""
@@ -102,7 +101,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
             self.defective_params[key] = value
-
 
     def induce_fault(
         self,
