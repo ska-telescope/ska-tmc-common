@@ -82,10 +82,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :rtype: str
         """
         return self._defective
-
-    def read_delay(self) -> int:
-        """This method is used to read the attribute value for delay."""
-        return self._delay
+    
 
     def read_obsState(self) -> ObsState:
         """This method is used to read the attribute value for obsState."""
@@ -106,14 +103,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         for key, value in input_dict.items():
             self.defective_params[key] = value
 
-    @command(
-        dtype_in=int,
-        doc_in="Set Delay",
-    )
-    def SetDelay(self, value: int) -> None:
-        """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
-        self._delay = value
 
     def induce_fault(
         self,

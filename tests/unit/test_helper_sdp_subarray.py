@@ -187,17 +187,19 @@ def test_scan_invalid_input(tango_context):
         sdp_subarray_device.Scan(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.READY
 
-
+@pytest.mark.kk
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     # Check ReleaseAllResources Defective
     defect = {
         "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is defective, cannot process command.completely.",
+        "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
+        "error_message": "Device stuck in intermediate state",
         "result": ResultCode.FAILED,
+        "intermediate_state": ObsState.RESOURCING,
     }
+
     sdp_subarray_device.SetDefective(json.dumps(defect))
     sdp_subarray_device.ReleaseAllResources()
     assert sdp_subarray_device.defective
