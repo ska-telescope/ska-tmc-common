@@ -712,7 +712,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
                 target=self.update_device_obsstate,
-                args=[ObsState.ABORTING, ObsState.ABORTED],
+                args=[ObsState.ABORTED],
             )
             thread.start()
         return [ResultCode.OK], [""]
@@ -741,7 +741,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
                 target=self.update_device_obsstate,
-                args=[ObsState.RESTARTING, ObsState.EMPTY],
+                args=[ObsState.EMPTY],
             )
             thread.start()
         return [ResultCode.OK], [""]

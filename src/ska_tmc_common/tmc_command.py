@@ -50,7 +50,6 @@ class BaseTMCCommand:
         self.logger = logger
         self.tracker_thread: threading.Thread
         self._stop: bool
-        self.obsstate_sequence = []
 
     def set_command_id(self, command_name: str):
         """Sets the command id for error propagation."""

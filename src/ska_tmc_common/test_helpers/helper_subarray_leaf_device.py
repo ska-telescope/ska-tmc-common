@@ -505,7 +505,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.update_device_obsstate,
-            args=[ObsState.ABORTING, ObsState.ABORTED],
+            args=[ObsState.ABORTED],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Abort")
@@ -545,7 +545,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.update_device_obsstate,
-            args=[ObsState.RESTARTING, ObsState.EMPTY],
+            args=[ObsState.EMPTY],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Restart")
