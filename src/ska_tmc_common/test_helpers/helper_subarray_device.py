@@ -417,8 +417,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Thread(
-            target=self.update_device_obsstate,
-            args=[ObsState.RESOURCING, ObsState.IDLE],
+            target=self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
         return [ResultCode.OK], [""]
@@ -503,8 +502,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Thread(
-            target=self.update_device_obsstate,
-            args=[ObsState.RESOURCING, ObsState.EMPTY],
+            target=self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
         return [ResultCode.OK], [""]
@@ -535,8 +533,7 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.CONFIGURING
                 self.push_change_event("obsState", self._obs_state)
                 thread = threading.Thread(
-                    target=self.update_device_obsstate,
-                    args=[ObsState.CONFIGURING, ObsState.READY],
+                    target=self.update_device_obsstate, args=[ObsState.READY]
                 )
                 thread.start()
             return [ResultCode.OK], [""]
@@ -711,8 +708,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate,
-                args=[ObsState.ABORTED],
+                target=self.update_device_obsstate, args=[ObsState.ABORTED]
             )
             thread.start()
         return [ResultCode.OK], [""]
@@ -740,8 +736,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate,
-                args=[ObsState.EMPTY],
+                target=self.update_device_obsstate, args=[ObsState.EMPTY]
             )
             thread.start()
         return [ResultCode.OK], [""]
