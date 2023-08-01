@@ -1,4 +1,5 @@
 import json
+import time
 from os.path import dirname, join
 
 import pytest
@@ -125,6 +126,7 @@ def test_assign_resources_invalid_input(tango_context):
         DevFailed, match="Missing eb_id in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
+    time.sleep(3)
     assert sdp_subarray_device.obsState == ObsState.EMPTY
 
 
