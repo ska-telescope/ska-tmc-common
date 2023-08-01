@@ -1,6 +1,8 @@
 import time
 
 import pytest
+from ska_tango_base.commands import ResultCode
+from ska_tango_base.executor import TaskStatus
 from tango import DevFailed
 
 from ska_tmc_common import (
@@ -11,7 +13,7 @@ from ska_tmc_common import (
     TmcComponentManager,
 )
 from src.ska_tmc_common import InputParameter
-from tests.settings import logger
+from tests.settings import DummyComponentManager, State, logger
 
 
 class DummyCommand(TMCCommand):
@@ -71,3 +73,25 @@ def test_adapter_creation_failure(command_object: DummyCommand):
             start_time=start_time,
             timeout=10,
         )
+
+
+def test_command_with_transitional_obsstate(task_callback):
+    cm = DummyComponentManager(
+        _input_parameter=InputParameter(None),
+        logger=logger,
+        _liveliness_probe=LivelinessProbeType.NONE,
+        _event_receiver=False,
+        transitional_obsstate=True,
+    )
+    cm.command_obj.state = State.NORMAL
+    cm.invoke_command(True, task_callback=task_callback)
+    time.sleep(2)
+    task_callback.assert_against_call(
+        status=TaskStatus.QUEUED,
+    )
+    cm.command_obj.state = State.TRANSITIONAL
+    time.sleep(0.5)
+    cm.command_obj.state = State.CHANGED
+    task_callback.assert_against_call(
+        status=TaskStatus.COMPLETED, result=ResultCode.OK
+    )
