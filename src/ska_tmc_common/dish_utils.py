@@ -19,8 +19,7 @@ from ska_telmodel.data import TMData
 
 LAYOUT_PATH = "instrument/ska1_mid/layout/mid-layout.json"
 GITLAB_MAIN_PATH = "gitlab://gitlab.com/ska-telescope/"
-GITLAB_SUB_PATH = "sdp/ska-sdp-tmlite-repository?main#tmdata"
-
+GITLAB_SUB_PATH = "ska-telmodel-data?main#tmdata"
 logger = logging.getLogger(__name__)
 
 
@@ -63,7 +62,7 @@ class DishHelper:
         )
         antenna_param.antenna_location = antenna_location
         antenna_param.dish_diameter = antenna_params["diameter"]
-        antenna_param.antenna_station_name = antenna_params["station_name"]
+        antenna_param.antenna_station_name = antenna_params["station_label"]
         return antenna_param
 
     def dd_to_dms(self, argin):

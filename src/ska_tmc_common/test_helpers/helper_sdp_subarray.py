@@ -106,6 +106,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes AssignResources command on SdpSubarray
         device."""
         if self._defective:
+            self._obs_state = ObsState.RESOURCING
+            self.push_change_event("obsState", self._obs_state)
             self.raise_exception_for_defective_device(
                 command_name="SdpSubarray.AssignResources",
                 exception="Device is Defective, \

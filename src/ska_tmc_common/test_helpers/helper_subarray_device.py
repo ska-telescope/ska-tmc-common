@@ -254,8 +254,9 @@ class HelperSubArrayDevice(SKASubarray):
         self._state_duration_info = []
 
     def read_commandCallInfo(self):
-        """This method is used to read the attribute value for commandCallInfo."""
-
+        """This method is used to read the attribute value for
+        commandCallInfo.
+        """
         return self._command_call_info
 
     def read_commandDelayInfo(self):

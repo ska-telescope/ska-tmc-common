@@ -9,7 +9,7 @@ import time
 from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
@@ -50,6 +50,16 @@ class BaseTMCCommand:
         self.logger = logger
         self.tracker_thread: threading.Thread
         self._stop: bool
+
+    def set_command_id(self, command_name: str):
+        """Sets the command id for error propagation."""
+        command_id = f"{time.time()}-{command_name}"
+        self.logger.info(
+            "Setting command id as %s for command: %s",
+            command_id,
+            command_name,
+        )
+        self.component_manager.command_id = command_id
 
     # pylint: disable=inconsistent-return-statements
     def adapter_creation_retry(
@@ -117,7 +127,7 @@ class BaseTMCCommand:
     def start_tracker_thread(
         self,
         state_function: Callable,
-        expected_state: IntEnum,
+        expected_state: List[IntEnum],
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -161,7 +171,7 @@ class BaseTMCCommand:
     def track_transitions(
         self,
         state_function: Callable,
-        expected_state: IntEnum,
+        expected_state: List[IntEnum],
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -186,14 +196,24 @@ class BaseTMCCommand:
                     attribute longRunningCommandResult arrives.
         """
         with EnsureOmniThread():
+            index = 0
+            state_to_achieve = expected_state[index]
             while not self._stop:
                 try:
-                    if state_function() == expected_state:
+                    if state_function() == state_to_achieve:
                         self.logger.info(
-                            "State change has occured, command succeded"
+                            "State change has occured, current state is %s",
+                            state_to_achieve,
                         )
-                        self.update_task_status(result=ResultCode.OK)
-                        self.stop_tracker_thread(timeout_id)
+                        if len(expected_state) > index + 1:
+                            index += 1
+                            state_to_achieve = expected_state[index]
+                        else:
+                            self.logger.info(
+                                "State change has occured, command successful"
+                            )
+                            self.update_task_status(result=ResultCode.OK)
+                            self.stop_tracker_thread(timeout_id)
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(

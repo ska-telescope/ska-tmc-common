@@ -159,3 +159,11 @@ def test_update_device_obs_state(component_manager):
         time.time(), abs=1e-3
     )
     assert not component_manager.get_device().unresponsive
+
+
+def test_command_id_property(component_manager):
+    # Test if command id property can be accessed and set correctly
+    assert component_manager.command_id == ""
+    new_id = f"{time.time()}-TempID"
+    component_manager.command_id = new_id
+    assert component_manager.command_id == new_id

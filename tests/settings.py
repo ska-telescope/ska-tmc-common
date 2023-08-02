@@ -17,6 +17,7 @@ from ska_tmc_common import (
     DevFactory,
     DeviceInfo,
     DishDeviceInfo,
+    FaultType,
     InputParameter,
     LivelinessProbeType,
     LRCRCallback,
@@ -52,6 +53,20 @@ HELPER_CSP_MASTER_DEVICE = "test/csp_master/1"
 DISH_FQDN = "ska_mid/tm_leaf_node/d0001"
 TMC_COMMON_DEVICE = "src/tmc/common"
 
+FAILED_RESULT_DEFECT = {
+    "enabled": True,
+    "fault_type": FaultType.FAILED_RESULT,
+    "error_message": "Device is defective, cannot process command completely.",
+    "result": ResultCode.FAILED,
+}
+
+COMMAND_NOT_ALLOWED_DEFECT = {
+    "enabled": True,
+    "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+    "error_message": "Device is stuck in Resourcing state",
+    "result": ResultCode.FAILED,
+}
+
 
 @unique
 class State(IntEnum):
@@ -59,6 +74,7 @@ class State(IntEnum):
 
     NORMAL = 1
     CHANGED = 2
+    TRANSITIONAL = 3
 
 
 def count_faulty_devices(cm):
@@ -100,6 +116,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         *args,
         _liveliness_probe: LivelinessProbeType = LivelinessProbeType.NONE,
         _event_receiver: bool = False,
+        transitional_obsstate: bool = False,
         communication_state_callback: Callable[..., Any] | None = None,
         component_state_callback: Callable[..., Any] | None = None,
         max_workers: int = 5,
@@ -123,6 +140,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         self.command_id: Optional[str] = None
         self.timeout = 10
         self.lrcr_callback = LRCRCallback(self.logger)
+        self.transitional_obsstate = transitional_obsstate
         self.command_obj = DummyCommandClass(self, self.logger)
 
     def add_device(self, dev_name: str) -> None:
@@ -174,6 +192,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         self.timeout_callback = TimeoutCallback(self._timeout_id, self.logger)
         self._state_val = State.NORMAL
         self.task_callback: Callable
+        self.transitional_obsstate = component_manager.transitional_obsstate
 
     @property
     def state(self) -> IntEnum:
@@ -207,14 +226,24 @@ class DummyCommandClass(TmcLeafNodeCommand):
         result, msg = self.do(argin)
         if result == ResultCode.OK:
             self.logger.info("Starting tracker for timeout and exceptions.")
-            self.start_tracker_thread(
-                self.get_state,
-                State.CHANGED,
-                self._timeout_id,
-                self.timeout_callback,
-                self.component_manager.command_id,
-                self.component_manager.lrcr_callback,
-            )
+            if self.transitional_obsstate:
+                self.start_tracker_thread(
+                    self.get_state,
+                    [State.TRANSITIONAL, State.CHANGED],
+                    self._timeout_id,
+                    self.timeout_callback,
+                    self.component_manager.command_id,
+                    self.component_manager.lrcr_callback,
+                )
+            else:
+                self.start_tracker_thread(
+                    self.get_state,
+                    [State.CHANGED],
+                    self._timeout_id,
+                    self.timeout_callback,
+                    self.component_manager.command_id,
+                    self.component_manager.lrcr_callback,
+                )
         else:
             self.logger.error("Command Failed")
             if self._timeout_id:
