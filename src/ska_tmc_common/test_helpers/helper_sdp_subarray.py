@@ -185,10 +185,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
+    @command()
     def On(self):
         if self.defective_params["enabled"]:
             self.induce_fault(
@@ -208,10 +205,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
+    @command()
     def Off(self):
         if self.defective_params["enabled"]:
             self.induce_fault(
