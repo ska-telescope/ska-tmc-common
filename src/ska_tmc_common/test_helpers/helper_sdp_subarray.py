@@ -83,10 +83,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return self._defective
 
-    def read_obsState(self) -> ObsState:
-        """This method is used to read the attribute value for obsState."""
-        return self._obs_state
-
     @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
