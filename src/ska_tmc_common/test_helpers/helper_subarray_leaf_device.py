@@ -70,8 +70,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :param: values
         :type: str
         """
-        self.logger.info("Setting device obsState to %s", value.name)
+        #self.logger.info("Setting device obsState to %s", value.name)
         self._obs_state = value
+
+
 
     @command(
         dtype_in=str,
