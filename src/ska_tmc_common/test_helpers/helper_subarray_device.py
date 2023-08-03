@@ -177,7 +177,6 @@ class HelperSubArrayDevice(SKASubarray):
         self._health_state = HealthState.OK
         self._command_in_progress = ""
         self._defective = False
-        self._delay = 2
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
             CONFIGURE: 2,
