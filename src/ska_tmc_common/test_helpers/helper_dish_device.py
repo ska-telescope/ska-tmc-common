@@ -21,11 +21,14 @@ from .constants import (
     ABORT,
     ABORT_COMMANDS,
     CONFIGURE,
+    RESET,
     RESTART,
+    SCAN,
     SET_OPERATE_MODE,
     SET_STANDBY_FP_MODE,
     SET_STANDBY_LP_MODE,
     SET_STOW_MODE,
+    SLEW,
     STAND_BY,
     TRACK,
     TRACK_STOP,
@@ -940,7 +943,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Slew command on Dish Master
         """
         self.logger.info("Processing Slew Command")
-
+        # to record the command data
+        self.update_command_info(SLEW)
         if self.defective_params["enabled"]:
             return self.induce_fault("Slew")
 
@@ -996,7 +1000,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Scan command on Dish Master
         """
         self.logger.info("Processing Scan Command")
-
+        # to record the command data
+        self.update_command_info(SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
 
@@ -1027,7 +1032,8 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype:tuple
         """
         self.logger.info("Processing Reset Command")
-
+        # to record the command data
+        self.update_command_info(RESET)
         if self.defective_params["enabled"]:
             return self.induce_fault("Reset")
 

@@ -15,6 +15,8 @@ SCAN = "Scan"
 END_SCAN = "EndScan"
 RELEASE_ALL_RESOURCES = "ReleaseAllResources"
 GO_TO_IDLE = "GO"
+SLEW = "Slew"
+RESET = "Reset"
 
 TRACK = "Track"
 TRACK_STOP = "TrackStop"
