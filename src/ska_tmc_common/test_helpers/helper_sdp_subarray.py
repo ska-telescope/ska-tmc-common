@@ -72,6 +72,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
+    def read_delay(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return self._delay
+
     def read_receiveAddresses(self):
         """Returns receive addresses."""
         return self._receive_addresses
