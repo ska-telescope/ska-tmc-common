@@ -3,6 +3,7 @@
 import json
 import threading
 import time
+import LOGGER
 from typing import List, Tuple
 
 import tango
@@ -154,6 +155,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         dtype: str
         """
         command_id = f"{time.time()}-{command}"
+        LOGGER.info("The command_id is %s and the ResultCode is %s",command_id,result)
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
