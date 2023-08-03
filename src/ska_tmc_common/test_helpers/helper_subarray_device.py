@@ -500,7 +500,6 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-
         self.update_command_info(ON, "")
 
         if not self._defective:
@@ -521,7 +520,6 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-
         self.update_command_info(OFF, "")
 
         if not self._defective:
@@ -877,7 +875,6 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-
         self.update_command_info(OBS_RESET, "")
         if not self._defective:
             if self._obs_state != ObsState.IDLE:

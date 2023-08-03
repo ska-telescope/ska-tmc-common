@@ -16,9 +16,6 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
 
-    def is_On_allowed(self) -> bool:
-        return True
-
     @command(
         dtype_in="DevVarStringArray",
         doc_in="Input argument as an empty list",
