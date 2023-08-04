@@ -183,6 +183,8 @@ class HelperSubArrayDevice(SKASubarray):
             RELEASE_RESOURCES: 2,
             ABORT: 2,
             RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
         }
         self._raise_exception = False
         # tuple of list
@@ -420,6 +422,8 @@ class HelperSubArrayDevice(SKASubarray):
             RELEASE_RESOURCES: 2,
             ABORT: 2,
             RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
         }
 
     @command(
