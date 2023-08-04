@@ -1,10 +1,11 @@
 # pylint: disable=attribute-defined-outside-init, too-many-ancestors
 """Helper device for SdpSubarray device"""
 import json
+import logging
 import threading
 import time
 from typing import List, Tuple
-import logging
+
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
@@ -15,6 +16,7 @@ from tango.server import attribute, command, run
 from ska_tmc_common import CommandNotAllowed, FaultType, HelperSubArrayDevice
 
 logger = logging.getLogger(__name__)
+
 
 class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
