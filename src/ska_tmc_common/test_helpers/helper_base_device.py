@@ -143,10 +143,17 @@ class HelperBaseDevice(SKABaseDevice):
         :param tango.DevState
         """
         # import debugpy; debugpy.debug_this_thread()
+        self.logger.info(
+            "HealthState value for simulator is : %s", self._health_state
+        )
         value = HealthState(argin)
         if self._health_state != value:
+            self.logger.info(
+                "Setting HealthState value for simulator to : %s", value
+            )
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
+            self.logger.info("Pushed updated HealthState value for simulator")
 
     @command(
         dtype_in=bool,

@@ -242,6 +242,14 @@ class HelperSubArrayDevice(SKASubarray):
         respective command for obs state is triggered then it change obs state
         after provided duration
         """
+        self.logger.info(
+            "Adding observation state transitions for Csp Subarray and \
+                         Sdp Subarray Simulators"
+        )
+        self.logger.info(
+            f"ObsState transitions sequence for Csp Subarray and \
+                         Sdp Subarray Simulators is:{state_duration_info}"
+        )
         self._state_duration_info = json.loads(state_duration_info)
 
     @command(
@@ -317,14 +325,21 @@ class HelperSubArrayDevice(SKASubarray):
             command_name (str): command name
             command_input (str): Input argin for command
         """
-        self.logger.info("Recording the command data")
+        self.logger.info(
+            "Recording the command data for Sdp Subarray \
+                 or Csp Subarray simulators"
+        )
         self._command_info = (command_name, command_input)
         self.logger.info(
-            "Updated command_info value is %s", self._command_info
+            "Recorded command_info for Sdp Subarray \
+            or Csp Subarray simulators is %s",
+            self._command_info,
         )
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Updated command_call_info value is %s", self._command_call_info
+            "Recorded command_call_info list for Csp Subarray or \
+                Sdp Subarray simulators is %s",
+            self._command_call_info,
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
@@ -400,7 +415,10 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def SetDelay(self, command_delay_info: str) -> None:
         """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", command_delay_info)
+        self.logger.info(
+            "Setting the Delay value for Csp Subarray simulator to : %s",
+            command_delay_info,
+        )
         # set command info
         command_delay_info_dict = json.loads(command_delay_info)
         for key, value in command_delay_info_dict.items():
@@ -412,7 +430,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def ResetDelay(self) -> None:
         """Reset Delay to it's default values"""
-        self.logger.info("Resetting Command Delay")
+        self.logger.info("Resetting Command Delays for Csp Subarray Simulator")
         # Reset command info
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
@@ -427,10 +445,11 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
-        self.logger.info("Clearing commandCallInfo")
+        self.logger.info(
+            "Clearing CommandCallInfo for Csp and Sdp Subarray simulators"
+        )
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
-        self.logger.info("CommandCallInfo updates are pushed")
 
     @command(
         dtype_in=int,
@@ -471,10 +490,17 @@ class HelperSubArrayDevice(SKASubarray):
         """
         # import debugpy; debugpy.debug_this_thread()
         # # pylint: disable=E0203
+        self.logger.info(
+            "HealthState value for simulator is : %s", self._health_state
+        )
         value = HealthState(argin)
         if self._health_state != value:
+            self.logger.info(
+                "Setting HealthState value for simulator to : %s", value
+            )
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
+            self.logger.info("Pushed updated HealthState value for simulator")
 
     @command(
         dtype_in="DevString",
