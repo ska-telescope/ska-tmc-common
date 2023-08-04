@@ -28,6 +28,14 @@ from .constants import (
     SCAN,
 )
 
+from .constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    RELEASE_RESOURCES,
+    RESTART,
+)
+
 
 class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
@@ -120,6 +128,37 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
             self.defective_params[key] = value
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, command_delay_info: str) -> None:
+        """Update delay value"""
+        self.logger.info(
+            "Setting the Delay value for Sdp Subarray simulator to : %s",
+            command_delay_info,
+        )
+        # set command info
+        command_delay_info_dict = json.loads(command_delay_info)
+        for key, value in command_delay_info_dict.items():
+            self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
+
+    @command(
+        doc_in="Reset Delay",
+    )
+    def ResetDelay(self) -> None:
+        """Reset Delay to it's default values"""
+        self.logger.info("Resetting Command Delays for Csp Subarray Simulator")
+        # Reset command info
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
 
     def induce_fault(
         self,
