@@ -59,6 +59,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             """
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
+            self._device.set_change_event("healthState", True, False)
+            self._device.set_change_event(
+                "longRunningCommandResult", True, False
+            )
+            self._device.set_change_event("commandCallInfo", True, False)
             return ResultCode.OK, ""
 
     receiveAddresses = attribute(
