@@ -249,8 +249,9 @@ class HelperSubArrayDevice(SKASubarray):
                          Sdp Subarray Simulators"
         )
         self.logger.info(
-            f"ObsState transitions sequence for Csp Subarray and \
-                         Sdp Subarray Simulators is:{state_duration_info}"
+            "ObsState transitions sequence for Csp Subarray and \
+                Sdp Subarray Simulators is: %s",
+            state_duration_info,
         )
         self._state_duration_info = json.loads(state_duration_info)
 
@@ -418,7 +419,8 @@ class HelperSubArrayDevice(SKASubarray):
     def SetDelay(self, command_delay_info: str) -> None:
         """Update delay value"""
         self.logger.info(
-            "Setting the Delay value for Csp Subarray simulator to : %s",
+            "Setting the Delay value for Csp Subarray \
+                or Sdp Subarray simulator to : %s",
             command_delay_info,
         )
         # set command info
@@ -432,7 +434,10 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def ResetDelay(self) -> None:
         """Reset Delay to it's default values"""
-        self.logger.info("Resetting Command Delays for Csp Subarray Simulator")
+        self.logger.info(
+            "Resetting Command Delays for \
+            Csp Subarray or Sdp Simulators"
+        )
         # Reset command info
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,

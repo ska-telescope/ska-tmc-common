@@ -124,7 +124,9 @@ class HelperDishDevice(HelperBaseDevice):
             "Adding pointing state transitions for DishMasters Simulators"
         )
         self.logger.info(
-            f"PointingState transitions sequence for DishMasters Simulators is:{state_duration_info}"
+            "PointingState transitions sequence for \
+                DishMasters Simulators is: %s",
+            state_duration_info,
         )
         self._state_duration_info = json.loads(state_duration_info)
 
