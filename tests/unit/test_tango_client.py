@@ -22,7 +22,6 @@ def test_get_fqdn(csp_sln_dev_name):
 
 
 def test_get_device_proxy(csp_sln_dev_name):
-
     with mock.patch.object(
         TangoClient, "_get_deviceproxy", return_value=Mock()
     ):

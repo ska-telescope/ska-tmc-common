@@ -92,6 +92,13 @@ class HelperDishDevice(HelperBaseDevice):
         respective command for obs state is triggered then it change obs state
         after provided duration
         """
+        self.logger.info(
+            "Adding pointing state transitions for DishMasters Simulators"
+        )
+        self.logger.info(
+            f"PointingState transitions sequence for DishMasters Simulators is:{state_duration_info}"
+        )
+
         self._state_duration_info = json.loads(state_duration_info)
 
     @command(
@@ -117,7 +124,11 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def SetDelay(self, command_delay_info: str) -> None:
         """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", command_delay_info)
+        self.logger.info(
+            "Setting the Delay value for Dish simulator to : %s",
+            command_delay_info,
+        )
+
         # set command info
         command_delay_info_dict = json.loads(command_delay_info)
         for key, value in command_delay_info_dict.items():
@@ -129,7 +140,7 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ResetDelay(self) -> None:
         """Reset Delay to it's default values"""
-        self.logger.info("Resetting Command Delay")
+        self.logger.info("Resetting Command Delays for Dish Master Simulator")
         # Reset command info
         self._command_delay_info = {
             CONFIGURE: 2,
@@ -142,9 +153,9 @@ class HelperDishDevice(HelperBaseDevice):
     )
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
+        self.logger.info("Clearing CommandCallInfo for DishMaster simulators")
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
-        self.logger.info("CommandCallInfo updates are pushed")
 
     def read_pointingState(self) -> PointingState:
         """
@@ -617,14 +628,20 @@ class HelperDishDevice(HelperBaseDevice):
             command_name (str): command name
             command_input (str): Input argin for command
         """
-        self.logger.info("Recording the command data")
+        self.logger.info(
+            "Recording the command data for DishMaster simulators"
+        )
+
         self._command_info = (command_name, command_input)
         self.logger.info(
-            "Updated command_info value is %s", self._command_info
+            "Recorded command_info for DishMaster simulator is %s",
+            self._command_info,
         )
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Updated command_call_info value is %s", self._command_call_info
+            "Recorded command_call_info list for DishMaster simulators \
+            is %s",
+            self._command_call_info,
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
