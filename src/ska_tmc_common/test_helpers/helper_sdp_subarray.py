@@ -4,7 +4,7 @@ import json
 import threading
 import time
 from typing import List, Tuple
-
+import logging
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
@@ -13,8 +13,8 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType, HelperSubArrayDevice
-from tests.settings import logger
 
+logger = logging.getLogger(__name__)
 
 class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
