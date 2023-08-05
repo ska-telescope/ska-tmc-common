@@ -26,11 +26,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke On command")
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("On completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -47,11 +49,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke On command")
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Off completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -68,11 +72,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke Standby command")
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Standby completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
