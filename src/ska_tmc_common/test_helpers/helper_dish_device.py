@@ -195,6 +195,30 @@ class HelperDishDevice(HelperBaseDevice):
         command_result = (command_id, json.dumps(result))
         self.push_change_event("longRunningCommandResult", command_result)
 
+    def is_Off_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Off(self):
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "Off",
+            )
+        if self.dev_state() != DevState.OFF:
+            self.set_state(DevState.OFF)
+            self.push_change_event("State", self.dev_state())
+        self.push_command_result(ResultCode.OK, "Off")
+        return [ResultCode.OK], [""]
+
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby Command is allowed in current State.
