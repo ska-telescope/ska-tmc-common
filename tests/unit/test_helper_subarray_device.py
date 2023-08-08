@@ -4,7 +4,7 @@ import pytest
 from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
 
-from ska_tmc_common import DevFactory
+from ska_tmc_common import DevFactory, FaultType
 from tests.settings import SUBARRAY_DEVICE
 
 commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
@@ -65,9 +65,15 @@ def test_clear_commandCallInfo(tango_context):
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    assert not subarray_device.defective
-    subarray_device.SetDefective(True)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is defective, cannot process command.completely.",
+        "result": ResultCode.FAILED,
+    }
+    subarray_device.SetDefective(json.dumps(defect))
     assert subarray_device.defective
+    subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_set_raise_exception(tango_context):
@@ -100,13 +106,19 @@ def test_command_without_argin(tango_context, command):
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(True)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device is defective, cannot process command.completely.",
+        "result": ResultCode.FAILED,
+    }
+    subarray_device.SetDefective(json.dumps(defect))
     result, message = subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert (
         message[0] == "Device is defective, cannot process command.completely."
     )
-    assert subarray_device.obsstate == ObsState.RESOURCING
+    subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_scan_command(tango_context):
@@ -120,13 +132,20 @@ def test_scan_command(tango_context):
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(True)
-    result, message = subarray_device.ReleaseAllResources()
-    assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is Defective, cannot process command completely."
-    )
-    assert subarray_device.obsstate == ObsState.RESOURCING
+    # Check ReleaseAllResources Defective
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
+        "error_message": "Device stuck in intermediate state",
+        "result": ResultCode.FAILED,
+        "intermediate_state": ObsState.RESOURCING,
+    }
+
+    subarray_device.SetDefective(json.dumps(defect))
+    subarray_device.ReleaseAllResources()
+    assert subarray_device.defective
+    assert subarray_device.obsState == ObsState.RESOURCING
+    subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_assign_resources_raise_exception(tango_context):
