@@ -214,7 +214,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
 
-    defective = attribute(dtype=bool, access=AttrWriteType.READ)
+    defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -395,13 +395,20 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=bool,
         doc_in="Set Defective",
     )
-    def SetDefective(self, value: bool) -> None:
+    def SetDefective(self, values: str) -> None:
         """
         Trigger defective change
         :rtype: bool
         """
-        self.logger.info("Setting the defective value to : %s", value)
-        self._defective = value
+        """
+        Trigger defective change
+        :param: values
+        :type: str
+        """
+        input_dict = json.loads(values)
+        self.logger.info("Setting defective params to %s", input_dict)
+        for key, value in input_dict.items():
+            self.defective_params[key] = value
 
     @command(
         dtype_in=bool,
