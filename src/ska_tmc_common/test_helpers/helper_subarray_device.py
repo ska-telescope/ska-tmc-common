@@ -400,11 +400,6 @@ class HelperSubArrayDevice(SKASubarray):
         Trigger defective change
         :rtype: bool
         """
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
         input_dict = json.loads(values)
         self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
