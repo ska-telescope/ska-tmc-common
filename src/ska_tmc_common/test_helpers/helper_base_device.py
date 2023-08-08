@@ -172,11 +172,13 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke On command")
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("On Completed")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -190,11 +192,13 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke Off command")
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Off Completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -209,11 +213,13 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke Standby command")
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 time.sleep(0.1)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Standby Completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [

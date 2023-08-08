@@ -22,6 +22,7 @@ from .constants import (
     ABORT_COMMANDS,
     CONFIGURE,
     RESET,
+    CONFIGURE_BAND_2,
     RESTART,
     SCAN,
     SET_OPERATE_MODE,
@@ -124,10 +125,10 @@ class HelperDishDevice(HelperBaseDevice):
             "Adding pointing state transitions for DishMasters Simulators"
         )
         self.logger.info(
-            "PointingState transitions sequence for \
-                DishMasters Simulators is: %s",
-            state_duration_info,
+            f"PointingState transitions sequence for DishMasters Simulators is:\
+            {state_duration_info}"
         )
+
         self._state_duration_info = json.loads(state_duration_info)
 
     @command(
@@ -360,6 +361,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Standby command on Dish Master
         :rtype: Tuple
         """
+        self.logger.info("Instructed Dish simulator to invoke Standby command")
         self.update_command_info(STAND_BY, "")
 
         if self.defective_params["enabled"]:
@@ -436,7 +438,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyLPMode command on  Dish Master
         :rtype: tuple
         """
-        self.logger.info("Processing SetStandbyLPMode Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke SetStandbyLPMode command"
+        )
         self.update_command_info(SET_STANDBY_LP_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyLPMode")
@@ -478,7 +482,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetOperateMode command on  Dish Master
         :rtype: tuple
         """
-        self.logger.info("Processing SetOperateMode Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke SetOperateMode command"
+        )
         self.update_command_info(SET_OPERATE_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode")
@@ -521,7 +527,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStowMode command on  Dish Master
         :rtype : tuple
         """
-        self.logger.info("Processing SetStowMode Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke SetStowMode command"
+        )
         self.update_command_info(SET_STOW_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode")
@@ -559,7 +567,7 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Track command on  Dish Master
         :rtype: tuple
         """
-        self.logger.info("Processing Track Command")
+        self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("Track")
@@ -599,7 +607,9 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes TrackStop command on  Dish Master
         """
-        self.logger.info("Processing TrackStop Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke TrackStop command"
+        )
         self.update_command_info(TRACK_STOP, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop")
@@ -640,6 +650,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes AbortCommands command on  Dish Master
         :rtype: tuple
         """
+        self.logger.info(
+            "Instructed Dish simulator to invoke AbortCommands command"
+        )
         self.update_command_info(ABORT_COMMANDS, "")
 
         if self.defective_params["enabled"]:
@@ -674,6 +687,9 @@ class HelperDishDevice(HelperBaseDevice):
         """
         self.logger.info("Processing Configure command")
         # to record the command data
+        self.logger.info(
+            "Instructed Dish simulator to invoke Configure command"
+        )
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
@@ -702,7 +718,9 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
-        self.logger.info("Processing ConfigureBand1 Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke ConfigureBand1 command"
+        )
 
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand1")
@@ -738,7 +756,7 @@ class HelperDishDevice(HelperBaseDevice):
         """
         self.logger.info("Processing ConfigureBand2 Command")
         # to record the command data
-        self.update_command_info(CONFIGURE, argin)
+        self.update_command_info(CONFIGURE_BAND_2, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand2")
 
@@ -788,15 +806,12 @@ class HelperDishDevice(HelperBaseDevice):
         self.logger.info(
             "Recording the command data for DishMaster simulators"
         )
+
         self._command_info = (command_name, command_input)
-        self.logger.info(
-            "Recorded command_info for DishMaster simulator is %s",
-            self._command_info,
-        )
         self._command_call_info.append(self._command_info)
         self.logger.info(
             "Recorded command_call_info list for DishMaster simulators \
-                is %s",
+            is %s",
             self._command_call_info,
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
