@@ -88,11 +88,11 @@ class CspMasterAdapter(BaseAdapter):
     for CSP master devices.
     """
 
-    def On(self, argin) -> Tuple[List[ResultCode], List[str]]:
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state
         """
-        return self._proxy.On(argin)
+        return self._proxy.On()
 
     def Standby(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """

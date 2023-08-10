@@ -1,6 +1,8 @@
 """
 This module defines a helper device that acts as csp master in our testing.
 """
+import logging
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import time
@@ -11,6 +13,8 @@ from tango import DevState
 from tango.server import command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
+
+logger = logging.getLogger(__name__)
 
 
 class HelperCspMasterDevice(HelperBaseDevice):
@@ -33,6 +37,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         #     self.set_state(DevState.ON)
         #     time.sleep(0.1)
         #     self.push_change_event("State", self.dev_state())
+        logger.info("In On command of CspMaster...")
         return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
