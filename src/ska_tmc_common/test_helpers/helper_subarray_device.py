@@ -746,7 +746,7 @@ class HelperSubArrayDevice(SKASubarray):
             args=[ObsState.EMPTY, RELEASE_RESOURCES],
         )
         thread.start()
-        self.looger.info("ReleaseAllResources completed")
+        self.logger.info("ReleaseAllResources completed")
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:

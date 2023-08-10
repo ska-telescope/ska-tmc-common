@@ -22,6 +22,7 @@ from .constants import (
     ABORT_COMMANDS,
     CONFIGURE,
     CONFIGURE_BAND_2,
+    OFF,
     RESET,
     RESTART,
     SCAN,
@@ -354,6 +355,8 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self):
+        self.logger.info("Instructed Dish simulator to invoke Off command")
+        self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
