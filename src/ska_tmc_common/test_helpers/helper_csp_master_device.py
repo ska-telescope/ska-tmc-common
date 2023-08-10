@@ -20,21 +20,19 @@ class HelperCspMasterDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_in="DevVarStringArray",
-        doc_in="Input argument as an empty list",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        if self._defective:
-            return [ResultCode.FAILED], [
-                "Device is defective, cannot process command."
-            ]
+    def On(self) -> Tuple[List[ResultCode], List[str]]:
+        # if self._defective:
+        #     return [ResultCode.FAILED], [
+        #         "Device is defective, cannot process command."
+        #     ]
 
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
+        # if self.dev_state() != DevState.ON:
+        #     self.set_state(DevState.ON)
+        #     time.sleep(0.1)
+        #     self.push_change_event("State", self.dev_state())
         return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
