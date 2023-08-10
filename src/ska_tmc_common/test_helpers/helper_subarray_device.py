@@ -17,6 +17,8 @@ from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
+from ska_tmc_common import FaultType
+
 from .constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -176,7 +178,15 @@ class HelperSubArrayDevice(SKASubarray):
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
-        self._defective = False
+        self._defective = json.dumps(
+            {
+                "enabled": False,
+                "fault_type": FaultType.FAILED_RESULT,
+                "error_message": "Default exception.",
+                "result": ResultCode.FAILED,
+            }
+        )
+        self.defective_params = json.loads(self._defective)
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
             CONFIGURE: 2,
@@ -214,7 +224,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
 
-    defective = attribute(dtype=str, access=AttrWriteType.READ)
+    defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -288,7 +298,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._command_in_progress
 
-    def read_defective(self) -> bool:
+    def read_defective(self) -> str:
         """
         This method is used to read the value of the attribute defective
         :rtype:bool
@@ -395,15 +405,13 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=bool,
         doc_in="Set Defective",
     )
-    def SetDefective(self, values: str) -> None:
+    def SetDefective(self, value: bool) -> None:
         """
         Trigger defective change
         :rtype: bool
         """
-        input_dict = json.loads(values)
-        self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
+        self.logger.info("Setting the defective value to : %s", value)
+        self._defective = value
 
     @command(
         dtype_in=bool,
