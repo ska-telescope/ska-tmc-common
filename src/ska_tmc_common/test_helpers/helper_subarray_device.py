@@ -17,8 +17,6 @@ from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
-from ska_tmc_common import FaultType
-
 from .constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -178,15 +176,7 @@ class HelperSubArrayDevice(SKASubarray):
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self._defective = False
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
             CONFIGURE: 2,
