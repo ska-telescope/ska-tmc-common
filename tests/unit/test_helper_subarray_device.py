@@ -124,7 +124,7 @@ def test_release_resources_defective(tango_context):
     result, message = subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
     assert (
-        message[0] == "Device is defective, cannot process command.completely."
+        message[0] == "Device is Defective, cannot process command completely."
     )
     assert subarray_device.obsstate == ObsState.RESOURCING
 
