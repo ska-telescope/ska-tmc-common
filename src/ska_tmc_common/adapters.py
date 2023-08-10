@@ -3,12 +3,15 @@ This module creates and manages different
 functions of adapters by creating proxy for devices.
 """
 import enum
+import logging
 from typing import List, Tuple, Union
 
 import tango
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common.dev_factory import DevFactory
+
+logger = logging.getLogger(__name__)
 
 
 class AdapterType(enum.IntEnum):
@@ -89,7 +92,12 @@ class CspMasterAdapter(BaseAdapter):
         """
         Sets device proxies to ON state
         """
-        return self._proxy.On(argin)
+        try:
+            result_code, message = self._proxy.On(argin)
+            return result_code, message
+        except Exception as e:
+            logger.exception(e)
+            return [ResultCode.FAILED], [str(e)]
 
     def Standby(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
