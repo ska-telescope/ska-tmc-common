@@ -1,6 +1,7 @@
 # pylint: disable=attribute-defined-outside-init, too-many-ancestors
 """Helper device for SdpSubarray device"""
 import json
+import logging
 import threading
 import time
 from typing import List, Tuple
@@ -27,6 +28,8 @@ from .constants import (
     RESTART,
     SCAN,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class HelperSdpSubarray(HelperSubArrayDevice):
