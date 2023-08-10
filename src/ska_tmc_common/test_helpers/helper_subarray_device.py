@@ -354,6 +354,7 @@ class HelperSubArrayDevice(SKASubarray):
                 Sdp Subarray simulators is %s",
             self._command_call_info,
         )
+
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
@@ -544,12 +545,14 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke On command")
         self.update_command_info(ON, "")
 
         if not self._defective:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("On completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -564,12 +567,14 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke Off command")
         self.update_command_info(OFF, "")
 
         if not self._defective:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Off completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -589,12 +594,14 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Standby command")
         self.update_command_info(STAND_BY, "")
 
         if not self._defective:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Standby completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -623,6 +630,9 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes AssignResources command on subarray devices
         """
+        self.logger.info(
+            "Instructed simulator to invoke AssignResources command"
+        )
         self.update_command_info(ASSIGN_RESOURCES, argin)
 
         if self._defective:
@@ -648,6 +658,7 @@ class HelperSubArrayDevice(SKASubarray):
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
+        self.logger.info("AssignResources completed")
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -679,12 +690,16 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes ReleaseResources command on subarray device
         """
+        self.logger.info(
+            "Instructed simulator to invoke ReleaseResources command"
+        )
         self.update_command_info(RELEASE_RESOURCES, "")
 
         if not self._defective:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("ReleaseResources completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -712,6 +727,9 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info(
+            "Instructed simulator to invoke ReleaseAllResources command"
+        )
         self.update_command_info(RELEASE_ALL_RESOURCES, "")
 
         if self._defective:
@@ -738,6 +756,7 @@ class HelperSubArrayDevice(SKASubarray):
             args=[ObsState.EMPTY, RELEASE_RESOURCES],
         )
         thread.start()
+        self.looger.info("ReleaseAllResources completed")
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
@@ -761,7 +780,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-
+        self.logger.info("Instructed simulator to invoke Configure command")
         self.update_command_info(CONFIGURE, argin)
 
         if not self._defective:
@@ -773,6 +792,7 @@ class HelperSubArrayDevice(SKASubarray):
                     self.push_change_event("obsState", self._obs_state)
                     self.logger.info("Starting Thread for configure")
                     self._start_thread([ObsState.READY, CONFIGURE])
+            self.logger.info("Configure completed")
             return [ResultCode.OK], [""]
         self._obs_state = ObsState.CONFIGURING
         self.push_change_event("obsState", self._obs_state)
@@ -801,11 +821,13 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Scan command")
         self.update_command_info(SCAN, argin)
         if not self._defective:
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("Scan completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -831,11 +853,13 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke EndScan command")
         self.update_command_info(END_SCAN, "")
         if not self._defective:
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("EndScan completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -861,6 +885,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke End command")
         self.update_command_info(END, "")
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
@@ -869,6 +894,7 @@ class HelperSubArrayDevice(SKASubarray):
                 else:
                     self._obs_state = ObsState.IDLE
                     self.push_change_event("obsState", self._obs_state)
+            self.logger.info("End completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -894,11 +920,13 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke GoToIdle command")
         self.update_command_info(GO_TO_IDLE, "")
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("GoToIdle completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -919,11 +947,13 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if not self._defective:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("ObsReset completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -949,6 +979,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Abort command")
         self.update_command_info(ABORT, "")
 
         if self._obs_state != ObsState.ABORTED:
@@ -959,6 +990,7 @@ class HelperSubArrayDevice(SKASubarray):
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
+        self.logger.info("Abort completed")
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -980,6 +1012,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Restart command")
         self.update_command_info(RESTART, "")
 
         if self._obs_state != ObsState.EMPTY:
@@ -990,6 +1023,7 @@ class HelperSubArrayDevice(SKASubarray):
                 args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
+        self.logger.info("Restart completed")
         return [ResultCode.OK], [""]
 
 
