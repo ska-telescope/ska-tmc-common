@@ -92,12 +92,7 @@ class CspMasterAdapter(BaseAdapter):
         """
         Sets device proxies to ON state
         """
-        try:
-            result_code, message = self._proxy.On(argin)
-            return result_code, message
-        except Exception as e:
-            logger.exception(e)
-            return [ResultCode.FAILED], [str(e)]
+        return self._proxy.On(argin)
 
     def Standby(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """

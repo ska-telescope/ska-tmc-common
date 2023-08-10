@@ -20,7 +20,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_in="DevVarStringArray",
+        dtype_in=list,
         doc_in="Input argument as an empty list",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
