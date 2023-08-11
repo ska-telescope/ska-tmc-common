@@ -13,7 +13,7 @@ from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
-from ska_tmc_common import FaultType
+from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
@@ -211,6 +211,12 @@ class HelperBaseDevice(SKABaseDevice):
         self._raise_exception = value
 
     def is_On_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -229,6 +235,12 @@ class HelperBaseDevice(SKABaseDevice):
         ]
 
     def is_Off_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -248,6 +260,12 @@ class HelperBaseDevice(SKABaseDevice):
         ]
 
     def is_Standby_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -268,6 +286,12 @@ class HelperBaseDevice(SKABaseDevice):
 
     def is_disable_allowed(self) -> bool:
         "Checks if disable command is allowed"
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(

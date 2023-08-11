@@ -17,7 +17,7 @@ from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
-from ska_tmc_common import FaultType
+from ska_tmc_common import CommandNotAllowed, FaultType
 
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
@@ -319,6 +319,19 @@ class HelperSubArrayDevice(SKASubarray):
             )
 
     def is_On_allowed(self) -> bool:
+        """
+        Check if command `On` is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -337,6 +350,19 @@ class HelperSubArrayDevice(SKASubarray):
         ]
 
     def is_Off_allowed(self) -> bool:
+        """
+        Check if command `Off` is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -355,6 +381,19 @@ class HelperSubArrayDevice(SKASubarray):
         ]
 
     def is_Standby_allowed(self) -> bool:
+        """
+        Check if command `Standby` is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -385,6 +424,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -481,6 +526,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -509,6 +560,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -554,6 +611,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -605,6 +668,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -636,6 +705,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -665,6 +740,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -694,6 +775,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -723,6 +810,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -747,6 +840,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -775,6 +874,12 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(

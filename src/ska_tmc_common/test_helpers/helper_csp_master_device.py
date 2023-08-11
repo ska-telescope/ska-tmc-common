@@ -14,7 +14,7 @@ from ska_tango_base.control_model import ObsState
 from tango import DevState
 from tango.server import command, run
 
-from ska_tmc_common import FaultType
+from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -36,6 +36,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.defective_params = json.loads(self._defective)
 
     def is_On_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     def induce_fault(
@@ -132,6 +138,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         ]
 
     def is_Standby_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
