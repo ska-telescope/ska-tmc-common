@@ -2,26 +2,28 @@
 This module implements the Helper devices for subarray leaf nodes for testing
 an integrated TMC
 """
+import json
+import threading
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
-from typing import Tuple , List
+from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType
 from tango.server import attribute, command, run
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
     HelperSubarrayLeafDevice,
 )
-import json
-from ska_tmc_common import  FaultType
-from ska_tango_base.control_model import ObsState
-import threading
+
 
 class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
     """A device exposing commands and attributes of the CSP Subarray Leaf
     Node devices."""
+
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
@@ -75,7 +77,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
             "Pushing change event for CspSubarrayObsState: %s", obs_state
         )
         self.push_change_event("cspSubarrayObsState", obs_state)
-    
+
     @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
@@ -90,6 +92,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
             self.defective_params[key] = value
+
     def induce_fault(
         self,
         command_name: str,

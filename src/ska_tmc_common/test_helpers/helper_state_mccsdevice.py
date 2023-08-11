@@ -4,22 +4,23 @@ an integrated TMC
 """
 # pylint: disable=unused-argument
 import json
+import threading
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType
 from tango.server import attribute, command
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-import json
-from ska_tmc_common import  FaultType
-from ska_tango_base.control_model import ObsState
-import threading
+
 
 # pylint: disable=attribute-defined-outside-init
 class HelperMCCSStateDevice(HelperBaseDevice):
     """A generic device for triggering state changes with a command"""
+
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
@@ -94,7 +95,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         self._assigned_resources = json.dumps(assigned_resources)
         self.push_change_event("assignedResources", self._assigned_resources)
         return [ResultCode.OK], [""]
-    
+
     def induce_fault(
         self,
         command_name: str,

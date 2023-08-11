@@ -1,21 +1,23 @@
 """
 A common module for different helper devices(mock devices)"
 """
+import json
+import threading
 import time
 from typing import List, Tuple
+
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState
+from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
-from ska_tango_base.control_model import ObsState
+
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
-import json
-from ska_tmc_common import  FaultType
-import threading
+
 
 # pylint: disable=attribute-defined-outside-init
 class HelperBaseDevice(SKABaseDevice):
@@ -97,7 +99,7 @@ class HelperBaseDevice(SKABaseDevice):
 
     def delete_device(self) -> None:
         pass
-        
+
     @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
@@ -112,6 +114,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
             self.defective_params[key] = value
+
     def induce_fault(
         self,
         command_name: str,
@@ -150,6 +153,7 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.QUEUED], [""]
 
         return [ResultCode.OK], [""]
+
     @command(
         dtype_in="DevState",
         doc_in="state to assign",

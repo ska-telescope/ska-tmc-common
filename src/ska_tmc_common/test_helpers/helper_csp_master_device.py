@@ -1,23 +1,26 @@
 """
 This module defines a helper device that acts as csp master in our testing.
 """
+import json
+import threading
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import ObsState
 from tango import DevState
 from tango.server import command, run
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-import json
-from ska_tmc_common import  FaultType
-from ska_tango_base.control_model import ObsState
-import threading
+
+
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
-    
+
     def init_device(self):
         super().init_device()
         self._delay = 2
@@ -31,10 +34,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
-        
+
     def is_On_allowed(self) -> bool:
         return True
-    
+
     def induce_fault(
         self,
         command_name: str,
@@ -73,7 +76,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             return [ResultCode.QUEUED], [""]
 
         return [ResultCode.OK], [""]
-    
+
     @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
@@ -88,7 +91,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         for key, value in input_dict.items():
             self.defective_params[key] = value
-            
+
     @command(
         dtype_in="DevVarStringArray",
         doc_in="Input argument as an empty list",

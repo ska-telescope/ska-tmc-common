@@ -2,6 +2,8 @@
 This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
+import json
+
 # pylint: disable=attribute-defined-outside-init
 import threading
 import time
@@ -14,10 +16,9 @@ from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
-import json
-from ska_tmc_common import  FaultType
-from ska_tango_base.control_model import ObsState
-import threading
+
+from ska_tmc_common import FaultType
+
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
@@ -168,6 +169,7 @@ class HelperSubArrayDevice(SKASubarray):
             }
         )
         self.defective_params = json.loads(self._defective)
+
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
 
@@ -238,18 +240,6 @@ class HelperSubArrayDevice(SKASubarray):
             component_state_callback=None,
         )
         return cm
-
-    @command(
-        dtype_in=bool,
-        doc_in="Set Defective",
-    )
-    def SetDefective(self, value: bool) -> None:
-        """
-        Trigger defective change
-        :rtype: bool
-        """
-        self.logger.info("Setting the defective value to : %s", value)
-        self._defective = value
 
     @command(
         dtype_in=bool,
