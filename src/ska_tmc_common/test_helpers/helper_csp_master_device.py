@@ -105,11 +105,14 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self.dev_state() != DevState.ON:
-                self.set_state(DevState.ON)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "On",
+            )
+        if self.dev_state() != DevState.ON:
+            self.set_state(DevState.ON)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -117,6 +120,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         ]
 
     def is_Off_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -126,11 +135,14 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self.dev_state() != DevState.OFF:
-                self.set_state(DevState.OFF)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "On",
+            )
+        if self.dev_state() != DevState.OFF:
+            self.set_state(DevState.OFF)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -153,11 +165,14 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self.dev_state() != DevState.STANDBY:
-                self.set_state(DevState.STANDBY)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "On",
+            )
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [

@@ -758,10 +758,13 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
-                self.push_change_event("obsState", self._obs_state)
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -793,10 +796,13 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
-                self.push_change_event("obsState", self._obs_state)
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            self.push_change_event("obsState", self._obs_state)
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [

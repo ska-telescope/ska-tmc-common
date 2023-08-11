@@ -224,11 +224,14 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self.dev_state() != DevState.ON:
-                self.set_state(DevState.ON)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "On",
+            )
+        if self.dev_state() != DevState.ON:
+            self.set_state(DevState.ON)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -248,11 +251,14 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self.dev_state() != DevState.OFF:
-                self.set_state(DevState.OFF)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "Off",
+            )
+        if self.dev_state() != DevState.OFF:
+            self.set_state(DevState.OFF)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -273,11 +279,14 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self.dev_state() != DevState.STANDBY:
-                self.set_state(DevState.STANDBY)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "Standby",
+            )
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -303,11 +312,14 @@ class HelperBaseDevice(SKABaseDevice):
         It sets the DevState to disable.
         :rtype: Tuple
         """
-        if not self._defective:
-            if self.dev_state() != DevState.DISABLE:
-                self.set_state(DevState.DISABLE)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "Off",
+            )
+        if self.dev_state() != DevState.DISABLE:
+            self.set_state(DevState.DISABLE)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], ["Disable command invoked on SDP Master"]
 
         return [ResultCode.FAILED], [
