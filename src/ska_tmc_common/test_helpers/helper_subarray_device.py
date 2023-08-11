@@ -157,7 +157,6 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
-        self._defective = False
         self._delay = 2
         self._raise_exception = False
         self._defective = json.dumps(
@@ -339,7 +338,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
@@ -370,7 +373,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
@@ -406,7 +413,11 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
@@ -444,7 +455,11 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes AssignResources command on subarray devices
         """
-        if self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             return [ResultCode.FAILED], [
@@ -542,7 +557,11 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes ReleaseResources command on subarray device
         """
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
@@ -579,7 +598,10 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             return [ResultCode.FAILED], [
@@ -688,7 +710,11 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self._obs_state != ObsState.SCANNING:
                 self._obs_state = ObsState.SCANNING
                 self.push_change_event("obsState", self._obs_state)
@@ -723,7 +749,11 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self._obs_state != ObsState.READY:
                 self._obs_state = ObsState.READY
                 self.push_change_event("obsState", self._obs_state)
@@ -829,7 +859,11 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "ReleaseAllResources",
+            )
+        else :
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
