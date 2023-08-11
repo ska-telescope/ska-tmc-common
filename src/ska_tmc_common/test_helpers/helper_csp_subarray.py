@@ -41,6 +41,7 @@ class HelperCspSubArray(HelperSubArrayDevice):
         """
         This method invokes AssignResources command on subarray devices
         """
+        self.logger.info("CSP Helper Subarray AssignResources command")
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)

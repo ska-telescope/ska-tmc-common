@@ -398,6 +398,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes AssignResources command on subarray devices
         """
+        self.logger.info("Helper Subarray Device AssignResources command")
         if self._defective:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
