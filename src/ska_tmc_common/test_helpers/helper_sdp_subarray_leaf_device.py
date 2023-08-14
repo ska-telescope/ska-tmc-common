@@ -78,21 +78,6 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         )
         self.push_change_event("sdpSubarrayObsState", obs_state)
 
-    @command(
-        dtype_in=str,
-        doc_in="Set Defective parameters",
-    )
-    def SetDefective(self, values: str) -> None:
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
-        input_dict = json.loads(values)
-        self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
-
     def induce_fault(
         self,
         command_name: str,
