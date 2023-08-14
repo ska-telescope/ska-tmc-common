@@ -342,7 +342,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
+        else:
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
@@ -377,7 +377,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
+        else:
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
@@ -417,7 +417,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
+        else:
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
@@ -456,24 +456,9 @@ class HelperSubArrayDevice(SKASubarray):
         This method invokes AssignResources command on subarray devices
         """
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
-                "Device is defective, cannot process command.completely."
-            ]
-
-        if self._raise_exception:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["AssignResources"]
-            )
-            self.thread.start()
-            return [ResultCode.QUEUED], [""]
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
@@ -561,7 +546,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
+        else:
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
@@ -599,24 +584,9 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "ReleaseAllResources",
             )
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
-                "Device is defective, cannot process command.completely."
-            ]
-
-        if self._raise_exception:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception,
-                args=["ReleaseAllResources"],
-            )
-            self.thread.start()
-            return [ResultCode.QUEUED], [""]
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
@@ -653,20 +623,17 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state in [ObsState.READY, ObsState.IDLE]:
-                self._obs_state = ObsState.CONFIGURING
-                self.push_change_event("obsState", self._obs_state)
-                thread = threading.Thread(
-                    target=self.update_device_obsstate, args=[ObsState.READY]
-                )
-                thread.start()
-            return [ResultCode.OK], [""]
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "Configure",
+            )
         self._obs_state = ObsState.CONFIGURING
         self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command.completely."
-        ]
+        thread = threading.Thread(
+            target=self.update_device_obsstate, args=[ObsState.READY]
+        )
+        thread.start()
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_in=str,
@@ -711,18 +678,13 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
-            if self._obs_state != ObsState.SCANNING:
-                self._obs_state = ObsState.SCANNING
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self._obs_state != ObsState.SCANNING:
+            self._obs_state = ObsState.SCANNING
+            self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.OK], [""]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -750,18 +712,13 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
-            if self._obs_state != ObsState.READY:
-                self._obs_state = ObsState.READY
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self._obs_state != ObsState.READY:
+            self._obs_state = ObsState.READY
+            self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.OK], [""]
 
     def is_End_allowed(self) -> bool:
         """
@@ -789,7 +746,7 @@ class HelperSubArrayDevice(SKASubarray):
         :rtype: tuple
         """
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "On",
             )
         if self._obs_state != ObsState.IDLE:
@@ -863,7 +820,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.induce_fault(
                 "ReleaseAllResources",
             )
-        else :
+        else:
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)

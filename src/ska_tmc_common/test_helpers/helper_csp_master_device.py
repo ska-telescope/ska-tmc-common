@@ -106,7 +106,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "On",
             )
         if self.dev_state() != DevState.ON:
@@ -114,7 +114,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             return [ResultCode.OK], [""]
-
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]
@@ -136,7 +135,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "On",
             )
         if self.dev_state() != DevState.OFF:
@@ -166,7 +165,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "On",
             )
         if self.dev_state() != DevState.STANDBY:
