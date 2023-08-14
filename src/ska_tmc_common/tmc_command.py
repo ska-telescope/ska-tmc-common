@@ -197,15 +197,25 @@ class BaseTMCCommand:
         """
         with EnsureOmniThread():
             index = 0
+            self.logger.info(f"expected states:{expected_state}")
             state_to_achieve = expected_state[index]
+            self.logger.info(f"state to acheve:{state_to_achieve}")
             while not self._stop:
                 try:
+                    self.logger.info(f"state functions:{state_function()}")
+                    self.logger.info(
+                        f"state to acheve inside try:{state_to_achieve}"
+                    )
                     if state_function() == state_to_achieve:
                         self.logger.info(
                             "State change has occured, current state is %s",
                             state_to_achieve,
                         )
+                        self.logger.info(
+                            f"length of expected state:{len(expected_state)}"
+                        )
                         if len(expected_state) > index + 1:
+                            self.logger.info("inside 2nd if condition")
                             index += 1
                             state_to_achieve = expected_state[index]
                         else:
