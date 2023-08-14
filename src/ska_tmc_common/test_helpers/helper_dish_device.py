@@ -192,7 +192,7 @@ class HelperDishDevice(HelperBaseDevice):
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
+        command_result = (command_id, json.dumps((result, "")))
         self.push_change_event("longRunningCommandResult", command_result)
 
     def is_Off_allowed(self) -> bool:
