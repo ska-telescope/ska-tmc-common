@@ -19,16 +19,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
     """A  helper CspSubarray device to mock CSP Subarray behaviour
     of returing the command result."""
 
-    # def is_AssignResources_allowed(self) -> bool:
-    #     """
-    #     Check if command `AssignResources` is allowed in the current device
-    #     state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format consists of receptorIDList.",
@@ -95,16 +85,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
             )
             self.push_change_event("longRunningCommandResult", command_result)
 
-    # def is_ReleaseResources_allowed(self) -> bool:
-    #     """
-    #     Check if command `ReleaseResources` is allowed in the current device
-    #     state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -122,16 +102,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]
-
-    # def is_ReleaseAllResources_allowed(self) -> bool:
-    #     """
-    #     Check if command `ReleaseAllResources` is allowed in the current
-    #     device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -176,15 +146,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
         thread.start()
         return [ResultCode.OK], [""]
 
-    # def is_Configure_allowed(self) -> bool:
-    #     """
-    #     Check if command `Configure` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
@@ -220,15 +181,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
             "Device is defective, cannot process command.completely."
         ]
 
-    # def is_Scan_allowed(self) -> bool:
-    #     """
-    #     Check if command `Scan` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
@@ -258,15 +210,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
             "Device is defective, cannot process command."
         ]
 
-    # def is_EndScan_allowed(self) -> bool:
-    #     """
-    #     Check if command `EndScan` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -295,15 +238,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
             "Device is defective, cannot process command."
         ]
 
-    # def is_GoToIdle_allowed(self) -> bool:
-    #     """
-    #     Check if command `GoToIdle` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -330,15 +264,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
             "Device is defective, cannot process command."
         ]
 
-    # def is_ObsReset_allowed(self) -> bool:
-    #     """
-    #     Check if command `ObsReset` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -360,15 +285,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]
-
-    # def is_Abort_allowed(self) -> bool:
-    #     """
-    #     Check if command `Abort` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -394,15 +310,6 @@ class HelperCspSubArray(HelperSubArrayDevice):
             )
             thread.start()
         return [ResultCode.OK], [""]
-
-    # def is_Restart_allowed(self) -> bool:
-    #     """
-    #     Check if command `Restart` is allowed in the current device state.
-
-    #     :return: ``True`` if the command is allowed
-    #     :rtype: boolean
-    #     """
-    #     return True
 
     @command(
         dtype_out="DevVarLongStringArray",
