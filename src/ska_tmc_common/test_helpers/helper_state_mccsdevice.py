@@ -11,12 +11,19 @@ from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType
 from tango.server import attribute, command
 
+from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
 class HelperMCCSStateDevice(HelperBaseDevice):
     """A generic device for triggering state changes with a command"""
+
+    def init_device(self) -> None:
+        super().init_device()
+        self.dev_name = self.get_name()
+        self._isSubsystemAvailable = False
+        self._raise_exception = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
@@ -49,6 +56,12 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(
@@ -86,6 +99,12 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
     @command(

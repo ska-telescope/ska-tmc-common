@@ -2,6 +2,8 @@
 This module implements the Helper devices for subarray leaf nodes for testing
 an integrated TMC
 """
+import json
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 from typing import Tuple
@@ -11,6 +13,7 @@ from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType
 from tango.server import attribute, command, run
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
     HelperSubarrayLeafDevice,
 )
@@ -19,6 +22,21 @@ from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
 class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
     """A device exposing commands and attributes of the CSP Subarray Leaf
     Node devices."""
+
+    def init_device(self) -> None:
+        super().init_device()
+        self.dev_name = self.get_name()
+        self._isSubsystemAvailable = False
+        self._raise_exception = False
+        self._defective = json.dumps(
+            {
+                "enabled": False,
+                "fault_type": FaultType.FAILED_RESULT,
+                "error_message": "Default exception.",
+                "result": ResultCode.FAILED,
+            }
+        )
+        self.defective_params = json.loads(self._defective)
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""

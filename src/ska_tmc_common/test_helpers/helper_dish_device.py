@@ -26,15 +26,6 @@ class HelperDishDevice(HelperBaseDevice):
         self._delay = 2
         self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.STANDBY_LP
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -99,21 +90,6 @@ class HelperDishDevice(HelperBaseDevice):
         self.set_dish_mode(argin)
 
     @command(
-        dtype_in=str,
-        doc_in="Set Defective parameters",
-    )
-    def SetDefective(self, values: str) -> None:
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
-        input_dict = json.loads(values)
-        self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
-
-    @command(
         dtype_in=int,
         doc_in="pointing state to assign",
     )
@@ -135,36 +111,6 @@ class HelperDishDevice(HelperBaseDevice):
             self._dish_mode = dishMode
             time.sleep(0.1)
             self.push_change_event("dishMode", self._dish_mode)
-
-    def induce_fault(
-        self,
-        command_name: str,
-    ) -> Tuple[List[ResultCode], List[str]]:
-        """Induces fault into device according to given parameters
-
-        :params:
-
-        command_name: Name of the command for which fault is being induced
-        dtype: str
-        rtype: Tuple[List[ResultCode], List[str]]
-        """
-        fault_type = self.defective_params["fault_type"]
-        result = self.defective_params["result"]
-        fault_message = self.defective_params["error_message"]
-
-        if fault_type == FaultType.FAILED_RESULT:
-            return [result], [fault_message]
-
-        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[result, command_name, fault_message],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [""]
-
-        return [ResultCode.OK], [""]
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
