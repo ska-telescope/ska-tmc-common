@@ -197,9 +197,17 @@ class BaseTMCCommand:
         """
         with EnsureOmniThread():
             index = 0
+            self.logger.info(f"Expected states:{expected_state}")
+            self.logger.info(
+                f"Length of expected states:{len(expected_state)}"
+            )
             state_to_achieve = expected_state[index]
+            self.logger.info(f"State to achieve:{state_to_achieve}")
             while not self._stop:
                 try:
+                    self.logger.info(
+                        f"State function values:{state_function()}"
+                    )
                     if state_function() == state_to_achieve:
                         self.logger.info(
                             "State change has occured, current state is %s",
@@ -208,12 +216,19 @@ class BaseTMCCommand:
                         if len(expected_state) > index + 1:
                             index += 1
                             state_to_achieve = expected_state[index]
+                            self.logger.info(
+                                f"after index update state to acheve{state_to_achieve}"
+                            )
                         else:
                             self.logger.info(
                                 "State change has occured, command successful"
                             )
                             self.update_task_status(result=ResultCode.OK)
                             self.stop_tracker_thread(timeout_id)
+                    else:
+                        self.logger.info(
+                            "Outside if condition, condition failed"
+                        )
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
