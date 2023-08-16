@@ -206,6 +206,7 @@ class BaseTMCCommand:
                             state_to_achieve,
                         )
                         if len(expected_state) > index + 1:
+                            index += 1
                             state_to_achieve = expected_state[index]
                         else:
                             self.logger.info(
@@ -213,7 +214,6 @@ class BaseTMCCommand:
                             )
                             self.update_task_status(result=ResultCode.OK)
                             self.stop_tracker_thread(timeout_id)
-                    index += 1
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
