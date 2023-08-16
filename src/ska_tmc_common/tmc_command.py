@@ -228,7 +228,6 @@ class BaseTMCCommand:
                         )
                         self.update_task_status(result=ResultCode.OK)
                         self.stop_tracker_thread(timeout_id)
-                    
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
