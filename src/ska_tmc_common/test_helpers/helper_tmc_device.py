@@ -3,17 +3,14 @@ This module contains a dummy TMC device for testing the integrated TMC.
 """
 # pylint: disable=unused-argument
 
-import json
 import logging
 from logging import Logger
 from typing import Any, Optional, Tuple
 
 from ska_tango_base.commands import ResultCode, SlowCommand
-from ska_tango_base.control_model import ObsState
-from tango import AttrWriteType
 
 # from tango import DevState
-from tango.server import Device, attribute, command
+from tango.server import command
 
 from ska_tmc_common.device_info import (
     DeviceInfo,
@@ -153,40 +150,3 @@ class DummyTmcDevice(HelperBaseDevice):
         """
         handler = self.get_command_object("SetData")
         handler()
-
-
-# pylint: disable=attribute-defined-outside-init
-class MockExtraBehaviour(Device):
-    """This class implement common mock behaviour"""
-
-    def init_device(self):
-        self._state_duration_info = {}
-
-    obsStateTransitionDuration = attribute(
-        dtype="DevString", access=AttrWriteType.READ
-    )
-
-    def read_obsStateTransitionDuration(self):
-        """Read transition"""
-        return json.dumps(self._state_duration_info)
-
-    @command(
-        dtype_in=str,
-        doc_in="Set Obs State Duration",
-    )
-    def SetObsStateDuration(self, state_duration_info: str) -> None:
-        """This command will set duration for obs state such that when
-        respective command for obs state is triggered then it change obs state
-        after provided duration
-        """
-        state_duration_dict = json.loads(state_duration_info)
-        for obs_state, value in state_duration_dict.items():
-            self._state_duration_info[ObsState[obs_state]] = value
-
-    @command(
-        doc_in="Reset Obs State Duration",
-    )
-    def ResetObsStateDuration(self) -> None:
-        """This command will reset ObsState duration which is set"""
-        self.logger.info("Resetting Obs State")
-        self._state_duration_info = {}
