@@ -15,7 +15,7 @@ from tango.server import command, run
 from ska_tmc_common import HelperSubArrayDevice
 
 
-class HelperCspSubArray(HelperSubArrayDevice):
+class HelperCspSubarray(HelperSubArrayDevice):
     """A  helper CspSubarray device to mock CSP Subarray behaviour
     of returing the command result."""
 
@@ -351,7 +351,7 @@ def main(args=None, **kwargs):
 
     :return: integer. Exit code of the run method.
     """
-    return run((HelperCspSubArray,), args=args, **kwargs)
+    return run((HelperCspSubarray,), args=args, **kwargs)
 
 
 if __name__ == "__main__":
