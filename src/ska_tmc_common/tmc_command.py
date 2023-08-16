@@ -218,16 +218,6 @@ class BaseTMCCommand:
                         self.logger.info(
                             "Outside if condition,condition failed."
                         )
-                    if len(expected_state) > index + 1:
-                        self.logger.info("inside 2nd if condition")
-                        index += 1
-                        state_to_achieve = expected_state[index]
-                    else:
-                        self.logger.info(
-                            "State change has occured, command successful"
-                        )
-                        self.update_task_status(result=ResultCode.OK)
-                        self.stop_tracker_thread(timeout_id)
 
                     if timeout_id:
                         if timeout_callback.assert_against_call(
@@ -256,6 +246,18 @@ class BaseTMCCommand:
                                 ],
                             )
                             self.stop_tracker_thread(timeout_id)
+
+                    if len(expected_state) > index + 1:
+                        self.logger.info("inside 2nd if condition")
+                        index += 1
+                        state_to_achieve = expected_state[index]
+                    else:
+                        self.logger.info(
+                            "State change has occured, command successful"
+                        )
+                        self.update_task_status(result=ResultCode.OK)
+                        self.stop_tracker_thread(timeout_id)
+
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
