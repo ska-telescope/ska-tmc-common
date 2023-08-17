@@ -1,7 +1,9 @@
+import json
+
 import pytest
 from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
-import json
+
 from ska_tmc_common import DevFactory
 from ska_tmc_common.test_helpers.helper_csp_subarray import HelperCspSubarray
 from tests.settings import CSP_SUBARRAY_DEVICE
@@ -63,6 +65,7 @@ def test_set_raise_exception(tango_context):
     csp_subarray_device.SetRaiseException(True)
     assert csp_subarray_device.raiseException
 
+
 @pytest.mark.parametrize("command", commands_with_argin)
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
@@ -92,6 +95,7 @@ def test_assign_resources_defective(tango_context):
     assert csp_subarray_device.obsstate == ObsState.RESOURCING
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
+
 def test_scan_command(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
@@ -111,6 +115,7 @@ def test_release_resources_defective(tango_context):
     )
     assert csp_subarray_device.obsstate == ObsState.RESOURCING
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
+
 
 def test_assign_resources_raise_exception(tango_context):
     dev_factory = DevFactory()
