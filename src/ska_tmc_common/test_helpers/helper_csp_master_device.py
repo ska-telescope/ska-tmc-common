@@ -16,7 +16,6 @@ from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
-
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
 
@@ -31,7 +30,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                self.logger.info("Device is defective, cannot process command.")
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("On Command is allowed")
         return True
@@ -52,7 +53,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("On command Successfully invoked.")
+            self.logger.info("On command completed.")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -64,7 +65,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                self.logger.info("Device is defective, cannot process command.")
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("Off Command is allowed")
         return True
@@ -85,7 +88,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command Successfully invoked.")
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -98,7 +101,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
-                self.logger.info("Device is defective, cannot process command.")
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("On Command is allowed")
         return True
@@ -119,7 +124,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Standby command successfully invoked.")
+            self.logger.info("Standby command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [

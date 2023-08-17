@@ -93,7 +93,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(assigned_resources)
         self.push_change_event("assignedResources", self._assigned_resources)
-        self.logger.info("AssignResources command Successfully invoked.")
+        self.logger.info("AssignResources command completed.")
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
@@ -140,5 +140,5 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         }
         # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(tmpDict)
-        self.logger.info("ReleaseResources command Successfully invoked.")
+        self.logger.info("ReleaseResources command completed.")
         return [ResultCode.OK], [""]

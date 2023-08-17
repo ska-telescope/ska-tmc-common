@@ -252,6 +252,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
             )
             thread.start()
+            self.logger.debug(
+                "ReleaseResources invoked obsstate is transition \
+                          to Resourcing"
+            )
             self.push_command_result(ResultCode.OK, "ReleaseResources")
 
     def is_ReleaseAllResources_allowed(self):
@@ -337,6 +341,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self._delay, self.update_device_obsstate, args=[ObsState.READY]
             )
             thread.start()
+            self.logger.debug(
+                "Configure invoked obsstate is transition \
+                          to Configuring"
+            )
             self.push_command_result(ResultCode.OK, "Configure")
 
     def is_Scan_allowed(self):
@@ -445,6 +453,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
             )
             thread.start()
+            self.logger.debug(
+                "END invoked obsstate is transition \
+                          to Configuring"
+            )
             self.push_command_result(ResultCode.OK, "End")
 
     def is_Abort_allowed(self):
@@ -515,6 +527,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
             )
             thread.start()
+            self.logger.debug(
+                "Restarting invoked obsstate is transition \
+                          to RESTARTING"
+            )
             self.push_command_result(ResultCode.OK, "Restart")
 
 

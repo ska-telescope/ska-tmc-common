@@ -60,6 +60,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
             target=self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
+        self.logger.debug(
+            "AssignResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -142,7 +146,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
             target=self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.logger.info("ReleaseAllResources command Successfully invoked.")
+        self.logger.debug(
+            "ReleaseAllResources invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     @command(
@@ -176,7 +183,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 target=self.update_device_obsstate, args=[ObsState.READY]
             )
             thread.start()
-        self.logger.info("Configure command Successfully invoked.")
+        self.logger.info("Configure command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -205,7 +212,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             self.push_change_event("obsState", self._obs_state)
-        self.logger.info("Scan command Successfully invoked.")
+        self.logger.debug(
+            "Scan invoked obsstate is transition \
+                          to SCANNING"
+        )
         return [ResultCode.OK], [""]
 
     @command(
@@ -233,7 +243,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             self.push_change_event("obsState", self._obs_state)
-        self.logger.info("EndScan command Successfully invoked.")
+        self.logger.info("EndScan command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -260,7 +270,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             self.push_change_event("obsState", self._obs_state)
-        self.logger.info("GoToIdle command Successfully invoked.")
+        self.logger.info("GoToIdle command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -283,7 +293,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             self.push_change_event("obsState", self._obs_state)
-        self.logger.info("ObsReset command Successfully invoked.")
+        self.logger.info("ObsReset command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -314,7 +324,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 target=self.update_device_obsstate, args=[ObsState.ABORTED]
             )
             thread.start()
-        self.logger.info("Abort command Successfully invoked.")
+        self.logger.info("Abort command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -345,7 +355,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 target=self.update_device_obsstate, args=[ObsState.EMPTY]
             )
             thread.start()
-        self.logger.info("Restart command Successfully invoked.")
+        self.logger.info("Restart command completed.")
         return [ResultCode.OK], [""]
 
 

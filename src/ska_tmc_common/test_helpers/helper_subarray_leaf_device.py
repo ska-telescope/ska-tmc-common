@@ -236,7 +236,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "AssignResources")
-        self.logger.info("AssignResources command Successfully invoked.")
+        self.logger.debug(
+            "AssignResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
@@ -281,7 +284,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Configure")
-        self.logger.info("Configure command Successfully invoked.")
+        self.logger.debug(
+            "Configure invoked obsstate is transition \
+                          to Configuring"
+        )
         return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
@@ -322,7 +328,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.SCANNING
         self.push_obs_state_event(self._obs_state)
         self.push_command_result(ResultCode.OK, "Scan")
-        self.logger.info("Scan command Successfully invoked.")
+        self.logger.info("Scan command completed.")
         return [ResultCode.OK], [""]
 
     def is_EndScan_allowed(self) -> bool:
@@ -361,7 +367,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.READY
         self.push_obs_state_event(self._obs_state)
         self.push_command_result(ResultCode.OK, "EndScan")
-        self.logger.info("EndScan command Successfully invoked.")
+        self.logger.info("EndScan command completed.")
         return [ResultCode.OK], [""]
 
     def is_End_allowed(self) -> bool:
@@ -404,7 +410,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "End")
-        self.logger.info("End command Successfully invoked.")
+        self.logger.debug(
+            "END invoked obsstate is transition \
+                          to CONFIGURING"
+        )
         return [ResultCode.OK], [""]
 
     def is_GoToIdle_allowed(self) -> bool:
@@ -485,7 +494,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Abort")
-        self.logger.info("Abort command Successfully invoked.")
+        self.logger.debug(
+            "ABORT invoked obsstate is transition \
+                          to ABORTING"
+        )
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -528,7 +540,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Restart")
-        self.logger.info("Restart command Successfully invoked.")
+        self.logger.info("Restart command completed.")
         return [ResultCode.OK], [""]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
@@ -572,7 +584,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseAllResources")
-        self.logger.info("ReleaseAllResources command Successfully invoked.")
+        self.logger.debug(
+            "ReleaseAllResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
@@ -620,7 +635,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseResources")
-        self.logger.info("ReleaseResources command Successfully invoked.")
+        self.logger.debug(
+            "ReleaseResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
 

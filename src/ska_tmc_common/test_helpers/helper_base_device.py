@@ -50,7 +50,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubsystemAvailable", True, False)
-            self.logger.info("Off command Successfully invoked.")
+            self.logger.info("Off command completed.")
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -152,7 +152,7 @@ class HelperBaseDevice(SKABaseDevice):
             self._obs_state = intermediate_state
             self.push_obs_state_event(intermediate_state)
             return [ResultCode.QUEUED], [""]
-        self.logger.info("Off command Successfully invoked.")
+        self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -237,7 +237,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("On command Successfully invoked.")
+            self.logger.info("On command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -270,7 +270,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command Successfully invoked.")
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -299,7 +299,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command Successfully invoked.")
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -336,7 +336,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.DISABLE)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command Successfully invoked.")
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], ["Disable command invoked on SDP Master"]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."

@@ -350,7 +350,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command Successfully invoked.")
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -544,7 +544,10 @@ class HelperSubArrayDevice(SKASubarray):
             target=self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
-        self.logger.info("AssignResources command Successfully invoked.")
+        self.logger.debug(
+            "AssignResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -594,7 +597,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
-            self.logger.info("ReleaseResources command Successfully invoked.")
+            self.logger.info("ReleaseResources command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -652,7 +655,10 @@ class HelperSubArrayDevice(SKASubarray):
             target=self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.logger.info("ReleaseAllResources command Successfully invoked.")
+        self.logger.debug(
+            "ReleaseResources invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
@@ -696,7 +702,10 @@ class HelperSubArrayDevice(SKASubarray):
             target=self.update_device_obsstate, args=[ObsState.READY]
         )
         thread.start()
-        self.logger.info("Configure command Successfully invoked.")
+        self.logger.debug(
+            "Configure command invoked obsstate is transition \
+                          to CONFIGURING"
+        )
         return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
@@ -737,7 +746,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
-        self.logger.info("Scan command Successfully invoked.")
+        self.logger.info("Scan command completed.")
         return [ResultCode.OK], [""]
 
     def is_EndScan_allowed(self) -> bool:
@@ -776,7 +785,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
             self.push_change_event("obsState", self._obs_state)
-        self.logger.info("EndScan command Successfully invoked.")
+        self.logger.info("EndScan command completed.")
         return [ResultCode.OK], [""]
 
     def is_End_allowed(self) -> bool:
@@ -815,7 +824,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
-            self.logger.info("End command Successfully invoked.")
+            self.logger.info("End command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -858,7 +867,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
-            self.logger.info("GoToIdle command Successfully invoked.")
+            self.logger.info("GoToIdle command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -894,7 +903,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
-            self.logger.info("ObsReset command Successfully invoked.")
+            self.logger.info("ObsReset command completed.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -937,7 +946,7 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.ABORTED]
             )
             thread.start()
-        self.logger.info("Abort command Successfully invoked.")
+        self.logger.info("Abort command completed.")
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -976,7 +985,7 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.EMPTY]
             )
             thread.start()
-        self.logger.info("Restart command Successfully invoked.")
+        self.logger.info("Restart command completed.")
         return [ResultCode.OK], [""]
 
 

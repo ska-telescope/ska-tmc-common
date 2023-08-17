@@ -167,7 +167,7 @@ class HelperDishDevice(HelperBaseDevice):
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "Off")
-        self.logger.info("Off command Successfully invoked.")
+        self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
@@ -206,7 +206,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_LP)
         self.push_command_result(ResultCode.OK, "Standby")
-        self.logger.info("Standby command Successfully invoked.")
+        self.logger.info("Standby command completed.")
         return ([ResultCode.OK], [""])
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
@@ -248,7 +248,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
         self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
-        self.logger.info("SetStandbyFPMode command Successfully invoked.")
+        self.logger.info("SetStandbyFPMode command completed.")
         return ([ResultCode.OK], [""])
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
@@ -296,7 +296,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set the Dish ModeLP
         self.set_dish_mode(DishMode.STANDBY_LP)
         self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
-        self.logger.info("SetStandbyLPMode command Successfully invoked.")
+        self.logger.info("SetStandbyLPMode command completed.")
         return ([ResultCode.OK], [""])
 
     def is_SetOperateMode_allowed(self) -> bool:
@@ -344,7 +344,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "SetOperateMode")
-        self.logger.info("SetOperateMode command Successfully invoked.")
+        self.logger.info("SetOperateMode command completed.")
         return ([ResultCode.OK], [""])
 
     def is_SetStowMode_allowed(self) -> bool:
@@ -386,7 +386,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
         self.push_command_result(ResultCode.OK, "SetStowMode")
-        self.logger.info("SetStowMode command Successfully invoked.")
+        self.logger.info("SetStowMode command completed.")
         return ([ResultCode.OK], [""])
 
     def is_Track_allowed(self) -> bool:
@@ -428,7 +428,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "Track")
-        self.logger.info("Track command Successfully invoked.")
+        self.logger.info("Track command completed.")
         return ([ResultCode.OK], [""])
 
     def is_TrackStop_allowed(self) -> bool:
@@ -470,7 +470,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "TrackStop")
-        self.logger.info("TrackStop command Successfully invoked.")
+        self.logger.info("TrackStop command completed.")
         return ([ResultCode.OK], [""])
 
     def is_AbortCommands_allowed(self) -> bool:
@@ -538,7 +538,7 @@ class HelperDishDevice(HelperBaseDevice):
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
-        self.logger.info("Configure command Successfully invoked.")
+        self.logger.info("Configure command completed.")
         return [ResultCode.OK], [""]
 
     def is_ConfigureBand1_allowed(self) -> bool:
@@ -576,7 +576,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
         self.push_command_result(ResultCode.OK, "ConfigureBand1")
-        self.logger.info("ConfigureBand1 command Successfully invoked.")
+        self.logger.info("ConfigureBand1 command completed.")
         return ([ResultCode.OK], [""])
 
     def is_ConfigureBand2_allowed(self) -> bool:
@@ -621,7 +621,7 @@ class HelperDishDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ConfigureBand2")
-        self.logger.info("ConfigureBand2 command Successfully invoked.")
+        self.logger.info("ConfigureBand2 command completed.")
         return ([ResultCode.OK], [""])
 
     def update_dish_mode(self, value) -> None:
@@ -664,7 +664,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
         self.push_command_result(ResultCode.OK, "ConfigureBand3")
-        self.logger.info("ConfigureBand3 command Successfully invoked.")
+        self.logger.info("ConfigureBand3 command completed.")
         return ([ResultCode.OK], [""])
 
     def is_ConfigureBand4_allowed(self) -> bool:
@@ -702,7 +702,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
         self.push_command_result(ResultCode.OK, "ConfigureBand4")
-        self.logger.info("ConfigureBand4 command Successfully invoked.")
+        self.logger.info("ConfigureBand4 command completed.")
         return ([ResultCode.OK], [""])
 
     def is_ConfigureBand5a_allowed(self) -> bool:
@@ -741,7 +741,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
         self.push_command_result(ResultCode.OK, "ConfigureBand5a")
-        self.logger.info("ConfigureBand5a command Successfully invoked.")
+        self.logger.info("ConfigureBand5a command completed.")
         return ([ResultCode.OK], [""])
 
     def is_ConfigureBand5b_allowed(self) -> bool:
@@ -780,7 +780,7 @@ class HelperDishDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
         self.push_command_result(ResultCode.OK, "ConfigureBand5b")
-        self.logger.info("ConfigureBand5b command Successfully invoked.")
+        self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
 
     def is_Slew_allowed(self) -> bool:
@@ -817,7 +817,7 @@ class HelperDishDevice(HelperBaseDevice):
         if self._pointing_state != PointingState.SLEW:
             self._pointing_state = PointingState.SLEW
             self.push_change_event("pointingState", self._pointing_state)
-        self.logger.info("Slew command Successfully invoked.")
+        self.logger.info("Slew command completed.")
         return ([ResultCode.OK], [""])
 
     @command(
@@ -911,7 +911,7 @@ class HelperDishDevice(HelperBaseDevice):
             return self.induce_fault("Reset")
 
             # TBD: Add your dish mode change logic here if required
-        self.logger.info("Reset command Successfully invoked.")
+        self.logger.info("Reset command completed.")
         return ([ResultCode.OK], [""])
 
 
