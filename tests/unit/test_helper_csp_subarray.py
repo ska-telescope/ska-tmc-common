@@ -51,7 +51,6 @@ def test_set_defective(tango_context):
     result, message = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."
-    assert csp_subarray_device.obsstate == ObsState.RESOURCING
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 

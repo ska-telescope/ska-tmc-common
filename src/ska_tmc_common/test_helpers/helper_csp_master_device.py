@@ -119,7 +119,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Standby command succfully invoked.")
+            self.logger.info("Standby command successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
