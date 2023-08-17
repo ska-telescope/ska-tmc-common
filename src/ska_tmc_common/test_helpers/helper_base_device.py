@@ -50,6 +50,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self.logger.info("Off command Successfully invoked.")
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -151,7 +152,7 @@ class HelperBaseDevice(SKABaseDevice):
             self._obs_state = intermediate_state
             self.push_obs_state_event(intermediate_state)
             return [ResultCode.QUEUED], [""]
-
+        self.logger.info("Off command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -216,7 +217,11 @@ class HelperBaseDevice(SKABaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command(
@@ -232,6 +237,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            self.logger.info("On command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -244,7 +250,11 @@ class HelperBaseDevice(SKABaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Off Command is allowed")
         return True
 
     @command(
@@ -260,6 +270,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command Successfully invoked.")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -272,6 +283,7 @@ class HelperBaseDevice(SKABaseDevice):
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Standby Command is allowed")
         return True
 
     @command(
@@ -287,6 +299,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command Successfully invoked.")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -299,7 +312,11 @@ class HelperBaseDevice(SKABaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Disable Command is allowed")
         return True
 
     @command(
@@ -319,6 +336,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.DISABLE)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command Successfully invoked.")
             return [ResultCode.OK], ["Disable command invoked on SDP Master"]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."

@@ -330,7 +330,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command(
@@ -346,6 +350,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self.dev_state() != DevState.ON:
                 self.set_state(DevState.ON)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -365,7 +370,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Off Command is allowed")
         return True
 
     def induce_fault(
@@ -454,7 +463,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Standby Command is allowed")
         return True
 
     @command(
@@ -494,7 +507,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("AssignResources Command is allowed")
         return True
 
     @command(
@@ -527,6 +544,7 @@ class HelperSubArrayDevice(SKASubarray):
             target=self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
+        self.logger.info("AssignResources command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -553,7 +571,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseResources Command is allowed")
         return True
 
     @command(
@@ -572,6 +594,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state != ObsState.EMPTY:
                 self._obs_state = ObsState.EMPTY
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("ReleaseResources command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -591,7 +614,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources Command is allowed")
         return True
 
     @command(
@@ -625,6 +652,7 @@ class HelperSubArrayDevice(SKASubarray):
             target=self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
+        self.logger.info("ReleaseAllResources command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
@@ -639,7 +667,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Configure Command is allowed")
         return True
 
     @command(
@@ -664,6 +696,7 @@ class HelperSubArrayDevice(SKASubarray):
             target=self.update_device_obsstate, args=[ObsState.READY]
         )
         thread.start()
+        self.logger.info("Configure command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
@@ -678,7 +711,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Scan Command is allowed")
         return True
 
     @command(
@@ -700,6 +737,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
+        self.logger.info("Scan command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_EndScan_allowed(self) -> bool:
@@ -714,7 +752,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
         return True
 
     @command(
@@ -734,6 +776,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
             self.push_change_event("obsState", self._obs_state)
+        self.logger.info("EndScan command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_End_allowed(self) -> bool:
@@ -748,7 +791,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("End Command is allowed")
         return True
 
     @command(
@@ -768,6 +815,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
+            self.logger.info("End command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -786,7 +834,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("GoToIdle Command is allowed")
         return True
 
     @command(
@@ -806,6 +858,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
+            self.logger.info("GoToIdle command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -825,6 +878,7 @@ class HelperSubArrayDevice(SKASubarray):
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ObsReset Command is allowed")
         return True
 
     @command(
@@ -840,6 +894,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self._obs_state != ObsState.IDLE:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
+            self.logger.info("ObsReset command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -858,7 +913,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources Command is allowed")
         return True
 
     @command(
@@ -878,6 +937,7 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.ABORTED]
             )
             thread.start()
+        self.logger.info("Abort command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -892,7 +952,11 @@ class HelperSubArrayDevice(SKASubarray):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Restart Command is allowed")
         return True
 
     @command(
@@ -912,6 +976,7 @@ class HelperSubArrayDevice(SKASubarray):
                 target=self.update_device_obsstate, args=[ObsState.EMPTY]
             )
             thread.start()
+        self.logger.info("Restart command Successfully invoked.")
         return [ResultCode.OK], [""]
 
 
@@ -924,9 +989,7 @@ def main(args=None, **kwargs):
     """
     Runs the HelperSubArrayDevice Tango device.
     :param args: Arguments internal to TANGO
-
     :param kwargs: Arguments internal to TANGO
-
     :return: integer. Exit code of the run method.
     """
     return run((HelperSubArrayDevice,), args=args, **kwargs)

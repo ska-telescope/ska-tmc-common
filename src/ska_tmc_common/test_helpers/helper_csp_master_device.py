@@ -1,6 +1,8 @@
 """
 This module defines a helper device that acts as csp master in our testing.
 """
+import logging
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import time
@@ -13,6 +15,8 @@ from tango.server import command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
+
+logger = logging.getLogger(__name__)
 
 
 class HelperCspMasterDevice(HelperBaseDevice):
@@ -29,7 +33,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                logger.info("Device is defective, cannot process command.")
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        logger.info("On Command is allowed")
         return True
 
     @command(
@@ -40,6 +46,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
+            logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "On",
             )
@@ -47,6 +54,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            logger.info("On command Successfully invoked.")
             return [ResultCode.OK], [""]
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
@@ -58,7 +66,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                logger.info("Device is defective, cannot process command.")
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        logger.info("Off Command is allowed")
         return True
 
     @command(
@@ -69,6 +79,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
+            logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "On",
             )
@@ -76,6 +87,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.OFF)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            logger.info("Off command Successfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -88,7 +100,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                logger.info("Device is defective, cannot process command.")
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command(
@@ -99,6 +113,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         if self.defective_params["enabled"]:
+            logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "On",
             )
@@ -106,6 +121,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            logger.info("Standby command succfully invoked.")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [

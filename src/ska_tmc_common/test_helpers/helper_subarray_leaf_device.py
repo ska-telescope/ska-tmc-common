@@ -116,7 +116,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command(
@@ -140,7 +144,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Off Command is allowed")
         return True
 
     @command(
@@ -164,7 +172,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Standby Command is allowed")
         return True
 
     @command(
@@ -191,7 +203,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("AssignResources Command is allowed")
         return True
 
     @command(
@@ -220,6 +236,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "AssignResources")
+        self.logger.info("AssignResources command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
@@ -233,7 +250,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Configure Command is allowed")
         return True
 
     @command(
@@ -260,6 +281,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Configure")
+        self.logger.info("Configure command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
@@ -273,7 +295,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Scan Command is allowed")
         return True
 
     @command(
@@ -296,6 +322,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.SCANNING
         self.push_obs_state_event(self._obs_state)
         self.push_command_result(ResultCode.OK, "Scan")
+        self.logger.info("Scan command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_EndScan_allowed(self) -> bool:
@@ -309,7 +336,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
         return True
 
     @command(
@@ -330,6 +361,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState.READY
         self.push_obs_state_event(self._obs_state)
         self.push_command_result(ResultCode.OK, "EndScan")
+        self.logger.info("EndScan command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_End_allowed(self) -> bool:
@@ -343,7 +375,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("End Command is allowed")
         return True
 
     @command(
@@ -368,6 +404,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "End")
+        self.logger.info("End command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_GoToIdle_allowed(self) -> bool:
@@ -381,7 +418,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("GoToIdle Command is allowed")
         return True
 
     @command(
@@ -415,7 +456,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Abort Command is allowed")
         return True
 
     @command(
@@ -440,6 +485,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Abort")
+        self.logger.info("Abort command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_Restart_allowed(self) -> bool:
@@ -453,7 +499,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources Command is allowed")
         return True
 
     @command(
@@ -478,6 +528,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "Restart")
+        self.logger.info("Restart command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
@@ -492,7 +543,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources Command is allowed")
         return True
 
     @command(
@@ -517,6 +572,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        self.logger.info("ReleaseAllResources command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
@@ -531,7 +587,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseResources Command is allowed")
         return True
 
     @command(
@@ -560,6 +620,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseResources")
+        self.logger.info("ReleaseResources command Successfully invoked.")
         return [ResultCode.OK], [""]
 
 

@@ -61,7 +61,11 @@ class HelperMCCSStateDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("AssignResources Command is allowed")
         return True
 
     @command(
@@ -89,6 +93,7 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(assigned_resources)
         self.push_change_event("assignedResources", self._assigned_resources)
+        self.logger.info("AssignResources command Successfully invoked.")
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:
@@ -104,6 +109,9 @@ class HelperMCCSStateDevice(HelperBaseDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
@@ -132,4 +140,5 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         }
         # pylint:enable=line-too-long
         self._assigned_resources = json.dumps(tmpDict)
+        self.logger.info("ReleaseResources command Successfully invoked.")
         return [ResultCode.OK], [""]

@@ -130,7 +130,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command()
@@ -150,7 +154,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                logger.info("Device is defective, cannot process command.")
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Off Command is allowed")
         return True
 
     @command()
@@ -177,7 +183,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("AssignResources Command is allowed")
         return True
 
     @command(
@@ -224,6 +234,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseResource Command is allowed")
         return True
 
     @command()
@@ -256,7 +267,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources Command is allowed")
         return True
 
     @command()
@@ -288,7 +303,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Configure Command is allowed")
         return True
 
     @command(
@@ -332,7 +351,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Scan Command is allowed")
         return True
 
     @command(
@@ -371,7 +394,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
         return True
 
     @command()
@@ -398,6 +425,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
@@ -429,6 +459,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
@@ -462,6 +495,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
