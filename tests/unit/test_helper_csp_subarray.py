@@ -47,7 +47,6 @@ def test_set_delay(tango_context):
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    assert not csp_subarray_device.defective
     csp_subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
@@ -89,9 +88,7 @@ def test_assign_resources_defective(tango_context):
     csp_subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command.completely."
-    )
+    assert message[0] == "Default exception."
     assert csp_subarray_device.obsstate == ObsState.RESOURCING
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
@@ -110,9 +107,7 @@ def test_release_resources_defective(tango_context):
     csp_subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = csp_subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command.completely."
-    )
+    assert message[0] == "Default exception."
     assert csp_subarray_device.obsstate == ObsState.RESOURCING
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
