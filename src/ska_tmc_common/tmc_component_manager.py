@@ -114,7 +114,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 proxy_timeout=proxy_timeout,
                 sleep_time=sleep_time,
             )
-        self.timer_object: threading.Timer
+        self.timer_object = None
         self.liveliness_probe_object: BaseLivelinessProbe
         self._command_id: str = ""
 
