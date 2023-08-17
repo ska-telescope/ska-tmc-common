@@ -201,10 +201,13 @@ class BaseTMCCommand:
             while not self._stop:
                 try:
                     if state_function() == state_to_achieve:
+                        self.logger.info(
+                            "State change has occured, current state is %s",
+                            state_to_achieve,
+                        )
                         if len(expected_state) > index + 1:
                             index += 1
                             state_to_achieve = expected_state[index]
-
                         else:
                             self.logger.info(
                                 "State change has occured, command successful"
