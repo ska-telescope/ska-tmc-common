@@ -12,8 +12,10 @@ from operator import methodcaller
 from typing import Callable, List, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.executor import TaskStatus
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
+from ska_tmc_common.abort_callback import AbortCallback
 from ska_tmc_common.adapters import (
     AdapterFactory,
     AdapterType,
@@ -25,12 +27,10 @@ from ska_tmc_common.adapters import (
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
-from ska_tango_base.executor import TaskStatus
-from ska_tmc_common.enum import TimeoutState, CommandState
+from ska_tmc_common.enum import CommandState, TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
-from ska_tmc_common.abort_callback import AbortCallback
 from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
@@ -119,7 +119,10 @@ class BaseTMCCommand:
         )
 
     def update_task_status(
-        self, result: ResultCode, status: TaskStatus = TaskStatus.COMPLETED, message: str = ""
+        self,
+        result: ResultCode,
+        status: TaskStatus = TaskStatus.COMPLETED,
+        message: str = "",
     ) -> NotImplementedError:
         """Method to update the task status for command."""
         raise NotImplementedError(
@@ -253,7 +256,7 @@ class BaseTMCCommand:
                             "Command has been Aborted, Setting TaskStatus to aborted"
                         )
                         self.update_task_status(
-                            status = TaskStatus.ABORTED,
+                            status=TaskStatus.ABORTED,
                             result=ResultCode.FAILED,
                         )
                         self.stop_tracker_thread(timeout_id)

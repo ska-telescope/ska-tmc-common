@@ -6,6 +6,8 @@ from typing import Any, Optional
 
 from ska_tmc_common.enum import CommandState
 
+# pylint: disable=C0301(line-too-long)
+
 
 class AbortCallback:
     """Callback class for tracking command abortion status.
@@ -74,5 +76,3 @@ class AbortCallback:
             return False
 
         return True
-
-    
