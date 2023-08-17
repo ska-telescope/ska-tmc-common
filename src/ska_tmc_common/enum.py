@@ -66,6 +66,20 @@ class TimeoutState(IntEnum):
 
 
 @unique
+class CommandState(IntEnum):
+    """Enum class for keeping track of Abort state.
+    Has 2 values according to the state of timer.
+
+    :NOT_OCCURED: Specifics timer is either running or has been canceled.
+    :OCCURED: Specifies the timeout has occured and corresponding method was
+        called.
+    """
+
+    INPROGRESS = 0
+    ABORTED = 1
+
+
+@unique
 class FaultType(IntEnum):
     """Enum class for raising various exceptions from helper devices."""
 

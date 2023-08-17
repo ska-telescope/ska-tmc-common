@@ -25,10 +25,12 @@ from ska_tmc_common.adapters import (
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
-from ska_tmc_common.enum import TimeoutState
+from ska_tango_base.executor import TaskStatus
+from ska_tmc_common.enum import TimeoutState, CommandState
 from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
+from ska_tmc_common.abort_callback import AbortCallback
 from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
@@ -117,7 +119,7 @@ class BaseTMCCommand:
         )
 
     def update_task_status(
-        self, result: ResultCode, message: str = ""
+        self, result: ResultCode, status: TaskStatus = TaskStatus.COMPLETED, message: str = ""
     ) -> NotImplementedError:
         """Method to update the task status for command."""
         raise NotImplementedError(
@@ -130,6 +132,7 @@ class BaseTMCCommand:
         expected_state: List[IntEnum],
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
+        abort_callback: Optional[AbortCallback] = None,
         command_id: Optional[str] = None,
         lrcr_callback: Optional[LRCRCallback] = None,
     ) -> None:
@@ -160,6 +163,7 @@ class BaseTMCCommand:
                 expected_state,
                 timeout_id,
                 timeout_callback,
+                abort_callback,
                 command_id,
                 lrcr_callback,
             ],
@@ -172,6 +176,7 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state: List[IntEnum],
+        abort_callback: AbortCallback,
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -241,7 +246,17 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
-                            self.stop_tracker_thread(timeout_id)
+                    if abort_callback.assert_against_call(
+                        command_id, CommandState.ABORTED
+                    ):
+                        self.logger.error(
+                            "Command has been Aborted, Setting TaskStatus to aborted"
+                        )
+                        self.update_task_status(
+                            status = TaskStatus.ABORTED,
+                            result=ResultCode.FAILED,
+                        )
+                        self.stop_tracker_thread(timeout_id)
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
