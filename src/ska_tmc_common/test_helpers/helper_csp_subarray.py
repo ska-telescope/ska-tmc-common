@@ -200,24 +200,25 @@ class HelperCspSubarray(HelperSubArrayDevice):
             return self.induce_fault(
                 "On",
             )
+
+        if self._state_duration_info:
+            self._follow_state_duration()
+
         if self._obs_state in [ObsState.READY, ObsState.IDLE]:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._obs_state = ObsState.CONFIGURING
-                self.push_change_event("obsState", self._obs_state)
+            self._obs_state = ObsState.CONFIGURING
+            self.push_change_event("obsState", self._obs_state)
 
-                command_result_thread = threading.Thread(
-                    target=self.wait_and_update_command_result,
-                    args=["Configure"],
-                )
-                command_result_thread.start()
+            command_result_thread = threading.Thread(
+                target=self.wait_and_update_command_result,
+                args=["Configure"],
+            )
+            command_result_thread.start()
 
-                thread = threading.Thread(
-                    target=self.update_device_obsstate,
-                    args=[ObsState.READY, CONFIGURE],
-                )
-                thread.start()
+            thread = threading.Thread(
+                target=self.update_device_obsstate,
+                args=[ObsState.READY, CONFIGURE],
+            )
+            thread.start()
         self.logger.info("Configure command completed.")
         return [ResultCode.OK], [""]
 
