@@ -48,7 +48,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             "Instructed simulator to invoke AssignResources command"
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
-        
+
         self.logger.info("CSP Helper Subarray AssignResources command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
