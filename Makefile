@@ -1,23 +1,28 @@
-# Minimal makefile for Sphinx documentation
 #
+# Project makefile for a Common Tango classes for tmc project. You should normally only need to modify
+# PROJECT below.
+#
+PROJECT = ska-tmc-common
 
-# You can set these variables from the command line.
-SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
-SOURCEDIR     = src
-BUILDDIR      = build
+# Issue resolution with twine during publish
+python-pre-publish:
+	pip3 install twine
 
-# Put it first so that "make" without argument is like "make help".
-help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+#DAR101 Missing parameter(s) in Docstring: - fqdn
+#DAR201 Missing "Returns" in Docstring: - return
+#DAR301 Missing "Yields" in Docstring: - yield
+#DAR401 Missing exception(s) in Raises section: -r Exception
+PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR301,DAR401,W503,E501
+MARK ?=
+PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE)
 
-generate-api-doc:
-	@sphinx-apidoc -f -o src/api ../src/
+# include makefile to pick up the standard Make targets, e.g., 'make build'
+# build, 'make push' docker push procedure, etc. The other Make targets
+# ('make interactive', 'make test', etc.) are defined in this file.
 
-.PHONY: help Makefile
-
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-
+-include .make/python.mk
+-include .make/docs.mk
+-include .make/release.mk
+-include .make/make.mk
+-include .make/help.mk
+-include PrivateRules.mak
