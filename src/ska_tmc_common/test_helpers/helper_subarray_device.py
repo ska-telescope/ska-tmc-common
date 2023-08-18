@@ -17,6 +17,8 @@ from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
+from ska_tmc_common import CommandNotAllowed, FaultType
+
 from .constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -33,9 +35,6 @@ from .constants import (
     SCAN,
     STAND_BY,
 )
-
-MAX_REPORTED_COMMANDS = 15
-from ska_tmc_common import CommandNotAllowed, FaultType
 
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
@@ -551,8 +550,7 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        """ON Command
-        """
+        """ON Command"""
         self.logger.info("Instructed simulator to invoke On command")
         self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
@@ -649,8 +647,7 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        """OFF Command
-        """
+        """OFF Command"""
         self.logger.info("Instructed simulator to invoke Off command")
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
@@ -1144,8 +1141,7 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-        """ObsReset Command
-        """
+        """ObsReset Command"""
         self.logger.info("Instructed simulator to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:

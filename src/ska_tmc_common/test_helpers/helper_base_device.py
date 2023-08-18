@@ -236,8 +236,7 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        """ON Command
-        """
+        """ON Command"""
         self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -272,8 +271,7 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        """OFF Command
-        """
+        """OFF Command"""
         self.logger.info("Instructed simulator to invoke Off command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -304,8 +302,7 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
-        """StandBy Command
-        """
+        """StandBy Command"""
         self.logger.info("Instructed simulator to invoke Standby command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
