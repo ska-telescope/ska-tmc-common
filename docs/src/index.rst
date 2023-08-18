@@ -14,6 +14,7 @@ Welcome to ska-tmc-common documentation!
    Class:  TangoClient<TangoClient>
    Class:  TangoGroupClient<TangoGroupClient>
    Class:  TangoServerHelper<TangoServerHelper>
+   Class:  TangoHelperDevices<TangoHelperDevices>
    
 
 Indices and tables

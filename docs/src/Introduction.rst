@@ -12,3 +12,5 @@ The ska-tmc-common repository contains implementation of Tango abstraction layer
 **TangoGroupClient**: Class that provides abstraction for Tango group APIs
 
 **TangoServerHelper**: Class that provides abstraction for Tango device server APIs
+
+**TangoHelperDevices**: Class that provides abstraction for Various TMC Tango devices for Testing and debugging
