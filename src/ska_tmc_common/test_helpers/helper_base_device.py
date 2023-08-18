@@ -1,16 +1,19 @@
 """
 A common module for different helper devices(mock devices)"
 """
+import json
+import threading
 import time
 from typing import List, Tuple
 
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState
+from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
+from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
@@ -23,10 +26,18 @@ class HelperBaseDevice(SKABaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._health_state = HealthState.OK
-        self._defective = False
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
         self._raise_exception = False
+        self._defective = json.dumps(
+            {
+                "enabled": False,
+                "fault_type": FaultType.FAILED_RESULT,
+                "error_message": "Default exception.",
+                "result": ResultCode.FAILED,
+            }
+        )
+        self.defective_params = json.loads(self._defective)
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
@@ -39,6 +50,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self.logger.info("Off command completed.")
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -90,16 +102,58 @@ class HelperBaseDevice(SKABaseDevice):
         pass
 
     @command(
-        dtype_in=bool,
-        doc_in="Set Defective",
+        dtype_in=str,
+        doc_in="Set Defective parameters",
     )
-    def SetDefective(self, value: bool) -> None:
+    def SetDefective(self, values: str) -> None:
         """
         Trigger defective change
-        :param: value
-        :type: bool
+        :param: values
+        :type: str
         """
-        self._defective = value
+        input_dict = json.loads(values)
+        self.logger.info("Setting defective params to %s", input_dict)
+        for key, value in input_dict.items():
+            self.defective_params[key] = value
+
+    def induce_fault(
+        self,
+        command_name: str,
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """Induces fault into device according to given parameters
+
+        :params:
+
+        command_name: Name of the command for which fault is being induced
+        dtype: str
+        rtype: Tuple[List[ResultCode], List[str]]
+        """
+        fault_type = self.defective_params["fault_type"]
+        result = self.defective_params["result"]
+        fault_message = self.defective_params["error_message"]
+        intermediate_state = (
+            self.defective_params.get("intermediate_state")
+            or ObsState.RESOURCING
+        )
+
+        if fault_type == FaultType.FAILED_RESULT:
+            return [result], [fault_message]
+
+        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[result, command_name, fault_message],
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            self._obs_state = intermediate_state
+            self.push_obs_state_event(intermediate_state)
+            return [ResultCode.QUEUED], [""]
+        self.logger.info("Off command completed.")
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_in="DevState",
@@ -165,6 +219,16 @@ class HelperBaseDevice(SKABaseDevice):
         self._raise_exception = value
 
     def is_On_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command(
@@ -172,19 +236,35 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        """ON Command
+        """
         self.logger.info("Instructed simulator to invoke On command")
-        if not self._defective:
-            if self.dev_state() != DevState.ON:
-                self.set_state(DevState.ON)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-            self.logger.info("On Completed")
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "On",
+            )
+        if self.dev_state() != DevState.ON:
+            self.set_state(DevState.ON)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("On command completed.")
             return [ResultCode.OK], [""]
+
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]
 
     def is_Off_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Off Command is allowed")
         return True
 
     @command(
@@ -192,20 +272,31 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        """OFF Command
+        """
         self.logger.info("Instructed simulator to invoke Off command")
-        if not self._defective:
-            if self.dev_state() != DevState.OFF:
-                self.set_state(DevState.OFF)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-            self.logger.info("Off Completed")
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "Off",
+            )
+        if self.dev_state() != DevState.OFF:
+            self.set_state(DevState.OFF)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], [""]
-
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]
 
     def is_Standby_allowed(self) -> bool:
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Standby Command is allowed")
         return True
 
     @command(
@@ -213,21 +304,35 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        """StandBy Command
+        """
         self.logger.info("Instructed simulator to invoke Standby command")
-        if not self._defective:
-            if self.dev_state() != DevState.STANDBY:
-                self.set_state(DevState.STANDBY)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
-            self.logger.info("Standby Completed")
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "Standby",
+            )
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], [""]
-
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]
 
     def is_disable_allowed(self) -> bool:
         "Checks if disable command is allowed"
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Disable Command is allowed")
         return True
 
     @command(
@@ -239,13 +344,16 @@ class HelperBaseDevice(SKABaseDevice):
         It sets the DevState to disable.
         :rtype: Tuple
         """
-        if not self._defective:
-            if self.dev_state() != DevState.DISABLE:
-                self.set_state(DevState.DISABLE)
-                time.sleep(0.1)
-                self.push_change_event("State", self.dev_state())
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "Off",
+            )
+        if self.dev_state() != DevState.DISABLE:
+            self.set_state(DevState.DISABLE)
+            time.sleep(0.1)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command completed.")
             return [ResultCode.OK], ["Disable command invoked on SDP Master"]
-
         return [ResultCode.FAILED], [
             "Device is defective, cannot process command."
         ]

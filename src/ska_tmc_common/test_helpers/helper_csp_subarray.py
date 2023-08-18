@@ -32,12 +32,11 @@ class HelperCspSubarray(HelperSubArrayDevice):
         This method invokes AssignResources command on subarray devices
         """
         self.logger.info("CSP Helper Subarray AssignResources command")
-        if self._defective:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
-                "Device is defective, cannot process command.completely."
-            ]
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
 
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
@@ -61,6 +60,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
             target=self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
+        self.logger.debug(
+            "AssignResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def wait_and_update_exception(self, command_name):
@@ -93,15 +96,15 @@ class HelperCspSubarray(HelperSubArrayDevice):
         """
         This method invokes ReleaseResources command on subarray device
         """
-        if not self._defective:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.EMPTY:
+            self._obs_state = ObsState.EMPTY
+            self.push_change_event("obsState", self._obs_state)
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -114,12 +117,11 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if self._defective:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.FAILED], [
-                "Device is defective, cannot process command.completely."
-            ]
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
 
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
@@ -144,6 +146,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
             target=self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
+        self.logger.debug(
+            "ReleaseAllResources invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     @command(
@@ -158,28 +164,27 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state in [ObsState.READY, ObsState.IDLE]:
-                self._obs_state = ObsState.CONFIGURING
-                self.push_change_event("obsState", self._obs_state)
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
+        if self._obs_state in [ObsState.READY, ObsState.IDLE]:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_change_event("obsState", self._obs_state)
 
-                command_result_thread = threading.Thread(
-                    target=self.wait_and_update_command_result,
-                    args=["Configure"],
-                )
-                command_result_thread.start()
+            command_result_thread = threading.Thread(
+                target=self.wait_and_update_command_result,
+                args=["Configure"],
+            )
+            command_result_thread.start()
 
-                thread = threading.Thread(
-                    target=self.update_device_obsstate, args=[ObsState.READY]
-                )
-                thread.start()
-            return [ResultCode.OK], [""]
-
-        self._obs_state = ObsState.CONFIGURING
-        self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command.completely."
-        ]
+            thread = threading.Thread(
+                target=self.update_device_obsstate, args=[ObsState.READY]
+            )
+            thread.start()
+        self.logger.info("Configure command completed.")
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_in=("str"),
@@ -193,22 +198,25 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.SCANNING:
-                self._obs_state = ObsState.SCANNING
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.SCANNING:
+            self._obs_state = ObsState.SCANNING
 
-                command_result_thread = threading.Thread(
-                    target=self.wait_and_update_command_result, args=["Scan"]
-                )
-                command_result_thread.start()
+            command_result_thread = threading.Thread(
+                target=self.wait_and_update_command_result, args=["Scan"]
+            )
+            command_result_thread.start()
 
-                self.push_change_event("obsState", self._obs_state)
-
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.debug(
+            "Scan invoked obsstate is transition \
+                          to SCANNING"
+        )
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -220,23 +228,23 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.READY:
-                self._obs_state = ObsState.READY
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.READY:
+            self._obs_state = ObsState.READY
 
-                command_result_thread = threading.Thread(
-                    target=self.wait_and_update_command_result,
-                    args=["EndScan"],
-                )
-                command_result_thread.start()
+            command_result_thread = threading.Thread(
+                target=self.wait_and_update_command_result,
+                args=["EndScan"],
+            )
+            command_result_thread.start()
 
-                self.push_change_event("obsState", self._obs_state)
-
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("EndScan command completed.")
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -248,43 +256,45 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        if not self._defective:
-            if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
-                command_result_thread = threading.Thread(
-                    target=self.wait_and_update_command_result,
-                    args=["GoToIdle"],
-                )
-                command_result_thread.start()
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            command_result_thread = threading.Thread(
+                target=self.wait_and_update_command_result,
+                args=["GoToIdle"],
+            )
+            command_result_thread.start()
 
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("GoToIdle command completed.")
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-        if not self._defective:
-            if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
 
-                command_result_thread = threading.Thread(
-                    target=self.wait_and_update_command_result,
-                    args=["ObsReset"],
-                )
-                command_result_thread.start()
+            command_result_thread = threading.Thread(
+                target=self.wait_and_update_command_result,
+                args=["ObsReset"],
+            )
+            command_result_thread.start()
 
-                self.push_change_event("obsState", self._obs_state)
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("ObsReset command completed.")
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -296,6 +306,11 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
@@ -309,6 +324,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 target=self.update_device_obsstate, args=[ObsState.ABORTED]
             )
             thread.start()
+        self.logger.info("Abort command completed.")
         return [ResultCode.OK], [""]
 
     @command(
@@ -321,6 +337,11 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "On",
+            )
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
@@ -334,6 +355,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 target=self.update_device_obsstate, args=[ObsState.EMPTY]
             )
             thread.start()
+        self.logger.info("Restart command completed.")
         return [ResultCode.OK], [""]
 
 

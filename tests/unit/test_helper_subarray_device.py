@@ -65,9 +65,10 @@ def test_clear_commandCallInfo(tango_context):
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    assert not subarray_device.defective
-    subarray_device.SetDefective(True)
-    assert subarray_device.defective
+    subarray_device.SetDefective(json.dumps({"enabled": True}))
+    result, message = subarray_device.command_inout("AssignResources", "")
+    assert result[0] == ResultCode.FAILED
+    assert message[0] == "Default exception."
 
 
 def test_set_raise_exception(tango_context):
@@ -100,13 +101,10 @@ def test_command_without_argin(tango_context, command):
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(True)
+    subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command.completely."
-    )
-    assert subarray_device.obsstate == ObsState.RESOURCING
+    assert message[0] == "Default exception."
 
 
 def test_scan_command(tango_context):
@@ -120,13 +118,10 @@ def test_scan_command(tango_context):
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(True)
+    subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is Defective, cannot process command completely."
-    )
-    assert subarray_device.obsstate == ObsState.RESOURCING
+    assert message[0] == "Default exception."
 
 
 def test_assign_resources_raise_exception(tango_context):

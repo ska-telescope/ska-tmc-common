@@ -4,7 +4,7 @@ import json
 import logging
 import threading
 import time
-from typing import List, Tuple
+from typing import Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
@@ -109,60 +109,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return self._defective
 
-    @command(
-        dtype_in=str,
-        doc_in="Set Defective parameters",
-    )
-    def SetDefective(self, values: str) -> None:
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
-        input_dict = json.loads(values)
-        self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
-
-    def induce_fault(
-        self,
-        command_name: str,
-    ) -> Tuple[List[ResultCode], List[str]]:
-        """Induces fault into device according to given parameters
-
-        :params:
-
-        command_name: Name of the command for which fault is being induced
-        dtype: str
-        rtype: Tuple[List[ResultCode], List[str]]
-        """
-        fault_type = self.defective_params["fault_type"]
-        result = self.defective_params["result"]
-        fault_message = self.defective_params["error_message"]
-        intermediate_state = (
-            self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
-        )
-
-        if fault_type == FaultType.FAILED_RESULT:
-            return [result], [fault_message]
-
-        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[result, command_name, fault_message],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [""]
-
-        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            self._obs_state = intermediate_state
-            self.push_obs_state_event(intermediate_state)
-            return [ResultCode.QUEUED], [""]
-
-        return [ResultCode.OK], [""]
-
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
     ) -> None:
@@ -207,7 +153,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("On Command is allowed")
         return True
 
     @command()
@@ -228,7 +178,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                logger.info("Device is defective, cannot process command.")
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Off Command is allowed")
         return True
 
     @command()
@@ -256,7 +208,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("AssignResources Command is allowed")
         return True
 
     @command(
@@ -306,6 +262,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseResource Command is allowed")
         return True
 
     @command()
@@ -326,6 +283,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 args=[ObsState.IDLE],
             )
             thread.start()
+            self.logger.debug(
+                "ReleaseResources invoked obsstate is transition \
+                          to Resourcing"
+            )
             self.push_command_result(ResultCode.OK, "ReleaseResources")
 
     def is_ReleaseAllResources_allowed(self):
@@ -341,7 +302,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources Command is allowed")
         return True
 
     @command()
@@ -376,7 +341,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Configure Command is allowed")
         return True
 
     @command(
@@ -426,7 +395,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Scan Command is allowed")
         return True
 
     @command(
@@ -466,7 +439,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
         return True
 
     @command()
@@ -494,6 +471,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
@@ -517,6 +497,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                     args=[ObsState.IDLE],
                 )
                 thread.start()
+                self.logger.debug(
+                    "END invoked obsstate is transition \
+                        to Configuring"
+                )
                 self.push_command_result(ResultCode.OK, "End")
 
     def is_Abort_allowed(self):
@@ -531,6 +515,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
@@ -565,6 +552,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.defective_params["fault_type"]
                 == FaultType.COMMAND_NOT_ALLOWED
             ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         return True
 
@@ -585,6 +575,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 args=[ObsState.EMPTY],
             )
             thread.start()
+            self.logger.debug(
+                "Restarting invoked obsstate is transition \
+                          to RESTARTING"
+            )
             self.push_command_result(ResultCode.OK, "Restart")
 
 
