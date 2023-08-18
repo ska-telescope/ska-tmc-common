@@ -4,7 +4,7 @@ TMC Common Tango Devices
 ============================================
 **HelperDevices in ska_tmc_common**:
 
-Devices and Their Functionality
+Devices and their functionality
 ===============================
 
 Functionality
