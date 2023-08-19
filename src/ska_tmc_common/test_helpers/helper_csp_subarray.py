@@ -204,7 +204,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self._state_duration_info:
             self._follow_state_duration()
 
-        if self._obs_state in [ObsState.READY, ObsState.IDLE]:
+        elif self._obs_state in [ObsState.READY, ObsState.IDLE]:
             self._obs_state = ObsState.CONFIGURING
             self.push_change_event("obsState", self._obs_state)
 
