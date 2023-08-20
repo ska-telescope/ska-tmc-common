@@ -53,7 +53,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "AssignResources",
             )
 
         if self._raise_exception:
@@ -122,7 +122,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "ReleaseResources",
             )
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
@@ -147,7 +147,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "ReleaseAllResources",
             )
 
         if self._raise_exception:
@@ -198,7 +198,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "Configure",
             )
 
         if self._state_duration_info:
@@ -239,7 +239,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "Scan",
             )
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
@@ -271,7 +271,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "EndScan",
             )
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
@@ -301,7 +301,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "GoToIdle",
             )
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
@@ -325,7 +325,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "ObsReset",
             )
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
@@ -355,7 +355,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "Abort",
             )
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
@@ -389,7 +389,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "Restart",
             )
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
