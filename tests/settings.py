@@ -265,11 +265,13 @@ class DummyCommandClass(TmcLeafNodeCommand):
 
     def update_task_status(
         self,
-        result: ResultCode = ResultCode.FAILED,
-        status: TaskStatus = TaskStatus.COMPLETED,
-        message: str = "",
+        **kwargs,
     ) -> None:
         """Method to update the task status."""
+        result = kwargs.get("result")
+        status = kwargs.get("status", TaskStatus.COMPLETED)
+        message = kwargs.get("message")
+
         if result == ResultCode.OK:
             self.task_callback(result=result, status=status)
         else:

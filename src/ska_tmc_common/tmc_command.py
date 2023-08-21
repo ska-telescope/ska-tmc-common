@@ -120,9 +120,7 @@ class BaseTMCCommand:
 
     def update_task_status(
         self,
-        result: ResultCode = ResultCode.FAILED,
-        status: TaskStatus = TaskStatus.COMPLETED,
-        message: str = "",
+        **kwargs,
     ) -> NotImplementedError:
         """Method to update the task status for command."""
         raise NotImplementedError(
