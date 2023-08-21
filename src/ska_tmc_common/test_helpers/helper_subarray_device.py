@@ -622,7 +622,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
-            self.push_obs_state_event(intermediate_state)
+            self.push_change_event("obsState", intermediate_state)
             return [ResultCode.QUEUED], [""]
 
         return [ResultCode.OK], [""]
