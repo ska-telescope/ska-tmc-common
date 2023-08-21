@@ -58,14 +58,12 @@ Device List
 .. automodule:: ska_tmc_common.test_helpers.helper_state_mccsdevice
    :members:
    :undoc-members:
-   :show-inheritance:
 
 7. Helper_Subarray_Device
 -------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_subarray_device
    :members:
    :undoc-members:
-   :show-inheritance:
 
 
 8. Helper_Subarray_Leaf_Device
@@ -73,7 +71,6 @@ Device List
 .. automodule:: ska_tmc_common.test_helpers.helper_subarray_leaf_device
    :members:
    :undoc-members:
-   :show-inheritance:
 
 
 Conclusion
