@@ -16,7 +16,6 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
-from ska_tmc_common.abort_callback import AbortCallback
 from ska_tmc_common.adapters import (
     AdapterFactory,
     AdapterType,
@@ -28,7 +27,7 @@ from ska_tmc_common.adapters import (
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
-from ska_tmc_common.enum import CommandState, TimeoutState
+from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
@@ -121,7 +120,7 @@ class BaseTMCCommand:
 
     def update_task_status(
         self,
-        result: ResultCode,
+        result: ResultCode = ResultCode.FAILED,
         status: TaskStatus = TaskStatus.COMPLETED,
         message: str = "",
     ) -> NotImplementedError:
@@ -134,9 +133,9 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state: List[IntEnum],
+        abort_event: threading.Event,
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
-        abort_callback: Optional[AbortCallback] = None,
         command_id: Optional[str] = None,
         lrcr_callback: Optional[LRCRCallback] = None,
     ) -> None:
@@ -148,6 +147,9 @@ class BaseTMCCommand:
 
         :param expected_state: Expected state of the device in case of
                     successful command execution.
+
+        :param abort_event: threading.Event class object that is used to check
+                    if the command has been aborted.
 
         :param timeout_id: Id for TimeoutCallback class object.
 
@@ -165,9 +167,9 @@ class BaseTMCCommand:
             args=[
                 state_function,
                 expected_state,
+                abort_event,
                 timeout_id,
                 timeout_callback,
-                abort_callback,
                 command_id,
                 lrcr_callback,
             ],
@@ -180,7 +182,7 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state: List[IntEnum],
-        abort_callback: AbortCallback,
+        abort_event: threading.Event,
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -192,6 +194,9 @@ class BaseTMCCommand:
 
         :param expected_state: Expected state of the device in case of
                     successful command execution.
+
+        :param abort_event: threading.Event class object that is used to check
+                    if the command has been aborted.
 
         :param timeout_id: Id for TimeoutCallback class object.
 
@@ -250,15 +255,12 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
-                    if abort_callback.assert_against_call(
-                        command_id, CommandState.ABORTED
-                    ):
+                    if abort_event.is_set():
                         self.logger.error(
                             "Command has been Aborted, Setting TaskStatus to aborted"
                         )
                         self.update_task_status(
                             status=TaskStatus.ABORTED,
-                            result=ResultCode.FAILED,
                         )
                         self.stop_tracker_thread(timeout_id)
                 except Exception as e:
