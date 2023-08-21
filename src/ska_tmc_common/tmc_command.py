@@ -255,6 +255,7 @@ class BaseTMCCommand:
                                     "exception_message"
                                 ],
                             )
+                            self.stop_tracker_thread(timeout_id)
                     if abort_event.is_set():
                         self.logger.error(
                             "Command has been Aborted, Setting TaskStatus to aborted"
