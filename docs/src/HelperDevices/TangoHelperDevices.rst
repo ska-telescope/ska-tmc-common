@@ -1,11 +1,10 @@
 
 
-TMC Common Tango Devices
-============================================
-**HelperDevices in ska_tmc_common**:
+TMC Common Tango Helper Devices
+================================
 
 Devices and their functionality
-===============================
+-------------------------------
 
 Functionality
 -------------
@@ -15,7 +14,7 @@ Functionality
 
 
 Device List
------------
+===========
 
 1. Helper_CSP_Master
 --------------------
