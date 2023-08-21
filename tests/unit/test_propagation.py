@@ -89,7 +89,6 @@ def test_kwargs_functionality_lrcr_callback():
         kwarg3=12.6,
     )
 
-
 def test_command_propogation_success(task_callback):
     cm = DummyComponentManager(logger)
     cm.invoke_command(True, task_callback)

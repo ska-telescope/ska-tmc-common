@@ -253,7 +253,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.logger.error("Command Failed")
             if self._timeout_id:
                 self.component_manager.stop_timer()
-            self.update_task_status(result, msg)
+            self.update_task_status(result=result, msg=msg)
 
     # pylint: disable=signature-differs
     def do(self, argin: bool) -> Tuple[ResultCode, str]:
