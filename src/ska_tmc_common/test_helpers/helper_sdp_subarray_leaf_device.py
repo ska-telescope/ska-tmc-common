@@ -89,6 +89,16 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         command_name: Name of the command for which fault is being induced
         dtype: str
         rtype: Tuple[List[ResultCode], List[str]]
+        Example:
+        defective = json.dumps(
+        {
+        "enabled": False,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Default exception.",
+        "result": ResultCode.FAILED,
+        }
+        )
+        defective_params = json.loads(defective)
         """
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
