@@ -53,7 +53,7 @@ Device List
 5. Helper_SDP_Subarray_leaf_Device
 ----------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device
-.. autoclass:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device.HelperSdpSubarray
+.. autoclass:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device.HelperSdpSubarrayLeafDevice
    :members:
    :undoc-members:
    :show-inheritance:
