@@ -82,7 +82,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "Off",
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
@@ -118,7 +118,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
-                "On",
+                "Standby",
             )
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)

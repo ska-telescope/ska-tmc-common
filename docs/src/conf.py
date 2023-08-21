@@ -13,7 +13,10 @@
 # serve to show the default.
 
 autodoc_mock_imports = ["PyTango", "tango", "tango.server", "run", "command", "numpy",
-                        "future", "future.utils", "ska.logging", "ska.logging.configuration"]
+                        "future", "future.utils", "ska.logging", "ska.logging.configuration",
+                        "ska_tango_base","marshmallow","mock",
+                        "katpoint","ska_telmodel","transitions",
+                        ]
 
 import sys
 import os
@@ -28,7 +31,6 @@ class Mock(MagicMock):
 # Mock tango modules
 MOCK_MODULES = ['logging', 'logging.handlers']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.

@@ -4,16 +4,37 @@
    contain the root `toctree` directive.
 
 Welcome to ska-tmc-common documentation!
-============================================
+==========================================
 
 .. toctree::
-  :caption: Table of Contents
+  :caption: Introduction
   :maxdepth: 2
 
    Introduction<Introduction>
-   Class:  TangoClient<TangoClient>
-   Class:  TangoGroupClient<TangoGroupClient>
-   Class:  TangoServerHelper<TangoServerHelper>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TangoClient
+
+   TangoClient
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TangoGroupClient
+
+   TangoGroupClient
+
+.. toctree::
+   :maxdepth: 1
+   :caption: HelperDevices
+
+   HelperDevices/TangoHelperDevices
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TangoServerHelper
+
+   TangoServerHelper
    
 
 Indices and tables
