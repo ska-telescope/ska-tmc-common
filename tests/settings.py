@@ -216,7 +216,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         argin: bool,
         timeout: int,
         task_callback: Callable,
-        task_abort_event: Optional[threading.Event] = None,
+        task_abort_event: threading.Event,
     ) -> None:
         """Invokes the do method and updates the task status."""
         self.logger.info("Starting timer for timeout")
@@ -233,6 +233,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
                 self.start_tracker_thread(
                     self.get_state,
                     [State.TRANSITIONAL, State.CHANGED],
+                    task_abort_event,
                     self._timeout_id,
                     self.timeout_callback,
                     self.component_manager.command_id,
@@ -242,6 +243,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
                 self.start_tracker_thread(
                     self.get_state,
                     [State.CHANGED],
+                    task_abort_event,
                     self._timeout_id,
                     self.timeout_callback,
                     self.component_manager.command_id,
@@ -251,7 +253,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.logger.error("Command Failed")
             if self._timeout_id:
                 self.component_manager.stop_timer()
-            self.update_task_status(result, msg)
+            self.update_task_status(result=result, msg=msg)
 
     # pylint: disable=signature-differs
     def do(self, argin: bool) -> Tuple[ResultCode, str]:
@@ -262,15 +264,20 @@ class DummyCommandClass(TmcLeafNodeCommand):
         return ResultCode.FAILED, ""
 
     def update_task_status(
-        self, result: ResultCode, message: str = ""
+        self,
+        **kwargs,
     ) -> None:
         """Method to update the task status."""
+        result = kwargs.get("result")
+        status = kwargs.get("status", TaskStatus.COMPLETED)
+        message = kwargs.get("message")
+
         if result == ResultCode.OK:
-            self.task_callback(result=result, status=TaskStatus.COMPLETED)
+            self.task_callback(result=result, status=status)
         else:
             self.task_callback(
                 result=result,
-                status=TaskStatus.COMPLETED,
+                status=status,
                 exception=message,
             )
 
