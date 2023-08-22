@@ -14,6 +14,19 @@ from tango.server import command, run
 
 from ska_tmc_common import HelperSubArrayDevice
 
+from .constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    END_SCAN,
+    GO_TO_IDLE,
+    OBS_RESET,
+    RELEASE_ALL_RESOURCES,
+    RELEASE_RESOURCES,
+    RESTART,
+    SCAN,
+)
+
 
 class HelperCspSubarray(HelperSubArrayDevice):
     """A  helper CspSubarray device to mock CSP Subarray behaviour
@@ -31,6 +44,11 @@ class HelperCspSubarray(HelperSubArrayDevice):
         """
         This method invokes AssignResources command on subarray devices
         """
+        self.logger.info(
+            "Instructed Csp Subarray to invoke AssignResources command"
+        )
+        self.update_command_info(ASSIGN_RESOURCES, argin)
+
         self.logger.info("CSP Helper Subarray AssignResources command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -57,7 +75,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         command_result_thread.start()
 
         thread = threading.Thread(
-            target=self.update_device_obsstate, args=[ObsState.IDLE]
+            target=self.update_device_obsstate,
+            args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
         self.logger.debug(
@@ -96,6 +115,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
         """
         This method invokes ReleaseResources command on subarray device
         """
+        self.logger.info(
+            "Instructed Csp Subarray to invoke ReleaseResources command"
+        )
+        self.update_command_info(RELEASE_RESOURCES, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -117,6 +140,10 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info(
+            "Instructed Csp Subarray to invoke ReleaseAllResources command"
+        )
+        self.update_command_info(RELEASE_ALL_RESOURCES, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -143,7 +170,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         command_result_thread.start()
 
         thread = threading.Thread(
-            target=self.update_device_obsstate, args=[ObsState.EMPTY]
+            target=self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
         thread.start()
         self.logger.debug(
@@ -164,12 +192,19 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Configure command")
+        self.update_command_info(CONFIGURE, argin)
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Configure",
             )
-        if self._obs_state in [ObsState.READY, ObsState.IDLE]:
+
+        if self._state_duration_info:
+            self._follow_state_duration()
+
+        elif self._obs_state in [ObsState.READY, ObsState.IDLE]:
             self._obs_state = ObsState.CONFIGURING
             self.push_change_event("obsState", self._obs_state)
 
@@ -180,7 +215,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.READY]
+                target=self.update_device_obsstate,
+                args=[ObsState.READY, CONFIGURE],
             )
             thread.start()
         self.logger.info("Configure command completed.")
@@ -198,6 +234,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed Csp Subarray to invoke Scan command")
+        self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -228,6 +266,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed Csp Subarray to invoke EndScan command")
+        self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -256,6 +296,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed Csp Subarray to invoke GoToIdle command")
+        self.update_command_info(GO_TO_IDLE, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -278,6 +320,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed Csp Subarray to invoke ObsReset command")
+        self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -306,6 +350,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed Csp Subarray to invoke Abort command")
+        self.update_command_info(ABORT, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -321,7 +367,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.ABORTED]
+                target=self.update_device_obsstate,
+                args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
         self.logger.info("Abort command completed.")
@@ -337,6 +384,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed Csp Subarray to invoke Restart command")
+        self.update_command_info(RESTART, "")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -352,7 +401,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
             command_result_thread.start()
 
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.EMPTY]
+                target=self.update_device_obsstate,
+                args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
         self.logger.info("Restart command completed.")

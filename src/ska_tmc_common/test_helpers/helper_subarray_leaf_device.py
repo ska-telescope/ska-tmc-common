@@ -70,7 +70,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
     def SetDelay(self, value: int) -> None:
         """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
+        self.logger.info(
+            "Setting the Delay for CspSubarrayLeafNode \
+            and SdpSubarrayLeafNode simulator to : %s",
+            value,
+        )
         self._delay = value
 
     def push_command_result(

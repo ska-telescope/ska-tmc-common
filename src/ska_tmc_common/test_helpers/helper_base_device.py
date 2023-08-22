@@ -244,10 +244,17 @@ class HelperBaseDevice(SKABaseDevice):
         :param tango.DevState
         """
         # import debugpy; debugpy.debug_this_thread()
+        self.logger.info(
+            "HealthState value for simulator is : %s", self._health_state
+        )
         value = HealthState(argin)
         if self._health_state != value:
+            self.logger.info(
+                "Setting HealthState value for simulator to : %s", value
+            )
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
+            self.logger.info("Pushed updated HealthState value for simulator")
 
     @command(
         dtype_in=bool,
@@ -276,6 +283,8 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        """ON Command"""
+        self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "On",
@@ -309,6 +318,8 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        """OFF Command"""
+        self.logger.info("Instructed simulator to invoke Off command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -338,6 +349,8 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        """StandBy Command"""
+        self.logger.info("Instructed simulator to invoke Standby command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",

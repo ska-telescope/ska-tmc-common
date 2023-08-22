@@ -1,3 +1,4 @@
+# pylint: disable=C0302
 """
 This module implements the Helper Dish Device for testing an integrated TMC
 """
@@ -6,6 +7,7 @@ import threading
 import time
 from typing import List, Tuple
 
+import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType, DevEnum, DevState
@@ -15,9 +17,28 @@ from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
+from .constants import (
+    ABORT,
+    ABORT_COMMANDS,
+    CONFIGURE,
+    CONFIGURE_BAND_2,
+    OFF,
+    RESET,
+    RESTART,
+    SCAN,
+    SET_OPERATE_MODE,
+    SET_STANDBY_FP_MODE,
+    SET_STANDBY_LP_MODE,
+    SET_STOW_MODE,
+    SLEW,
+    STAND_BY,
+    TRACK,
+    TRACK_STOP,
+)
+
 
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,too-many-public-methods
 class HelperDishDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish device."""
 
@@ -26,6 +47,14 @@ class HelperDishDevice(HelperBaseDevice):
         self._delay = 2
         self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.STANDBY_LP
+        self._command_delay_info = {
+            CONFIGURE: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
+        self._command_call_info = []
+        self._command_info = ("", "")
+        self._state_duration_info = []
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -37,9 +66,11 @@ class HelperDishDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
+            self._device.set_change_event("commandCallInfo", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
+
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     delay = attribute(dtype=int, access=AttrWriteType.READ)
@@ -56,6 +87,99 @@ class HelperDishDevice(HelperBaseDevice):
         """
         return self._defective
 
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+
+    commandCallInfo = attribute(
+        dtype=(("str",),),
+        access=AttrWriteType.READ,
+        max_dim_x=100,
+        max_dim_y=100,
+    )
+
+    obsStateTransitionDuration = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+
+    def read_obsStateTransitionDuration(self):
+        """Read transition"""
+        return json.dumps(self._state_duration_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Obs State Duration",
+    )
+    def AddTransition(self, state_duration_info: str) -> None:
+        """This command will set duration for dish mode such that when
+        respective command for obs state is triggered then it change obs state
+        after provided duration
+        """
+        self.logger.info(
+            "Adding pointing state transitions for DishMasters Simulators"
+        )
+        self.logger.info(
+            "PointingState transitions sequence for DishMasters Simulators \
+                is: %s",
+            state_duration_info,
+        )
+
+        self._state_duration_info = json.loads(state_duration_info)
+
+    @command(
+        doc_in="Reset Obs State Duration",
+    )
+    def ResetTransitions(self) -> None:
+        """This command will reset ObsState duration which is set"""
+        self.logger.info("Resetting Pointing State Duration")
+        self._state_duration_info = []
+
+    def read_commandCallInfo(self):
+        """This method is used to read the attribute value for
+        commandCallInfo.
+        """
+        return self._command_call_info
+
+    def read_commandDelayInfo(self) -> int:
+        """This method is used to read the attribute value for delay."""
+        return json.dumps(self._command_delay_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, command_delay_info: str) -> None:
+        """Update delay value"""
+        self.logger.info(
+            "Setting the Delay value for Dish simulator to : %s",
+            command_delay_info,
+        )
+        # set command info
+        command_delay_info_dict = json.loads(command_delay_info)
+        for key, value in command_delay_info_dict.items():
+            self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
+
+    @command(
+        doc_in="Reset Delay",
+    )
+    def ResetDelay(self) -> None:
+        """Reset Delay to it's default values"""
+        self.logger.info("Resetting Command Delays for Dish Master Simulator")
+        # Reset command info
+        self._command_delay_info = {
+            CONFIGURE: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
+
+    @command(
+        doc_in="Clears commandCallInfo",
+    )
+    def ClearCommandCallInfo(self) -> None:
+        """Clears commandCallInfo to empty list"""
+        self.logger.info("Clearing CommandCallInfo for DishMaster simulators")
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
+
     def read_pointingState(self) -> PointingState:
         """
         This method reads the pointingState of dishes.
@@ -70,14 +194,27 @@ class HelperDishDevice(HelperBaseDevice):
         """
         return self._dish_mode
 
-    @command(
-        dtype_in=int,
-        doc_in="Set Delay",
-    )
-    def SetDelay(self, value: int) -> None:
-        """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
-        self._delay = value
+    def _update_poiniting_state_in_sequence(self) -> None:
+        """This method update pointing state in sequence as per
+        state duration info
+        """
+        with tango.EnsureOmniThread():
+            for poiniting_state, duration in self._state_duration_info:
+                pointing_state_enum = PointingState[poiniting_state]
+                self.logger.info(
+                    "Sleep %s sec for pointing state %s",
+                    duration,
+                    poiniting_state,
+                )
+                time.sleep(duration)
+                self.set_pointing_state(pointing_state_enum)
+
+    def _follow_state_duration(self):
+        """This method will update pointing state as per state duration"""
+        thread = threading.Thread(
+            target=self._update_poiniting_state_in_sequence,
+        )
+        thread.start()
 
     @command(
         dtype_in=DevEnum,
@@ -141,6 +278,15 @@ class HelperDishDevice(HelperBaseDevice):
         command_result = (command_id, json.dumps(result))
         self.push_change_event("longRunningCommandResult", command_result)
 
+    def set_pointing_state(self, pointingState: PointingState) -> None:
+        """
+        This method set the Pointing State
+        """
+        if self._pointing_state != pointingState:
+            self._pointing_state = pointingState
+            self.push_change_event("pointingState", self._pointing_state)
+            self.logger.info("Pointing State: %s", self._pointing_state)
+
     def is_Off_allowed(self) -> bool:
         if self.defective_params["enabled"]:
             if (
@@ -159,6 +305,8 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self):
+        self.logger.info("Instructed Dish simulator to invoke Off command")
+        self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -196,6 +344,9 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Standby command on Dish Master
         :rtype: Tuple
         """
+        self.logger.info("Instructed Dish simulator to invoke Standby command")
+        self.update_command_info(STAND_BY, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Standby")
         # Set the device state
@@ -238,6 +389,7 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: tuple
         """
         self.logger.info("Processing SetStandbyFPMode Command")
+        self.update_command_info(SET_STANDBY_FP_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyFPMode")
         if self.dev_state() != DevState.STANDBY:
@@ -279,8 +431,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyLPMode command on  Dish Master
         :rtype: tuple
         """
-        self.logger.info("Processing SetStandbyLPMode Command")
-
+        self.logger.info(
+            "Instructed Dish simulator to invoke SetStandbyLPMode command"
+        )
+        self.update_command_info(SET_STANDBY_LP_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyLPMode")
         # Set the device state
@@ -326,8 +480,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetOperateMode command on  Dish Master
         :rtype: tuple
         """
-        self.logger.info("Processing SetOperateMode Command")
-
+        self.logger.info(
+            "Instructed Dish simulator to invoke SetOperateMode command"
+        )
+        self.update_command_info(SET_OPERATE_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode")
 
@@ -374,7 +530,10 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStowMode command on  Dish Master
         :rtype : tuple
         """
-        self.logger.info("Processing SetStowMode Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke SetStowMode command"
+        )
+        self.update_command_info(SET_STOW_MODE, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode")
 
@@ -416,14 +575,17 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Track command on  Dish Master
         :rtype: tuple
         """
-        self.logger.info("Processing Track Command")
-
+        self.logger.info("Instructed Dish simulator to invoke Track command")
+        self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("Track")
 
         if self._pointing_state != PointingState.TRACK:
-            self._pointing_state = PointingState.TRACK
-            self.push_change_event("pointingState", self._pointing_state)
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._pointing_state = PointingState.TRACK
+                self.push_change_event("pointingState", self._pointing_state)
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
@@ -458,14 +620,20 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes TrackStop command on  Dish Master
         """
-        self.logger.info("Processing TrackStop Command")
-
+        self.logger.info(
+            "Instructed Dish simulator to invoke TrackStop command"
+        )
+        self.update_command_info(TRACK_STOP, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop")
 
         if self._pointing_state != PointingState.READY:
-            self._pointing_state = PointingState.READY
-            self.push_change_event("pointingState", self._pointing_state)
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._pointing_state = PointingState.READY
+                self.push_change_event("pointingState", self._pointing_state)
+                self.logger.info("Pointing State: %s", self._pointing_state)
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
@@ -500,6 +668,11 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes AbortCommands command on  Dish Master
         :rtype: tuple
         """
+        self.logger.info(
+            "Instructed Dish simulator to invoke AbortCommands command"
+        )
+        self.update_command_info(ABORT_COMMANDS, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands")
         self.logger.info("Abort Completed")
@@ -535,7 +708,11 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: tuple
         """
         self.logger.info("Processing Configure command")
-
+        # to record the command data
+        self.logger.info(
+            "Instructed Dish simulator to invoke Configure command"
+        )
+        self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
         self.logger.info("Configure command completed.")
@@ -568,7 +745,9 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
-        self.logger.info("Processing ConfigureBand1 Command")
+        self.logger.info(
+            "Instructed Dish simulator to invoke ConfigureBand1 command"
+        )
 
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand1")
@@ -608,7 +787,8 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
-
+        # to record the command data
+        self.update_command_info(CONFIGURE_BAND_2, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand2")
 
@@ -617,17 +797,58 @@ class HelperDishDevice(HelperBaseDevice):
         self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
             target=self.update_dish_mode,
-            args=[current_dish_mode],
+            args=[current_dish_mode, CONFIGURE],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "ConfigureBand2")
         self.logger.info("ConfigureBand2 command completed.")
         return ([ResultCode.OK], [""])
 
-    def update_dish_mode(self, value) -> None:
+    def update_dish_mode(self, value, command_name: str = ""):
         """Sets the dish mode back to original state."""
-        time.sleep(self._delay)
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+            time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
         self.set_dish_mode(value)
+
+    def update_pointing_state(self, value, command_name):
+        """Sets the dish mode back to original state."""
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+                time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+        self.set_pointing_state(value)
+
+    def update_command_info(
+        self, command_name: str = "", command_input: str = ""
+    ) -> None:
+        """This method updates the commandCallInfo attribute,
+        with the respective command information.
+
+        Args:
+            command_name (str): command name
+            command_input (str): Input argin for command
+        """
+        self.logger.info(
+            "Recording the command data for DishMaster simulators"
+        )
+
+        self._command_info = (command_name, command_input)
+        self._command_call_info.append(self._command_info)
+        self.logger.info(
+            "Recorded command_call_info list for DishMaster simulators \
+            is %s",
+            self._command_call_info,
+        )
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
 
     def is_ConfigureBand3_allowed(self) -> bool:
         """
@@ -810,7 +1031,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Slew command on Dish Master
         """
         self.logger.info("Processing Slew Command")
-
+        # to record the command data
+        self.update_command_info(SLEW)
         if self.defective_params["enabled"]:
             return self.induce_fault("Slew")
 
@@ -871,7 +1093,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Scan command on Dish Master
         """
         self.logger.info("Processing Scan Command")
-
+        # to record the command data
+        self.update_command_info(SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
 
@@ -906,7 +1129,8 @@ class HelperDishDevice(HelperBaseDevice):
         :rtype:tuple
         """
         self.logger.info("Processing Reset Command")
-
+        # to record the command data
+        self.update_command_info(RESET)
         if self.defective_params["enabled"]:
             return self.induce_fault("Reset")
 

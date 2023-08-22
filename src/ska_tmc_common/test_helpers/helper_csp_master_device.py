@@ -44,6 +44,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -79,6 +80,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -96,6 +98,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         ]
 
     def is_Standby_allowed(self) -> bool:
+        self.logger.info("Instructed simulator to invoke Standby command")
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]

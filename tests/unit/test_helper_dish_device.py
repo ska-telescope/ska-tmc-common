@@ -54,9 +54,16 @@ COMMANDS_WITH_INPUT = [
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert dish_device.delay == 2
-    dish_device.SetDelay(5)
-    assert dish_device.delay == 5
+    dish_device.SetDelay('{"Configure": 3}')
+    command_delay_info = json.loads(dish_device.commandDelayInfo)
+    assert command_delay_info["Configure"] == 3
+
+
+def test_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(DISH_DEVICE)
+    subarray_device.AddTransition('[["TRACK", 0.1]]')
+    assert subarray_device.obsStateTransitionDuration == '[["TRACK", 0.1]]'
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
@@ -64,6 +71,8 @@ def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     result, message = dish_device.command_inout(command)
+    command_call_info = dish_device.commandCallInfo
+    assert command_call_info[0] == (command, "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 

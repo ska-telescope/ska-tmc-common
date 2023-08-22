@@ -24,12 +24,42 @@ commands_without_argin = [
 ]
 
 
+def test_command_call_info(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    _, _ = subarray_device.command_inout("AssignResources", "")
+    command_call_info_len = len(subarray_device.commandCallInfo)
+    _, _ = subarray_device.command_inout("Configure", "")
+    command_call_info_len = command_call_info_len + 1
+    assert command_call_info_len == 2
+    command_call_info = subarray_device.commandCallInfo
+    assert command_call_info[command_call_info_len - 1] == ("Configure", "")
+
+
+def test_obs_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.AddTransition('[["CONFIGURING", 0.1]]')
+    assert (
+        subarray_device.obsStateTransitionDuration == '[["CONFIGURING", 0.1]]'
+    )
+
+
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    assert subarray_device.delay == 2
-    subarray_device.SetDelay(5)
-    assert subarray_device.delay == 5
+    subarray_device.SetDelay('{"Configure": 3}')
+    command_delay_info = json.loads(subarray_device.commandDelayInfo)
+    assert command_delay_info["Configure"] == 3
+
+
+def test_clear_commandCallInfo(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    _, _ = subarray_device.command_inout("Configure", "")
+    subarray_device.command_inout("ClearCommandCallInfo")
+    command_call_info = subarray_device.commandCallInfo
+    assert command_call_info is None
 
 
 def test_set_defective(tango_context):
@@ -54,6 +84,8 @@ def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     result, message = subarray_device.command_inout(command, "")
+    command_call_info = subarray_device.commandCallInfo
+    assert command_call_info[0] == (command, "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 

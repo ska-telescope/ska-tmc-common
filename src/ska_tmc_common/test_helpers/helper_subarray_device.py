@@ -19,6 +19,23 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 
+from .constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    END,
+    END_SCAN,
+    GO_TO_IDLE,
+    OBS_RESET,
+    OFF,
+    ON,
+    RELEASE_ALL_RESOURCES,
+    RELEASE_RESOURCES,
+    RESTART,
+    SCAN,
+    STAND_BY,
+)
+
 
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
@@ -149,14 +166,30 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         return self._assigned_resources
 
 
+# pylint: disable=too-many-instance-attributes
 class HelperSubArrayDevice(SKASubarray):
     """A generic subarray device for triggering state changes with a command.
     It can be used as helper device for element subarray node"""
 
     def init_device(self):
         super().init_device()
+        # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
+        self._defective = False
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
+        }
+        # tuple of list
+        self._command_call_info = []
+        self._command_info = ("", "")
+        self._state_duration_info = []
         self._delay = 2
         self._raise_exception = False
         self._defective = json.dumps(
@@ -184,19 +217,72 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
+            self._device.set_change_event("commandCallInfo", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
 
+    receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
+
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    delay = attribute(dtype=int, access=AttrWriteType.READ)
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    def read_delay(self) -> int:
+    commandCallInfo = attribute(
+        dtype=(("str",),),
+        access=AttrWriteType.READ,
+        max_dim_x=100,
+        max_dim_y=100,
+    )
+
+    obsStateTransitionDuration = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+
+    def read_obsStateTransitionDuration(self):
+        """Read transition"""
+        return json.dumps(self._state_duration_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Obs State Duration",
+    )
+    def AddTransition(self, state_duration_info: str) -> None:
+        """This command will set duration for obs state such that when
+        respective command for obs state is triggered then it change obs state
+        after provided duration
+        """
+        self.logger.info(
+            "Adding observation state transitions for Csp Subarray and \
+                         Sdp Subarray Simulators"
+        )
+        self.logger.info(
+            "ObsState transitions sequence for Csp Subarray and \
+                Sdp Subarray Simulators is: %s",
+            state_duration_info,
+        )
+        self._state_duration_info = json.loads(state_duration_info)
+
+    @command(
+        doc_in="Reset Obs State Duration",
+    )
+    def ResetTransitions(self) -> None:
+        """This command will reset ObsState duration which is set"""
+        self.logger.info("Resetting Obs State Duration")
+        self._state_duration_info = []
+
+    def read_commandCallInfo(self):
+        """This method is used to read the attribute value for
+        commandCallInfo.
+        """
+        return self._command_call_info
+
+    def read_commandDelayInfo(self):
         """This method is used to read the attribute value for delay."""
-        return self._delay
+
+        return json.dumps(self._command_delay_info)
 
     def read_raiseException(self) -> bool:
         """This method is used to read the attribute value for raise exception
@@ -212,20 +298,96 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._command_in_progress
 
-    def read_defective(self) -> bool:
+    def read_defective(self) -> str:
         """
         This method is used to read the value of the attribute defective
         :rtype:bool
         """
         return self._defective
 
-    def update_device_obsstate(self, value: ObsState) -> None:
+    def read_receiveAddresses(self) -> str:
+        """
+        This method is used to read receiveAddresses attribute
+        :rtype:str
+        """
+        return self._receive_addresses
+
+    def update_device_obsstate(
+        self, value: ObsState, command_name: str = ""
+    ) -> None:
         """Updates the given data after a delay."""
+        delay_value = 0
         with tango.EnsureOmniThread():
-            time.sleep(self._delay)
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+            time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
             self._obs_state = value
             time.sleep(0.1)
             self.push_change_event("obsState", self._obs_state)
+
+    def update_command_info(
+        self, command_name: str = "", command_input: str = ""
+    ) -> None:
+        """This method updates the commandCallInfo attribute,
+        with the respective command information.
+
+        Args:
+            command_name (str): command name
+            command_input (str): Input argin for command
+        """
+        self.logger.info(
+            "Recording the command data for Sdp Subarray \
+                 or Csp Subarray simulators"
+        )
+        self._command_info = (command_name, command_input)
+        self.logger.info(
+            "Recorded command_info for Sdp Subarray \
+            or Csp Subarray simulators is %s",
+            self._command_info,
+        )
+        self._command_call_info.append(self._command_info)
+        self.logger.info(
+            "Recorded command_call_info list for Csp Subarray or \
+                Sdp Subarray simulators is %s",
+            self._command_call_info,
+        )
+
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
+
+    def _update_obs_state_in_sequence(self):
+        """Update Obs state in sequence as per state duration info"""
+        with tango.EnsureOmniThread():
+            for obs_state, duration in self._state_duration_info:
+                obs_state_enum = ObsState[obs_state]
+                self.logger.info(
+                    "Sleep %s for obs state %s", duration, obs_state
+                )
+                time.sleep(duration)
+                self._obs_state = obs_state_enum
+                self.push_change_event("obsState", self._obs_state)
+
+    def _start_thread(self, args: list) -> None:
+        """This method start thread which is required for
+        changing obs state after certain duration
+        """
+        thread = threading.Thread(
+            target=self.update_device_obsstate,
+            args=args,
+        )
+        thread.start()
+
+    def _follow_state_duration(self):
+        """This method will update obs state as per state duration
+        in separate thread
+        """
+        thread = threading.Thread(
+            target=self._update_obs_state_in_sequence,
+        )
+        thread.start()
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
@@ -250,13 +412,52 @@ class HelperSubArrayDevice(SKASubarray):
         self._raise_exception = value
 
     @command(
-        dtype_in=int,
+        dtype_in=str,
         doc_in="Set Delay",
     )
-    def SetDelay(self, value: int) -> None:
+    def SetDelay(self, command_delay_info: str) -> None:
         """Update delay value"""
-        self.logger.info("Setting the Delay value to : %s", value)
-        self._delay = value
+        self.logger.info(
+            "Setting the Delay value for Csp Subarray \
+                or Sdp Subarray simulator to : %s",
+            command_delay_info,
+        )
+        # set command info
+        command_delay_info_dict = json.loads(command_delay_info)
+        for key, value in command_delay_info_dict.items():
+            self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
+
+    @command(
+        doc_in="Reset Delay",
+    )
+    def ResetDelay(self) -> None:
+        """Reset Delay to it's default values"""
+        self.logger.info(
+            "Resetting Command Delays for \
+            Csp Subarray or Sdp Simulators"
+        )
+        # Reset command info
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
+        }
+
+    @command(
+        doc_in="Clears commandCallInfo",
+    )
+    def ClearCommandCallInfo(self) -> None:
+        """Clears commandCallInfo to empty list"""
+        self.logger.info(
+            "Clearing CommandCallInfo for Csp and Sdp Subarray simulators"
+        )
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
 
     @command(
         dtype_in=int,
@@ -297,10 +498,17 @@ class HelperSubArrayDevice(SKASubarray):
         """
         # import debugpy; debugpy.debug_this_thread()
         # # pylint: disable=E0203
+        self.logger.info(
+            "HealthState value for simulator is : %s", self._health_state
+        )
         value = HealthState(argin)
         if self._health_state != value:
+            self.logger.info(
+                "Setting HealthState value for simulator to : %s", value
+            )
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
+            self.logger.info("Pushed updated HealthState value for simulator")
 
     @command(
         dtype_in="DevString",
@@ -342,6 +550,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        """ON Command"""
+        self.logger.info("Instructed simulator to invoke On command")
+        self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
             self.induce_fault(
                 "ReleaseAllResources",
@@ -458,7 +669,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
-            self.push_obs_state_event(intermediate_state)
+            self.push_change_event("obsState", intermediate_state)
             return [ResultCode.QUEUED], [""]
 
         return [ResultCode.OK], [""]
@@ -483,6 +694,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        """OFF Command"""
+        self.logger.info("Instructed simulator to invoke Off command")
+        self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
             self.induce_fault(
                 "ReleaseAllResources",
@@ -491,6 +705,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self.dev_state() != DevState.OFF:
                 self.set_state(DevState.OFF)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Off completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -527,6 +742,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Standby command")
+        self.update_command_info(STAND_BY, "")
         if self.defective_params["enabled"]:
             self.induce_fault(
                 "ReleaseAllResources",
@@ -535,6 +752,7 @@ class HelperSubArrayDevice(SKASubarray):
             if self.dev_state() != DevState.STANDBY:
                 self.set_state(DevState.STANDBY)
                 self.push_change_event("State", self.dev_state())
+            self.logger.info("Standby completed")
             return [ResultCode.OK], [""]
 
         return [ResultCode.FAILED], [
@@ -573,6 +791,10 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes AssignResources command on subarray devices
         """
+        self.logger.info(
+            "Instructed simulator to invoke AssignResources command"
+        )
+        self.update_command_info(ASSIGN_RESOURCES, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ReleaseAllResources",
@@ -588,7 +810,8 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Thread(
-            target=self.update_device_obsstate, args=[ObsState.IDLE]
+            target=self.update_device_obsstate,
+            args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
         self.logger.debug(
@@ -636,6 +859,10 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method invokes ReleaseResources command on subarray device
         """
+        self.logger.info(
+            "Instructed simulator to invoke ReleaseResources command"
+        )
+        self.update_command_info(RELEASE_RESOURCES, "")
         if self.defective_params["enabled"]:
             self.induce_fault(
                 "ReleaseAllResources",
@@ -682,6 +909,10 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info(
+            "Instructed simulator to invoke ReleaseAllResources command"
+        )
+        self.update_command_info(RELEASE_ALL_RESOURCES, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ReleaseAllResources",
@@ -699,7 +930,8 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Thread(
-            target=self.update_device_obsstate, args=[ObsState.EMPTY]
+            target=self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
         thread.start()
         self.logger.debug(
@@ -739,20 +971,23 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Configure command")
+        self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Configure",
             )
-        self._obs_state = ObsState.CONFIGURING
-        self.push_change_event("obsState", self._obs_state)
-        thread = threading.Thread(
-            target=self.update_device_obsstate, args=[ObsState.READY]
-        )
-        thread.start()
-        self.logger.debug(
-            "Configure command invoked obsstate is transition \
-                          to CONFIGURING"
-        )
+        if self._state_duration_info:
+            self._follow_state_duration()
+        else:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_change_event("obsState", self._obs_state)
+            self.logger.info("Starting Thread for configure")
+            self._start_thread([ObsState.READY, CONFIGURE])
+            self.logger.debug(
+                "Configure command invoked obsstate is transition \
+                            to CONFIGURING"
+            )
         return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
@@ -786,6 +1021,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Scan command")
+        self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ReleaseAllResources",
@@ -825,6 +1062,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke EndScan command")
+        self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ReleaseAllResources",
@@ -864,13 +1103,18 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke End command")
+        self.update_command_info(END, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "End",
             )
         if self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.IDLE
-            self.push_change_event("obsState", self._obs_state)
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._obs_state = ObsState.IDLE
+                self.push_change_event("obsState", self._obs_state)
             self.logger.info("End command completed.")
             return [ResultCode.OK], [""]
 
@@ -907,6 +1151,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke GoToIdle command")
+        self.update_command_info(GO_TO_IDLE, "")
         if self.defective_params["enabled"]:
             self.induce_fault(
                 "On",
@@ -942,6 +1188,9 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+        """ObsReset Command"""
+        self.logger.info("Instructed simulator to invoke ObsReset command")
+        self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
             self.induce_fault(
                 "ReleaseAllResources",
@@ -986,11 +1235,15 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Abort command")
+        self.update_command_info(ABORT, "")
+
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.ABORTED]
+                target=self.update_device_obsstate,
+                args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
         self.logger.info("Abort command completed.")
@@ -1025,11 +1278,15 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.info("Instructed simulator to invoke Restart command")
+        self.update_command_info(RESTART, "")
+
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Thread(
-                target=self.update_device_obsstate, args=[ObsState.EMPTY]
+                target=self.update_device_obsstate,
+                args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
         self.logger.info("Restart command completed.")

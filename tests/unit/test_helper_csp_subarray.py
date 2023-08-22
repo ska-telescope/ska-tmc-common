@@ -39,9 +39,9 @@ commands_without_argin = [
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    assert csp_subarray_device.delay == 2
-    csp_subarray_device.SetDelay(5)
-    assert csp_subarray_device.delay == 5
+    csp_subarray_device.SetDelay('{"Configure": 3}')
+    command_delay_info = json.loads(csp_subarray_device.commandDelayInfo)
+    assert command_delay_info["Configure"] == 3
 
 
 def test_set_defective(tango_context):
