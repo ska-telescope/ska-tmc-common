@@ -211,6 +211,29 @@ class BaseTMCCommand:
             state_to_achieve = expected_state[index]
             while not self._stop:
                 try:
+                    if abort_event.is_set():
+                        self.logger.error(
+                            "Command has been Aborted, "
+                            + "Setting TaskStatus to aborted"
+                        )
+                        self.update_task_status(
+                            status=TaskStatus.ABORTED,
+                        )
+                        self.stop_tracker_thread(timeout_id)
+
+                    if timeout_id:
+                        if timeout_callback.assert_against_call(
+                            timeout_id, TimeoutState.OCCURED
+                        ):
+                            self.logger.error(
+                                "Timeout has occured, command failed"
+                            )
+                            self.update_task_status(
+                                result=ResultCode.FAILED,
+                                message="Timeout has occured, command failed",
+                            )
+                            self.stop_tracker_thread(timeout_id)
+
                     if state_function() == state_to_achieve:
                         self.logger.info(
                             "State change has occured, current state is %s",
@@ -224,19 +247,6 @@ class BaseTMCCommand:
                                 "State change has occured, command successful"
                             )
                             self.update_task_status(result=ResultCode.OK)
-                            self.stop_tracker_thread(timeout_id)
-
-                    if timeout_id:
-                        if timeout_callback.assert_against_call(
-                            timeout_id, TimeoutState.OCCURED
-                        ):
-                            self.logger.error(
-                                "Timeout has occured, command failed"
-                            )
-                            self.update_task_status(
-                                result=ResultCode.FAILED,
-                                message="Timeout has occured, command failed",
-                            )
                             self.stop_tracker_thread(timeout_id)
 
                     if command_id:
@@ -253,15 +263,7 @@ class BaseTMCCommand:
                                 ],
                             )
                             self.stop_tracker_thread(timeout_id)
-                    if abort_event.is_set():
-                        self.logger.error(
-                            "Command has been Aborted, "
-                            + "Setting TaskStatus to aborted"
-                        )
-                        self.update_task_status(
-                            status=TaskStatus.ABORTED,
-                        )
-                        self.stop_tracker_thread(timeout_id)
+
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
