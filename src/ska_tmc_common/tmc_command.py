@@ -12,6 +12,7 @@ from operator import methodcaller
 from typing import Callable, List, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.executor import TaskStatus
 from tango import ConnectionFailed, DevFailed, EnsureOmniThread
 
 from ska_tmc_common.adapters import (
@@ -117,7 +118,8 @@ class BaseTMCCommand:
         )
 
     def update_task_status(
-        self, result: ResultCode, message: str = ""
+        self,
+        **kwargs,
     ) -> NotImplementedError:
         """Method to update the task status for command."""
         raise NotImplementedError(
@@ -128,6 +130,7 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state: List[IntEnum],
+        abort_event: threading.Event,
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -141,6 +144,9 @@ class BaseTMCCommand:
 
         :param expected_state: Expected state of the device in case of
                     successful command execution.
+
+        :param abort_event: threading.Event class object that is used to check
+                    if the command has been aborted.
 
         :param timeout_id: Id for TimeoutCallback class object.
 
@@ -158,6 +164,7 @@ class BaseTMCCommand:
             args=[
                 state_function,
                 expected_state,
+                abort_event,
                 timeout_id,
                 timeout_callback,
                 command_id,
@@ -172,6 +179,7 @@ class BaseTMCCommand:
         self,
         state_function: Callable,
         expected_state: List[IntEnum],
+        abort_event: threading.Event,
         timeout_id: Optional[str] = None,
         timeout_callback: Optional[TimeoutCallback] = None,
         command_id: Optional[str] = None,
@@ -183,6 +191,9 @@ class BaseTMCCommand:
 
         :param expected_state: Expected state of the device in case of
                     successful command execution.
+
+        :param abort_event: threading.Event class object that is used to check
+                    if the command has been aborted.
 
         :param timeout_id: Id for TimeoutCallback class object.
 
@@ -200,6 +211,29 @@ class BaseTMCCommand:
             state_to_achieve = expected_state[index]
             while not self._stop:
                 try:
+                    if abort_event.is_set():
+                        self.logger.error(
+                            "Command has been Aborted, "
+                            + "Setting TaskStatus to aborted"
+                        )
+                        self.update_task_status(
+                            status=TaskStatus.ABORTED,
+                        )
+                        self.stop_tracker_thread(timeout_id)
+
+                    if timeout_id:
+                        if timeout_callback.assert_against_call(
+                            timeout_id, TimeoutState.OCCURED
+                        ):
+                            self.logger.error(
+                                "Timeout has occured, command failed"
+                            )
+                            self.update_task_status(
+                                result=ResultCode.FAILED,
+                                message="Timeout has occured, command failed",
+                            )
+                            self.stop_tracker_thread(timeout_id)
+
                     if state_function() == state_to_achieve:
                         self.logger.info(
                             "State change has occured, current state is %s",
@@ -213,19 +247,6 @@ class BaseTMCCommand:
                                 "State change has occured, command successful"
                             )
                             self.update_task_status(result=ResultCode.OK)
-                            self.stop_tracker_thread(timeout_id)
-
-                    if timeout_id:
-                        if timeout_callback.assert_against_call(
-                            timeout_id, TimeoutState.OCCURED
-                        ):
-                            self.logger.error(
-                                "Timeout has occured, command failed"
-                            )
-                            self.update_task_status(
-                                result=ResultCode.FAILED,
-                                message="Timeout has occured, command failed",
-                            )
                             self.stop_tracker_thread(timeout_id)
 
                     if command_id:
@@ -242,6 +263,7 @@ class BaseTMCCommand:
                                 ],
                             )
                             self.stop_tracker_thread(timeout_id)
+
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
