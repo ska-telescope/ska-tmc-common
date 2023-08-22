@@ -15,7 +15,7 @@ OBS_RESET = "ObsReset"
 SCAN = "Scan"
 END_SCAN = "EndScan"
 RELEASE_ALL_RESOURCES = "ReleaseAllResources"
-GO_TO_IDLE = "GO"
+GO_TO_IDLE = "GoToIdle"
 SLEW = "Slew"
 RESET = "Reset"
 
