@@ -82,13 +82,60 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self,
         command_name: str,
     ) -> Tuple[List[ResultCode], List[str]]:
-        """Induces fault into device according to given parameters
+        """
+        Induces a fault into the device based on the given parameters.
 
-        :params:
+        :param command_name: The name of the
+         command for which a fault is being induced.
+        :type command_name: str
 
-        command_name: Name of the command for which fault is being induced
-        dtype: str
-        rtype: Tuple[List[ResultCode], List[str]]
+        :param dtype: The data type of the fault parameter.
+        :type dtype: str
+
+        :param rtype: A tuple containing two lists - the
+         list of possible result codes and the list of error messages.
+        :type rtype: Tuple[List[ResultCode], List[str]]
+
+        Example:
+        defective = json.dumps(
+        {
+        "enabled": False,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Default exception.",
+        "result": ResultCode.FAILED,
+        }
+        )
+        defective_params = json.loads(defective)
+
+        Detailed Explanation:
+        This method simulates inducing various types of faults into a device
+        to test its robustness and error-handling capabilities.
+
+        - FAILED_RESULT:
+          A fault type that triggers a failed result code
+          for the command. The device will return a result code of 'FAILED'
+          along with a custom error message, indicating that
+          the command execution has failed.
+
+        - LONG_RUNNING_EXCEPTION:
+          A fault type that simulates a command getting stuck in an
+          intermediate state for an extended period.
+          This could simulate a situation where a command execution
+          hangs due to some internal processing issue.
+
+        - STUCK_IN_INTERMEDIATE_STATE:
+          This fault type represents a scenario where the
+          device gets stuck in an intermediate state between two
+          well-defined states. This can help test the device's state
+          recovery and error handling mechanisms.
+
+        - COMMAND_NOT_ALLOWED:
+          This fault type represents a situation where the
+          given command is not allowed to be executed due to some
+          authorization or permission issues. The device
+          should respond with an appropriate error code and message.
+
+        :raises: None
         """
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
