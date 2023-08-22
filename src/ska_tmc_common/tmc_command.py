@@ -3,7 +3,6 @@ This module manages all the base classes and methods
 required for TMC commands
 """
 # pylint: disable=unused-argument
-# pylint: disable=C0301(line-too-long)
 
 import threading
 import time
@@ -256,7 +255,8 @@ class BaseTMCCommand:
                             self.stop_tracker_thread(timeout_id)
                     if abort_event.is_set():
                         self.logger.error(
-                            "Command has been Aborted, Setting TaskStatus to aborted"
+                            "Command has been Aborted, "
+                            + "Setting TaskStatus to aborted"
                         )
                         self.update_task_status(
                             status=TaskStatus.ABORTED,
