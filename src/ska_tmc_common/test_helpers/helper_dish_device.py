@@ -67,6 +67,7 @@ class HelperDishDevice(HelperBaseDevice):
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             self._device.set_change_event("commandCallInfo", True, False)
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
