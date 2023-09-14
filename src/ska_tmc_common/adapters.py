@@ -23,6 +23,7 @@ class AdapterType(enum.IntEnum):
     CSPSUBARRAY = 4
     CSPMASTER = 5
     SDPSUBARRAY = 6
+    MCCSSUBARRAY = 7
 
 
 class BaseAdapter:
@@ -404,7 +405,7 @@ class AdapterFactory:
             new_adapter = DishAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
-        elif adapter_type == AdapterType.SUBARRAY:
+        elif adapter_type in (AdapterType.SUBARRAY, AdapterType.MCCSSUBARRAY):
             new_adapter = SubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
