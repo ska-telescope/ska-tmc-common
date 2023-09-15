@@ -3,7 +3,6 @@ This module implements the Helper MCCS subarray devices for testing
 an integrated TMC
 """
 # pylint: disable=unused-argument
-import json
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -16,13 +15,12 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
-class HelperMCCSStateDevice(HelperBaseDevice):
+class HelperMCCSMasterLeafNode(HelperBaseDevice):
     """A generic device for triggering state changes with a command"""
 
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
-        self._isSubsystemAvailable = False
         self._raise_exception = False
 
     class InitCommand(SKABaseDevice.InitCommand):
@@ -35,8 +33,6 @@ class HelperMCCSStateDevice(HelperBaseDevice):
             :rtype:tuple
             """
             super().do()
-            self._device._assigned_resources = "{ }"
-            self._device.set_change_event("assignedResources", True, False)
             return (ResultCode.OK, "")
 
     assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -83,16 +79,6 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        # pylint:disable=line-too-long
-        # need to check if below command data is correct
-        assigned_resources = {
-            "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
-            "subarray_beam_ids": [1],
-            "station_ids": [[1, 2]],
-            "channel_blocks": [3],
-        }
-        # pylint:enable=line-too-long
-        self._assigned_resources = json.dumps(assigned_resources)
         self.logger.info("AssignResources command completed.")
         return [ResultCode.OK], [""]
 
@@ -131,15 +117,5 @@ class HelperMCCSStateDevice(HelperBaseDevice):
         :return: a tuple conataining Resultcose and Message
         :rtype: Tuple
         """
-        # pylint:disable=line-too-long
-        # need to check if below command data is correct
-        tmpDict = {
-            "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
-            "subarray_beam_ids": [],
-            "station_ids": [],
-            "channel_blocks": [],
-        }
-        # pylint:enable=line-too-long
-        self._released_resources_resources = json.dumps(tmpDict)
         self.logger.info("ReleaseResources command completed.")
         return [ResultCode.OK], [""]
