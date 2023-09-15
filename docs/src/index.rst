@@ -14,13 +14,13 @@ Welcome to ska-tmc-common documentation!
 
 .. toctree::
    :maxdepth: 3
-   :caption: TangoClasses[deprecated]
+   :caption: Tango Classes[deprecated]
    
    TangoClasses/index
 
 .. toctree::
    :maxdepth: 1
-   :caption: HelperDevices
+   :caption: Helper Devices
 
    HelperDevices/TangoHelperDevices
 
@@ -32,31 +32,31 @@ Welcome to ska-tmc-common documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: LivelinessProbe
+   :caption: Liveliness Probe
 
    liveliness_probe
    
 .. toctree::
    :maxdepth: 1
-   :caption: EventReceiver
+   :caption: Event Receiver
 
    event_receiver
 
 .. toctree::
    :maxdepth: 1
-   :caption: TMCBaseDevice
+   :caption: TMC Base Device
 
    tmc_base_device
 
 .. toctree::
    :maxdepth: 1
-   :caption: TMCCommand
+   :caption: TMC Command
 
    tmc_command
    
 .. toctree::
    :maxdepth: 1
-   :caption: TMCComponentManager
+   :caption: TMC Component Manager
 
    tmc_component_manager
    
