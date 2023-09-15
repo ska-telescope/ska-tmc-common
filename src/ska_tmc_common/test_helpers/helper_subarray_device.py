@@ -14,7 +14,7 @@ import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
-from tango import AttrWriteType, DevState, EnsureOmniThread
+from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -186,6 +186,8 @@ class HelperSubArrayDevice(SKASubarray):
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
         }
+        self._scan_id = None
+        self._assigned_resources = "{ }"
         # tuple of list
         self._command_call_info = []
         self._command_info = ("", "")
@@ -218,6 +220,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("commandCallInfo", True, False)
+            self._device.set_change_event("assignedResources", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -240,6 +243,20 @@ class HelperSubArrayDevice(SKASubarray):
     obsStateTransitionDuration = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
+
+    scanId = attribute(dtype="DevLong", access=AttrWriteType.READ)
+
+    @attribute(dtype="DevString")
+    def assignedResources(self) -> DevString:
+        return self._assigned_resources
+
+    @assignedResources.write
+    def assignedResources(self, assignResources: DevString = None) -> None:
+        self._assigned_resources = assignResources
+
+    def read_scanId(self) -> int:
+        """This method is used to read the attribute value for scanId."""
+        return self._scan_id
 
     def read_obsStateTransitionDuration(self):
         """Read transition"""
