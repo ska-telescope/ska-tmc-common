@@ -16,13 +16,13 @@ Welcome to ska-tmc-common documentation!
    :maxdepth: 1
    :caption: TangoClient
 
-   TangoClient
+   TangoClasses/TangoClient
 
 .. toctree::
    :maxdepth: 1
    :caption: TangoGroupClient
 
-   TangoGroupClient
+    TangoClasses/TangoGroupClient
 
 .. toctree::
    :maxdepth: 1
@@ -34,7 +34,7 @@ Welcome to ska-tmc-common documentation!
    :maxdepth: 1
    :caption: TangoServerHelper
 
-   TangoServerHelper
+    TangoClasses/TangoServerHelper
 
 .. toctree::
    :maxdepth: 1
