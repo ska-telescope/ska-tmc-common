@@ -42,7 +42,7 @@ TMC Common AdapterFactory
     :undoc-members:
 
 6. SdpSubArrayAdapter
---------------------
+-----------------------
 .. automodule:: ska_tmc_common.adapters
 .. autoclass:: ska_tmc_common.adapters.SdpSubArrayAdapter
     :members:
@@ -63,7 +63,7 @@ TMC Common AdapterFactory
     :undoc-members:
 
 9. CspSubarrayAdapter
---------------------
+----------------------
 .. automodule:: ska_tmc_common.adapters
 .. autoclass:: ska_tmc_common.adapters.CspSubarrayAdapter
     :members:

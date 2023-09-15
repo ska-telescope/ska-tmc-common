@@ -8,7 +8,7 @@
 # See LICENSE.txt for more info.
 
 """ Tango Group Client Code
-
+    This class is now deprecated.
 """
 # pylint: disable=inconsistent-return-statements
 # pylint: disable=unused-argument

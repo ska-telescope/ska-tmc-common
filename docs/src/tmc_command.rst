@@ -20,7 +20,7 @@ TMC Base Command Class
     :undoc-members:
 
 3. TmcLeafNodeCommand
---------------------
+-----------------------
 .. automodule:: ska_tmc_common.tmc_command
 .. autoclass:: ska_tmc_common.tmc_command.TmcLeafNodeCommand
     :members:

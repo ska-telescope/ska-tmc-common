@@ -13,14 +13,14 @@ TMC Common TMC Component Manager
     :undoc-members:
 
 2. BaseTmcComponentManager
---------------------
+-----------------------------
 .. automodule:: ska_tmc_common.tmc_component_manager
 .. autoclass:: ska_tmc_common.tmc_component_manager.BaseTmcComponentManager
     :members:
     :undoc-members:
 
 3. TmcComponentManager
---------------------
+-----------------------------
 .. automodule:: ska_tmc_common.tmc_component_manager
 .. autoclass:: ska_tmc_common.tmc_component_manager.TmcComponentManager
     :members:
@@ -28,7 +28,7 @@ TMC Common TMC Component Manager
 
 
 3. TmcLeafNodeComponentManager
---------------------
+---------------------------------
 .. automodule:: ska_tmc_common.tmc_component_manager
 .. autoclass:: ska_tmc_common.tmc_component_manager.TmcLeafNodeComponentManager
     :members:

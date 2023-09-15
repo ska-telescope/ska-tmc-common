@@ -13,28 +13,16 @@ Welcome to ska-tmc-common documentation!
    Introduction<Introduction>
 
 .. toctree::
-   :maxdepth: 1
-   :caption: TangoClient
-
-   TangoClasses/TangoClient
-
-.. toctree::
-   :maxdepth: 1
-   :caption: TangoGroupClient
-
-    TangoClasses/TangoGroupClient
+   :maxdepth: 3
+   :caption: TangoClasses[deprecated]
+   
+   TangoClasses/index
 
 .. toctree::
    :maxdepth: 1
    :caption: HelperDevices
 
    HelperDevices/TangoHelperDevices
-
-.. toctree::
-   :maxdepth: 1
-   :caption: TangoServerHelper
-
-    TangoClasses/TangoServerHelper
 
 .. toctree::
    :maxdepth: 1
