@@ -16,6 +16,9 @@ The ska-tmc-common repository contains implementation of Tango abstraction layer
 **TangoHelperDevices**: Class that provides abstraction for various TMC Tango devices for testing and debugging
 
 **Adapters**: Module used to create adapter for all the devices.
+
 **Liveliness Probe**: Module contains classes to manage liveliness probe on the devices. 
+
 **TMC Command**: Module contains classes that have generic command class functionality and is inherited by all the other TMC Command Classes
+
 **TangoHelperDevices**: Module contains classes that have generic component manager functionality and is inherited by all other Component Manager Classes.

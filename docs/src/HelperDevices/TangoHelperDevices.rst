@@ -17,12 +17,21 @@ Each helper device exposes required API's similar to real device.
 Functionality
 -------------
 Few Functionality provided by the helper devices are as follows:
+
 - SetDirectObsState: used to set device obsState directly.
-- SetDirectState: Used to set device state directly
-- commandCallInfo: Used to get information of arguments used to call the command/
+
+- SetDirectState: Used to set device state directly.
+
+- commandCallInfo: Used to get information of arguments used to call the command
+
 - SetDelay: Used to produce delay in execution of commands to mimic real scenario.
-- resetDelay: Used to reset delay to default one
-- Fault Injection - To make devices faulty to check error handling in tango devices
+
+- resetDelay: Used to reset delay to default one.
+
+- Fault Injection: To make devices faulty to check error handling in tango devices.
+
+- AddTransitions: This command will set duration for obs state such that whenrespective command for obs state is triggered then it change obs state 
+after provided duration.
 
 
 Device List
