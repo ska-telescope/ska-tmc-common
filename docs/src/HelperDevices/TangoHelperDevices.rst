@@ -3,13 +3,25 @@
 TMC Common Tango Helper Devices
 ================================
 
+
+TMC uses helper devices instead of real devices to test component level functionality and also functionality of overall integrated TMC in TMC integration repository.
+These Devices are used by multiple TMC repositories so kept in common repository to have functionality readily available across TMC repositories.
+
 Devices and their functionality
 -------------------------------
 
+This page contains all the helper devices used by TMC to mock behavior of sub-systems,leaf nodes or subarray device. 
+Each helper device exposes required API's similar to real device.   
+
+
 Functionality
 -------------
-
-- Pytango Devices - Similar to real devices 
+Few Functionality provided by the helper devices are as follows:
+- SetDirectObsState: used to set device obsState directly.
+- SetDirectState: Used to set device state directly
+- commandCallInfo: Used to get information of arguments used to call the command/
+- SetDelay: Used to produce delay in execution of commands to mimic real scenario.
+- resetDelay: Used to reset delay to default one
 - Fault Injection - To make devices faulty to check error handling in tango devices
 
 
