@@ -11,6 +11,7 @@ This is the Tango Server Helper module of Tango Interface Layer.
 This module implements a class
 TangoServerHelper which helps in operations like getting and
 setting attributes and properties of the Tango device.
+This class is now deprecated.
 """
 # pylint: disable=inconsistent-return-statements
 

@@ -13,30 +13,53 @@ Welcome to ska-tmc-common documentation!
    Introduction<Introduction>
 
 .. toctree::
-   :maxdepth: 1
-   :caption: TangoClient
-
-   TangoClient
-
-.. toctree::
-   :maxdepth: 1
-   :caption: TangoGroupClient
-
-   TangoGroupClient
+   :maxdepth: 3
+   :caption: Tango Classes[deprecated]
+   
+   TangoClasses/index
 
 .. toctree::
    :maxdepth: 1
-   :caption: HelperDevices
+   :caption: Helper Devices
 
    HelperDevices/TangoHelperDevices
 
 .. toctree::
    :maxdepth: 1
-   :caption: TangoServerHelper
+   :caption: Adapter Classes
 
-   TangoServerHelper
+   adapter_class
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Liveliness Probe
+
+   liveliness_probe
    
+.. toctree::
+   :maxdepth: 1
+   :caption: Event Receiver
 
+   event_receiver
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TMC Base Device
+
+   tmc_base_device
+
+.. toctree::
+   :maxdepth: 1
+   :caption: TMC Command
+
+   tmc_command
+   
+.. toctree::
+   :maxdepth: 1
+   :caption: TMC Component Manager
+
+   tmc_component_manager
+   
 Indices and tables
 ==================
 
