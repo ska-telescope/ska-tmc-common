@@ -19,10 +19,11 @@ class AdapterType(enum.IntEnum):
     BASE = 0
     SUBARRAY = 1
     DISH = 2
-    MCCS = 3
+    MCCS_MASTER_LEAF_NODE = 3
     CSPSUBARRAY = 4
     CSPMASTER = 5
     SDPSUBARRAY = 6
+    MCCS_CONTROLLER = 7
 
 
 class BaseAdapter:
@@ -212,7 +213,7 @@ class SdpSubArrayAdapter(SubArrayAdapter):
 
 class MCCSAdapter(BaseAdapter):
     """
-    This class is used for creating and managing adapterss
+    This class is used for creating and managing adapters
     for MCCS devices.
     """
 
@@ -231,6 +232,28 @@ class MCCSAdapter(BaseAdapter):
         Invokes ReleaseResources on device proxy.
         """
         return self._proxy.ReleaseResources(argin)
+
+
+# need to update this class with methods for allocate and release command invocation
+
+
+class MCCSControllerAdapter(BaseAdapter):
+    """
+    This class is used for creating and managing adapterss
+    for MCCS controller devices.
+    """
+
+    def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Allocate on device proxy.
+        """
+        return self._proxy.Allocate(argin)
+
+    def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Release on device proxy.
+        """
+        return self._proxy.Release(argin)
 
 
 class DishAdapter(BaseAdapter):
@@ -416,8 +439,12 @@ class AdapterFactory:
             new_adapter = SdpSubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
-        elif adapter_type == AdapterType.MCCS:
+        elif adapter_type == AdapterType.MCCS_MASTER_LEAF_NODE:
             new_adapter = MCCSAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.MCCS_CONTROLLER:
+            new_adapter = MCCSControllerAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.CSPMASTER:

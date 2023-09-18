@@ -18,6 +18,7 @@ from .adapters import (
     CspSubarrayAdapter,
     DishAdapter,
     MCCSAdapter,
+    MCCSControllerAdapter,
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
@@ -104,6 +105,7 @@ __all__ = [
     "SdpSubArrayAdapter",
     "BaseAdapter",
     "MCCSAdapter",
+    "MCCSControllerAdapter",
     "Aggregator",
     "DevFactory",
     "DeviceInfo",

@@ -1,5 +1,5 @@
 """
-This module implements the Helper MCCS subarray devices for testing
+This module implements the Helper MCCS master leaf node devices for testing
 an integrated TMC
 """
 # pylint: disable=unused-argument

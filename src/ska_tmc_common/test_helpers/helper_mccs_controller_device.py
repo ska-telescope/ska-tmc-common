@@ -1,5 +1,5 @@
 """
-This module implements the Helper MCCS subarray devices for testing
+This module implements the Helper MCCS controller devices for testing
 an integrated TMC
 """
 # pylint: disable=unused-argument
@@ -23,7 +23,7 @@ class HelperMCCSController(HelperBaseDevice):
         self._raise_exception = False
 
     class InitCommand(SKABaseDevice.InitCommand):
-        """A class for the HelperMccsStateDevice's init_device() "command"."""
+        """A class for the HelperMCCSController's init_device() "command"."""
 
         def do(self) -> Tuple[ResultCode, str]:
             """
