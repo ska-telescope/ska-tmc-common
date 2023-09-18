@@ -234,7 +234,8 @@ class MCCSAdapter(BaseAdapter):
         return self._proxy.ReleaseResources(argin)
 
 
-# need to update this class with methods for allocate and release command invocation
+# need to update this class with methods for allocate and release
+# command invocation
 
 
 class MCCSControllerAdapter(BaseAdapter):
