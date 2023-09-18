@@ -104,7 +104,7 @@ def test_get_or_create_dish_adapter(tango_context):
 def test_get_or_create_mccs_controller_adapter(tango_context):
     factory = AdapterFactory()
     mccs_adapter = factory.get_or_create_adapter(
-        HELPER_MCCS_CONTROLLER, AdapterType.MCCS
+        HELPER_MCCS_CONTROLLER, AdapterType.MCCS_CONTROLLER
     )
     assert isinstance(mccs_adapter, MCCSControllerAdapter)
 
@@ -112,7 +112,7 @@ def test_get_or_create_mccs_controller_adapter(tango_context):
 def test_get_or_create_mccs_master_leaf_node_adapter(tango_context):
     factory = AdapterFactory()
     mccs_master_leaf_node_adapter = factory.get_or_create_adapter(
-        HELPER_MCCS_MASTER_LEAF_NODE_DEVICE, AdapterType.MCCS
+        HELPER_MCCS_MASTER_LEAF_NODE_DEVICE, AdapterType.MCCS_MASTER_LEAF_NODE
     )
     assert isinstance(mccs_master_leaf_node_adapter, MCCSAdapter)
 

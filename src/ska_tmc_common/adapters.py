@@ -408,6 +408,7 @@ class AdapterFactory:
         CspSubarrayAdapter,
         SdpSubArrayAdapter,
         MCCSAdapter,
+        MCCSControllerAdapter,
         BaseAdapter,
     ]:
         """
