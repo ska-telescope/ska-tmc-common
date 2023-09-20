@@ -366,7 +366,10 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         Method to invoke commands on device adapters.
         """
         if adapter is None:
-            return ResultCode.FAILED, f"The proxy is missing for {device}"
+            return (
+                [ResultCode.FAILED],
+                [f"The proxy is missing for {device}"],
+            )
 
         self.logger.info(
             f"Invoking {command_name} command on: {adapter.dev_name}"
@@ -384,7 +387,9 @@ class TmcLeafNodeCommand(BaseTMCCommand):
             self.logger.exception("Command invocation failed: %s", exp_msg)
             return (
                 [ResultCode.FAILED],
-                [f"The invocation of the {command_name} command is failed on "
-                + f"{device} device {adapter.dev_name}.\n"
-                + f"The following exception occurred - {exp_msg}."],
+                [
+                    f"The invocation of the {command_name} command is failed "
+                    + f"on {device} device {adapter.dev_name}.\n"
+                    + f"The following exception occurred - {exp_msg}."
+                ],
             )
