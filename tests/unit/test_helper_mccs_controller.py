@@ -7,8 +7,8 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import HELPER_MCCS_CONTROLLER
 
-commands_with_argin = ["On", "Off"]
-commands_without_argin = ["Allocate", "Release"]
+commands_with_argin = ["Allocate", "Release"]
+commands_without_argin = ["On", "Off"]
 
 
 @pytest.mark.parametrize("command", commands_with_argin)

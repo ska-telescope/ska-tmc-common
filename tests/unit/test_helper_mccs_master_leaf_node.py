@@ -8,8 +8,8 @@ from tango import DevFailed
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import HELPER_MCCS_MASTER_LEAF_NODE_DEVICE
 
-commands_with_argin = ["On", "Off"]
-commands_without_argin = ["AssignResources", "ReleaseResources"]
+commands_with_argin = ["AssignResources", "ReleaseResources"]
+commands_without_argin = ["On", "Off"]
 
 
 @pytest.mark.parametrize("command", commands_with_argin)
