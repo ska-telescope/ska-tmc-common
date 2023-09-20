@@ -211,10 +211,10 @@ class SdpSubArrayAdapter(SubArrayAdapter):
         return self._proxy.command_inout_asynch("Configure", argin, callback)
 
 
-class MCCSMasterLeafNode(BaseAdapter):
+class MCCSMasterLeafNodeAdapter(BaseAdapter):
     """
     This class is used for creating and managing adapters
-    for MCCS master leaf node devices.
+    for MCCS master leaf node device.
     """
 
     def AssignResources(
@@ -407,7 +407,7 @@ class AdapterFactory:
         CspMasterAdapter,
         CspSubarrayAdapter,
         SdpSubArrayAdapter,
-        MCCSMasterLeafNode,
+        MCCSMasterLeafNodeAdapter,
         MCCSControllerAdapter,
         BaseAdapter,
     ]:
@@ -442,7 +442,7 @@ class AdapterFactory:
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.MCCS_MASTER_LEAF_NODE:
-            new_adapter = MCCSMasterLeafNode(
+            new_adapter = MCCSMasterLeafNodeAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.MCCS_CONTROLLER:

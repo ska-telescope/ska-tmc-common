@@ -18,7 +18,7 @@ from .adapters import (
     CspSubarrayAdapter,
     DishAdapter,
     MCCSControllerAdapter,
-    MCCSMasterLeafNode,
+    MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
@@ -104,7 +104,7 @@ __all__ = [
     "SubArrayAdapter",
     "SdpSubArrayAdapter",
     "BaseAdapter",
-    "MCCSMasterLeafNode",
+    "MCCSMasterLeafNodeAdapter",
     "MCCSControllerAdapter",
     "Aggregator",
     "DevFactory",

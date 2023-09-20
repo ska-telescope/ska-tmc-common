@@ -16,7 +16,7 @@ from ska_tmc_common import (
     HelperMCCSMasterLeafNode,
     HelperSubArrayDevice,
     MCCSControllerAdapter,
-    MCCSMasterLeafNode,
+    MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
     SubArrayAdapter,
     TmcLeafNodeCommand,
@@ -114,7 +114,7 @@ def test_get_or_create_mccs_master_leaf_node_adapter(tango_context):
     mccs_master_leaf_node_adapter = factory.get_or_create_adapter(
         HELPER_MCCS_MASTER_LEAF_NODE_DEVICE, AdapterType.MCCS_MASTER_LEAF_NODE
     )
-    assert isinstance(mccs_master_leaf_node_adapter, MCCSMasterLeafNode)
+    assert isinstance(mccs_master_leaf_node_adapter, MCCSMasterLeafNodeAdapter)
 
 
 def test_get_or_create_csp_adapter(tango_context):

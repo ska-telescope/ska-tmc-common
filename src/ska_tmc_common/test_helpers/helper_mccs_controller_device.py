@@ -3,6 +3,7 @@ This module implements the Helper MCCS controller devices for testing
 an integrated TMC
 """
 # pylint: disable=unused-argument
+import json
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -21,6 +22,15 @@ class HelperMCCSController(HelperBaseDevice):
         super().init_device()
         self.dev_name = self.get_name()
         self._raise_exception = False
+        self._defective = json.dumps(
+            {
+                "enabled": False,
+                "fault_type": FaultType.FAILED_RESULT,
+                "error_message": "Default exception.",
+                "result": ResultCode.FAILED,
+            }
+        )
+        self.defective_params = json.loads(self._defective)
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMCCSController's init_device() "command"."""
@@ -33,6 +43,21 @@ class HelperMCCSController(HelperBaseDevice):
             """
             super().do()
             return (ResultCode.OK, "")
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Defective parameters",
+    )
+    def SetDefective(self, values: str) -> None:
+        """
+        Trigger defective change
+        :param: values
+        :type: str
+        """
+        input_dict = json.loads(values)
+        self.logger.info("Setting defective params to %s", input_dict)
+        for key, value in input_dict.items():
+            self.defective_params[key] = value
 
     def is_Allocate_allowed(self) -> bool:
         """
