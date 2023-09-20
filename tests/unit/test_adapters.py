@@ -162,9 +162,9 @@ def test_call_adapter_method_exception(tango_context):
     result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
         HELPER_SUBARRAY_DEVICE, subarray_adapter, "AssignResources"
     )
-    assert result_code == ResultCode.FAILED
+    assert result_code[0] == ResultCode.FAILED
     assert (
-        message
+        message[0]
         == "The invocation of the AssignResources command is failed on "
         + "test/subarray/1 device test/subarray/1.\n"
         + "The following exception occurred - SubArrayAdapter.AssignResources() "
