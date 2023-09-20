@@ -383,8 +383,8 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         except Exception as exp_msg:
             self.logger.exception("Command invocation failed: %s", exp_msg)
             return (
-                ResultCode.FAILED,
-                f"The invocation of the {command_name} command is failed on "
+                [ResultCode.FAILED],
+                [f"The invocation of the {command_name} command is failed on "
                 + f"{device} device {adapter.dev_name}.\n"
-                + f"The following exception occurred - {exp_msg}.",
+                + f"The following exception occurred - {exp_msg}."],
             )
