@@ -93,8 +93,8 @@ class HelperDishDevice(HelperBaseDevice):
     commandCallInfo = attribute(
         dtype=(("str",),),
         access=AttrWriteType.READ,
-        max_dim_x=100,
-        max_dim_y=100,
+        max_dim_x=500,
+        max_dim_y=500,
     )
 
     obsStateTransitionDuration = attribute(
@@ -306,6 +306,8 @@ class HelperDishDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self):
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Instructed Dish simulator to invoke Off command")
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
@@ -317,8 +319,6 @@ class HelperDishDevice(HelperBaseDevice):
             self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "Off")
         self.logger.info("Off command completed.")
-        self._command_call_info.clear()
-        self.push_change_event("commandCallInfo", self._command_call_info)
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
@@ -347,6 +347,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Standby command on Dish Master
         :rtype: Tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Instructed Dish simulator to invoke Standby command")
         self.update_command_info(STAND_BY, "")
 
@@ -380,8 +382,6 @@ class HelperDishDevice(HelperBaseDevice):
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("SetStandbyFPMode Command is allowed")
-        self._command_call_info.clear()
-        self.push_change_event("commandCallInfo", self._command_call_info)
         return True
 
     @command(
@@ -393,6 +393,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyFPMode command on  Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing SetStandbyFPMode Command")
         self.update_command_info(SET_STANDBY_FP_MODE, "")
         if self.defective_params["enabled"]:
@@ -438,6 +440,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStandbyLPMode command on  Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
             "Instructed Dish simulator to invoke SetStandbyLPMode command"
         )
@@ -487,6 +491,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetOperateMode command on  Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
@@ -537,6 +543,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes SetStowMode command on  Dish Master
         :rtype : tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
             "Instructed Dish simulator to invoke SetStowMode command"
         )
@@ -582,6 +590,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Track command on  Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
@@ -627,6 +637,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes TrackStop command on  Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
             "Instructed Dish simulator to invoke TrackStop command"
         )
@@ -675,6 +687,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes AbortCommands command on  Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
             "Instructed Dish simulator to invoke AbortCommands command"
         )
@@ -683,8 +697,6 @@ class HelperDishDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands")
         self.logger.info("Abort Completed")
-        self._command_call_info.clear()
-        self.push_change_event("commandCallInfo", self._command_call_info)
         # Dish Mode Not Applicable.
         return ([ResultCode.OK], [""])
 
@@ -716,6 +728,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Configure command on  Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing Configure command")
         # to record the command data
         self.logger.info(
@@ -754,6 +768,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info(
             "Instructed Dish simulator to invoke ConfigureBand1 command"
         )
@@ -795,6 +811,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes ConfigureBand2 command on Dish Master
         :rtype: tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing ConfigureBand2 Command")
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
@@ -886,6 +904,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand3 command on  Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing ConfigureBand3 Command")
 
         if self.defective_params["enabled"]:
@@ -924,6 +944,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand4 command on Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing ConfigureBand4 Command")
 
         if self.defective_params["enabled"]:
@@ -964,6 +986,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand5a command on Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing ConfigureBand5a Command")
 
         if self.defective_params["enabled"]:
@@ -1003,6 +1027,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes ConfigureBand5b command on Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing ConfigureBand5b Command")
 
         if self.defective_params["enabled"]:
@@ -1039,6 +1065,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes Slew command on Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing Slew Command")
         # to record the command data
         self.update_command_info(SLEW)
@@ -1101,6 +1129,8 @@ class HelperDishDevice(HelperBaseDevice):
         """
         This method invokes Scan command on Dish Master
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN)
@@ -1137,6 +1167,8 @@ class HelperDishDevice(HelperBaseDevice):
         This method invokes Reset command on Dish Master
         :rtype:tuple
         """
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("Processing Reset Command")
         # to record the command data
         self.update_command_info(RESET)
