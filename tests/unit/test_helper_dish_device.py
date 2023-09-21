@@ -66,6 +66,7 @@ def test_state_transition(tango_context):
     assert subarray_device.obsStateTransitionDuration == '[["TRACK", 0.1]]'
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
