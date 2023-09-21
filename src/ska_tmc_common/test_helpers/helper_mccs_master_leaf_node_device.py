@@ -16,7 +16,8 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 # pylint: disable=attribute-defined-outside-init
 class HelperMCCSMasterLeafNode(HelperBaseDevice):
-    """A generic device for triggering state changes with a command"""
+    """A helper MCCS master leafnode device for triggering state
+    changes with a command"""
 
     def init_device(self) -> None:
         super().init_device()
