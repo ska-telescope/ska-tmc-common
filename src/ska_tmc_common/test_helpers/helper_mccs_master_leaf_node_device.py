@@ -45,21 +45,6 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             super().do()
             return (ResultCode.OK, "")
 
-    @command(
-        dtype_in=str,
-        doc_in="Set Defective parameters",
-    )
-    def SetDefective(self, values: str) -> None:
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
-        input_dict = json.loads(values)
-        self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
-
     def is_AssignResources_allowed(self) -> bool:
         """
         Check if command `AssignResources` is allowed in the current device
@@ -95,7 +80,15 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        self.logger.info("AssignResources command completed.")
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "AssignResources",
+            )
+        self.push_command_result(ResultCode.OK, "AssignResources")
+        self.logger.debug(
+            "AssignResourse invoked obsstate is transition \
+                          to Resourcing"
+        )
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:

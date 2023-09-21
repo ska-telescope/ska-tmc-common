@@ -52,6 +52,6 @@ def test_release_raise_exception(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetRaiseException(True)
-    result, message = mccs_controller_device.ReleaseAllResources()
+    result, message = mccs_controller_device.Release()
     assert result[0] == ResultCode.QUEUED
     assert mccs_controller_device.obsstate == ObsState.RESOURCING
