@@ -40,6 +40,18 @@ def test_obs_state_transition(tango_context):
     )
 
 
+def test_reset_obs_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_leaf_device.AddTransition('[["CONFIGURING", 0.1]]')
+    assert (
+        subarray_leaf_device.obsStateTransitionDuration
+        == '[["CONFIGURING", 0.1]]'
+    )
+    subarray_leaf_device.ResetTransitions()
+    assert subarray_leaf_device.obsStateTransitionDuration == "[]"
+
+
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()

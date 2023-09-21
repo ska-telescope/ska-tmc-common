@@ -97,8 +97,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             "Subarray Leaf Device"
         )
         self.logger.info(
-            "ObsState transitions sequence for Csp Subarray and "
-            "Sdp Subarray Simulators is: %s",
+            "ObsState transitions sequence for "
+            "Helper Subarray Leaf Device is: %s",
             state_duration_info,
         )
         self._state_duration_info = json.loads(state_duration_info)
