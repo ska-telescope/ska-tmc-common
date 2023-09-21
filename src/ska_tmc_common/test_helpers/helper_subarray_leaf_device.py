@@ -83,6 +83,15 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self._obs_state = obs_state_enum
                 self.push_change_event("obsState", self._obs_state)
 
+    def _follow_state_duration(self):
+        """This method will update obs state as per state duration
+        in separate thread
+        """
+        thread = threading.Thread(
+            target=self._update_obs_state_in_sequence,
+        )
+        thread.start()
+
     @command(
         dtype_in=str,
         doc_in="Set Obs State Duration",
