@@ -75,7 +75,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes AssignResources command on subarray device
+        This method invokes AssignResources command on MCCS
+        master leaf node device.
 
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
@@ -117,9 +118,10 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ReleaseResources command on subarray device
+        This method invokes ReleaseResources command on MCCS
+        master leaf node device.
 
-        :return: a tuple conataining Resultcose and Message
+        :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
         self.logger.info("ReleaseResources command completed.")
