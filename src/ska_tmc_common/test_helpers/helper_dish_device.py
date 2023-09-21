@@ -317,6 +317,8 @@ class HelperDishDevice(HelperBaseDevice):
             self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "Off")
         self.logger.info("Off command completed.")
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
@@ -378,6 +380,8 @@ class HelperDishDevice(HelperBaseDevice):
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("SetStandbyFPMode Command is allowed")
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         return True
 
     @command(
@@ -402,6 +406,8 @@ class HelperDishDevice(HelperBaseDevice):
         self.set_dish_mode(DishMode.STANDBY_FP)
         self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
         self.logger.info("SetStandbyFPMode command completed.")
+        self._command_call_info.clear()
+
         return ([ResultCode.OK], [""])
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
@@ -677,6 +683,8 @@ class HelperDishDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands")
         self.logger.info("Abort Completed")
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
         # Dish Mode Not Applicable.
         return ([ResultCode.OK], [""])
 
