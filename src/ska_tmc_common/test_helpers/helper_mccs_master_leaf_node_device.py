@@ -84,7 +84,6 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             return self.induce_fault(
                 "AssignResources",
             )
-        self.push_command_result(ResultCode.OK, "AssignResources")
         self.logger.debug("AssignResourses command complete")
         return [ResultCode.OK], [""]
 

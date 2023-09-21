@@ -39,9 +39,9 @@ def test_mccs_controller_command_defective(tango_context, command):
 
 
 @pytest.mark.parametrize("command", commands_with_argin)
-def test_mccs_controller_command_raise_exception(tango_context):
+def test_mccs_controller_command_raise_exception(tango_context, command):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetRaiseException(True)
-    result, message = mccs_controller_device.Allocate("")
+    result, message = mccs_controller_device.command_inout(command, "")
     assert result[0] == ResultCode.QUEUED

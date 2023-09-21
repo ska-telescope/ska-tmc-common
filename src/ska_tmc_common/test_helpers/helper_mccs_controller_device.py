@@ -105,7 +105,6 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info(
             "Instructed Csp Subarray to invoke AssignResources command"
         )
-        self.update_command_info("Allocate", argin)
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(

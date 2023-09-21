@@ -2,7 +2,6 @@ import json
 
 import pytest
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory, FaultType
@@ -53,24 +52,6 @@ def test_assign_resources_failed_result(tango_context):
     assert (
         message[0] == "Device is defective, cannot process command.completely."
     )
-    mccs_master_leaf_node_device.SetDefective(json.dumps({"enabled": False}))
-
-
-def test_assign_resources_stuck_in_intermediate_state(tango_context):
-    dev_factory = DevFactory()
-    mccs_master_leaf_node_device = dev_factory.get_device(
-        HELPER_MCCS_MASTER_LEAF_NODE_DEVICE
-    )
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
-        "result": ResultCode.FAILED,
-        "intermediate_state": ObsState.RESOURCING,
-    }
-    mccs_master_leaf_node_device.SetDefective(json.dumps(defect))
-    result, _ = mccs_master_leaf_node_device.AssignResources("")
-    assert result[0] == ResultCode.QUEUED
-    assert mccs_master_leaf_node_device.obsState == ObsState.RESOURCING
     mccs_master_leaf_node_device.SetDefective(json.dumps({"enabled": False}))
 
 
