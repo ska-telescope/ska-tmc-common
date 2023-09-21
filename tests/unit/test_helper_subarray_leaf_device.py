@@ -60,6 +60,15 @@ def test_obs_state_tranisition_for_configure(tango_context):
     assert subarray_leaf_device.obsState == ObsState.READY
 
 
+def test_clear_commandCallInfo(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    _, _ = subarray_leaf_device.command_inout("Configure", "")
+    subarray_leaf_device.command_inout("ClearCommandCallInfo")
+    command_call_info = subarray_leaf_device.commandCallInfo
+    assert command_call_info is None
+
+
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()

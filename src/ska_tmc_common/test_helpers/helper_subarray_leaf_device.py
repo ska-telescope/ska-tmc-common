@@ -19,6 +19,22 @@ from tango.server import AttrWriteType, attribute, command, run
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
+from .constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    END,
+    END_SCAN,
+    GO_TO_IDLE,
+    OFF,
+    ON,
+    RELEASE_ALL_RESOURCES,
+    RELEASE_RESOURCES,
+    RESTART,
+    SCAN,
+    STAND_BY,
+)
+
 
 class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes
@@ -29,6 +45,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._delay = 2
         self._obs_state = ObsState.EMPTY
         self._state_duration_info = []
+        # tuple of list
+        self._command_call_info = []
+        self._command_info = ("", "")
 
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -39,6 +58,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             """
             super().do()
             self._device.set_change_event("obsState", True, False)
+            self._device.set_change_event("commandCallInfo", True, False)
             return ResultCode.OK, ""
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
@@ -51,9 +71,22 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype="DevString", access=AttrWriteType.READ
     )
 
+    commandCallInfo = attribute(
+        dtype=(("str",),),
+        access=AttrWriteType.READ,
+        max_dim_x=100,
+        max_dim_y=100,
+    )
+
     def read_obsStateTransitionDuration(self):
         """Read transition"""
         return json.dumps(self._state_duration_info)
+
+    def read_commandCallInfo(self):
+        """This method is used to read the attribute value for
+        commandCallInfo.
+        """
+        return self._command_call_info
 
     def read_defective(self) -> str:
         """
@@ -70,6 +103,36 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def read_obsState(self) -> ObsState:
         """This method is used to read the attribute value for obsState."""
         return self._obs_state
+
+    def update_command_info(
+        self, command_name: str = "", command_input: str = ""
+    ) -> None:
+        """This method updates the commandCallInfo attribute,
+        with the respective command information.
+
+        Args:
+            command_name (str): command name
+            command_input (str): Input argin for command
+        """
+        self.logger.info(
+            "Recording the command data for Sdp Subarray \
+                 or Csp Subarray simulators"
+        )
+        self._command_info = (command_name, command_input)
+        self.logger.info(
+            "Recorded command_info for Sdp Subarray \
+            or Csp Subarray simulators is %s",
+            self._command_info,
+        )
+        self._command_call_info.append(self._command_info)
+        self.logger.info(
+            "Recorded command_call_info list for Csp Subarray or \
+                Sdp Subarray simulators is %s",
+            self._command_call_info,
+        )
+
+        self.push_change_event("commandCallInfo", self._command_call_info)
+        self.logger.info("CommandCallInfo updates are pushed")
 
     def _update_obs_state_in_sequence(self):
         """Update Obs state in sequence as per state duration info"""
@@ -91,6 +154,17 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             target=self._update_obs_state_in_sequence,
         )
         thread.start()
+
+    @command(
+        doc_in="Clears commandCallInfo",
+    )
+    def ClearCommandCallInfo(self) -> None:
+        """Clears commandCallInfo to empty list"""
+        self.logger.info(
+            "Clearing CommandCallInfo for Csp and Sdp Subarray simulators"
+        )
+        self._command_call_info.clear()
+        self.push_change_event("commandCallInfo", self._command_call_info)
 
     @command(
         dtype_in=str,
@@ -202,6 +276,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        self.update_command_info(ON)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "On",
@@ -230,6 +305,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        self.update_command_info(OFF)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -258,6 +334,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        self.update_command_info(STAND_BY)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",
@@ -298,6 +375,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(ASSIGN_RESOURCES, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "AssignResources",
@@ -349,6 +427,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Configure",
@@ -399,6 +478,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Scan",
@@ -438,6 +518,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "EndScan",
@@ -477,6 +558,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(END)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "End",
@@ -523,6 +605,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(GO_TO_IDLE)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "GoToIdle",
@@ -561,6 +644,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(ABORT)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Abort",
@@ -607,6 +691,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(RESTART)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Restart",
@@ -651,6 +736,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(RELEASE_ALL_RESOURCES)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ReleaseAllResources",
@@ -702,6 +788,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.update_command_info(RELEASE_RESOURCES)
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ReleaseResources",
