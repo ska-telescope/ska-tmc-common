@@ -85,10 +85,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
                 "AssignResources",
             )
         self.push_command_result(ResultCode.OK, "AssignResources")
-        self.logger.debug(
-            "AssignResourse invoked obsstate is transition \
-                          to Resourcing"
-        )
+        self.logger.debug("AssignResourses command complete")
         return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self) -> bool:

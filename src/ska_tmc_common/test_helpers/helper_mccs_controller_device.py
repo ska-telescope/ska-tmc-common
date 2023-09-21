@@ -60,6 +60,15 @@ class HelperMCCSController(HelperBaseDevice):
         for key, value in input_dict.items():
             self.defective_params[key] = value
 
+    @command(
+        dtype_in=bool,
+        doc_in="Raise Exception",
+    )
+    def SetRaiseException(self, value: bool) -> None:
+        """Set Raise Exception"""
+        self.logger.info("Setting the raise exception value to : %s", value)
+        self._raise_exception = value
+
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
@@ -93,7 +102,19 @@ class HelperMCCSController(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        self.logger.info("Allocate command completed.")
+        self.logger.info(
+            "Instructed Csp Subarray to invoke AssignResources command"
+        )
+        self.update_command_info("Allocate", argin)
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "Allocate",
+            )
+
+        if self._raise_exception:
+            return [ResultCode.QUEUED], [""]
+        self.logger.debug("Allocate command complete")
         return [ResultCode.OK], [""]
 
     def is_Release_allowed(self) -> bool:
