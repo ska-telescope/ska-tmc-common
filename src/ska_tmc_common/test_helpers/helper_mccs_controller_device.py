@@ -97,14 +97,12 @@ class HelperMCCSController(HelperBaseDevice):
     )
     def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Allocate command on subarray device
+        This method invokes Allocate command on MCCS
+        controller device
 
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        self.logger.info(
-            "Instructed Csp Subarray to invoke AssignResources command"
-        )
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -144,10 +142,19 @@ class HelperMCCSController(HelperBaseDevice):
     )
     def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Release command on subarray device
+        This method invokes Release command on
+        MCCS controller device
 
         :return: a tuple containing Resultcode and Message
         :rtype: Tuple
         """
-        self.logger.info("ReleaseResources command completed.")
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "Release",
+            )
+
+        if self._raise_exception:
+            return [ResultCode.QUEUED], [""]
+        self.logger.debug("Release command complete")
         return [ResultCode.OK], [""]
