@@ -120,14 +120,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         self._command_info = (command_name, command_input)
         self.logger.info(
-            "Recorded command_info for Sdp Subarray \
-            or Csp Subarray simulators is %s",
+            "Recorded command_info for Helper Subarray Leaf device %s",
             self._command_info,
         )
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Recorded command_call_info list for Csp Subarray or \
-                Sdp Subarray simulators is %s",
+            "Recorded command_call_info list for helper subarray leaf device"
+            " is %s",
             self._command_call_info,
         )
 
