@@ -6,7 +6,9 @@
 #
 # Distributed under the terms of the BSD-3-Clause license.
 # See LICENSE.txt for more info.
-""" Tango Client Code"""
+""" Tango Client Code.
+    This class is now deprecated.
+"""
 
 # pylint: disable=inconsistent-return-statements
 
@@ -21,6 +23,7 @@ from tango import DevFailed, DeviceProxy, EventType
 
 class TangoClient:
     """
+    NOTE: This class is now deprecated.
     Class for TangoClient API
     """
 
