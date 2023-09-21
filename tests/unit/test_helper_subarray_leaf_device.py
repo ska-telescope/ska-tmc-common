@@ -31,6 +31,15 @@ def test_leaf_node_command_with_argument(tango_context, command):
     assert message[0] == ""
 
 
+def test_obs_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_device.AddTransition('[["CONFIGURING", 0.1]]')
+    assert (
+        subarray_device.obsStateTransitionDuration == '[["CONFIGURING", 0.1]]'
+    )
+
+
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()

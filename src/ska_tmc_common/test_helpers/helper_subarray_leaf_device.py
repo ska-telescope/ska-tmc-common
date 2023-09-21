@@ -28,12 +28,32 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
+        self._state_duration_info = []
+
+    class InitCommand(HelperBaseDevice.InitCommand):
+        """A class for the HelperSubarrayDevice's init_device() "command"."""
+
+        def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialisation.
+            """
+            super().do()
+            self._device.set_change_event("obsState", True, False)
+            return ResultCode.OK, ""
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
     obsState = attribute(dtype=ObsState, access=AttrWriteType.READ)
+
+    obsStateTransitionDuration = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+
+    def read_obsStateTransitionDuration(self):
+        """Read transition"""
+        return json.dumps(self._state_duration_info)
 
     def read_defective(self) -> str:
         """
@@ -50,6 +70,46 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def read_obsState(self) -> ObsState:
         """This method is used to read the attribute value for obsState."""
         return self._obs_state
+
+    def _update_obs_state_in_sequence(self):
+        """Update Obs state in sequence as per state duration info"""
+        with tango.EnsureOmniThread():
+            for obs_state, duration in self._state_duration_info:
+                obs_state_enum = ObsState[obs_state]
+                self.logger.info(
+                    "Sleep %s for obs state %s", duration, obs_state
+                )
+                time.sleep(duration)
+                self._obs_state = obs_state_enum
+                self.push_change_event("obsState", self._obs_state)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Obs State Duration",
+    )
+    def AddTransition(self, state_duration_info: str) -> None:
+        """This command will set duration for obs state such that when
+        respective command for obs state is triggered then it change obs state
+        after provided duration
+        """
+        self.logger.info(
+            "Adding observation state transitions for Helper "
+            "Subarray Leaf Device"
+        )
+        self.logger.info(
+            "ObsState transitions sequence for Csp Subarray and "
+            "Sdp Subarray Simulators is: %s",
+            state_duration_info,
+        )
+        self._state_duration_info = json.loads(state_duration_info)
+
+    @command(
+        doc_in="Reset Obs State Duration",
+    )
+    def ResetTransitions(self) -> None:
+        """This command will reset ObsState duration which is set"""
+        self.logger.info("Resetting Obs State Duration")
+        self._state_duration_info = []
 
     @command(
         dtype_in=int,
@@ -100,12 +160,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_result = (command_id, json.dumps(result))
         self.push_change_event("longRunningCommandResult", command_result)
 
-    def push_obs_state_event(self, obs_state: ObsState) -> NotImplementedError:
-        """Place holder method. This method will be implemented in the child
-        classes."""
-        raise NotImplementedError(
-            "This method needs to be implemented in the child class"
+    def push_obs_state_event(self, obs_state: ObsState) -> None:
+        """Push Obs State Change Event"""
+        self.logger.info(
+            "Pushing change event for HelperSubarrayLeafDeviceObsState: %s",
+            obs_state,
         )
+        self.push_change_event("obsState", self._obs_state)
 
     def update_device_obsstate(self, obs_state: ObsState):
         """Updates the device obsState"""
@@ -233,17 +294,20 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "AssignResources",
             )
 
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "AssignResources")
-        self.logger.debug(
-            "AssignResourse invoked obsstate is transition \
-                          to Resourcing"
-        )
+        if self._state_duration_info:
+            self._follow_state_duration()
+        else:
+            self._obs_state = ObsState.RESOURCING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "AssignResources")
+            self.logger.debug(
+                "AssignResourse invoked obsstate is transition \
+                            to Resourcing"
+            )
         return [ResultCode.OK], [""]
 
     def is_Configure_allowed(self) -> bool:
@@ -280,18 +344,20 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return self.induce_fault(
                 "Configure",
             )
-
-        self._obs_state = ObsState.CONFIGURING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.READY]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "Configure")
-        self.logger.debug(
-            "Configure invoked obsstate is transition \
-                          to Configuring"
-        )
+        if self._state_duration_info:
+            self._follow_state_duration()
+        else:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._delay, self.update_device_obsstate, args=[ObsState.READY]
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "Configure")
+            self.logger.debug(
+                "Configure invoked obsstate is transition \
+                            to Configuring"
+            )
         return [ResultCode.OK], [""]
 
     def is_Scan_allowed(self) -> bool:
