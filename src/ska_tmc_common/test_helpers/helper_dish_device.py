@@ -93,8 +93,8 @@ class HelperDishDevice(HelperBaseDevice):
     commandCallInfo = attribute(
         dtype=(("str",),),
         access=AttrWriteType.READ,
-        max_dim_x=10000,
-        max_dim_y=10000,
+        max_dim_x=1000000,
+        max_dim_y=1000000,
     )
 
     obsStateTransitionDuration = attribute(
