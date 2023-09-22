@@ -866,7 +866,8 @@ class HelperDishDevice(HelperBaseDevice):
         self.logger.info(
             "Recording the command data for DishMaster simulators"
         )
-
+        
+        self.logger.info(f"commandCallInfo list: {self._command_call_info}")
         self._command_info = (command_name, command_input)
         self._command_call_info.append(self._command_info)
         self.logger.info(
