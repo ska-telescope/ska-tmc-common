@@ -60,6 +60,14 @@ def test_obs_state_tranisition_for_configure(tango_context):
     assert subarray_leaf_device.obsState == ObsState.READY
 
 
+def test_obs_state_tranisition_for_assignresources(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_leaf_device.AddTransition('[["READY", 0.0]]')
+    _, _ = subarray_leaf_device.AssignResources("")
+    assert subarray_leaf_device.obsState == ObsState.READY
+
+
 def test_clear_commandCallInfo(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
