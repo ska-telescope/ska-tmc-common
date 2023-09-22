@@ -45,7 +45,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._delay = 2
         self._obs_state = ObsState.EMPTY
         self._state_duration_info = []
-        # tuple of list
+        # list of tuple
         self._command_call_info = []
         self._command_info = ("", "")
 
@@ -134,7 +134,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("CommandCallInfo updates are pushed")
 
     def _update_obs_state_in_sequence(self):
-        """Update Obs state in sequence as per state duration info"""
+        """Update Obs state in sequence as per state duration info
+        This method update obs state of subarray device as per sequence
+        provided in state_duration_info
+        Example:
+        if state_duration_info is [["READY", 1], ["FAULT", 2]]
+        then obsState is updated to READY in 1 sec and after it update
+        it to FAULT in 2 sec
+        """
         with tango.EnsureOmniThread():
             for obs_state, duration in self._state_duration_info:
                 obs_state_enum = ObsState[obs_state]
@@ -147,7 +154,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     def _follow_state_duration(self):
         """This method will update obs state as per state duration
-        in separate thread
+        in separate thread.
+        To avoid Tango default 3 sec timeout creating seperate thread
+        for updating obs state.As Updating Obs state might take
+        more than 3 sec.
         """
         thread = threading.Thread(
             target=self._update_obs_state_in_sequence,
@@ -170,9 +180,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_in="Set Obs State Duration",
     )
     def AddTransition(self, state_duration_info: str) -> None:
-        """This command will set duration for obs state such that when
-        respective command for obs state is triggered then it change obs state
-        after provided duration
+        """This command will set state_duration_info as per
+        provided argument
         """
         self.logger.info(
             "Adding observation state transitions for Helper "
@@ -391,8 +400,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             thread.start()
             self.push_command_result(ResultCode.OK, "AssignResources")
             self.logger.debug(
-                "AssignResourse invoked obsstate is transition \
-                            to Resourcing"
+                "AssignResourse command is invoked and obsstate is \
+                transition to Resourcing"
             )
         return [ResultCode.OK], [""]
 
@@ -442,7 +451,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             thread.start()
             self.push_command_result(ResultCode.OK, "Configure")
             self.logger.debug(
-                "Configure invoked obsstate is transition \
+                "Configure command is invoked and obsstate is transition to \
                             to Configuring"
             )
         return [ResultCode.OK], [""]
