@@ -19,10 +19,11 @@ class AdapterType(enum.IntEnum):
     BASE = 0
     SUBARRAY = 1
     DISH = 2
-    MCCS = 3
+    MCCS_MASTER_LEAF_NODE = 3
     CSPSUBARRAY = 4
     CSPMASTER = 5
     SDPSUBARRAY = 6
+    MCCS_CONTROLLER = 7
 
 
 class BaseAdapter:
@@ -210,10 +211,10 @@ class SdpSubArrayAdapter(SubArrayAdapter):
         return self._proxy.command_inout_asynch("Configure", argin, callback)
 
 
-class MCCSAdapter(BaseAdapter):
+class MCCSMasterLeafNodeAdapter(BaseAdapter):
     """
-    This class is used for creating and managing adapterss
-    for MCCS devices.
+    This class is used for creating and managing adapters
+    for MCCS master leaf node device.
     """
 
     def AssignResources(
@@ -231,6 +232,29 @@ class MCCSAdapter(BaseAdapter):
         Invokes ReleaseResources on device proxy.
         """
         return self._proxy.ReleaseResources(argin)
+
+
+class MCCSControllerAdapter(BaseAdapter):
+    """
+    This class is used for creating and managing adapters
+    for MCCS controller devices.
+    """
+
+    def AssignResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Allocate on MCCS controller device proxy.
+        """
+        return self._proxy.Allocate(argin)
+
+    def ReleaseResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Release on MCCS controller device proxy.
+        """
+        return self._proxy.Release(argin)
 
 
 class DishAdapter(BaseAdapter):
@@ -383,7 +407,8 @@ class AdapterFactory:
         CspMasterAdapter,
         CspSubarrayAdapter,
         SdpSubArrayAdapter,
-        MCCSAdapter,
+        MCCSMasterLeafNodeAdapter,
+        MCCSControllerAdapter,
         BaseAdapter,
     ]:
         """
@@ -416,8 +441,12 @@ class AdapterFactory:
             new_adapter = SdpSubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
-        elif adapter_type == AdapterType.MCCS:
-            new_adapter = MCCSAdapter(
+        elif adapter_type == AdapterType.MCCS_MASTER_LEAF_NODE:
+            new_adapter = MCCSMasterLeafNodeAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.MCCS_CONTROLLER:
+            new_adapter = MCCSControllerAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.CSPMASTER:

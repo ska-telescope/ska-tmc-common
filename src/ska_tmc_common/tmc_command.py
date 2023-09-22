@@ -22,7 +22,7 @@ from ska_tmc_common.adapters import (
     CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
-    MCCSAdapter,
+    MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
     SubArrayAdapter,
 )
@@ -75,7 +75,7 @@ class BaseTMCCommand:
             SubArrayAdapter,
             CspMasterAdapter,
             CspSubarrayAdapter,
-            MCCSAdapter,
+            MCCSMasterLeafNodeAdapter,
             BaseAdapter,
             SdpSubArrayAdapter,
         ]
