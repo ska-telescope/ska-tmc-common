@@ -402,8 +402,6 @@ class HelperDishDevice(HelperBaseDevice):
         self.set_dish_mode(DishMode.STANDBY_FP)
         self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
         self.logger.info("SetStandbyFPMode command completed.")
-        self._command_call_info.clear()
-
         return ([ResultCode.OK], [""])
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
@@ -842,6 +840,7 @@ class HelperDishDevice(HelperBaseDevice):
         self.logger.info(
             "Recording the command data for DishMaster simulators"
         )
+
         self._command_info = (command_name, command_input)
         self._command_call_info.append(self._command_info)
         self.logger.info(
