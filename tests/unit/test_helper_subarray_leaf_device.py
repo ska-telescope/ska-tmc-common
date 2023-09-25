@@ -31,6 +31,52 @@ def test_leaf_node_command_with_argument(tango_context, command):
     assert message[0] == ""
 
 
+def test_obs_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_device.AddTransition('[["CONFIGURING", 0.1]]')
+    assert (
+        subarray_device.obsStateTransitionDuration == '[["CONFIGURING", 0.1]]'
+    )
+
+
+def test_reset_obs_state_transition(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_leaf_device.AddTransition('[["CONFIGURING", 0.1]]')
+    assert (
+        subarray_leaf_device.obsStateTransitionDuration
+        == '[["CONFIGURING", 0.1]]'
+    )
+    subarray_leaf_device.ResetTransitions()
+    assert subarray_leaf_device.obsStateTransitionDuration == "[]"
+
+
+def test_obs_state_tranisition_for_configure(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_leaf_device.AddTransition('[["READY", 0.0]]')
+    _, _ = subarray_leaf_device.Configure("")
+    assert subarray_leaf_device.obsState == ObsState.READY
+
+
+def test_obs_state_tranisition_for_assignresources(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_leaf_device.AddTransition('[["READY", 0.0]]')
+    _, _ = subarray_leaf_device.AssignResources("")
+    assert subarray_leaf_device.obsState == ObsState.READY
+
+
+def test_clear_commandCallInfo(tango_context):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    _, _ = subarray_leaf_device.command_inout("Configure", "")
+    subarray_leaf_device.command_inout("ClearCommandCallInfo")
+    command_call_info = subarray_leaf_device.commandCallInfo
+    assert command_call_info is None
+
+
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()
