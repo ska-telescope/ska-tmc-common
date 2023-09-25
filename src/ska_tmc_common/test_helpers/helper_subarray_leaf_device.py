@@ -180,8 +180,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_in="Set Obs State Duration",
     )
     def AddTransition(self, state_duration_info: str) -> None:
-        """This command will set state_duration_info as per
-        provided argument
+        """This command will establish a duration for the observation state, 
+        so that when the corresponding command for the observation state is triggered, 
+        it will transition to a provided observation state after the specified duration
         """
         self.logger.info(
             "Adding observation state transitions for Helper "
