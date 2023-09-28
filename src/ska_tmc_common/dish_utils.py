@@ -18,7 +18,7 @@ import re
 import katpoint
 from ska_telmodel.data import TMData
 
-from ska_tmc_common import ConversionError
+from ska_tmc_common.exceptions import ConversionError
 
 LAYOUT_PATH = "instrument/ska1_mid/layout/mid-layout.json"
 GITLAB_MAIN_PATH = "gitlab://gitlab.com/ska-telescope/"
@@ -110,7 +110,10 @@ class DishHelper:
         """
         try:
             obj = re.split(":", argin)
-            dd = float(obj[0]) + float(obj[1]) / 60 + float(obj[2]) / 3600
+            if float(obj[0]) < 0:
+                dd = float(obj[0]) - float(obj[1]) / 60 - float(obj[2]) / 3600
+            else:
+                dd = float(obj[0]) + float(obj[1]) / 60 + float(obj[2]) / 3600
         except Exception as error:
             logger.error(
                 "Error occured while converting %s to Degree decimals : %s",
