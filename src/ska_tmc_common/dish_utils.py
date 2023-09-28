@@ -92,9 +92,9 @@ class DishHelper:
                 error,
             )
             raise ConversionError(
-                f"Error while converting {argin} to DMS"
+                f"Error while converting {argin} to Degree:Minutes:Seconds"
             ) from error
-        return dms
+        return str(dms)
 
     def dms_to_dd(self, argin: str) -> str:
         """This method converts the give angle in degree, minutes, seconds to
@@ -124,6 +124,33 @@ class DishHelper:
                 f"Error while converting {argin} to Degree Decimals"
             ) from error
         return str(dd)
+    
+
+    def dd_to_hms(self, argin: float) -> str:
+        """
+        Converts a number in degree decimal to Hours:Minutes:Seconds
+
+        :param argin: A number in decimal degrees.
+            Example: 37.96199884
+        :return: Number in Hours:Minutes:Seconds format.
+            Example: 2:31:50.88 is returned value for input 37.96199884.
+        """
+        hms = ""  # hours:minutes:seconds
+        try:
+            frac, ra_hours = math.modf(argin/15.0)
+            frac, ra_minutes = math.modf(frac * 60)
+            ra_seconds = frac * 60
+            hms = f"{int(ra_hours)}:{int(ra_minutes)}:{round(ra_seconds,2)}"
+        except SyntaxError as error:
+            logger.error(
+                "Error while converting decimal degree to Hours:Minutes:Seconds -> %s",
+                error,
+            )
+            raise ConversionError(
+                f"Error while converting {argin} to Hours:Minutes:Seconds"
+            ) from error
+        return str(hms)
+
 
     def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the
