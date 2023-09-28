@@ -124,7 +124,6 @@ class DishHelper:
                 f"Error while converting {argin} to Degree Decimals"
             ) from error
         return str(dd)
-    
 
     def dd_to_hms(self, argin: float) -> str:
         """
@@ -137,20 +136,19 @@ class DishHelper:
         """
         hms = ""  # hours:minutes:seconds
         try:
-            frac, ra_hours = math.modf(argin/15.0)
+            frac, ra_hours = math.modf(argin / 15.0)
             frac, ra_minutes = math.modf(frac * 60)
             ra_seconds = frac * 60
             hms = f"{int(ra_hours)}:{int(ra_minutes)}:{round(ra_seconds,2)}"
         except SyntaxError as error:
             logger.error(
-                "Error while converting decimal degree to Hours:Minutes:Seconds -> %s",
+                "Error while converting decimal degree to HH:MM:SS -> %s",
                 error,
             )
             raise ConversionError(
                 f"Error while converting {argin} to Hours:Minutes:Seconds"
             ) from error
         return str(hms)
-
 
     def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the

@@ -35,17 +35,15 @@ def test_dms_to_dd(dms: str, expected_dd: str):
     assert dd == expected_dd
 
 
-
-
 @pytest.mark.parametrize(
     "dd, expected_hms",
     [
         pytest.param(37.96199884, "2:31:50.88"),
-        pytest.param(247.35191667,"16:29:24.46"),
-        pytest.param(342.717625, "22:50:52.23")
+        pytest.param(247.35191667, "16:29:24.46"),
+        pytest.param(342.717625, "22:50:52.23"),
     ],
 )
-def test_dms_to_dd(dd: float, expected_hms: str):
+def test_dd_to_hms(dd: float, expected_hms: str):
     """Test the DMS to degree decimal conversion."""
     dish_helper = DishHelper()
     hms = dish_helper.dd_to_hms(dd)
