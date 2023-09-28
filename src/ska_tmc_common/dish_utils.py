@@ -13,9 +13,12 @@ methods used in dish related calculations.
 
 import logging
 import math
+import re
 
 import katpoint
 from ska_telmodel.data import TMData
+
+from ska_tmc_common import ConversionError
 
 LAYOUT_PATH = "instrument/ska1_mid/layout/mid-layout.json"
 GITLAB_MAIN_PATH = "gitlab://gitlab.com/ska-telescope/"
@@ -65,7 +68,7 @@ class DishHelper:
         antenna_param.antenna_station_name = antenna_params["station_label"]
         return antenna_param
 
-    def dd_to_dms(self, argin):
+    def dd_to_dms(self, argin: float) -> str:
         """
         Converts a number in degree decimal to Deg:Min:Sec.
 
@@ -84,11 +87,40 @@ class DishHelper:
             seconds = frac_sec * 60
             dms = f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
         except SyntaxError as error:
-            log_msg = (
-                f"Error while converting decimal degree to dig:min:sec.{error}"
+            logger.error(
+                "Error while converting decimal degree to deg:min:sec -> %s",
+                error,
             )
-            logger.error(log_msg)
+            raise ConversionError(
+                f"Error while converting {argin} to DMS"
+            ) from error
         return dms
+
+    def dms_to_dd(self, argin: str) -> str:
+        """This method converts the give angle in degree, minutes, seconds to
+        decimal degrees.
+
+        :param argin: Input angle in D:M:S
+        :dtype: str, example -> 30:42:46.5307
+
+        :return: Angle in degree decimals.
+        :rtype: str, example -> 30.7129252.
+
+        :raises: ConversionError if the conversion fails.
+        """
+        try:
+            obj = re.split(":", argin)
+            dd = float(obj[0]) + float(obj[1]) / 60 + float(obj[2]) / 3600
+        except Exception as error:
+            logger.error(
+                "Error occured while converting %s to Degree decimals : %s",
+                argin,
+                error,
+            )
+            raise ConversionError(
+                f"Error while converting {argin} to Degree Decimals"
+            ) from error
+        return str(dd)
 
     def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the
