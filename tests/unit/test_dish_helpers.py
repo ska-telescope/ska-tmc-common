@@ -13,7 +13,7 @@ from ska_tmc_common import DishHelper
     ],
 )
 def test_dd_to_dms(dd: float, expected_dms: str):
-    """Test the degree decimal to DMS conversion."""
+    """Test the degree decimal to Degrees:Minutes:Seconds conversion."""
     dish_helper = DishHelper()
     dms = dish_helper.dd_to_dms(dd)
     assert dms == expected_dms
@@ -28,7 +28,7 @@ def test_dd_to_dms(dd: float, expected_dms: str):
     ],
 )
 def test_dms_to_dd(dms: str, expected_dd: str):
-    """Test the DMS to degree decimal conversion."""
+    """Test the Degrees:Minutes:Seconds to degree decimal conversion."""
     dish_helper = DishHelper()
     dd = dish_helper.dms_to_dd(dms)
     dd = str(round(float(dd), 7))
@@ -44,7 +44,7 @@ def test_dms_to_dd(dms: str, expected_dd: str):
     ],
 )
 def test_dd_to_hms(dd: float, expected_hms: str):
-    """Test the DMS to degree decimal conversion."""
+    """Test the Hours:Minutes:Seconds to degree decimal conversion."""
     dish_helper = DishHelper()
     hms = dish_helper.dd_to_hms(dd)
     assert hms == expected_hms

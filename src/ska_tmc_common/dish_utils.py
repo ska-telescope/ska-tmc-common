@@ -97,7 +97,7 @@ class DishHelper:
         return str(dms)
 
     def dms_to_dd(self, argin: str) -> str:
-        """This method converts the give angle in degree, minutes, seconds to
+        """This method converts the give angle in Degrees:Minutes:Seconds to
         decimal degrees.
 
         :param argin: Input angle in D:M:S
