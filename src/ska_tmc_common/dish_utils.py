@@ -77,15 +77,17 @@ class DishHelper:
         :return: Number in deg:min:sec format.
             Example: 30:42:46.5307 is returned value for input 30.7129252.
         """
-        dms = ""  # degree:minutes:seconds
+        dms_str = ""  # degree:minutes:seconds
         try:
             sign = 1
             if argin < 0:
                 sign = -1
-            frac_min, degrees = math.modf(abs(argin))
-            frac_sec, minutes = math.modf(frac_min * 60)
-            seconds = frac_sec * 60
-            dms = f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
+            fraction_min, degrees = math.modf(abs(argin))
+            fraction_sec, minutes = math.modf(fraction_min * 60)
+            seconds = fraction_sec * 60
+            dms_str = (
+                f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
+            )
         except SyntaxError as error:
             logger.error(
                 "Error while converting decimal degree to deg:min:sec -> %s",
@@ -94,7 +96,7 @@ class DishHelper:
             raise ConversionError(
                 f"Error while converting {argin} to Degree:Minutes:Seconds"
             ) from error
-        return str(dms)
+        return str(dms_str)
 
     def degree_minute_seconds_to_degree(self, argin: str) -> str:
         """This method converts the give angle in Degrees:Minutes:Seconds to
@@ -109,11 +111,19 @@ class DishHelper:
         :raises: ConversionError if the conversion fails.
         """
         try:
-            obj = re.split(":", argin)
-            if float(obj[0]) < 0:
-                dd = float(obj[0]) - float(obj[1]) / 60 - float(obj[2]) / 3600
+            dms_list = re.split(":", argin)
+            if float(dms_list[0]) < 0:
+                degree_decimals = (
+                    float(dms_list[0])
+                    - float(dms_list[1]) / 60
+                    - float(dms_list[2]) / 3600
+                )
             else:
-                dd = float(obj[0]) + float(obj[1]) / 60 + float(obj[2]) / 3600
+                degree_decimals = (
+                    float(dms_list[0])
+                    + float(dms_list[1]) / 60
+                    + float(dms_list[2]) / 3600
+                )
         except Exception as error:
             logger.error(
                 "Error occured while converting %s to Degree decimals : %s",
@@ -123,7 +133,7 @@ class DishHelper:
             raise ConversionError(
                 f"Error while converting {argin} to Degree Decimals"
             ) from error
-        return str(dd)
+        return str(degree_decimals)
 
     def degree_to_hour_minute_seconds(self, argin: float) -> str:
         """
@@ -135,10 +145,12 @@ class DishHelper:
             Example: 2:31:50.88 is returned value for input 37.96199884.
         """
         try:
-            frac, ra_hours = math.modf(argin / 15.0)
-            frac, ra_minutes = math.modf(frac * 60)
-            ra_seconds = frac * 60
-            hms = f"{int(ra_hours)}:{int(ra_minutes)}:{round(ra_seconds,2)}"
+            fractions, ra_hours = math.modf(argin / 15.0)
+            fractions, ra_minutes = math.modf(fractions * 60)
+            ra_seconds = fractions * 60
+            hours_minutes_seconds = (
+                f"{int(ra_hours)}:{int(ra_minutes)}:{round(ra_seconds,2)}"
+            )
         except SyntaxError as error:
             logger.error(
                 "Error while converting decimal degree to HH:MM:SS -> %s",
@@ -147,7 +159,7 @@ class DishHelper:
             raise ConversionError(
                 f"Error while converting {argin} to Hours:Minutes:Seconds"
             ) from error
-        return hms
+        return hours_minutes_seconds
 
     def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the
