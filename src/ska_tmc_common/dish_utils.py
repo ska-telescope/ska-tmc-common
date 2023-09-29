@@ -134,7 +134,6 @@ class DishHelper:
         :return: Number in Hours:Minutes:Seconds format.
             Example: 2:31:50.88 is returned value for input 37.96199884.
         """
-        hms = ""  # hours:minutes:seconds
         try:
             frac, ra_hours = math.modf(argin / 15.0)
             frac, ra_minutes = math.modf(frac * 60)
@@ -148,7 +147,7 @@ class DishHelper:
             raise ConversionError(
                 f"Error while converting {argin} to Hours:Minutes:Seconds"
             ) from error
-        return str(hms)
+        return hms
 
     def get_dish_antennas_list(self):
         """This method returns the antennas list.It gets the
