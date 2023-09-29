@@ -22,6 +22,10 @@ class InvalidObsStateError(ValueError):
     allow to invoke the command as per SKA state model"""
 
 
+class ConversionError(ValueError):
+    """Raised when the conversion from one unit to another fails."""
+
+
 class ResourceReassignmentError(Exception):
     """Raised when the resource is already assigned to another subarray"""
 

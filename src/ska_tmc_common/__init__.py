@@ -41,6 +41,7 @@ from .enum import (
 from .event_receiver import EventReceiver
 from .exceptions import (
     CommandNotAllowed,
+    ConversionError,
     DeviceUnresponsive,
     InvalidJSONError,
     InvalidObsStateError,
@@ -129,6 +130,7 @@ __all__ = [
     "DeviceUnresponsive",
     "SubarrayNotPresentError",
     "InvalidReceptorIdError",
+    "ConversionError",
     "InputParameter",
     "BaseLivelinessProbe",
     "MultiDeviceLivelinessProbe",
