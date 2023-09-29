@@ -88,7 +88,7 @@ class DishHelper:
             dms_str = (
                 f"{int(degrees * sign)}:{int(minutes)}:{round(seconds, 4)}"
             )
-        except SyntaxError as error:
+        except Exception as error:
             logger.error(
                 "Error while converting decimal degree to deg:min:sec -> %s",
                 error,
@@ -151,7 +151,7 @@ class DishHelper:
             hours_minutes_seconds = (
                 f"{int(ra_hours)}:{int(ra_minutes)}:{round(ra_seconds,2)}"
             )
-        except SyntaxError as error:
+        except Exception as error:
             logger.error(
                 "Error while converting decimal degree to HH:MM:SS -> %s",
                 error,
