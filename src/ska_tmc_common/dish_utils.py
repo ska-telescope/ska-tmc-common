@@ -68,7 +68,7 @@ class DishHelper:
         antenna_param.antenna_station_name = antenna_params["station_label"]
         return antenna_param
 
-    def dd_to_dms(self, argin: float) -> str:
+    def degree_to_degree_minute_seconds(self, argin: float) -> str:
         """
         Converts a number in degree decimal to Deg:Min:Sec.
 
@@ -96,7 +96,7 @@ class DishHelper:
             ) from error
         return str(dms)
 
-    def dms_to_dd(self, argin: str) -> str:
+    def degree_minute_seconds_to_degree(self, argin: str) -> str:
         """This method converts the give angle in Degrees:Minutes:Seconds to
         decimal degrees.
 
@@ -125,7 +125,7 @@ class DishHelper:
             ) from error
         return str(dd)
 
-    def dd_to_hms(self, argin: float) -> str:
+    def degree_to_hour_minute_seconds(self, argin: float) -> str:
         """
         Converts a number in degree decimal to Hours:Minutes:Seconds
 
@@ -166,8 +166,8 @@ class DishHelper:
                 )
 
                 input_to_antenna = f"{receptor_params.antenna_station_name},\
-                        {self.dd_to_dms(receptor_params.antenna_location.latitude)},\
-                            {self.dd_to_dms(receptor_params.antenna_location.longitude)},\
+                        {self.degree_to_degree_minute_seconds(receptor_params.antenna_location.latitude)},\
+                            {self.degree_to_degree_minute_seconds(receptor_params.antenna_location.longitude)},\
                                 {receptor_params.antenna_location.height},\
                                     {receptor_params.dish_diameter}"
                 antennas.append(katpoint.Antenna(input_to_antenna))

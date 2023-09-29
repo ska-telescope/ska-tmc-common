@@ -15,7 +15,7 @@ Welcome to ska-tmc-common documentation!
 .. toctree::
    :maxdepth: 3
    :caption: Tango Classes[deprecated]
-   
+
    TangoClasses/index
 
 .. toctree::
@@ -35,7 +35,7 @@ Welcome to ska-tmc-common documentation!
    :caption: Liveliness Probe
 
    liveliness_probe
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: Event Receiver
@@ -53,13 +53,19 @@ Welcome to ska-tmc-common documentation!
    :caption: TMC Command
 
    tmc_command
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: TMC Component Manager
 
    tmc_component_manager
-   
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Dish Utils
+
+   dish_utils
+
 Indices and tables
 ==================
 

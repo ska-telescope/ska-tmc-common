@@ -12,10 +12,10 @@ from ska_tmc_common import DishHelper
         pytest.param(2.4871655, "2:29:13.7958"),
     ],
 )
-def test_dd_to_dms(dd: float, expected_dms: str):
+def test_degree_to_degree_minute_seconds(dd: float, expected_dms: str):
     """Test the degree decimal to Degrees:Minutes:Seconds conversion."""
     dish_helper = DishHelper()
-    dms = dish_helper.dd_to_dms(dd)
+    dms = dish_helper.degree_to_degree_minute_seconds(dd)
     assert dms == expected_dms
 
 
@@ -27,10 +27,10 @@ def test_dd_to_dms(dd: float, expected_dms: str):
         pytest.param("2:29:13.7958", "2.4871655"),
     ],
 )
-def test_dms_to_dd(dms: str, expected_dd: str):
+def test_degree_minute_seconds_to_degree(dms: str, expected_dd: str):
     """Test the Degrees:Minutes:Seconds to degree decimal conversion."""
     dish_helper = DishHelper()
-    dd = dish_helper.dms_to_dd(dms)
+    dd = dish_helper.degree_minute_seconds_to_degree(dms)
     dd = str(round(float(dd), 7))
     assert dd == expected_dd
 
@@ -43,8 +43,8 @@ def test_dms_to_dd(dms: str, expected_dd: str):
         pytest.param(342.717625, "22:50:52.23"),
     ],
 )
-def test_dd_to_hms(dd: float, expected_hms: str):
+def test_degree_to_hour_minute_seconds(dd: float, expected_hms: str):
     """Test the Hours:Minutes:Seconds to degree decimal conversion."""
     dish_helper = DishHelper()
-    hms = dish_helper.dd_to_hms(dd)
+    hms = dish_helper.degree_to_hour_minute_seconds(dd)
     assert hms == expected_hms
