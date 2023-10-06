@@ -26,7 +26,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
     def is_On_allowed(self) -> bool:
         """
-        This method checks if the On Command is allowed in current state.
+        This method checks if the On command is allowed in current state.
         :rtype: bool
         """
         if self.defective_params["enabled"]:
