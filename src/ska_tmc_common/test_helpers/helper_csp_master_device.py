@@ -26,7 +26,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
     def is_On_allowed(self) -> bool:
         """
-        This method checks if the On Command is allowed in current State.
+        This method checks if the On Command is allowed in current state.
         :rtype: bool
         """
         if self.defective_params["enabled"]:
@@ -38,7 +38,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
+        self.logger.info("On command is allowed")
         return True
 
     @command(
@@ -67,7 +67,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
     def is_Off_allowed(self) -> bool:
         """
-        This method checks if the Off Command is allowed in current State.
+        This method checks if the Off command is allowed in current state.
         :rtype: bool
         """
         if self.defective_params["enabled"]:
@@ -79,7 +79,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off Command is allowed")
+        self.logger.info("Off command is allowed")
         return True
 
     @command(
@@ -108,7 +108,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
     def is_Standby_allowed(self) -> bool:
         """
-        This method checks if the Standby Command is allowed in current State.
+        This method checks if the Standby command is allowed in current state.
         :rtype: bool
         """
         if self.defective_params["enabled"]:
@@ -120,7 +120,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
+        self.logger.info("On command is allowed")
         return True
 
     @command(

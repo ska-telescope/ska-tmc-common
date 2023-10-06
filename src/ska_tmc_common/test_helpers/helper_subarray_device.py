@@ -559,7 +559,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
+        self.logger.info("On command is allowed")
         return True
 
     @command(
@@ -600,7 +600,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off Command is allowed")
+        self.logger.info("Off command is allowed")
         return True
 
     def induce_fault(
@@ -742,7 +742,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Standby Command is allowed")
+        self.logger.info("Standby command is allowed")
         return True
 
     @command(
@@ -900,7 +900,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources Command is allowed")
+        self.logger.info("ReleaseAllResources command is allowed")
         return True
 
     @command(
