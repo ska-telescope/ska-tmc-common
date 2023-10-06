@@ -266,6 +266,10 @@ class HelperBaseDevice(SKABaseDevice):
         self._raise_exception = value
 
     def is_On_allowed(self) -> bool:
+        """
+        This method checks if the On Command is allowed in current State.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -283,7 +287,10 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        """ON Command"""
+        """
+        This method invokes On command
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -294,13 +301,13 @@ class HelperBaseDevice(SKABaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off Command is allowed in current State.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -318,7 +325,10 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        """OFF Command"""
+        """
+        This method invokes Off command
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke Off command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -329,12 +339,13 @@ class HelperBaseDevice(SKABaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
-            return [ResultCode.OK], [""]
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
+        """
+        This method checks if the Standby Command is allowed in current State.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -349,7 +360,10 @@ class HelperBaseDevice(SKABaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
-        """StandBy Command"""
+        """
+        This method invokes Standby command
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke Standby command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -359,14 +373,14 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command completed.")
-            return [ResultCode.OK], [""]
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+            self.logger.info("Standy command completed.")
+        return [ResultCode.OK], [""]
 
     def is_disable_allowed(self) -> bool:
-        "Checks if disable command is allowed"
+        """
+        This method checks if the Disable Command is allowed in current State.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -385,22 +399,19 @@ class HelperBaseDevice(SKABaseDevice):
     )
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        It sets the DevState to disable.
+        This method invokes Disable command
         :rtype: Tuple
         """
         if self.defective_params["enabled"]:
             return self.induce_fault(
-                "Off",
+                "Disable",
             )
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command completed.")
-            return [ResultCode.OK], ["Disable command invoked on SDP Master"]
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+            self.logger.info("Disable command completed.")
+        return [ResultCode.OK], ["Disable command invoked on SDP Master"]
 
 
 # ----------
