@@ -17,10 +17,7 @@ COMMANDS = [
     "SetOperateMode",
     "SetStowMode",
     "Off",
-    "Slew",
-    "Scan",
     "AbortCommands",
-    "Reset",
     "Configure",
     "ConfigureBand1",
     "ConfigureBand2",
@@ -35,10 +32,7 @@ COMMANDS_WITHOUT_INPUT = [
     "SetOperateMode",
     "SetStowMode",
     "Off",
-    "Slew",
-    "Scan",
     "AbortCommands",
-    "Reset",
 ]
 COMMANDS_WITH_INPUT = [
     "Configure",
@@ -59,11 +53,16 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
-def test_state_transition(tango_context):
+def test_desired_pointing(tango_context):
     dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(DISH_DEVICE)
-    subarray_device.AddTransition('[["TRACK", 0.1]]')
-    assert subarray_device.obsStateTransitionDuration == '[["TRACK", 0.1]]'
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    assert dish_device.desiredPointing == "[]"
+    dish_device.desiredPointing = json.dumps(
+        ["2019-02-19 06:01:00", 287.2504396, 77.8694392]
+    )
+    assert dish_device.desiredPointing == json.dumps(
+        ["2019-02-19 06:01:00", 287.2504396, 77.8694392]
+    )
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
