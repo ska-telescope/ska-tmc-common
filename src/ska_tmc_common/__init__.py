@@ -69,6 +69,7 @@ from .test_helpers.helper_csp_subarray_leaf_device import (
     HelperCspSubarrayLeafDevice,
 )
 from .test_helpers.helper_dish_device import HelperDishDevice
+from .test_helpers.helper_dish_ln_device import HelperDishLNDevice
 from .test_helpers.helper_mccs_controller_device import HelperMCCSController
 from .test_helpers.helper_mccs_master_leaf_node_device import (
     HelperMCCSMasterLeafNode,
@@ -154,6 +155,7 @@ __all__ = [
     "EmptyComponentManager",
     "HelperDishDevice",
     "HelperBaseDevice",
+    "HelperDishLNDevice",
     "HelperMCCSController",
     "HelperMCCSMasterLeafNode",
     "HelperSubArrayDevice",

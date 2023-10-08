@@ -51,6 +51,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
+        self._pointing_calibrations = []
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = (
@@ -76,6 +77,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event("healthState", True, False)
+            self._device.set_change_event("pointingCalibrations", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
@@ -89,6 +91,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
+    pointingCalibrations = attribute(
+        dtype=str, access=AttrWriteType.READ_WRITE
+    )
+
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
@@ -96,6 +102,26 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
         return self._delay
+
+    def read_pointingCalibrations(self) -> str:
+        """This method is used to read the attribute value for
+        pointingCalibrations."""
+        return json.dumps(self._pointing_calibrations)
+
+    def write_pointingCalibrations(self, value) -> None:
+        """This method is used to write the attribute value for
+        pointingCalibrations."""
+        cross_el, el = json.loads(value)
+        self.logger.info(
+            "The pointing corrections for cross elevation and elevation are: "
+            + "%s, %s",
+            cross_el,
+            el,
+        )
+        self._pointing_calibrations = [cross_el, el]
+        self.push_change_event(
+            "pointingCalibrations", json.dumps(self._pointing_calibrations)
+        )
 
     def read_receiveAddresses(self):
         """Returns receive addresses."""
