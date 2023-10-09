@@ -1,6 +1,7 @@
 # pylint: disable=C0302
 """
-This module implements the Helper Dish Device for testing an integrated TMC
+This module implements the Helper Dish Leaf Node Device for testing an
+integrated TMC.
 """
 import json
 import time
@@ -33,7 +34,9 @@ from .constants import (
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument,too-many-public-methods
 class HelperDishLNDevice(HelperBaseDevice):
-    """A device exposing commands and attributes of the Dish device."""
+    """A device exposing commands and attributes of the Dish Leaf Node
+    device.
+    """
 
     def init_device(self):
         super().init_device()
@@ -50,7 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing = []
 
     class InitCommand(SKABaseDevice.InitCommand):
-        """A class for the HelperDishDevice's init_device() command."""
+        """A class for the HelperDishLNDevice's init_device() command."""
 
         def do(self) -> Tuple[ResultCode, str]:
             """
@@ -97,9 +100,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._offset["off_el"] = elevation
 
     def read_commandCallInfo(self):
-        """This method is used to read the attribute value for
-        commandCallInfo.
-        """
+        """This method is used to read the attribute value for commandCallInfo."""
         return self._command_call_info
 
     def read_commandDelayInfo(self) -> str:
@@ -304,7 +305,7 @@ class HelperDishLNDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetOperativeMode Command is allowed")
+        self.logger.info("SetOperateMode Command is allowed")
         return True
 
     @command(

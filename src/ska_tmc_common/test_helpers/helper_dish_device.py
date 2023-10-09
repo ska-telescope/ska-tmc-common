@@ -335,7 +335,7 @@ class HelperDishDevice(HelperDishLNDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetOperativeMode Command is allowed")
+        self.logger.info("SetOperateMode Command is allowed")
         return True
 
     @command(
