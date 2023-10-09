@@ -19,6 +19,7 @@ COMMANDS = [
     "Off",
     "AbortCommands",
     "Configure",
+    "Scan",
 ]
 COMMANDS_WITHOUT_INPUT = [
     "SetStandbyFPMode",
@@ -27,6 +28,7 @@ COMMANDS_WITHOUT_INPUT = [
     "SetStowMode",
     "Off",
     "AbortCommands",
+    "Scan",
 ]
 COMMANDS_WITH_INPUT = [
     "Configure",

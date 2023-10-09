@@ -20,6 +20,7 @@ from .constants import (
     CONFIGURE,
     OFF,
     RESTART,
+    SCAN,
     SET_OPERATE_MODE,
     SET_STANDBY_FP_MODE,
     SET_STANDBY_LP_MODE,
@@ -662,44 +663,43 @@ class HelperDishLNDevice(HelperBaseDevice):
     #     # TBD: Dish mode change
     #     return ([ResultCode.OK], [""])
 
-    # def is_Scan_allowed(self) -> bool:
-    #     """
-    #     This method checks if the Scan Command is allowed in current State.
-    #     :rtype:bool
-    #     """
-    #     if self.defective_params["enabled"]:
-    #         if (
-    #             self.defective_params["fault_type"]
-    #             == FaultType.COMMAND_NOT_ALLOWED
-    #         ):
-    #             self.logger.info(
-    #                 "Device is defective, cannot process command."
-    #             )
-    #             raise CommandNotAllowed(
-    #               self.defective_params["error_message"]
-    #             )
-    #     self.logger.info("Scan Command is allowed")
-    #     return True
+    def is_Scan_allowed(self) -> bool:
+        """
+        This method checks if the Scan Command is allowed in current State.
+        :rtype:bool
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Scan Command is allowed")
+        return True
 
-    # @command(
-    #     dtype_in=("DevVoid"),
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def Scan(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes Scan command on Dish Master
-    #     """
-    #     self.logger.info("Processing Scan Command")
-    #     # to record the command data
-    #     self.update_command_info(SCAN)
-    #     if self.defective_params["enabled"]:
-    #         return self.induce_fault("Scan")
+    @command(
+        dtype_in=("DevVoid"),
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Scan command on Dish Master
+        """
+        self.logger.info("Processing Scan Command")
+        # to record the command data
+        self.update_command_info(SCAN)
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Scan")
 
-    #         # TBD: Add your dish mode change logic here if required
-    #     self.logger.info("Processing Scan")
-    #     return ([ResultCode.OK], [""])
+            # TBD: Add your dish mode change logic here if required
+        self.logger.info("Processing Scan")
+        return ([ResultCode.OK], [""])
 
+    # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Reset_allowed(self) -> bool:
     #     """
     #     This method checks if the Reset command is allowed in current State.
