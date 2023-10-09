@@ -529,9 +529,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Configure command completed.")
         return [ResultCode.OK], [""]
 
-    def is_TrackStaticLoadOff_allowed(self) -> bool:
+    def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
-        This method checks if the TrackStaticLoadOff command is allowed in
+        This method checks if the TrackLoadStaticOff command is allowed in
         current State.
         :rtype: bool
         """
@@ -544,7 +544,7 @@ class HelperDishLNDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("TrackStaticLoadOff Command is allowed")
+        self.logger.info("TrackLoadStaticOff Command is allowed")
         return True
 
     @command(
@@ -552,26 +552,26 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def TrackStaticLoadOff(
+    def TrackLoadStaticOff(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes TrackStaticLoadOff command on  Dish Master
+        This method invokes TrackLoadStaticOff command on  Dish Master
         """
         self.logger.info(
-            "Instructed Dish simulator to invoke TrackStaticLoadOff command"
+            "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("TrackStaticLoadOff")
+            return self.induce_fault("TrackLoadStaticOff")
 
         # Set offsets.
         input_offsets = json.loads(argin)
         cross_elevation = input_offsets[0]
         elevation = input_offsets[1]
         self.set_offset(cross_elevation, elevation)
-        self.push_command_result(ResultCode.OK, "TrackStaticLoadOff")
-        self.logger.info("TrackStaticLoadOff command completed.")
+        self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
+        self.logger.info("TrackLoadStaticOff command completed.")
         return ([ResultCode.OK], [""])
 
     def update_command_info(
