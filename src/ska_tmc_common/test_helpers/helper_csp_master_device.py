@@ -25,6 +25,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self._obs_state = ObsState.EMPTY
 
     def is_On_allowed(self) -> bool:
+        """
+        This method checks if the On command is allowed in current state.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -34,7 +38,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
+        self.logger.info("On command is allowed")
         return True
 
     @command(
@@ -44,6 +48,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes On command on CSP Master
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -55,12 +63,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-            return [ResultCode.OK], [""]
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off command is allowed in current state.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -70,7 +79,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off Command is allowed")
+        self.logger.info("Off command is allowed")
         return True
 
     @command(
@@ -80,6 +89,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Off command on CSP Master
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -91,14 +104,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
-        self.logger.info("Instructed simulator to invoke Standby command")
+        """
+        This method checks if the Standby command is allowed in current state.
+        :rtype: bool
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -108,7 +120,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
+        self.logger.info("On command is allowed")
         return True
 
     @command(
@@ -118,6 +130,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Standby command on CSP Master
+        :rtype: Tuple
+        """
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -128,11 +144,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standby command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return [ResultCode.OK], [""]
 
 
 # ----------
