@@ -463,7 +463,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             args,
             kwargs,
         )
-        self._device: DeviceInfo  # It should be an object of DeviceInfo class
+        self._device = None
         self.start_liveliness_probe(_liveliness_probe)
         self.start_event_receiver()
 

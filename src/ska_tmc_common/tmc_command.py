@@ -361,7 +361,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
 
     def call_adapter_method(
         self, device: str, adapter, command_name: str, argin=None
-    ) -> Tuple[ResultCode, str]:
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         Method to invoke commands on device adapters.
         """

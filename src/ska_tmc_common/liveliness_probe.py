@@ -136,7 +136,7 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                     )
                 else:
                     try:
-                        if dev_info is None:
+                        if dev_info.dev_name is None:
                             continue
                         executor.submit(self.device_task, dev_info)
                     except Exception as exp_msg:
