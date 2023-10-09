@@ -28,12 +28,12 @@ def test_stop():
 
 
 def test_stop_ln(dev_name):
+    device = DishDeviceInfo(dev_name)
     cm = TmcLeafNodeComponentManager(
         logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
-    device = DishDeviceInfo(dev_name)
     cm._device = device
-
+    assert cm._device.dev_name == dev_name
     assert cm.liveliness_probe_object._thread.is_alive()
 
     cm.stop_liveliness_probe()
