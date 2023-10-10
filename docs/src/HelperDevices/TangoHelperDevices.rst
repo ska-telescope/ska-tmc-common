@@ -10,8 +10,8 @@ These Devices are used by multiple TMC repositories so kept in common repository
 Devices and their functionality
 -------------------------------
 
-This page contains all the helper devices used by TMC to mock behavior of sub-systems,leaf nodes or subarray device. 
-Each helper device exposes required API's similar to real device.   
+This page contains all the helper devices used by TMC to mock behavior of sub-systems,leaf nodes or subarray device.
+Each helper device exposes required API's similar to real device.
 
 
 Functionality
@@ -30,7 +30,7 @@ Few Functionality provided by the helper devices are as follows:
 
 - Fault Injection: To make devices faulty to check error handling in tango devices.
 
-- AddTransitions: This command will set duration for obs state such that whenrespective command for obs state is triggered then it change obs state 
+- AddTransitions: This command will set duration for obs state such that whenrespective command for obs state is triggered then it change obs state
 after provided duration.
 
 
@@ -103,11 +103,19 @@ Device List
    :undoc-members:
    :show-inheritance:
 
+9. Helper_Dish_LN_Device
+---------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_dish_ln_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_dish_ln_device.HelperDishLNDevice
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Conclusion
 -----------
 
-This module contain all helper devices required in TMC for testing and debugging  
+This module contain all helper devices required in TMC for testing and debugging
 
 
 
