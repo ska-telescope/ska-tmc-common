@@ -345,11 +345,13 @@ class DishAdapter(BaseAdapter):
         """
         return self._proxy.TrackStop()
 
-    def TrackLoadStaticOff(self) -> Tuple[List[ResultCode], List[str]]:
+    def TrackLoadStaticOff(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes TrackLoadStaticOff on device proxy.
         """
-        return self._proxy.TrackLoadStaticOff()
+        return self._proxy.TrackLoadStaticOff(argin)
 
     def Scan(self) -> Tuple[List[ResultCode], List[str]]:
         """

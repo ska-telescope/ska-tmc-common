@@ -559,7 +559,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes TrackLoadStaticOff command on  Dish Master
+        This method invokes TrackLoadStaticOff command on  Dish Master.
+
+        :param argin: A list containing scan_id/ time, cross elevation and
+            elevation offsets.
+        :argin dtype: str(List)
+        :rtype: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info(
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
