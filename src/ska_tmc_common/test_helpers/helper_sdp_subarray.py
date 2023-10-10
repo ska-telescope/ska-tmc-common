@@ -108,7 +108,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         pointingCalibrations."""
         return json.dumps(self._pointing_calibrations)
 
-    def write_pointingCalibrations(self, value) -> None:
+    def write_pointingCalibrations(self, value: str) -> None:
         """This method is used to write the attribute value for
         pointingCalibrations.
 

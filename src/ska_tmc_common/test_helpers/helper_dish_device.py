@@ -159,8 +159,18 @@ class HelperDishDevice(HelperDishLNDevice):
             self.push_change_event("pointingState", self._pointing_state)
             self.logger.info("Pointing State: %s", self._pointing_state)
 
-    def update_dish_mode(self, value, command_name: str = ""):
-        """Sets the dish mode back to original state."""
+    def update_dish_mode(
+        self, value: DishMode, command_name: str = ""
+    ) -> None:
+        """Sets the dish mode back to original state.
+
+        :param value: Dish Mode to update.
+        :value dtype: DishMode
+        :param command_name: Command name
+        :command_name dtype: str
+
+        :rtype: None
+        """
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
@@ -170,8 +180,18 @@ class HelperDishDevice(HelperDishLNDevice):
             )
         self.set_dish_mode(value)
 
-    def update_pointing_state(self, value, command_name):
-        """Sets the dish mode back to original state."""
+    def update_pointing_state(
+        self, value: PointingState, command_name: str
+    ) -> None:
+        """Sets the dish mode back to original state.
+
+        :param value: Pointing state to update.
+        :value dtype: PointingState
+        :param command_name: Command name
+        :command_name dtype: str
+
+        :rtype: None
+        """
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
