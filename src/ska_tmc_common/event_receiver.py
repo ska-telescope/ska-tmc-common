@@ -74,8 +74,8 @@ class EventReceiver:
                     for dev_info in self._component_manager.devices:
                         if dev_info.last_event_arrived is None:
                             executor.submit(self.subscribe_events, dev_info)
-                except Exception as x:
-                    self._logger.warning("Exception occurred: %s", x)
+                except Exception as e:
+                    self._logger.warning("Exception occurred: %s", e)
                 sleep(self._sleep_time)
 
     def subscribe_events(self, dev_info: DeviceInfo) -> None:
@@ -84,9 +84,9 @@ class EventReceiver:
         """
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
-        except Exception as x:
+        except Exception as e:
             self._logger.error(
-                "Exception occurred while creating proxy: %s", x
+                "Exception occurred while creating proxy: %s", e
             )
         else:
             try:
@@ -107,14 +107,14 @@ class EventReceiver:
                     "leaf" not in dev_info.dev_name
                 ):
                     proxy.subscribe_event(
-                        "ObsState",
+                        "obsState",
                         tango.EventType.CHANGE_EVENT,
                         self.handle_obs_state_event,
                         stateless=True,
                     )
-            except Exception as x:
+            except Exception as e:
                 self._logger.debug(
-                    "Event not working for device %s :%s", proxy.dev_name, x
+                    "Event not working for device %s :%s", proxy.dev_name, e
                 )
 
     def handle_health_state_event(self, event: tango.EventData) -> None:
