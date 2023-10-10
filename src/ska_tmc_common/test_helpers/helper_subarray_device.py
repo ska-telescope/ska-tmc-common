@@ -559,7 +559,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
+        self.logger.info("On command is allowed")
         return True
 
     @command(
@@ -567,23 +567,21 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
-        """ON Command"""
+        """
+        This method invokes On command on Subarray Device
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke On command")
         self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseAllResources",
+            return self.induce_fault(
+                "On",
             )
-        else:
-            if self.dev_state() != DevState.ON:
-                self.set_state(DevState.ON)
-                self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self.dev_state() != DevState.ON:
+            self.set_state(DevState.ON)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("On command completed.")
+        return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
         """
@@ -602,7 +600,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off Command is allowed")
+        self.logger.info("Off command is allowed")
         return True
 
     def induce_fault(
@@ -711,23 +709,21 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        """OFF Command"""
+        """
+        This method invokes Off command on Subarray Device
+        :rtype: Tuple
+        """
         self.logger.info("Instructed simulator to invoke Off command")
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseAllResources",
+            return self.induce_fault(
+                "Off",
             )
-        else:
-            if self.dev_state() != DevState.OFF:
-                self.set_state(DevState.OFF)
-                self.push_change_event("State", self.dev_state())
+        if self.dev_state() != DevState.OFF:
+            self.set_state(DevState.OFF)
+            self.push_change_event("State", self.dev_state())
             self.logger.info("Off completed")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -746,7 +742,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Standby Command is allowed")
+        self.logger.info("Standby command is allowed")
         return True
 
     @command(
@@ -762,19 +758,15 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke Standby command")
         self.update_command_info(STAND_BY, "")
         if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseAllResources",
+            return self.induce_fault(
+                "Standby",
             )
-        else:
-            if self.dev_state() != DevState.STANDBY:
-                self.set_state(DevState.STANDBY)
-                self.push_change_event("State", self.dev_state())
-            self.logger.info("Standby completed")
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+            self.push_change_event("State", self.dev_state())
+        self.logger.info("Standby completed")
+        return [ResultCode.OK], [""]
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -881,19 +873,15 @@ class HelperSubArrayDevice(SKASubarray):
         )
         self.update_command_info(RELEASE_RESOURCES, "")
         if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseAllResources",
+            return self.induce_fault(
+                "ReleaseResources",
             )
-        else:
-            if self._obs_state != ObsState.EMPTY:
-                self._obs_state = ObsState.EMPTY
-                self.push_change_event("obsState", self._obs_state)
-            self.logger.info("ReleaseResources command completed.")
-            return [ResultCode.OK], [""]
 
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self._obs_state != ObsState.EMPTY:
+            self._obs_state = ObsState.EMPTY
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("ReleaseResources command completed.")
+        return [ResultCode.OK], [""]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -912,7 +900,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources Command is allowed")
+        self.logger.info("ReleaseAllResources command is allowed")
         return True
 
     @command(
