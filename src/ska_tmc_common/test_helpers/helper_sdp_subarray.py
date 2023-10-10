@@ -110,15 +110,19 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     def write_pointingCalibrations(self, value) -> None:
         """This method is used to write the attribute value for
-        pointingCalibrations."""
-        cross_el, el = json.loads(value)
+        pointingCalibrations.
+
+        :param value: A list in json format containing cross elevation and \
+            elevation offsets along with scan id / time.
+        """
+        scan_id, cross_el, el = json.loads(value)
         self.logger.info(
             "The pointing corrections for cross elevation and elevation are: "
             + "%s, %s",
             cross_el,
             el,
         )
-        self._pointing_calibrations = [cross_el, el]
+        self._pointing_calibrations = [scan_id, cross_el, el]
         self.push_change_event(
             "pointingCalibrations", json.dumps(self._pointing_calibrations)
         )
