@@ -113,6 +113,7 @@ class HelperMCCSController(HelperBaseDevice):
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
         command_result = (command_id, json.dumps(result))
+        self.logger.info(f"command_result {command_result}")
         self.push_change_event("longRunningCommandResult", command_result)
 
     def update_lrcr(
