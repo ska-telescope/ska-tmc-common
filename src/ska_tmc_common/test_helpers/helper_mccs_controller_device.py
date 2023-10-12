@@ -103,6 +103,7 @@ class HelperMCCSController(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
+        self.logger.info("Allocate command started")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
