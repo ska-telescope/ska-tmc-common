@@ -78,7 +78,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event("pointing_offsets", True, False)
+            self._device.set_change_event("pointingOffsets", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
