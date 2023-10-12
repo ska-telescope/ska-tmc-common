@@ -402,7 +402,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             thread.start()
             self.push_command_result(ResultCode.OK, "AssignResources")
             self.logger.debug(
-                "AssignResources command invoked, obsState will transition to"
+                "AssignResources command invoked, obsState will transition to "
                 + "IDLE current obsState is %s",
                 self._obs_state,
             )
@@ -454,7 +454,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             thread.start()
             self.push_command_result(ResultCode.OK, "Configure")
             self.logger.debug(
-                "Configure command invoked, obsState will transition to"
+                "Configure command invoked, obsState will transition to "
                 + "READY current obsState is %s",
                 self._obs_state,
             )
@@ -584,7 +584,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "End")
         self.logger.debug(
-            "End command invoked, obsState will transition to"
+            "End command invoked, obsState will transition to "
             + "IDLE current obsState is %s",
             self._obs_state,
         )
@@ -671,7 +671,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "Abort")
         self.logger.debug(
-            "Abort command invoked, obsState will transition to"
+            "Abort command invoked, obsState will transition to "
             + "ABORTED current obsState is %s",
             self._obs_state,
         )
@@ -764,7 +764,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseAllResources")
         self.logger.debug(
-            "ReleaseAllResources command invoked, obsState will transition to"
+            "ReleaseAllResources command invoked, obsState will transition to "
             + "EMPTY current obsState is %s",
             self._obs_state,
         )
@@ -817,7 +817,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseResources")
         self.logger.debug(
-            "ReleaseResources command invoked, obsState will transition to"
+            "ReleaseResources command invoked, obsState will transition to "
             + "IDLE current obsState is %s",
             self._obs_state,
         )

@@ -824,7 +824,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
         self.logger.debug(
-            "AssignResources command invoked, obsState will transition to"
+            "AssignResources command invoked, obsState will transition to "
             + "IDLE current obsState is %s",
             self._obs_state,
         )
@@ -941,7 +941,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
         self.logger.debug(
-            "ReleaseAllResources command invoked, obsState will transition to"
+            "ReleaseAllResources command invoked, obsState will transition to "
             + "EMPTY current obsState is %s",
             self._obs_state,
         )
@@ -992,7 +992,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.logger.info("Starting Thread for configure")
             self._start_thread([ObsState.READY, CONFIGURE])
             self.logger.debug(
-                "Configure command invoked, obsState will transition to"
+                "Configure command invoked, obsState will transition to "
                 + "READY current obsState is %s",
                 self._obs_state,
             )
@@ -1217,7 +1217,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources Command is allowed")
+        self.logger.info("Abort Command is allowed")
         return True
 
     @command(
