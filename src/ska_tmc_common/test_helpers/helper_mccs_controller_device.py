@@ -119,18 +119,18 @@ class HelperMCCSController(HelperBaseDevice):
         self ,command_name: str = "" , command_id : str = ""
     ) -> None:
         """Updates the given data after a delay."""
-        delay_value = 0
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-
-            time.sleep(0.1)
-            self.push_command_result(command_id ,ResultCode.OK)
-            self.logger.info("Command result pushed")
+        # delay_value = 0
+        # with tango.EnsureOmniThread():
+        #     if command_name in self._command_delay_info:
+        #         delay_value = self._command_delay_info[command_name]
+        #     time.sleep(delay_value)
+        #     self.logger.info(
+        #         "Sleep %s for command %s ", delay_value, command_name
+        #     )
+        #
+        #     time.sleep(0.1)
+        self.push_command_result(command_id ,ResultCode.OK)
+        self.logger.info("Command result pushed")
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
