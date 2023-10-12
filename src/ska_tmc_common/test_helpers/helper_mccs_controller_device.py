@@ -191,7 +191,8 @@ class HelperMCCSController(HelperBaseDevice):
         )
 
 
-        return [ ResultCode.QUEUED, command_id ]
+        #return [ ResultCode.QUEUED, command_id ]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
         """
