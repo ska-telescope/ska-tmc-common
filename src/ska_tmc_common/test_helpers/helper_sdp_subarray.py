@@ -4,7 +4,6 @@ import json
 import logging
 import threading
 import time
-from time import sleep
 from typing import Tuple
 
 import tango
@@ -41,7 +40,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     def init_device(self):
         super().init_device()
-        self._delay = 2
+        self._delay = 5
         self._obs_state = ObsState.EMPTY
         self._defective = json.dumps(
             {
@@ -119,15 +118,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         cross_elevation = pointing_offsets_data[3]
         elevation_offset = pointing_offsets_data[5]
         self.logger.info(
-            "The pointing corrections for cross elevation and elevation are: "
+            "The pointing offsets for cross elevation and elevation are: "
             + "%s, %s",
             cross_elevation,
             elevation_offset,
         )
         self._pointing_offsets = [dish_id, cross_elevation, elevation_offset]
         # wait for sometime to reflect it on SDPLN attribute
-        sleep(5)
-        self.set_pointing_offsets()
+        thread = threading.Timer(
+            self._delay,
+            function=self.set_pointing_offsets,
+        )
+        thread.start()
 
     def read_receiveAddresses(self):
         """Returns receive addresses."""
