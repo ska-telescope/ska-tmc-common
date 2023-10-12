@@ -80,8 +80,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         )
         thread.start()
         self.logger.debug(
-            "AssignResources command invoked, obsState will transition to "
-            + "IDLE current obsState is %s",
+            "AssignResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
             self._obs_state,
         )
         return [ResultCode.OK], [""]
@@ -176,8 +176,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         )
         thread.start()
         self.logger.debug(
-            "ReleaseAllResources command invoked, obsState will transition to "
-            + "EMPTY current obsState is %s",
+            "ReleaseAllResources command invoked, obsState will transition to"
+            + "EMPTY, current obsState is %s",
             self._obs_state,
         )
         return [ResultCode.OK], [""]

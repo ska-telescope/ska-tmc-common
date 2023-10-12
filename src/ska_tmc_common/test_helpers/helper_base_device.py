@@ -217,6 +217,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(argin)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+            self.logger.info("Device obsState is set to %s", self.dev_state())
 
     @command(
         dtype_in=bool,
