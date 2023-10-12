@@ -91,9 +91,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
-    pointing_offsets = attribute(
-        dtype=str, access=AttrWriteType.READ_WRITE
-    )
+    pointing_offsets = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -141,13 +139,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return self._defective
 
     def set_pointing_offsets(self):
-        """"
+        """ "
         This method is to push the change event for pointing_offsets attribute
         """
-        self.push_change_event(
-                "pointing_offsets", self.set_pointing_offsets
-            )
-        
+        self.push_change_event("pointing_offsets", self.set_pointing_offsets)
+
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
     ) -> None:
