@@ -82,7 +82,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._defective
 
     def read_actualPointing(self) -> str:
-        """Read method for achieved pointing."""
+        """Read method for actual pointing."""
         return json.dumps(self._actual_pointing)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)

@@ -51,7 +51,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
-        self._pointing_calibrations = []
+        self._pointing_offsets = []
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = (
@@ -77,7 +77,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event("pointingCalibrations", True, False)
+            self._device.set_change_event("pointing_offsets", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
@@ -91,7 +91,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
-    pointingCalibrations = attribute(
+    pointing_offsets = attribute(
         dtype=str, access=AttrWriteType.READ_WRITE
     )
 
@@ -103,29 +103,30 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method is used to read the attribute value for delay."""
         return self._delay
 
-    def read_pointingCalibrations(self) -> str:
+    def read_pointing_offsets(self) -> str:
         """This method is used to read the attribute value for
-        pointingCalibrations."""
-        return json.dumps(self._pointing_calibrations)
+        pointing_offsets from QueueConnector SDP device."""
+        return json.dumps(self._pointing_offsets)
 
-    def write_pointingCalibrations(self, value: str) -> None:
+    def write_pointing_offsets(self, value: str) -> None:
         """This method is used to write the attribute value for
-        pointingCalibrations.
+        pointing_offsets for testing purpose.
 
         :param value: A list in json format containing cross elevation and \
             elevation offsets along with scan id / time.
         """
-        scan_id, cross_el, el = json.loads(value)
+        pointing_offsets_data = json.loads(value)
+        dish_id = pointing_offsets_data[0]
+        cross_elevation = pointing_offsets_data[3]
+        elevation_offset = pointing_offsets_data[5]
         self.logger.info(
             "The pointing corrections for cross elevation and elevation are: "
             + "%s, %s",
-            cross_el,
-            el,
+            cross_elevation,
+            elevation_offset,
         )
-        self._pointing_calibrations = [scan_id, cross_el, el]
-        self.push_change_event(
-            "pointingCalibrations", json.dumps(self._pointing_calibrations)
-        )
+        self._pointing_offsets = [dish_id, cross_elevation, elevation_offset]
+        self.set_pointing_offsets()
 
     def read_receiveAddresses(self):
         """Returns receive addresses."""
@@ -139,6 +140,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return self._defective
 
+    def set_pointing_offsets(self):
+        """"
+        This method is to push the change event for pointing_offsets attribute
+        """
+        self.push_change_event(
+                "pointing_offsets", self.set_pointing_offsets
+            )
+        
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
     ) -> None:
