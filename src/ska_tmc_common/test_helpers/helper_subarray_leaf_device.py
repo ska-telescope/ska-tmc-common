@@ -402,8 +402,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             thread.start()
             self.push_command_result(ResultCode.OK, "AssignResources")
             self.logger.debug(
-                "AssignResourse command is invoked and obsstate is \
-                transition to Resourcing"
+                "AssignResources command invoked, obsState will transition to"
+                + "IDLE current obsState is %s",
+                self._obs_state,
             )
         return [ResultCode.OK], [""]
 
@@ -453,8 +454,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             thread.start()
             self.push_command_result(ResultCode.OK, "Configure")
             self.logger.debug(
-                "Configure command is invoked and obsstate is transition to \
-                            to Configuring"
+                "Configure command invoked, obsState will transition to"
+                + "READY current obsState is %s",
+                self._obs_state,
             )
         return [ResultCode.OK], [""]
 
@@ -582,8 +584,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "End")
         self.logger.debug(
-            "END invoked obsstate is transition \
-                          to CONFIGURING"
+            "End command invoked, obsState will transition to"
+            + "IDLE current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -668,8 +671,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "Abort")
         self.logger.debug(
-            "ABORT invoked obsstate is transition \
-                          to ABORTING"
+            "Abort command invoked, obsState will transition to"
+            + "ABORTED current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -688,7 +692,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources Command is allowed")
+        self.logger.info("Restart Command is allowed")
         return True
 
     @command(
@@ -760,8 +764,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseAllResources")
         self.logger.debug(
-            "ReleaseAllResourse invoked obsstate is transition \
-                          to Resourcing"
+            "ReleaseAllResources command invoked, obsState will transition to"
+            + "EMPTY current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -812,8 +817,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "ReleaseResources")
         self.logger.debug(
-            "ReleaseResourse invoked obsstate is transition \
-                          to Resourcing"
+            "ReleaseResources command invoked, obsState will transition to"
+            + "IDLE current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 

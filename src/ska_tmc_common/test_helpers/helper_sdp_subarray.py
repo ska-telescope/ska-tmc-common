@@ -314,8 +314,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             thread.start()
             self.logger.debug(
-                "ReleaseResources invoked obsstate is transition \
-                          to Resourcing"
+                "ReleaseResources command invoked, obsState will transition to"
+                + "IDLE current obsState is %s",
+                self._obs_state,
             )
             self.push_command_result(ResultCode.OK, "ReleaseResources")
 
@@ -528,8 +529,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 )
                 thread.start()
                 self.logger.debug(
-                    "END invoked obsstate is transition \
-                        to Configuring"
+                    "End command invoked, obsState will transition to IDLE,"
+                    + "current obsState is %s",
+                    self._obs_state,
                 )
                 self.push_command_result(ResultCode.OK, "End")
 
@@ -606,8 +608,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             thread.start()
             self.logger.debug(
-                "Restarting invoked obsstate is transition \
-                          to RESTARTING"
+                "Restart command invoked, obsState will transition to EMPTY,"
+                + "current obsState is %s",
+                self._obs_state,
             )
             self.push_command_result(ResultCode.OK, "Restart")
 

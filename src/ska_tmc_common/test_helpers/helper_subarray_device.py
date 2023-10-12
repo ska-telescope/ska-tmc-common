@@ -806,7 +806,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(ASSIGN_RESOURCES, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
-                "ReleaseAllResources",
+                "AssignResources",
             )
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
@@ -824,8 +824,9 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
         self.logger.debug(
-            "AssignResourse invoked obsstate is transition \
-                          to Resourcing"
+            "AssignResources command invoked, obsState will transition to"
+            + "IDLE current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -940,8 +941,9 @@ class HelperSubArrayDevice(SKASubarray):
         )
         thread.start()
         self.logger.debug(
-            "ReleaseResources invoked obsstate is transition \
-                          to Resourcing"
+            "ReleaseAllResources command invoked, obsState will transition to"
+            + "EMPTY current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -990,8 +992,9 @@ class HelperSubArrayDevice(SKASubarray):
             self.logger.info("Starting Thread for configure")
             self._start_thread([ObsState.READY, CONFIGURE])
             self.logger.debug(
-                "Configure command invoked obsstate is transition \
-                            to CONFIGURING"
+                "Configure command invoked, obsState will transition to"
+                + "READY current obsState is %s",
+                self._obs_state,
             )
         return [ResultCode.OK], [""]
 
@@ -1030,7 +1033,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
-                "ReleaseAllResources",
+                "Scan",
             )
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
@@ -1071,7 +1074,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(
-                "ReleaseAllResources",
+                "EndScan",
             )
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
@@ -1120,12 +1123,8 @@ class HelperSubArrayDevice(SKASubarray):
             else:
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
-            self.logger.info("End command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self.logger.info("End command completed.")
+        return [ResultCode.OK], [""]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -1159,18 +1158,14 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke GoToIdle command")
         self.update_command_info(GO_TO_IDLE, "")
         if self.defective_params["enabled"]:
-            self.induce_fault(
-                "On",
+            return self.induce_fault(
+                "GoToIdle",
             )
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
-            self.logger.info("GoToIdle command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        self.logger.info("GoToIdle command completed.")
+        return [ResultCode.OK], [""]
 
     def is_ObsReset_allowed(self) -> bool:
         """
@@ -1197,19 +1192,14 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseAllResources",
+            return self.induce_fault(
+                "ObsReset",
             )
-        else:
-            if self._obs_state != ObsState.IDLE:
-                self._obs_state = ObsState.IDLE
-                self.push_change_event("obsState", self._obs_state)
-            self.logger.info("ObsReset command completed.")
-            return [ResultCode.OK], [""]
-
-        return [ResultCode.FAILED], [
-            "Device is defective, cannot process command."
-        ]
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("ObsReset command completed.")
+        return [ResultCode.OK], [""]
 
     def is_Abort_allowed(self) -> bool:
         """
