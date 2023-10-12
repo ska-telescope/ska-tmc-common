@@ -116,9 +116,12 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info(f"command_result {command_result}")
         self.push_change_event("longRunningCommandResult", command_result)
 
+    # def update_lrcr(
+    #     self ,command_name: str = "" , command_id : str = ""
+    # ) -> None:
     def update_lrcr(
-        self ,command_name: str = "" , command_id : str = ""
-    ) -> None:
+            self , command_id : str = ""
+        ) -> None:
         """Updates the given data after a delay."""
         # delay_value = 0
         # with tango.EnsureOmniThread():
