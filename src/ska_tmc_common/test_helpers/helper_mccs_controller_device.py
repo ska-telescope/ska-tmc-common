@@ -12,7 +12,7 @@ from tango.server import command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-
+import time
 
 # pylint: disable=attribute-defined-outside-init
 class HelperMCCSController(HelperBaseDevice):
@@ -69,6 +69,30 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting the raise exception value to : %s", value)
         self._raise_exception = value
 
+
+    def push_command_result(
+        self, result: ResultCode, command: str, exception: str = ""
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command: The command name for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
+        command_id = f"{time.time()}-{command}"
+        if exception:
+            command_result = (command_id, exception)
+            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (command_id, json.dumps(result))
+        self.push_change_event("longRunningCommandResult", command_result)
+
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
@@ -111,8 +135,13 @@ class HelperMCCSController(HelperBaseDevice):
             )
 
         if self._raise_exception:
+            self.logger.info("exception")
             return [ResultCode.QUEUED], [""]
+
+        # self.push_command_result(ResultCode.QUEUED, "AssignResources")
+        # self.logger.info("Command result pushed")
         self.logger.info("Allocate command complete")
+
         return [ResultCode.OK], ["Allocate command complete"]
 
     def is_Release_allowed(self) -> bool:
