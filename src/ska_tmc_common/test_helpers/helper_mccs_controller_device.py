@@ -112,8 +112,8 @@ class HelperMCCSController(HelperBaseDevice):
 
         if self._raise_exception:
             return [ResultCode.QUEUED], [""]
-        self.logger.debug("Allocate command complete")
-        return [ResultCode.OK], [""]
+        self.logger.info("Allocate command complete")
+        return [ResultCode.OK], ["Allocate command complete"]
 
     def is_Release_allowed(self) -> bool:
         """
