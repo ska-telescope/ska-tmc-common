@@ -145,7 +145,13 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """ "
         This method is to push the change event for pointing_offsets attribute
         """
-        self.push_change_event("pointingOffsets", self._pointing_offsets)
+        self.logger.info(
+            "Pointing Offsets [dish_id, cross_el, el_offset]: %s ",
+            self._pointing_offsets,
+        )
+        self.push_change_event(
+            "pointingOffsets", json.dumps(self._pointing_offsets)
+        )
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
