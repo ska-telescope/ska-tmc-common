@@ -4,6 +4,7 @@ import json
 import logging
 import threading
 import time
+from time import sleep
 from typing import Tuple
 
 import tango
@@ -91,7 +92,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
-    pointing_offsets = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
+    pointingOffsets = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -101,12 +102,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method is used to read the attribute value for delay."""
         return self._delay
 
-    def read_pointing_offsets(self) -> str:
+    def read_pointingOffsets(self) -> str:
         """This method is used to read the attribute value for
         pointing_offsets from QueueConnector SDP device."""
         return json.dumps(self._pointing_offsets)
 
-    def write_pointing_offsets(self, value: str) -> None:
+    def write_pointingOffsets(self, value: str) -> None:
         """This method is used to write the attribute value for
         pointing_offsets for testing purpose.
 
@@ -124,6 +125,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             elevation_offset,
         )
         self._pointing_offsets = [dish_id, cross_elevation, elevation_offset]
+        # wait for sometime to reflect it on SDPLN attribute
+        sleep(5)
         self.set_pointing_offsets()
 
     def read_receiveAddresses(self):
@@ -142,7 +145,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """ "
         This method is to push the change event for pointing_offsets attribute
         """
-        self.push_change_event("pointing_offsets", self.set_pointing_offsets)
+        self.push_change_event("pointingOffsets", self._pointing_offsets)
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
