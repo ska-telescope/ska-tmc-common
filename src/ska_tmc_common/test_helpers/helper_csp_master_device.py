@@ -120,7 +120,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On command is allowed")
+        self.logger.info("Standby command is allowed")
         return True
 
     @command(
