@@ -109,6 +109,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype: str
         """
         #command_id = f"{time.time()}-{command}"
+        self.logger.info("push_command_result started")
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
@@ -133,6 +134,7 @@ class HelperMCCSController(HelperBaseDevice):
         #     )
         #
         #     time.sleep(0.1)
+        self.logger.info("update_lrcr started")
         self.push_command_result(command_id ,ResultCode.OK)
         self.logger.info("Command result pushed")
     def is_Allocate_allowed(self) -> bool:
@@ -186,8 +188,6 @@ class HelperMCCSController(HelperBaseDevice):
         thread = threading.Thread(
             target=self.update_lrcr,
             args = ["Allocate",command_id]
-
-
         )
         thread.start()
         self.logger.info(
