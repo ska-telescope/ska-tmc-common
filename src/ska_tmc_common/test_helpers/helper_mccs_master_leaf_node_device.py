@@ -124,5 +124,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
+        if self.defective_params["enabled"]:
+            return self.induce_fault(
+                "ReleaseResources",
+            )
         self.logger.info("ReleaseResources command completed.")
         return [ResultCode.OK], [""]
