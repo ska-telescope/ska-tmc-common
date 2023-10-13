@@ -93,7 +93,7 @@ class HelperMCCSController(HelperBaseDevice):
 
 
     def push_command_result(
-        self, command_id: str ,result: ResultCode, command: str, exception: str = ""
+        self, command_id: str ,result: ResultCode,  exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
 
