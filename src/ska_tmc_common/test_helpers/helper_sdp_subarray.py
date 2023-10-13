@@ -40,7 +40,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     def init_device(self):
         super().init_device()
-        self._delay = 5
+        self._delay = 2
         self._obs_state = ObsState.EMPTY
         self._defective = json.dumps(
             {
@@ -138,14 +138,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
 
         pointing_offsets_data = json.loads(pointing_offsets)
+        self._pointing_offsets = pointing_offsets_data
+        self.push_change_event(
+            "pointingOffsets", json.dumps(self._pointing_offsets)
+        )
         self.logger.info(
             "The pointing offsets for cross elevation and elevation are: "
             + "%s",
             pointing_offsets_data,
-        )
-        self._pointing_offsets = pointing_offsets_data
-        self.push_change_event(
-            "pointingOffsets", json.dumps(self._pointing_offsets)
         )
 
     def read_receiveAddresses(self):
