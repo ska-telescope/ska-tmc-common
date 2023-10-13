@@ -91,7 +91,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
-    pointingOffsets = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
+    # The actual attribute names are not yet finalised,using as below for now.
+    pointingOffsets = attribute(dtype=str, access=AttrWriteType.READ)
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -103,33 +104,49 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     def read_pointingOffsets(self) -> str:
         """This method is used to read the attribute value for
-        pointing_offsets from QueueConnector SDP device."""
+        pointing_offsets from QueueConnector SDP device.
+        The string contains is an array of
+        lists with below values in each array:
+        [
+        Antenna_Name,Azimuth_Offset,Azimuth_Offset_Std,
+        Elevation_Offset,Elevation_Offset_Std,
+        CrossElevation_Offset,CrossElevation_Offset_Std,
+        Expected_Width_H,Expected_Width_VFitted_Width_H,
+        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
+        Fitted_Height,Fitted_Height_Std
+        ]
+        """
         return json.dumps(self._pointing_offsets)
 
-    def write_pointingOffsets(self, value: str) -> None:
+    @command(
+        dtype_in=str,
+        doc_in="Set pointing offsets",
+    )
+    def SetDirectPointingOffsets(self, pointing_offsets: str) -> None:
         """This method is used to write the attribute value for
         pointing_offsets for testing purpose.
-
-        :param value: A list in json format containing cross elevation and \
-            elevation offsets along with scan id / time.
+        :param pointing_offsets: The variable contains is an array of
+        lists with below values in each array:
+        [
+        Antenna_Name,Azimuth_Offset,Azimuth_Offset_Std,
+        Elevation_Offset,Elevation_Offset_Std,
+        CrossElevation_Offset,CrossElevation_Offset_Std,
+        Expected_Width_H,Expected_Width_VFitted_Width_H,
+        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
+        Fitted_Height,Fitted_Height_Std
+        ]
         """
-        pointing_offsets_data = json.loads(value)
-        dish_id = pointing_offsets_data[0]
-        cross_elevation = pointing_offsets_data[3]
-        elevation_offset = pointing_offsets_data[5]
+
+        pointing_offsets_data = json.loads(pointing_offsets)
         self.logger.info(
             "The pointing offsets for cross elevation and elevation are: "
-            + "%s, %s",
-            cross_elevation,
-            elevation_offset,
+            + "%s",
+            pointing_offsets_data,
         )
-        self._pointing_offsets = [dish_id, cross_elevation, elevation_offset]
-        # wait for sometime to reflect it on SDPLN attribute
-        thread = threading.Timer(
-            self._delay,
-            function=self.set_pointing_offsets,
+        self._pointing_offsets = pointing_offsets_data
+        self.push_change_event(
+            "pointingOffsets", json.dumps(self._pointing_offsets)
         )
-        thread.start()
 
     def read_receiveAddresses(self):
         """Returns receive addresses."""
@@ -142,18 +159,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :rtype: str
         """
         return self._defective
-
-    def set_pointing_offsets(self):
-        """ "
-        This method is to push the change event for pointing_offsets attribute
-        """
-        self.logger.info(
-            "Pointing Offsets [dish_id, cross_el, el_offset]: %s ",
-            self._pointing_offsets,
-        )
-        self.push_change_event(
-            "pointingOffsets", json.dumps(self._pointing_offsets)
-        )
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""

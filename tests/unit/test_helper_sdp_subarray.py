@@ -226,7 +226,5 @@ def test_pointing_offsets(tango_context):
     ]
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
-    sdp_subarray_device.pointingOffsets = json.dumps(POINTING_OFFSETS)
-    assert sdp_subarray_device.pointingOffsets == json.dumps(
-        ["SKA001", -7.090356031104502, -4.115211938625473]
-    )
+    sdp_subarray_device.SetDirectPointingOffsets(json.dumps(POINTING_OFFSETS))
+    assert sdp_subarray_device.pointingOffsets == json.dumps(POINTING_OFFSETS)
