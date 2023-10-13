@@ -143,8 +143,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             "pointingOffsets", json.dumps(self._pointing_offsets)
         )
         self.logger.info(
-            "The pointing offsets for cross elevation and elevation are: "
-            + "%s",
+            "Received pointing offsets are: " + "%s",
             pointing_offsets_data,
         )
 
