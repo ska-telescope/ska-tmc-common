@@ -233,15 +233,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :return: ``True`` if the command is allowed
         :rtype: boolean
         """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("AssignResources Command is allowed")
         return True
 
@@ -252,10 +243,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def AssignResources(self, argin):
         """This method invokes AssignResources command on SdpSubarray
         device."""
+        # Change obsState to RESOURCING as the command execution is started
+        self._obs_state = ObsState.RESOURCING
+        self.push_obs_state_event(self._obs_state)
+
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
+
+        # if eb_id not present in JSON, SDP Subarray remains in
+        # obsState=RESOURCING and raises exception
         if "eb_id" not in input["execution_block"]:
             self.logger.info("Missing eb_id in the AssignResources input json")
+
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing eb_id in the AssignResources input json",
@@ -263,20 +262,33 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "AssignResources",
+        # if resources not present in JSON, SDP Subarray moves to
+        # obsState=EMPTY and raises exception
+        if "resources" not in input:
+            self.logger.info(
+                "Missing resources in the AssignResources input json"
             )
-        else:
-            self._obs_state = ObsState.RESOURCING
+            self._obs_state = ObsState.EMPTY
             self.push_obs_state_event(self._obs_state)
-            thread = threading.Timer(
-                self._command_delay_info[ASSIGN_RESOURCES],
-                self.update_device_obsstate,
-                args=[ObsState.IDLE],
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing resources in the AssignResources input json",
+                "SdpSubarry.AssignResources()",
+                tango.ErrSeverity.ERR,
             )
-            thread.start()
-            self.push_command_result(ResultCode.OK, "AssignResources")
+
+        # if self.defective_params["enabled"]:
+        #     self.induce_fault(
+        #         "AssignResources",
+        #     )
+
+        thread = threading.Timer(
+            self._command_delay_info[ASSIGN_RESOURCES],
+            self.update_device_obsstate,
+            args=[ObsState.IDLE],
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "AssignResources")
 
     def is_ReleaseResources_allowed(self):
         """
