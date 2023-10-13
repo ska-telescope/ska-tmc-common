@@ -140,7 +140,6 @@ def test_get_or_create_csp_subarray_adapter(tango_context):
     )
     assert isinstance(csp_subarray_adapter, CspSubarrayAdapter)
 
-
 def test_call_adapter_method(tango_context):
     factory = AdapterFactory()
     subarray_adapter = factory.get_or_create_adapter(
@@ -157,7 +156,7 @@ def test_call_adapter_method(tango_context):
     result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
         HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources", ""
     )
-    assert result_code == ResultCode.OK
+    assert ResultCode(result_code) == ResultCode.OK
     assert message[0] == ""
 
 

@@ -205,7 +205,6 @@ def test_release_resources_defective(tango_context):
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
-@pytest.mark.R1
 def test_pointing_offsets(tango_context):
     POINTING_OFFSETS = [
         "SKA001",
