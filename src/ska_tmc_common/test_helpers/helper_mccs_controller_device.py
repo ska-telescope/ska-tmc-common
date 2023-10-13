@@ -187,7 +187,8 @@ class HelperMCCSController(HelperBaseDevice):
 
         thread = threading.Thread(
             target=self.update_lrcr,
-            args = ["Allocate",command_id]
+            #args = ["Allocate",command_id]
+            args=[command_id]
         )
         thread.start()
         self.logger.info(
