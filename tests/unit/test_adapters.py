@@ -157,7 +157,7 @@ def test_call_adapter_method(tango_context):
     result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
         HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources", ""
     )
-    assert ResultCode(result_code) == ResultCode.OK
+    assert result_code[0] == ResultCode.OK
     assert message[0] == ""
 
 
