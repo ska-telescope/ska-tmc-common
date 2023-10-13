@@ -140,6 +140,7 @@ def test_get_or_create_csp_subarray_adapter(tango_context):
     )
     assert isinstance(csp_subarray_adapter, CspSubarrayAdapter)
 
+
 def test_call_adapter_method(tango_context):
     factory = AdapterFactory()
     subarray_adapter = factory.get_or_create_adapter(
