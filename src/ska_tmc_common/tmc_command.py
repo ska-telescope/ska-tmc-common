@@ -234,6 +234,9 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread(timeout_id)
 
+                    value=state_function()
+                    self.logger.info(f"value :: {value}")
+                    self.logger.info(f" state_to_achieve:: {state_to_achieve}")
                     if state_function() == state_to_achieve:
                         self.logger.info(
                             "State change has occured, current state is %s",
