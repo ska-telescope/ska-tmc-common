@@ -28,14 +28,24 @@ def test_csp_command_defective(tango_context, command):
     assert message[0] == "Default exception."
 
 
-@pytest.mark.dish
-def test_csp_loaddishconfig(tango_context, json_factory):
+def test_csp_loadDishConfig_command(tango_context, json_factory):
+    """
+    This test case invokes command on csp master device
+    and checks whether the attributes are populated with
+    relevant json data or not.
+    """
     dev_factory = DevFactory()
     csp_master_device = dev_factory.get_device(CSP_DEVICE)
+
     input_json_str = json_factory("mid_cbf_param_file uri")
     return_code, _ = csp_master_device.LoadDishCfg(input_json_str)
+
     assert return_code == ResultCode.OK
     assert csp_master_device.sourceSysParam == input_json_str
-    output_json_str = json_factory("mid-layout")
-    output_json = json.load(output_json_str)
-    assert csp_master_device.sysParam == output_json
+
+    expected_json_str = json_factory("mid_cbf_initial_parameters")
+    expected_json = json.loads(expected_json_str)
+    sysParam = json.loads(csp_master_device.sysParam)
+
+    # comparing dictionary instead of strings to avoid the issues with whitespaces
+    assert expected_json == sysParam

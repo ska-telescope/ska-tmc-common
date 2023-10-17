@@ -134,10 +134,16 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
-@pytest.mark.dish
-def test_SetKValue_command_dish(tango_context):
+def test_dish_SetKValue_command(tango_context):
+    """
+    This test case invokes command on dish master device
+    and checks whether the attributes are populated with
+    relevant k value or not.
+    """
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+
     return_code, _ = dish_device.SetKValue(1)
     return_code[0] = ResultCode.OK
+
     assert dish_device.kValue == 1

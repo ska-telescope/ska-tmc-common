@@ -45,7 +45,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self._dish_mode = DishMode.STANDBY_LP
         self._desired_pointing = []
         self._achieved_pointing = []
-        self._kvalue = 0
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -58,7 +57,6 @@ class HelperDishDevice(HelperDishLNDevice):
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             self._device.set_change_event("achievedPointing", True, False)
-            self._device.set_change_event("kValue", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
@@ -66,14 +64,6 @@ class HelperDishDevice(HelperDishLNDevice):
     desiredPointing = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
-    kValue = attribute(dtype=int, access=AttrWriteType.READ)
-
-    def read_kValue(self):
-        """
-        This method reads the k value of the dish.
-        :rtype:int
-        """
-        return self._kvalue
 
     def read_pointingState(self) -> PointingState:
         """
@@ -488,31 +478,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "Track")
         self.logger.info("Track command completed.")
-        return ([ResultCode.OK], [""])
-
-    def is_SetKValue_allowed(self) -> bool:
-        """
-        This method checks if the SetKValue Command is allowed in current
-        State.
-        :rtype: bool
-        """
-        return True
-
-    @command(
-        dtype_in="DevLong",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetKValue(self, kValue: int) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes SetKValue command on  Dish Master.
-
-        :param argin: k value between range 1-2222.
-        :argin dtype: int
-        :rtype: Tuple[List[ResultCode], List[str]]
-        """
-        self._kvalue = kValue
-        self.push_change_event("kValue", self._kvalue)
         return ([ResultCode.OK], [""])
 
     def is_TrackStop_allowed(self) -> bool:

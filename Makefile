@@ -13,7 +13,7 @@ python-pre-publish:
 #DAR301 Missing "Yields" in Docstring: - yield
 #DAR401 Missing exception(s) in Raises section: -r Exception
 PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR301,DAR401,W503,E501
-MARK ?=dish
+MARK ?=
 PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE)
 
 # include makefile to pick up the standard Make targets, e.g., 'make build'
