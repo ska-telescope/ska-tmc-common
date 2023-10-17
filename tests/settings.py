@@ -11,6 +11,7 @@ from typing import Any, Callable, Optional, Tuple
 
 import tango
 from ska_control_model import ObsState
+from ska_ser_logging import configure_logging
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 
@@ -29,6 +30,7 @@ from ska_tmc_common import (
     TmcLeafNodeComponentManager,
 )
 
+configure_logging()
 logger = logging.getLogger(__name__)
 
 SLEEP_TIME = 0.5
@@ -164,6 +166,8 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
             self.device_info = DishDeviceInfo(dev_name, False)
         else:
             self.device_info = DeviceInfo(dev_name, False)
+
+        self._device = self.device_info
 
     def invoke_command(
         self, argin, task_callback: Callable

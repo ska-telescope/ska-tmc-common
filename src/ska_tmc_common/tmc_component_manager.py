@@ -465,7 +465,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         )
         self._device = None
         self.start_liveliness_probe(_liveliness_probe)
-        self.start_event_receiver()
 
     def reset(self) -> None:
         """
@@ -481,6 +480,14 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         :rtype: DeviceInfo
         """
         return self._device
+
+    @property
+    def devices(self) -> list:
+        """Returns the list of DeviceInfo objects for all the devices.
+
+        :rtype: List
+        """
+        return [self._device]
 
     def device_failed(self, exception: str) -> None:
         """
@@ -515,19 +522,26 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.ping = ping
 
-    def update_event_failure(self) -> None:
+    def update_event_failure(self, dev_name: str) -> None:
         """
         Update a monitored device failure status
+
+        :param dev_name: name of the device
+        :type dev_name: str
         """
         with self.lock:
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_health_state(self, health_state: HealthState) -> None:
+    def update_device_health_state(
+        self, dev_name: str, health_state: HealthState
+    ) -> None:
         """
         Update a monitored device health state
         aggregate the health states available
 
+        :param dev_name: name of the device
+        :type dev_name: str
         :param health_state: health state of the device
         :type health_state: HealthState
         """
@@ -536,12 +550,16 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_state(self, state: tango.DevState) -> None:
+    def update_device_state(
+        self, dev_name: str, state: tango.DevState
+    ) -> None:
         """
         Update a monitored device state,
         aggregate the states available
         and call the relative callbacks if available
 
+        :param dev_name: name of the device
+        :type dev_name: str
         :param state: state of the device
         :type state: DevState
         """
@@ -550,11 +568,15 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_obs_state(self, obs_state: ObsState) -> None:
+    def update_device_obs_state(
+        self, dev_name: str, obs_state: ObsState
+    ) -> None:
         """
         Update a monitored device obs state,
         and call the relative callbacks if available
 
+        :param dev_name: name of the device
+        :type dev_name: str
         :param obs_state: obs state of the device
         :type obs_state: ObsState
         """
