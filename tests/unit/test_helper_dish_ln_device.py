@@ -114,7 +114,7 @@ def test_SetKValue_command_dishln(tango_context, change_event_callbacks):
         change_event_callbacks["kValue"],
     )
 
-    change_event_callbacks["kValue"].assert_change_event(1, lookahead=2)
+    change_event_callbacks.assert_change_event("kValue", 1, lookahead=2)
 
     dishln_device.SetKValue(1)
     assert dishln_device.kValue == 1
