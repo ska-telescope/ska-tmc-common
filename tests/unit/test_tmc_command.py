@@ -75,7 +75,6 @@ def test_adapter_creation_failure(command_object: DummyCommand):
         )
 
 
-@pytest.mark.test1
 def test_command_with_transitional_obsstate(task_callback):
     cm = DummyComponentManager(
         _input_parameter=InputParameter(None),
