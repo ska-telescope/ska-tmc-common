@@ -45,7 +45,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._dish_mode = DishMode.STANDBY_LP
         self._desired_pointing = []
         self._achieved_pointing = []
-        self._kvalue = None
+        self._kvalue = 0
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""

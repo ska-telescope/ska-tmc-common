@@ -51,8 +51,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._state_duration_info = []
         self._offset = {"off_xel": 0.0, "off_el": 0.0}
         self._actual_pointing = []
-        self._kvalue = None
-
+        self._kvalue = 0
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
 
