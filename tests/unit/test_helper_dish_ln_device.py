@@ -103,6 +103,7 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     # defective
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
+
 @pytest.mark.dish
 def test_SetKValue_command_dishln(tango_context, change_event_callbacks):
     dev_factory = DevFactory()
