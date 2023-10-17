@@ -71,7 +71,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
     kValue = attribute(dtype=int, access=AttrWriteType.READ)
-    
+
     def read_kValue(self):
         """
         This method reads the k value of the dish.
