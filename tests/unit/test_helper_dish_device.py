@@ -144,8 +144,6 @@ def test_SetKValue_command_dish(tango_context, change_event_callbacks):
         tango.EventType.CHANGE_EVENT,
         change_event_callbacks["kValue"],
     )
-
-    change_event_callbacks.assert_change_event("kValue", 1, lookahead=2)
-
     dish_device.SetKValue(1)
+    change_event_callbacks["kValue"].assert_change_event(1)
     assert dish_device.kValue == 1
