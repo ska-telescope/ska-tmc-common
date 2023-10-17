@@ -23,6 +23,8 @@ class HelperCspMasterDevice(HelperBaseDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
+        self._configFileUri = None
+        self._configFileContent = None
 
     def is_On_allowed(self) -> bool:
         """

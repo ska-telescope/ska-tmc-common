@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import tango
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
@@ -132,3 +133,18 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
         dish_device.command_inout(command_to_check)
     # Clear the defect and ensure the command can be executed when not defective
     dish_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_SetKValue_command_dish(tango_context, change_event_callbacks):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.subscribe_event(
+        "kValue",
+        tango.EventType.CHANGE_EVENT,
+        change_event_callbacks["kValue"],
+    )
+
+    change_event_callbacks["kValue"].assert_change_event(1)
+
+    dish_device.SetKValue(1)
+    assert dish_device.kValue == 1

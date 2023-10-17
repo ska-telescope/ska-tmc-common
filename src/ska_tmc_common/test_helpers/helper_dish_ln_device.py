@@ -51,6 +51,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._state_duration_info = []
         self._offset = {"off_xel": 0.0, "off_el": 0.0}
         self._actual_pointing = []
+        self._kvalue = None
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -68,6 +69,14 @@ class HelperDishLNDevice(HelperBaseDevice):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
+    kValue = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_kValue(self):
+        """
+        This method reads the k value of the dish.
+        :rtype:int
+        """
+        return self._kvalue
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
@@ -108,6 +117,26 @@ class HelperDishLNDevice(HelperBaseDevice):
     def read_commandDelayInfo(self) -> str:
         """This method is used to read the attribute value for delay."""
         return json.dumps(self._command_delay_info)
+
+    def is_SetKValue_allowed(self) -> bool:
+        return True
+
+    @command(
+        dtype_in="DevLong",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def SetKValue(self, kValue: int) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes SetKValue command on  Dish Master.
+
+        :param argin: k value between range 1-2222.
+        :argin dtype: int
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        self._kvalue = kValue
+        self.push_change_event("kValue", self._kvalue)
+        return ([ResultCode.OK], [""])
 
     @command(
         dtype_in=str,

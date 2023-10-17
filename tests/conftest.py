@@ -11,6 +11,9 @@ import logging
 import pytest
 import tango
 from ska_tango_testing.mock import MockCallable
+from ska_tango_testing.mock.tango.event_callback import (
+    MockTangoEventCallbackGroup,
+)
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
@@ -184,3 +187,18 @@ def csp_sln_dev_name() -> str:
     """
     # testing device
     return "ska_mid/tm_leaf_node/csp_subarray01"
+
+
+@pytest.fixture
+def change_event_callbacks() -> MockTangoEventCallbackGroup:
+    """
+    Return a dictionary of Tango device change event callbacks
+    with asynchrony support.
+
+    :return: a collections.defaultdict that returns change event
+        callbacks by name.
+    """
+    return MockTangoEventCallbackGroup(
+        "kValue",
+        timeout=50.0,
+    )
