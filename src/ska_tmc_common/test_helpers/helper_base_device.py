@@ -435,7 +435,9 @@ class HelperBaseDevice(SKABaseDevice):
 
     def is_LoadDishCfg_allowed(self) -> bool:
         """
-        This method checks if the LoadDishCfg command is allowed in current state.
+        This method checks if the LoadDishCfg command is allowed
+        in current state.
+
         :rtype: bool
         """
         return True
@@ -459,14 +461,15 @@ class HelperBaseDevice(SKABaseDevice):
         {
         "interface":
         "https://schema.skao.int/ska-mid-cbf-initial-parameters/2.2",
+
         "tm_data_sources": [tm_data_sources]
-        #the data source
-        #that is used to store the data
-        # and is accessible through the Telescope Model
+        #The data source that is used to store the data
+        and is accessible through the Telescope Model
+
         "tm_data_filepath": "path/to/file.json"
-        # the path to the json file
-        # containing the Mid.CBF initialization
-        # parameters within the data source
+        #The path to the json file containing the Mid.CBF initialization
+        parameters within the data source
+
         }
         """
         json_argument = json.loads(argin)
