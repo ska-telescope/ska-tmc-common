@@ -64,13 +64,14 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event("actualPointing", True, False)
+            self._device.set_change_event("kValue", True, False)
             return (ResultCode.OK, "")
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
     kValue = attribute(dtype=int, access=AttrWriteType.READ)
-
+    
     def read_kValue(self):
         """
         This method reads the k value of the dish.

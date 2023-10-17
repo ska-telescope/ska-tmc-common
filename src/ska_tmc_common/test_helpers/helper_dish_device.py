@@ -58,6 +58,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             self._device.set_change_event("achievedPointing", True, False)
+            self._device.set_change_event("kValue", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
