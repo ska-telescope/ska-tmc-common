@@ -2,6 +2,8 @@
 This module defines a helper device that acts as csp master in our testing.
 """
 
+import json
+
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import time
@@ -9,6 +11,7 @@ from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
+from ska_telmodel.data import TMData
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
@@ -29,19 +32,31 @@ class HelperCspMasterDevice(HelperBaseDevice):
     sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
     sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
 
+    class InitCommand(HelperBaseDevice.InitCommand):
+        """A class for the HelperCspMasterDevice's init_device() command."""
+
+        def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialisation.
+            """
+            super().do()
+            self._device.set_change_event("sourceSysParam", True, False)
+            self._device.set_change_event("sysParam", True, False)
+            return (ResultCode.OK, "")
+
     def read_sourceSysParam(self):
         """
         This method reads the sourceSysParam value of the dish.
         :rtype:str
         """
-        return self._kvalue
+        return self._sourceSysParam
 
     def read_sysParam(self):
         """
         This method reads the sysParam value of the dish.
         :rtype:str
         """
-        return self._kvalue
+        return self._sysParam
 
     def is_On_allowed(self) -> bool:
         """
@@ -163,6 +178,47 @@ class HelperCspMasterDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standby command completed.")
+        return [ResultCode.OK], [""]
+
+    @command(
+        dtype_in="str",
+        doc_in="The string in JSON format.\
+        The JSON contains following values: File URI",
+        dtype_out="DevVarLongStringArray",
+        doc_out="information-only string",
+    )
+    def LoadDishCfg(self, argin: str):
+        """
+        This method updates attribute sourceSysParam and sysParam
+        :rtype: Tuple
+
+        :param argin: json with File URI.
+        :dtype: str
+
+        Example argin:
+        {
+        "interface":
+        "https://schema.skao.int/ska-mid-cbf-initial-parameters/2.2",
+        "tm_data_sources": [tm_data_sources]
+        #the data source
+        #that is used to store the data
+        # and is accessible through the Telescope Model
+        "tm_data_filepath": "path/to/file.json"
+        # the path to the json file
+        # containing the Mid.CBF initialization
+        # parameters within the data source
+        }
+        """
+        json_argument = json.loads(argin)
+        sources = json_argument["tm_data_sources"]
+        filepath = json_argument["tm_data_filepath"]
+        mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
+        mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
+        self._sourceSysParam = argin
+        self._sysParam = mid_cbf_initial_parameters_str
+        self.push_change_event("sourceSysParam", self._sourceSysParam)
+        self.push_change_event("sysParam", self._sysParam)
+
         return [ResultCode.OK], [""]
 
 
