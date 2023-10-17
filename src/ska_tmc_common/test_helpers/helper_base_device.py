@@ -196,10 +196,14 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.QUEUED], [""]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            self._obs_state = intermediate_state
-            self.push_obs_state_event(intermediate_state)
+            #If device does not have its own Obs-state then obs_state_event
+            #should not be pushed
+            if intermediate_state != "NA" :
+                self._obs_state = intermediate_state
+                self.push_obs_state_event(intermediate_state)
             return [ResultCode.QUEUED], [""]
-        self.logger.info("Off command completed.")
+
+        self.logger.info("induce_fault activity completed.")
         return [ResultCode.OK], [""]
 
     @command(

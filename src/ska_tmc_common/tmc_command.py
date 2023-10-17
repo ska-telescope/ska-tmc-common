@@ -226,11 +226,11 @@ class BaseTMCCommand:
                             timeout_id, TimeoutState.OCCURED
                         ):
                             self.logger.error(
-                                "Timeout has occured, command failed"
+                                "Timeout has occurred, command failed"
                             )
                             self.update_task_status(
                                 result=ResultCode.FAILED,
-                                message="Timeout has occured, command failed",
+                                message="Timeout has occurred, command failed",
                             )
                             self.stop_tracker_thread(timeout_id)
 
@@ -277,6 +277,7 @@ class BaseTMCCommand:
                         "Exception occured in Tracker thread: %s", e
                     )
                 time.sleep(0.1)
+
 
             if command_id:
                 lrcr_callback.remove_data(command_id)
