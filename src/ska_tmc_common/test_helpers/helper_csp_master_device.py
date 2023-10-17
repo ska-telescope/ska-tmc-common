@@ -23,11 +23,25 @@ class HelperCspMasterDevice(HelperBaseDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
-        self._configFileUri = None
-        self._configFileContent = None
+        self._sourceSysParam = None
+        self._sysParam = None
 
     sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
     sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    def read_sourceSysParam(self):
+        """
+        This method reads the sourceSysParam value of the dish.
+        :rtype:str
+        """
+        return self._kvalue
+
+    def read_sysParam(self):
+        """
+        This method reads the sysParam value of the dish.
+        :rtype:str
+        """
+        return self._kvalue
 
     def is_On_allowed(self) -> bool:
         """
