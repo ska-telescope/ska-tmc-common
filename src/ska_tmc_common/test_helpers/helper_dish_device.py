@@ -490,6 +490,11 @@ class HelperDishDevice(HelperDishLNDevice):
         return ([ResultCode.OK], [""])
 
     def is_SetKValue_allowed(self) -> bool:
+        """
+        This method checks if the SetKValue Command is allowed in current
+        State.
+        :rtype: bool
+        """
         return True
 
     @command(

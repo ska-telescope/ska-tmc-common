@@ -119,6 +119,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         return json.dumps(self._command_delay_info)
 
     def is_SetKValue_allowed(self) -> bool:
+        """
+        This method checks if the SetKValue Command is allowed in current
+        State.
+        :rtype: bool
+        """
         return True
 
     @command(

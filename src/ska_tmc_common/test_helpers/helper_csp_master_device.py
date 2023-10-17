@@ -9,8 +9,8 @@ from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
-from tango import DevState
-from tango.server import command, run
+from tango import AttrWriteType, DevState
+from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
@@ -25,6 +25,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self._obs_state = ObsState.EMPTY
         self._configFileUri = None
         self._configFileContent = None
+
+    sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
+    sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     def is_On_allowed(self) -> bool:
         """
