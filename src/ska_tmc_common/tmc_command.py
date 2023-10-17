@@ -51,6 +51,7 @@ class BaseTMCCommand:
         self.logger = logger
         self.tracker_thread: threading.Thread
         self._stop: bool
+        self.index: int
 
     def set_command_id(self, command_name: str):
         """Sets the command id for error propagation."""
@@ -207,8 +208,8 @@ class BaseTMCCommand:
                     attribute longRunningCommandResult arrives.
         """
         with EnsureOmniThread():
-            index = 0
-            state_to_achieve = expected_state[index]
+            self.index = 0
+            state_to_achieve = expected_state[self.index]
             while not self._stop:
                 try:
                     self.check_abort_event(abort_event, timeout_id)
@@ -218,7 +219,6 @@ class BaseTMCCommand:
                         state_to_achieve,
                         expected_state,
                         timeout_id,
-                        index,
                     )
                     self.check_command_exception(
                         command_id, lrcr_callback, timeout_id
@@ -269,7 +269,6 @@ class BaseTMCCommand:
         state_to_achieve,
         expected_state,
         timeout_id,
-        index,
     ):
         """Waits for expected final obsState with or without
         transitional obsState. On expected obsState occurrence,
@@ -279,9 +278,9 @@ class BaseTMCCommand:
                 "State change has occurred, current state is %s",
                 state_to_achieve,
             )
-            if len(expected_state) > index + 1:
-                index += 1
-                state_to_achieve = expected_state[index]
+            if len(expected_state) > self.index + 1:
+                self.index += 1
+                state_to_achieve = expected_state[self.index]
             else:
                 self.logger.info(
                     "State change has occurred, command successful"
