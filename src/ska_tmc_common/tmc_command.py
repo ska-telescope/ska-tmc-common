@@ -234,7 +234,7 @@ class BaseTMCCommand:
                             )
                             self.stop_tracker_thread(timeout_id)
 
-                    value=state_function()
+                    value = state_function()
                     self.logger.info(f"value :: {value}")
                     self.logger.info(f" state_to_achieve:: {state_to_achieve}")
                     if state_function() == state_to_achieve:
@@ -277,7 +277,6 @@ class BaseTMCCommand:
                         "Exception occured in Tracker thread: %s", e
                     )
                 time.sleep(0.1)
-
 
             if command_id:
                 lrcr_callback.remove_data(command_id)

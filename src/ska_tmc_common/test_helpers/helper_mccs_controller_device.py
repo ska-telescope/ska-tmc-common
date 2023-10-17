@@ -4,6 +4,7 @@ an integrated TMC
 """
 # pylint: disable=unused-argument
 import json
+import threading
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -12,10 +13,6 @@ from tango.server import command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-import time
-import threading
-
-import tango
 
 from .constants import (
     ABORT,
@@ -25,8 +22,9 @@ from .constants import (
     RELEASE_ALL_RESOURCES,
     RELEASE_RESOURCES,
     RESTART,
-
 )
+
+
 # pylint: disable=attribute-defined-outside-init
 class HelperMCCSController(HelperBaseDevice):
     """A helper MCCS controller device for triggering state changes
@@ -91,9 +89,8 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting the raise exception value to : %s", value)
         self._raise_exception = value
 
-
     def push_command_result(
-        self, command_id: str ,result: ResultCode,  exception: str = ""
+        self, command_id: str, result: ResultCode, exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
 
@@ -108,7 +105,7 @@ class HelperMCCSController(HelperBaseDevice):
         exception: Exception message to be pushed as an event
         dtype: str
         """
-        #command_id = f"{time.time()}-{command}"
+        # command_id = f"{time.time()}-{command}"
         self.logger.info("push_command_result started")
         if exception:
             command_result = (command_id, exception)
@@ -120,9 +117,7 @@ class HelperMCCSController(HelperBaseDevice):
     # def update_lrcr(
     #     self ,command_name: str = "" , command_id : str = ""
     # ) -> None:
-    def update_lrcr(
-            self , command_id : str = ""
-        ) -> None:
+    def update_lrcr(self, command_id: str = "") -> None:
         """Updates the given data after a delay."""
         # delay_value = 0
         # with tango.EnsureOmniThread():
@@ -135,8 +130,9 @@ class HelperMCCSController(HelperBaseDevice):
         #
         #     time.sleep(0.1)
         self.logger.info("update_lrcr started")
-        self.push_command_result(command_id ,ResultCode.OK)
+        self.push_command_result(command_id, ResultCode.OK)
         self.logger.info("Command result pushed")
+
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
@@ -182,21 +178,17 @@ class HelperMCCSController(HelperBaseDevice):
             self.logger.info("exception")
             return [ResultCode.QUEUED], [""]
 
-
-        command_id = f"1000_Allocate"
+        command_id = "1000_Allocate"
 
         thread = threading.Thread(
             target=self.update_lrcr,
-            #args = ["Allocate",command_id]
-            args=[command_id]
+            # args = ["Allocate",command_id]
+            args=[command_id],
         )
         thread.start()
-        self.logger.info(
-            "AssignResourse invoked on MCCS Controller"
-        )
+        self.logger.info("AssignResourse invoked on MCCS Controller")
 
-
-        #return [ ResultCode.QUEUED, command_id ]
+        # return [ ResultCode.QUEUED, command_id ]
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
