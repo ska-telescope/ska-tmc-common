@@ -36,5 +36,6 @@ def test_csp_loaddishconfig(tango_context, json_factory):
     return_code, _ = csp_master_device.LoadDishCfg(input_json_str)
     assert return_code == ResultCode.OK
     assert csp_master_device.sourceSysParam == input_json_str
-    output = json.dumps("tests/data/mid-layout.json")
-    assert csp_master_device.sysParam == output
+    output_json_str = json_factory("mid-layout")
+    json= json.load(output_json_str)
+    assert csp_master_device.sysParam == json
