@@ -5,13 +5,15 @@ This module defines a helper device that acts as csp master in our testing.
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
+import json
 import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
+from ska_telmodel.data import TMData
 from tango import DevState
-from tango.server import command, run
+from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
@@ -24,6 +26,11 @@ class HelperCspMasterDevice(HelperBaseDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
+        self._sourceSysParam = None
+        self._sysParam = None
+
+    sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
+    sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperCspMasterDevice's init_device() command."""
@@ -36,6 +43,20 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self._device.set_change_event("sourceSysParam", True, False)
             self._device.set_change_event("sysParam", True, False)
             return (ResultCode.OK, "")
+
+    def read_sourceSysParam(self):
+        """
+        This method reads the sourceSysParam value of the dish.
+        :rtype:str
+        """
+        return self._sourceSysParam
+
+    def read_sysParam(self):
+        """
+        This method reads the sysParam value of the dish.
+        :rtype:str
+        """
+        return self._sysParam
 
     def is_On_allowed(self) -> bool:
         """
@@ -157,6 +178,57 @@ class HelperCspMasterDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standby command completed.")
+        return [ResultCode.OK], [""]
+
+    def is_LoadDishCfg_allowed(self) -> bool:
+        """
+        This method checks if the LoadDishCfg command is allowed
+        in current state.
+
+        :rtype: bool
+        """
+        return True
+
+    @command(
+        dtype_in="str",
+        doc_in="The string in JSON format.\
+        The JSON contains following values: data source,path and interface",
+        dtype_out="DevVarLongStringArray",
+        doc_out="information-only string",
+    )
+    def LoadDishCfg(self, argin: str):
+        """
+        This method updates attribute sourceSysParam and sysParam
+        :rtype: Tuple
+
+        :param argin: json with File URI.
+        :dtype: str
+
+        Example argin:
+        {
+        "interface":
+        "https://schema.skao.int/ska-mid-cbf-initial-parameters/2.2",
+
+        "tm_data_sources": [tm_data_sources]
+        #The data source that is used to store the data
+        and is accessible through the Telescope Model
+
+        "tm_data_filepath": "path/to/file.json"
+        #The path to the json file containing the Mid.CBF initialization
+        parameters within the data source
+
+        }
+        """
+        json_argument = json.loads(argin)
+        sources = json_argument["tm_data_sources"]
+        filepath = json_argument["tm_data_filepath"]
+        mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
+        mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
+        self._sourceSysParam = argin
+        self._sysParam = mid_cbf_initial_parameters_str
+        self.push_change_event("sourceSysParam", self._sourceSysParam)
+        self.push_change_event("sysParam", self._sysParam)
+
         return [ResultCode.OK], [""]
 
 

@@ -10,7 +10,6 @@ import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
-from ska_telmodel.data import TMData
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
@@ -39,25 +38,6 @@ class HelperBaseDevice(SKABaseDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
-        self._sourceSysParam = None
-        self._sysParam = None
-
-    sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
-    sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
-
-    def read_sourceSysParam(self):
-        """
-        This method reads the sourceSysParam value of the dish.
-        :rtype:str
-        """
-        return self._sourceSysParam
-
-    def read_sysParam(self):
-        """
-        This method reads the sysParam value of the dish.
-        :rtype:str
-        """
-        return self._sysParam
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
@@ -432,57 +412,6 @@ class HelperBaseDevice(SKABaseDevice):
             self.push_change_event("State", self.dev_state())
             self.logger.info("Disable command completed.")
         return [ResultCode.OK], ["Disable command invoked on SDP Master"]
-
-    def is_LoadDishCfg_allowed(self) -> bool:
-        """
-        This method checks if the LoadDishCfg command is allowed
-        in current state.
-
-        :rtype: bool
-        """
-        return True
-
-    @command(
-        dtype_in="str",
-        doc_in="The string in JSON format.\
-        The JSON contains following values: data source,path and interface",
-        dtype_out="DevVarLongStringArray",
-        doc_out="information-only string",
-    )
-    def LoadDishCfg(self, argin: str):
-        """
-        This method updates attribute sourceSysParam and sysParam
-        :rtype: Tuple
-
-        :param argin: json with File URI.
-        :dtype: str
-
-        Example argin:
-        {
-        "interface":
-        "https://schema.skao.int/ska-mid-cbf-initial-parameters/2.2",
-
-        "tm_data_sources": [tm_data_sources]
-        #The data source that is used to store the data
-        and is accessible through the Telescope Model
-
-        "tm_data_filepath": "path/to/file.json"
-        #The path to the json file containing the Mid.CBF initialization
-        parameters within the data source
-
-        }
-        """
-        json_argument = json.loads(argin)
-        sources = json_argument["tm_data_sources"]
-        filepath = json_argument["tm_data_filepath"]
-        mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
-        mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
-        self._sourceSysParam = argin
-        self._sysParam = mid_cbf_initial_parameters_str
-        self.push_change_event("sourceSysParam", self._sourceSysParam)
-        self.push_change_event("sysParam", self._sysParam)
-
-        return [ResultCode.OK], [""]
 
 
 # ----------
