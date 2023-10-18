@@ -14,10 +14,11 @@ from ska_tmc_common import (
     TmcLeafNodeComponentManager,
 )
 from ska_tmc_common.enum import LivelinessProbeType
-from tests.settings import logger
-
-DUMMY_MONITORED_DEVICE = "dummy/monitored/device"
-DUMMY_SUBARRAY_DEVICE = "dummy/subarray/device"
+from tests.settings import (
+    DUMMY_MONITORED_DEVICE,
+    DUMMY_SUBARRAY_DEVICE,
+    logger,
+)
 
 
 def test_add_device():
