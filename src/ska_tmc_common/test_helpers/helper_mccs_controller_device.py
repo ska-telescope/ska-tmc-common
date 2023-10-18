@@ -250,6 +250,19 @@ class HelperMCCSController(HelperBaseDevice):
             )
 
         if self._raise_exception:
+            thread = threading.Thread(
+                target=self.wait_and_update_exception, args=["Release"]
+            )
+            thread.start()
             return [ResultCode.QUEUED], [""]
-        self.logger.debug("Release command complete")
-        return [ResultCode.OK], [""]
+
+        command_id = "1000_Release"
+
+        thread = threading.Thread(
+            target=self.update_lrcr,
+            # args = ["Allocate",command_id]
+            args=[command_id],
+        )
+        thread.start()
+        self.logger.info("Release Resource invoked on MCCS Controller")
+        return [ResultCode.QUEUED], [command_id]
