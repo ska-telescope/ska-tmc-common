@@ -38,20 +38,20 @@ class HelperDishLNDevice(HelperBaseDevice):
     device.
     """
 
-    def init_device(self):
+    def init_device(self) -> None:
         super().init_device()
-        self._delay = 2
-        self._command_delay_info = {
+        self._delay: int = 2
+        self._command_delay_info: dict = {
             CONFIGURE: 2,
             ABORT: 2,
             RESTART: 2,
         }
-        self._command_call_info = []
-        self._command_info = ("", "")
-        self._state_duration_info = []
-        self._offset = {"off_xel": 0.0, "off_el": 0.0}
-        self._actual_pointing = []
-        self._kvalue = 0
+        self._command_call_info: list = []
+        self._command_info: Tuple = ("", "")
+        self._state_duration_info: list = []
+        self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
+        self._actual_pointing: list = []
+        self._kvalue: int = 0
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -72,7 +72,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
     kValue = attribute(dtype=int, access=AttrWriteType.READ)
 
-    def read_kValue(self):
+    def read_kValue(self) -> int:
         """
         This method reads the k value of the dish.
         :rtype:int
@@ -132,7 +132,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetKValue(self, kValue: int) -> Tuple[List[ResultCode], List[str]]:
+    def SetKValue(self, kvalue: int) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetKValue command on  Dish Master.
 
@@ -140,7 +140,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :argin dtype: int
         :rtype: Tuple[List[ResultCode], List[str]]
         """
-        self._kvalue = kValue
+        self._kvalue = kvalue
         self.push_change_event("kValue", self._kvalue)
         return ([ResultCode.OK], [""])
 

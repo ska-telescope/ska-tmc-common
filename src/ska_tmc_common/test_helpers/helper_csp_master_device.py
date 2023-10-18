@@ -22,12 +22,12 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
 
-    def init_device(self):
+    def init_device(self) -> None:
         super().init_device()
-        self._delay = 2
-        self._obs_state = ObsState.EMPTY
-        self._sourceSysParam = None
-        self._sysParam = None
+        self._delay: int = 2
+        self._obs_state: ObsState = ObsState.EMPTY
+        self._source_sys_param: str = ""
+        self._sys_param: str = ""
 
     sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
     sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -44,19 +44,19 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self._device.set_change_event("sysParam", True, False)
             return (ResultCode.OK, "")
 
-    def read_sourceSysParam(self):
+    def read_sourceSysParam(self) -> str:
         """
         This method reads the sourceSysParam value of the dish.
         :rtype:str
         """
-        return self._sourceSysParam
+        return self._source_sys_param
 
-    def read_sysParam(self):
+    def read_sysParam(self) -> str:
         """
         This method reads the sysParam value of the dish.
         :rtype:str
         """
-        return self._sysParam
+        return self._sys_param
 
     def is_On_allowed(self) -> bool:
         """
@@ -194,9 +194,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_in="The string in JSON format.\
         The JSON contains following values: data source,path and interface",
         dtype_out="DevVarLongStringArray",
-        doc_out="information-only string",
+        doc_out="(ReturnType, 'informational message')",
     )
-    def LoadDishCfg(self, argin: str):
+    def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method updates attribute sourceSysParam and sysParam
         :rtype: Tuple
@@ -224,10 +224,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         filepath = json_argument["tm_data_filepath"]
         mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
         mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
-        self._sourceSysParam = argin
-        self._sysParam = mid_cbf_initial_parameters_str
-        self.push_change_event("sourceSysParam", self._sourceSysParam)
-        self.push_change_event("sysParam", self._sysParam)
+        self._source_sys_param = argin
+        self._sys_param = mid_cbf_initial_parameters_str
+        self.push_change_event("sourceSysParam", self._source_sys_param)
+        self.push_change_event("sysParam", self._sys_param)
 
         return [ResultCode.OK], [""]
 
