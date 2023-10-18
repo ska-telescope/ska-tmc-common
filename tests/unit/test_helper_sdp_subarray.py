@@ -203,3 +203,27 @@ def test_release_resources_defective(tango_context):
     assert sdp_subarray_device.defective
     assert sdp_subarray_device.obsState == ObsState.RESOURCING
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_pointing_offsets(tango_context):
+    POINTING_OFFSETS = [
+        "SKA001",
+        -6.71102309437987,
+        114.11010391244332,
+        -7.090356031104502,
+        104.10028693155607,
+        -4.115211938625473,
+        69.9725295732531,
+        70.1182176899719,
+        78.8829949012184,
+        95.49061976199042,
+        729.5782881970024,
+        119.27311545171803,
+        1065.4074085647912,
+        0.9948872678443994,
+        0.8441090109163307,
+    ]
+    dev_factory = DevFactory()
+    sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.SetDirectPointingOffsets(json.dumps(POINTING_OFFSETS))
+    assert sdp_subarray_device.pointingOffsets == json.dumps(POINTING_OFFSETS)

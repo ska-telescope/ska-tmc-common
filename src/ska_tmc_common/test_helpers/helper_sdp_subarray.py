@@ -51,7 +51,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
-        self._pointing_calibrations = []
+        self._pointing_offsets = []
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = (
@@ -77,7 +77,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event("pointingCalibrations", True, False)
+            self._device.set_change_event("pointingOffsets", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
@@ -91,9 +91,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
-    pointingCalibrations = attribute(
-        dtype=str, access=AttrWriteType.READ_WRITE
-    )
+    # The actual attribute names are not yet finalised,using as below for now.
+    pointingOffsets = attribute(dtype=str, access=AttrWriteType.READ)
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -103,28 +102,49 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method is used to read the attribute value for delay."""
         return self._delay
 
-    def read_pointingCalibrations(self) -> str:
+    def read_pointingOffsets(self) -> str:
         """This method is used to read the attribute value for
-        pointingCalibrations."""
-        return json.dumps(self._pointing_calibrations)
-
-    def write_pointingCalibrations(self, value: str) -> None:
-        """This method is used to write the attribute value for
-        pointingCalibrations.
-
-        :param value: A list in json format containing cross elevation and \
-            elevation offsets along with scan id / time.
+        pointing_offsets from QueueConnector SDP device.
+        The string contains is an array of
+        lists with below values in each array:
+        [
+        Antenna_Name,Azimuth_Offset,Azimuth_Offset_Std,
+        Elevation_Offset,Elevation_Offset_Std,
+        CrossElevation_Offset,CrossElevation_Offset_Std,
+        Expected_Width_H,Expected_Width_VFitted_Width_H,
+        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
+        Fitted_Height,Fitted_Height_Std
+        ]
         """
-        scan_id, cross_el, el = json.loads(value)
-        self.logger.info(
-            "The pointing corrections for cross elevation and elevation are: "
-            + "%s, %s",
-            cross_el,
-            el,
-        )
-        self._pointing_calibrations = [scan_id, cross_el, el]
+        return json.dumps(self._pointing_offsets)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set pointing offsets",
+    )
+    def SetDirectPointingOffsets(self, pointing_offsets: str) -> None:
+        """This method is used to write the attribute value for
+        pointing_offsets for testing purpose.
+        :param pointing_offsets: The variable contains is an array of
+        lists with below values in each array:
+        [
+        Antenna_Name,Azimuth_Offset,Azimuth_Offset_Std,
+        Elevation_Offset,Elevation_Offset_Std,
+        CrossElevation_Offset,CrossElevation_Offset_Std,
+        Expected_Width_H,Expected_Width_VFitted_Width_H,
+        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
+        Fitted_Height,Fitted_Height_Std
+        ]
+        """
+
+        pointing_offsets_data = json.loads(pointing_offsets)
+        self._pointing_offsets = pointing_offsets_data
         self.push_change_event(
-            "pointingCalibrations", json.dumps(self._pointing_calibrations)
+            "pointingOffsets", json.dumps(self._pointing_offsets)
+        )
+        self.logger.info(
+            "Received pointing offsets are: " + "%s",
+            pointing_offsets_data,
         )
 
     def read_receiveAddresses(self):
@@ -314,8 +334,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             thread.start()
             self.logger.debug(
-                "ReleaseResources invoked obsstate is transition \
-                          to Resourcing"
+                "ReleaseResources command invoked, obsState will transition to"
+                + "IDLE, current obsState is %s",
+                self._obs_state,
             )
             self.push_command_result(ResultCode.OK, "ReleaseResources")
 
@@ -528,8 +549,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 )
                 thread.start()
                 self.logger.debug(
-                    "END invoked obsstate is transition \
-                        to Configuring"
+                    "End command invoked, obsState will transition to IDLE,"
+                    + "current obsState is %s",
+                    self._obs_state,
                 )
                 self.push_command_result(ResultCode.OK, "End")
 
@@ -606,8 +628,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             thread.start()
             self.logger.debug(
-                "Restarting invoked obsstate is transition \
-                          to RESTARTING"
+                "Restart command invoked, obsState will transition to EMPTY,"
+                + "current obsState is %s",
+                self._obs_state,
             )
             self.push_command_result(ResultCode.OK, "Restart")
 
