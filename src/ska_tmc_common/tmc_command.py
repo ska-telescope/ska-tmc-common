@@ -237,7 +237,7 @@ class BaseTMCCommand:
             if command_id:
                 lrcr_callback.remove_data(command_id)
 
-    def check_abort_event(self, abort_event, timeout_id):
+    def check_abort_event(self, abort_event, timeout_id) -> None:
         """Checks for abort event. If abort event detected, sets TaskStatus
         to ABORTED and stops the tracker thread."""
         if abort_event.is_set():
@@ -249,7 +249,7 @@ class BaseTMCCommand:
             )
             self.stop_tracker_thread(timeout_id)
 
-    def check_command_timeout(self, timeout_id, timeout_callback):
+    def check_command_timeout(self, timeout_id, timeout_callback) -> None:
         """Checks for command timeout. On timeout, it sets ResultCode
         to FAILED and stops the tracker thread."""
         if timeout_id:
@@ -269,7 +269,7 @@ class BaseTMCCommand:
         state_to_achieve,
         expected_state,
         timeout_id,
-    ):
+    ) -> None:
         """Waits for expected final obsState with or without
         transitional obsState. On expected obsState occurrence,
         it sets ResultCode to OK and stops the tracker thread"""
@@ -288,7 +288,9 @@ class BaseTMCCommand:
                 self.update_task_status(result=ResultCode.OK)
                 self.stop_tracker_thread(timeout_id)
 
-    def check_command_exception(self, command_id, lrcr_callback, timeout_id):
+    def check_command_exception(
+        self, command_id, lrcr_callback, timeout_id
+    ) -> None:
         """Checks if command has been failed with an exception.
         On exception, it sets ResultCode to FAILED and stops
         the tracker thread"""
