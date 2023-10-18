@@ -16,6 +16,9 @@ from ska_tmc_common import (
 from ska_tmc_common.enum import LivelinessProbeType
 from tests.settings import logger
 
+DUMMY_MONITORED_DEVICE = "dummy/monitored/device"
+DUMMY_SUBARRAY_DEVICE = "dummy/subarray/device"
+
 
 def test_add_device():
     dummy_component = DummyComponent(logger)
@@ -24,8 +27,8 @@ def test_add_device():
         _component=dummy_component,
         logger=logger,
     )
-    cm.add_device("dummy/monitored/device")
-    cm.add_device("dummy/subarray/device")
+    cm.add_device(DUMMY_MONITORED_DEVICE)
+    cm.add_device(DUMMY_SUBARRAY_DEVICE)
 
     assert len(dummy_component._devices) == 2
 
@@ -37,10 +40,10 @@ def test_get_device():
         _component=dummy_component,
         logger=logger,
     )
-    cm.add_device("dummy/monitored/device")
+    cm.add_device(DUMMY_MONITORED_DEVICE)
 
-    dummy_device_info = cm.get_device("dummy/monitored/device")
-    assert dummy_device_info.dev_name == "dummy/monitored/device"
+    dummy_device_info = cm.get_device(DUMMY_MONITORED_DEVICE)
+    assert dummy_device_info.dev_name == DUMMY_MONITORED_DEVICE
 
 
 def test_update_device():
@@ -50,54 +53,54 @@ def test_update_device():
         _component=dummy_component,
         logger=logger,
     )
-    cm.add_device("dummy/monitored/device")
-    device_info = cm.get_device("dummy/monitored/device")
+    cm.add_device(DUMMY_MONITORED_DEVICE)
+    device_info = cm.get_device(DUMMY_MONITORED_DEVICE)
     assert device_info.unresponsive is False
 
     device_info._unresponsive = True
     cm.update_device_info(device_info)
-    new_device_info = cm.get_device("dummy/monitored/device")
+    new_device_info = cm.get_device(DUMMY_MONITORED_DEVICE)
     assert new_device_info.unresponsive is True
 
 
 def test_get_device_leafnode():
-    dummy_device = DeviceInfo("dummy/monitored/device")
+    dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
     cm = TmcLeafNodeComponentManager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
-    assert dummy_device_info.dev_name == "dummy/monitored/device"
+    assert dummy_device_info.dev_name == DUMMY_MONITORED_DEVICE
 
 
 def test_update_device_health_state_leafnode():
-    dummy_device = DeviceInfo("dummy/monitored/device")
+    dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
     cm = TmcLeafNodeComponentManager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.health_state == HealthState.UNKNOWN
 
-    cm.update_device_health_state("dummy/monitored/device", HealthState.OK)
+    cm.update_device_health_state(DUMMY_MONITORED_DEVICE, HealthState.OK)
     assert dummy_device_info.health_state == HealthState.OK
 
 
 def test_update_device_state_leafnode():
-    dummy_device = DeviceInfo("dummy/monitored/device")
+    dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
     cm = TmcLeafNodeComponentManager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.state == DevState.UNKNOWN
 
-    cm.update_device_state("dummy/monitored/device", DevState.ON)
+    cm.update_device_state(DUMMY_MONITORED_DEVICE, DevState.ON)
     assert dummy_device_info.state == DevState.ON
 
 
 def test_update_device_obs_state_leafnode():
-    dummy_device = SubArrayDeviceInfo("dummy/subarray/device")
+    dummy_device = SubArrayDeviceInfo(DUMMY_SUBARRAY_DEVICE)
     cm = TmcLeafNodeComponentManager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.obs_state == ObsState.EMPTY
 
-    cm.update_device_obs_state("dummy/subarray/device", ObsState.IDLE)
+    cm.update_device_obs_state(DUMMY_SUBARRAY_DEVICE, ObsState.IDLE)
     assert dummy_device_info.obs_state == ObsState.IDLE
 
 
@@ -115,7 +118,7 @@ def test_device_failed(component_manager):
 
 def test_update_device_info(component_manager):
     # Test if update_device_info sets the device info and does not raise an exception
-    device_info = DeviceInfo("dummy/monitored/device")
+    device_info = DeviceInfo(DUMMY_MONITORED_DEVICE)
     component_manager.update_device_info(device_info)
     assert component_manager.get_device() == device_info
 
@@ -123,7 +126,7 @@ def test_update_device_info(component_manager):
 def test_update_ping_info(component_manager):
     # Test if update_ping_info sets the device's ping and does not raise an exception
     ping = 123
-    dev_name = "dummy/monitored/device"
+    dev_name = DUMMY_MONITORED_DEVICE
     component_manager.update_ping_info(ping, dev_name)
     assert component_manager.get_device().ping == ping
 
@@ -132,7 +135,7 @@ def test_update_device_health_state(component_manager):
     # Test if update_device_health_state updates the device's health state and does not raise an exception
     health_state = HealthState.OK
     component_manager.update_device_health_state(
-        "dummy/monitored/device", health_state
+        DUMMY_MONITORED_DEVICE, health_state
     )
     assert component_manager.get_device().health_state == health_state
     assert component_manager.get_device().last_event_arrived == pytest.approx(
@@ -144,7 +147,7 @@ def test_update_device_health_state(component_manager):
 def test_update_device_state(component_manager):
     # Test if update_device_state updates the device's state and does not raise an exception
     state = tango.DevState.ON
-    component_manager.update_device_state("dummy/monitored/device", state)
+    component_manager.update_device_state(DUMMY_MONITORED_DEVICE, state)
     assert component_manager.get_device().state == state
     assert component_manager.get_device().last_event_arrived == pytest.approx(
         time.time(), abs=1e-3
@@ -156,7 +159,7 @@ def test_update_device_obs_state(component_manager):
     # Test if update_device_obs_state updates the device's obs state and does not raise an exception
     obs_state = ObsState.READY
     component_manager.update_device_obs_state(
-        "dummy/monitored/device", obs_state
+        DUMMY_MONITORED_DEVICE, obs_state
     )
     assert component_manager.get_device().obs_state == obs_state
     assert component_manager.get_device().last_event_arrived == pytest.approx(

@@ -50,10 +50,12 @@ def test_event_subscription_default(tango_context):
     start_time = time.time()
     while cm.get_device().obs_state != ObsState.READY:
         if time.time() - start_time > TIMEOUT:
+            event_receiver.stop()
             pytest.fail(
                 reason="Timeout occured while waiting for obsState event to be"
                 + " received."
             )
+    event_receiver.stop()
 
 
 def test_event_subscription_additional_attributes(tango_context):
@@ -86,7 +88,9 @@ def test_event_subscription_additional_attributes(tango_context):
     start_time = time.time()
     while event_handler.command_in_progress != "AssignResources":
         if time.time() - start_time > TIMEOUT:
+            event_receiver.stop()
             pytest.fail(
                 reason="Timeout occured while waiting for commandInProgress "
                 + "event to be received."
             )
+    event_receiver.stop()

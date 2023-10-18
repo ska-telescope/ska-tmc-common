@@ -49,7 +49,6 @@ class EventReceiver:
         self._sleep_time = sleep_time
         self._max_workers = max_workers
         self._dev_factory = DevFactory()
-        self.method_flag = True
         self.attribute_dictionary: dict[str, Callable] = attribute_dict or {
             "State": self.handle_state_event,
             "healthState": self.handle_health_state_event,
