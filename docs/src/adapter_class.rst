@@ -48,10 +48,10 @@ TMC Common AdapterFactory
     :members:
     :undoc-members:
 
-7. MCCSAdapter
+7. MCCSMasterLeafNodeAdapter
 --------------------
 .. automodule:: ska_tmc_common.adapters
-.. autoclass:: ska_tmc_common.adapters.MCCSAdapter
+.. autoclass:: ska_tmc_common.adapters.MCCSMasterLeafNodeAdapter
     :members:
     :undoc-members:
 
@@ -66,6 +66,13 @@ TMC Common AdapterFactory
 ----------------------
 .. automodule:: ska_tmc_common.adapters
 .. autoclass:: ska_tmc_common.adapters.CspSubarrayAdapter
+    :members:
+    :undoc-members:
+
+10. MCCSControllerAdapter
+--------------------
+.. automodule:: ska_tmc_common.adapters
+.. autoclass:: ska_tmc_common.adapters.MCCSControllerAdapter
     :members:
     :undoc-members:
 

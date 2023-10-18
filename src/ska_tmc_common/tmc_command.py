@@ -267,7 +267,8 @@ class BaseTMCCommand:
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
-                        message=lrcr_callback.command_data[command_id][e],
+                        message="Exception occured in track transitions "
+                        + f"thread: {e}",
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.logger.error(
