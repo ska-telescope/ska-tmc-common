@@ -48,7 +48,7 @@ class EventReceiver:
         self._max_workers = max_workers
         self._dev_factory = DevFactory()
         self.attribute_dictionary: dict[str, Callable] = attribute_dict or {
-            "State": self.handle_state_event,
+            "state": self.handle_state_event,
             "healthState": self.handle_health_state_event,
             "obsState": self.handle_obs_state_event,
         }
@@ -77,18 +77,35 @@ class EventReceiver:
         ) as executor:
             while not self._stop:
                 try:
-                    for dev_info in self._component_manager.devices:
-                        if dev_info.last_event_arrived is None:
-                            executor.submit(
-                                self.subscribe_events,
-                                dev_info=dev_info,
-                                attribute_dictionary=(
-                                    self.attribute_dictionary
-                                ),
-                            )
+                    if hasattr(self._component_manager, "devices"):
+                        for dev_info in self._component_manager.devices:
+                            self.submit_task(executor, dev_info)
+                    else:
+                        dev_info = self._component_manager.get_device()
+                        self.submit_task(executor, dev_info)
                 except Exception as e:
                     self._logger.warning("Exception occurred: %s", e)
                 sleep(self._sleep_time)
+
+    def submit_task(
+        self, executor: futures.ThreadPoolExecutor, device_info: DeviceInfo
+    ) -> None:
+        """Submits the task to the executor for the given device info object.
+
+        :param executor: Threadpoolexecutor object
+
+        :param device_info: DeviceInfo object for the device on which events
+            are to be subscribed.
+        :type device_info: DeviceInfo class object.
+
+        :rtype: None
+        """
+        if device_info.last_event_arrived is None:
+            executor.submit(
+                self.subscribe_events,
+                dev_info=device_info,
+                attribute_dictionary=(self.attribute_dictionary),
+            )
 
     def subscribe_events(
         self, dev_info: DeviceInfo, attribute_dictionary: dict[str, Callable]
@@ -116,6 +133,9 @@ class EventReceiver:
         else:
             try:
                 for attribute, callable in attribute_dictionary.items():
+                    self._logger.info(
+                        "Subscribing event for attribute: %s", attribute
+                    )
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,

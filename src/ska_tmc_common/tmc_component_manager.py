@@ -481,14 +481,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         return self._device
 
-    @property
-    def devices(self) -> list:
-        """Returns the list of DeviceInfo objects for all the devices.
-
-        :rtype: List
-        """
-        return [self._device]
-
     def device_failed(self, exception: str) -> None:
         """
         Set a device to failed and call the relative callback if available
