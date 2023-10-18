@@ -198,7 +198,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def LoadDishCfg(self, argin: str):
         """
-        This method updates attribute sourceSysParam and sysParam
+        This command updates attribute sourceSysParam and sysParam
         :rtype: Tuple
 
         :param argin: json with File URI.

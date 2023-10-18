@@ -134,7 +134,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     )
     def SetKValue(self, kValue: int) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes SetKValue command on  Dish Master.
+        This command invokes SetKValue command on  Dish Master.
 
         :param argin: k value between range 1-2222.
         :argin dtype: int
