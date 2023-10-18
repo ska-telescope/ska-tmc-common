@@ -222,8 +222,17 @@ class HelperCspMasterDevice(HelperBaseDevice):
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
+        self.logger.debug(
+            "Received source:%s and file path:%s", sources, filepath
+        )
         mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
         mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
+        self.logger.debug(
+            "Updating sourceSysParam attribute with:%s"
+            + "and sysParam attribute with:%s",
+            argin,
+            mid_cbf_initial_parameters_str,
+        )
         self._source_sys_param = argin
         self._sys_param = mid_cbf_initial_parameters_str
         self.push_change_event("sourceSysParam", self._source_sys_param)
