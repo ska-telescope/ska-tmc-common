@@ -19,16 +19,14 @@ class EventReceiver:
     """
     The EventReceiver class has the responsibility to receive events
     from the sub devices managed by a TMC node. It subscribes to State,
-    healthState and obsState attribute. TO subscribe any additional attribute,
-    the class should be inherited, override the `subscribe_events` method
-    and implement appropriate event handler methods.
+    healthState and obsState attribute by default. To subscribe any additional
+    attributes, the class should be sent an attribute_dictionary that contains
+    the attribute names as keys and their handler methods as values.
 
-    The ComponentManager uses the handle events methods
-    for the attribute of interest.
-    For each of them a callback is defined.
+    The Component Manager uses the handle events methods for the attribute of
+    interest. For each of them a callback is defined.
 
     TBD: what about scalability? what if we have 1000 devices?
-
     """
 
     def __init__(
@@ -57,21 +55,22 @@ class EventReceiver:
 
     def start(self) -> None:
         """
-        checks if device is alive
+        Checks if device is alive
         """
         if not self._thread.is_alive():
             self._thread.start()
 
     def stop(self) -> None:
         """
-        checks if device has stopped
+        Checks if device has stopped
         """
         self._stop = True
         # self._thread.join()
 
     def run(self) -> None:
         """
-        checks if device is running
+        The run method for the Event Receiver thread. Runs in a loop to
+        subscribe events on the devices.
         """
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
             max_workers=self._max_workers
@@ -97,11 +96,11 @@ class EventReceiver:
         """A method to subscribe to attribute events from lower level devices.
 
         :param device_info: The device info object of the given device.
-        :device_info dtype: DeviceInfo class object
+        :type device_info: DeviceInfo class object
 
         :param attribute_dictionary: A dictionary containing the attributes to
             subscribe to as keys and their handler functions as values.
-        :attribute_dictionary dtype: dict[str, Callable]
+        :type attribute_dictionary: dict[str, Callable]
 
         :rtype: None
         """
@@ -133,7 +132,7 @@ class EventReceiver:
 
     def handle_health_state_event(self, event: tango.EventData) -> None:
         """
-        It handles the health state of different devices
+        It handles the health state events of different devices
         """
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
@@ -156,7 +155,7 @@ class EventReceiver:
 
     def handle_state_event(self, event: tango.EventData) -> None:
         """
-        It handles the state of different devices
+        It handles the state events of different devices
         """
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
@@ -174,7 +173,7 @@ class EventReceiver:
 
     def handle_obs_state_event(self, event: tango.EventData) -> None:
         """
-        It handles the observation state of different devices
+        It handles the observation state events of different devices
         """
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
