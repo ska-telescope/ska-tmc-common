@@ -909,14 +909,15 @@ reference = 'ska-nexus'
 
 [[package]]
 name = "ska-tango-testing"
-version = "0.4.1"
+version = "0.6.0"
 description = "Test harness for testing SKA Tango devices"
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
-pytango = ">=9.3,<10.0"
+numpy = ">=1.19.0,<2.0.0"
+pytango = ">=9.3.3,<10.0.0"
 
 [package.source]
 type = "legacy"
@@ -1225,7 +1226,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "1e35e9bd5f95fc5232100305f75a4e9d509a78d53c5ad70b1ca65ac8386fb076"
+content-hash = "6a1f6f760b6b6b5f0a9faddd316d7e7ced2aa67e4f874d8ae8594515c3201906"
 
 [metadata.files]
 alabaster = [
@@ -2044,8 +2045,8 @@ ska-tango-base = [
     {file = "ska_tango_base-0.18.1.tar.gz", hash = "sha256:60a05dbdbb5dde0ad725f2bd58ce34e02faae62a2fa14ed73a4c27bd072fa5b2"},
 ]
 ska-tango-testing = [
-    {file = "ska-tango-testing-0.4.1.tar.gz", hash = "sha256:c41c1d6593b59de15aa7a11e05a61b39f08e900e824d4325afb053327bc21e63"},
-    {file = "ska_tango_testing-0.4.1-py3-none-any.whl", hash = "sha256:58541c22e741387b119c63ad1f90265f7f5e7b76b21049fc266bb1133fc27bbf"},
+    {file = "ska_tango_testing-0.6.0-py3-none-any.whl", hash = "sha256:3a96b090998b445df013cba33721d110298a946b277a7de6fe312f3da1219504"},
+    {file = "ska_tango_testing-0.6.0.tar.gz", hash = "sha256:fdc1d807dc1cad2ddc1d754cb5ee9debe846db667de12e412474388c3fff97d6"},
 ]
 ska-telmodel = [
     {file = "ska_telmodel-1.5.0-py3-none-any.whl", hash = "sha256:66be880a6d269664d76caedc4aca984688d4864a9c331d14ea3d00a72dc838be"},
