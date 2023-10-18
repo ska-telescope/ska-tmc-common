@@ -161,7 +161,7 @@ class BaseTMCCommand:
                     longRunningCommandResult event is received.
         """
         self.tracker_thread = threading.Thread(
-            target=self.track_and_decide_command_status,
+            target=self.track_and_update_command_status,
             args=[
                 state_function,
                 expected_state,
@@ -212,12 +212,34 @@ class BaseTMCCommand:
             state_to_achieve = expected_state[self.index]
             while not self._stop:
                 try:
-                    self.check_abort_event(abort_event)
-                    self.check_command_timeout(timeout_id, timeout_callback)
-                    self.check_final_obsstate(
+                    if self.check_abort_event(abort_event):
+                        self.update_task_status(status=TaskStatus.ABORTED)
+                        self.stop_tracker_thread()
+
+                    if self.check_command_timeout(
+                        timeout_id, timeout_callback
+                    ):
+                        self.update_task_status(
+                            result=ResultCode.FAILED,
+                            message="Timeout has occurred, command failed",
+                        )
+                        self.stop_tracker_thread()
+
+                    if self.check_final_obsstate(
                         state_function, state_to_achieve, expected_state
-                    )
-                    self.check_command_exception(command_id, lrcr_callback)
+                    ):
+                        self.update_task_status(result=ResultCode.OK)
+                        self.stop_tracker_thread()
+
+                    if self.check_command_exception(command_id, lrcr_callback):
+                        self.update_task_status(
+                            result=ResultCode.FAILED,
+                            message=lrcr_callback.command_data[command_id][
+                                "exception_message"
+                            ],
+                        )
+                        self.stop_tracker_thread()
+
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
@@ -234,7 +256,7 @@ class BaseTMCCommand:
             if timeout_id:
                 self.component_manager.stop_timer()
 
-    def check_abort_event(self, abort_event) -> None:
+    def check_abort_event(self, abort_event) -> bool:
         """Checks for abort event. If abort event detected, sets TaskStatus
         to ABORTED and stops the tracker thread.
         :param abort_event: threading.Event class object that is used to check
@@ -244,12 +266,10 @@ class BaseTMCCommand:
             self.logger.error(
                 "Command has been Aborted, " + "Setting TaskStatus to aborted"
             )
-            self.update_task_status(
-                status=TaskStatus.ABORTED,
-            )
-            self.stop_tracker_thread()
+            return True
+        return None
 
-    def check_command_timeout(self, timeout_id, timeout_callback) -> None:
+    def check_command_timeout(self, timeout_id, timeout_callback) -> bool:
         """Checks for command timeout. On timeout, it sets ResultCode
         to FAILED and stops the tracker thread.
 
@@ -263,18 +283,15 @@ class BaseTMCCommand:
                 timeout_id, TimeoutState.OCCURED
             ):
                 self.logger.error("Timeout has occurred, command failed")
-                self.update_task_status(
-                    result=ResultCode.FAILED,
-                    message="Timeout has occurred, command failed",
-                )
-                self.stop_tracker_thread()
+                return True
+        return None
 
     def check_final_obsstate(
         self,
         state_function,
         state_to_achieve,
         expected_state,
-    ) -> None:
+    ) -> bool:
         """Waits for expected final obsState with or without
         transitional obsState. On expected obsState occurrence,
         it sets ResultCode to OK and stops the tracker thread
@@ -301,10 +318,10 @@ class BaseTMCCommand:
                 self.logger.info(
                     "State change has occurred, command successful"
                 )
-                self.update_task_status(result=ResultCode.OK)
-                self.stop_tracker_thread()
+                return True
+        return None
 
-    def check_command_exception(self, command_id, lrcr_callback) -> None:
+    def check_command_exception(self, command_id, lrcr_callback) -> bool:
         """Checks if command has been failed with an exception.
         On exception, it sets ResultCode to FAILED and stops
         the tracker thread.
@@ -319,13 +336,8 @@ class BaseTMCCommand:
             command_id, ResultCode.FAILED
         ):
             self.logger.error("Exception has occurred, command failed")
-            self.update_task_status(
-                result=ResultCode.FAILED,
-                message=lrcr_callback.command_data[command_id][
-                    "exception_message"
-                ],
-            )
-            self.stop_tracker_thread()
+            return True
+        return None
 
     def stop_tracker_thread(self) -> None:
         """External stop method for stopping the timer thread as well as the
