@@ -673,7 +673,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         intermediate_state = (
             self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
+            # or ObsState.RESOURCING
         )
         self.logger.info("intermediate_state is: %s", intermediate_state)
 
