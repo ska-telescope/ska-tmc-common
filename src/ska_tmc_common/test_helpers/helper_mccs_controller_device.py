@@ -5,13 +5,14 @@ an integrated TMC
 # pylint: disable=unused-argument
 import json
 import threading
+import time
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango.server import command
 from tango import EnsureOmniThread
-import time
+from tango.server import command
+
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
@@ -90,7 +91,6 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting the raise exception value to : %s", value)
         self._raise_exception = value
 
-
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
@@ -100,9 +100,8 @@ class HelperMCCSController(HelperBaseDevice):
                 command_id,
                 f"Exception occured on device: {self.get_name()}",
             )
-            self.logger.info("exception will be raised as %s",command_result)
+            self.logger.info("exception will be raised as %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
-
 
     def push_command_result(
         self, command_id: str, result: ResultCode, exception: str = ""
