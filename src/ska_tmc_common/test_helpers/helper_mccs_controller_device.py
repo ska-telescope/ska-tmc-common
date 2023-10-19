@@ -10,6 +10,7 @@ from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import ObsState
 from tango import EnsureOmniThread
 from tango.server import command
 
@@ -66,6 +67,96 @@ class HelperMCCSController(HelperBaseDevice):
             """
             super().do()
             return (ResultCode.OK, "")
+
+    def induce_fault(
+        self,
+        command_name: str,
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Induces a fault into the device based on the given parameters.
+
+        :param command_name: The name of the
+         command for which a fault is being induced.
+        :type command_name: str
+
+        :param dtype: The data type of the fault parameter.
+        :type dtype: str
+
+        :param rtype: A tuple containing two lists - the
+         list of possible result codes and the list of error messages.
+        :type rtype: Tuple[List[ResultCode], List[str]]
+
+        Example:
+        defective = json.dumps(
+        {
+        "enabled": False,
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Default exception.",
+        "result": ResultCode.FAILED,
+        }
+        )
+        defective_params = json.loads(defective)
+
+        Detailed Explanation:
+        This method simulates inducing various types of faults into a device
+        to test its robustness and error-handling capabilities.
+
+        - FAILED_RESULT:
+          A fault type that triggers a failed result code
+          for the command. The device will return a result code of 'FAILED'
+          along with a custom error message, indicating that
+          the command execution has failed.
+
+        - LONG_RUNNING_EXCEPTION:
+          A fault type that simulates a command getting stuck in an
+          intermediate state for an extended period.
+          This could simulate a situation where a command execution
+          hangs due to some internal processing issue.
+
+        - STUCK_IN_INTERMEDIATE_STATE:
+          This fault type represents a scenario where the
+          device gets stuck in an intermediate state between two
+          well-defined states. This can help test the device's state
+          recovery and error handling mechanisms.
+
+        - COMMAND_NOT_ALLOWED:
+          This fault type represents a situation where the
+          given command is not allowed to be executed due to some
+          authorization or permission issues. The device
+          should respond with an appropriate error code and message.
+
+        :raises: None
+        """
+        fault_type = self.defective_params["fault_type"]
+        result = self.defective_params["result"]
+        fault_message = self.defective_params["error_message"]
+        intermediate_state = (
+            self.defective_params.get("intermediate_state")
+            or ObsState.RESOURCING
+        )
+
+        if fault_type == FaultType.FAILED_RESULT:
+            return [result], [fault_message]
+
+        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[result, command_name, fault_message],
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            # If device does not have its own Obs-state then obs_state_event
+            # should not be pushed
+            if intermediate_state != "NA":
+                self._obs_state = intermediate_state
+                self.push_obs_state_event(intermediate_state)
+            return [ResultCode.QUEUED], [""]
+
+        self.logger.info("induce_fault activity completed.")
+        return [ResultCode.OK], [""]
 
     @command(
         dtype_in=str,
