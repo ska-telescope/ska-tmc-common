@@ -153,9 +153,9 @@ class HelperMCCSController(HelperBaseDevice):
             if intermediate_state != "NA":
                 self._obs_state = intermediate_state
                 self.push_obs_state_event(intermediate_state)
+                self.logger.info("Induce_fault activity completed.")
             return [ResultCode.QUEUED], [""]
 
-        self.logger.info("induce_fault activity completed.")
         return [ResultCode.OK], [""]
 
     @command(
