@@ -44,6 +44,7 @@ def dev_state_2_str(value: DevState) -> str:
     return "DevState.UNKNOWN"
 
 
+# pylint: disable=too-many-instance-attributes
 class DeviceInfo:
     """
     Provides different information about the device.
@@ -111,9 +112,9 @@ class DeviceInfo:
     def source_sys_param(self) -> str:
         """Returns the source_sys_param value for Dish master device"""
         return self._source_sys_param
-    
+
     @source_sys_param.setter
-    def source_sys_param(self,value: str):
+    def source_sys_param(self, value: str):
         """Sets the value of source_sys_param  for Dish master device"""
         if self._source_sys_param != value:
             self._source_sys_param = value
@@ -122,12 +123,14 @@ class DeviceInfo:
     def sys_param(self) -> str:
         """Returns the sys_param  value for Dish master device"""
         return self._sys_param
-    
+
     @sys_param.setter
-    def sys_param(self,value: str):
-        """Sets the value of sys_param attribute value for Dish master device"""
+    def sys_param(self, value: str):
+        """Sets the value of sys_param attribute value
+        for Dish master device"""
         if self._sys_param != value:
             self._sys_param = value
+
     @property
     def unresponsive(self) -> bool:
         """
@@ -250,17 +253,18 @@ class DishDeviceInfo(DeviceInfo):
         self.achieved_pointing = []
         self.desired_pointing = []
         self._kvalue = 0
-    
+
     @property
     def kvalue(self) -> int:
         """Returns the k value for Dish master device"""
         return self._kvalue
-    
+
     @kvalue.setter
-    def kvalue(self,value: int):
+    def kvalue(self, value: int):
         """Sets the value of k value for Dish master device"""
         if self._kvalue != value:
             self._kvalue = value
+
     @property
     def dish_mode(self) -> DishMode:
         """Returns the dish mode value for Dish master device"""
