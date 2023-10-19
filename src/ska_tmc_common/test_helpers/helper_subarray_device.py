@@ -662,14 +662,20 @@ class HelperSubArrayDevice(SKASubarray):
 
         :raises: None
         """
+        self.logger.info("inducing fault ....")
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
         fault_message = self.defective_params["error_message"]
+        self.logger.info(
+            "intermediate_state is: %s",
+            self.defective_params.get("intermediate_state"),
+        )
         intermediate_state = (
             self.defective_params.get("intermediate_state")
-            # or ObsState.RESOURCING
+            or ObsState.RESOURCING
         )
         self.logger.info("intermediate_state is: %s", intermediate_state)
+
         if fault_type == FaultType.FAILED_RESULT:
             return [result], [fault_message]
 
