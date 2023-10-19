@@ -667,7 +667,7 @@ class HelperSubArrayDevice(SKASubarray):
         fault_message = self.defective_params["error_message"]
         intermediate_state = (
             self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
+            # or ObsState.RESOURCING
         )
 
         if fault_type == FaultType.FAILED_RESULT:
