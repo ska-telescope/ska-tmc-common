@@ -44,7 +44,7 @@ class TmcComponent:
         self._health_state = HealthState.OK
         self._devices = []
 
-    def get_device(self, dev_name):
+    def get_device(self, device_name):
         """
         Retrieve information about a specific device.
         This is a base method that should be implemented by derived classes.
@@ -306,35 +306,35 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         return self._component._devices
 
-    def add_device(self, dev_name: str) -> None:
+    def add_device(self, device_name: str) -> None:
         """
         Add device to the monitoring loop
 
-        :param dev_name: device name
-        :type dev_name: str
+        :param device_name: device name
+        :type device_name: str
         """
-        if dev_name is None:
+        if device_name is None:
             return
 
-        if "subarray" in dev_name.lower():
-            dev_info = SubArrayDeviceInfo(dev_name, False)
-        elif "dish/master" in dev_name.lower():
-            dev_info = DishDeviceInfo(dev_name, False)
+        if "subarray" in device_name.lower():
+            dev_info = SubArrayDeviceInfo(device_name, False)
+        elif "dish/master" in device_name.lower():
+            dev_info = DishDeviceInfo(device_name, False)
         else:
-            dev_info = DeviceInfo(dev_name, False)
+            dev_info = DeviceInfo(device_name, False)
 
         self._component.update_device(dev_info)
 
-    def get_device(self, dev_name: str) -> DeviceInfo:
+    def get_device(self, device_name: str) -> DeviceInfo:
         """
-        Return the device info our of the monitoring loop with name dev_name
+        Return the device info our of the monitoring loop with name device_name
 
-        :param dev_name: name of the device
-        :type dev_name: str
+        :param device_name: name of the device
+        :type device_name: str
         :return: a device info
         :rtype: DeviceInfo
         """
-        return self._component.get_device(dev_name)
+        return self._component.get_device(device_name)
 
     def device_failed(self, device_info: DeviceInfo, exception: str) -> None:
         """
@@ -348,12 +348,12 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device_exception(device_info, exception)
 
-    def update_event_failure(self, dev_name: str) -> None:
+    def update_event_failure(self, device_name: str) -> None:
         """
         Update the failure status of an event for a specific device.
         """
         with self.lock:
-            dev_info = self._component.get_device(dev_name)
+            dev_info = self._component.get_device(device_name)
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
@@ -368,52 +368,52 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device(device_info)
 
-    def update_ping_info(self, ping: int, dev_name: str) -> None:
+    def update_ping_info(self, ping: int, device_name: str) -> None:
         """
         Update a device with correct ping information.
 
-        :param dev_name: name of the device
-        :type dev_name: str
+        :param device_name: name of the device
+        :type device_name: str
         :param ping: device response time
         :type ping: int
         """
         with self.lock:
-            dev_info = self._component.get_device(dev_name)
+            dev_info = self._component.get_device(device_name)
             dev_info.ping = ping
 
     def update_device_health_state(
-        self, dev_name: str, health_state: HealthState
+        self, device_name: str, health_state: HealthState
     ) -> None:
         """
         Update a monitored device health state
         aggregate the health states available
 
-        :param dev_name: name of the device
-        :type dev_name: str
+        :param device_name: name of the device
+        :type device_name: str
         :param health_state: health state of the device
         :type health_state: HealthState
         """
         with self.lock:
-            dev_info = self._component.get_device(dev_name)
+            dev_info = self._component.get_device(device_name)
             dev_info.health_state = health_state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
     def update_device_state(
-        self, dev_name: str, state: tango.DevState
+        self, device_name: str, state: tango.DevState
     ) -> None:
         """
         Update a monitored device state,
         aggregate the states available
         and call the relative callbacks if available
 
-        :param dev_name: name of the device
-        :type dev_name: str
+        :param device_name: name of the device
+        :type device_name: str
         :param state: state of the device
         :type state: DevState
         """
         with self.lock:
-            dev_info = self._component.get_device(dev_name)
+            dev_info = self._component.get_device(device_name)
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
@@ -465,7 +465,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         )
         self._device = None
         self.start_liveliness_probe(_liveliness_probe)
-        self.start_event_receiver()
 
     def reset(self) -> None:
         """
@@ -474,7 +473,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def get_device(self) -> DeviceInfo:
         """
-        Return the device info our of the monitoring loop with name dev_name
+        Return the device info our of the monitoring loop with name device_name
 
         :param None:
         :return: a device info
@@ -503,31 +502,38 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device = device_info
 
-    def update_ping_info(self, ping: int, dev_name: str) -> None:
+    def update_ping_info(self, ping: int, device_name: str) -> None:
         """
         Update a device with the correct ping information.
 
-        :param dev_name: name of the device
-        :type dev_name: str
+        :param device_name: name of the device
+        :type device_name: str
         :param ping: device response time
         :type ping: int
         """
         with self.lock:
             self._device.ping = ping
 
-    def update_event_failure(self) -> None:
+    def update_event_failure(self, device_name: str) -> None:
         """
         Update a monitored device failure status
+
+        :param device_name: name of the device
+        :type device_name: str
         """
         with self.lock:
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_health_state(self, health_state: HealthState) -> None:
+    def update_device_health_state(
+        self, device_name: str, health_state: HealthState
+    ) -> None:
         """
         Update a monitored device health state
         aggregate the health states available
 
+        :param device_name: name of the device
+        :type device_name: str
         :param health_state: health state of the device
         :type health_state: HealthState
         """
@@ -536,12 +542,16 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_state(self, state: tango.DevState) -> None:
+    def update_device_state(
+        self, device_name: str, state: tango.DevState
+    ) -> None:
         """
         Update a monitored device state,
         aggregate the states available
         and call the relative callbacks if available
 
+        :param device_name: name of the device
+        :type device_name: str
         :param state: state of the device
         :type state: DevState
         """
@@ -550,11 +560,15 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
 
-    def update_device_obs_state(self, obs_state: ObsState) -> None:
+    def update_device_obs_state(
+        self, device_name: str, obs_state: ObsState
+    ) -> None:
         """
         Update a monitored device obs state,
         and call the relative callbacks if available
 
+        :param device_name: name of the device
+        :type device_name: str
         :param obs_state: obs state of the device
         :type obs_state: ObsState
         """

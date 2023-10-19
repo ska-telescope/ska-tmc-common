@@ -917,14 +917,15 @@ reference = 'ska-nexus'
 
 [[package]]
 name = "ska-tango-testing"
-version = "0.4.1"
+version = "0.6.0"
 description = "Test harness for testing SKA Tango devices"
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 
 [package.dependencies]
-pytango = ">=9.3,<10.0"
+numpy = ">=1.19.0,<2.0.0"
+pytango = ">=9.3.3,<10.0.0"
 
 [package.source]
 type = "legacy"
@@ -1212,7 +1213,11 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "urllib3"
+<<<<<<< HEAD
 version = "2.0.7"
+=======
+version = "2.0.6"
+>>>>>>> de43ffd1cd2c92b54c9a8e297688ac8ca39f786a
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
@@ -1235,7 +1240,11 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
+<<<<<<< HEAD
 content-hash = "9807ef49d0d606cb960d64183233c938e6e7ceec0588fca22dda80620a94b567"
+=======
+content-hash = "6a1f6f760b6b6b5f0a9faddd316d7e7ced2aa67e4f874d8ae8594515c3201906"
+>>>>>>> de43ffd1cd2c92b54c9a8e297688ac8ca39f786a
 
 [metadata.files]
 alabaster = [
@@ -2054,8 +2063,8 @@ ska-tango-base = [
     {file = "ska_tango_base-0.18.1.tar.gz", hash = "sha256:60a05dbdbb5dde0ad725f2bd58ce34e02faae62a2fa14ed73a4c27bd072fa5b2"},
 ]
 ska-tango-testing = [
-    {file = "ska-tango-testing-0.4.1.tar.gz", hash = "sha256:c41c1d6593b59de15aa7a11e05a61b39f08e900e824d4325afb053327bc21e63"},
-    {file = "ska_tango_testing-0.4.1-py3-none-any.whl", hash = "sha256:58541c22e741387b119c63ad1f90265f7f5e7b76b21049fc266bb1133fc27bbf"},
+    {file = "ska_tango_testing-0.6.0-py3-none-any.whl", hash = "sha256:3a96b090998b445df013cba33721d110298a946b277a7de6fe312f3da1219504"},
+    {file = "ska_tango_testing-0.6.0.tar.gz", hash = "sha256:fdc1d807dc1cad2ddc1d754cb5ee9debe846db667de12e412474388c3fff97d6"},
 ]
 ska-telmodel = [
     {file = "ska_telmodel-1.9.0-py3-none-any.whl", hash = "sha256:743de456315e077fc2aa8c10ca1ac34c44e9c0a97cacb0d3d42930a3f94aca07"},
@@ -2137,8 +2146,13 @@ typing-extensions = [
     {file = "typing_extensions-4.8.0.tar.gz", hash = "sha256:df8e4339e9cb77357558cbdbceca33c303714cf861d1eef15e1070055ae8b7ef"},
 ]
 urllib3 = [
+<<<<<<< HEAD
     {file = "urllib3-2.0.7-py3-none-any.whl", hash = "sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e"},
     {file = "urllib3-2.0.7.tar.gz", hash = "sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84"},
+=======
+    {file = "urllib3-2.0.6-py3-none-any.whl", hash = "sha256:7a7c7003b000adf9e7ca2a377c9688bbc54ed41b985789ed576570342a375cd2"},
+    {file = "urllib3-2.0.6.tar.gz", hash = "sha256:b19e1a85d206b56d7df1d5e683df4a7725252a964e3993648dd0fb5a1c157564"},
+>>>>>>> de43ffd1cd2c92b54c9a8e297688ac8ca39f786a
 ]
 wrapt = [
     {file = "wrapt-1.15.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:ca1cccf838cd28d5a0883b342474c630ac48cac5df0ee6eacc9c7290f76b11c1"},
