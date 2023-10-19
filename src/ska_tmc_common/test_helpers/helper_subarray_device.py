@@ -669,7 +669,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.defective_params.get("intermediate_state")
             # or ObsState.RESOURCING
         )
-
+        self.logger.info("intermediate_state is: %s", intermediate_state)
         if fault_type == FaultType.FAILED_RESULT:
             return [result], [fault_message]
 
@@ -684,6 +684,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
+            self.logger.info("pushing obsState %s event", intermediate_state)
             self.push_change_event("obsState", intermediate_state)
             return [ResultCode.QUEUED], [""]
 
