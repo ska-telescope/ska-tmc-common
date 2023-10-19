@@ -1213,11 +1213,7 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "urllib3"
-<<<<<<< HEAD
 version = "2.0.7"
-=======
-version = "2.0.6"
->>>>>>> de43ffd1cd2c92b54c9a8e297688ac8ca39f786a
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
@@ -1240,11 +1236,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-<<<<<<< HEAD
-content-hash = "9807ef49d0d606cb960d64183233c938e6e7ceec0588fca22dda80620a94b567"
-=======
-content-hash = "6a1f6f760b6b6b5f0a9faddd316d7e7ced2aa67e4f874d8ae8594515c3201906"
->>>>>>> de43ffd1cd2c92b54c9a8e297688ac8ca39f786a
+content-hash = "8728b8df19a5802b8c646fa392bb80f3f5e68967d47edcc9fd1aa1a1228b2902"
 
 [metadata.files]
 alabaster = [
@@ -2146,13 +2138,8 @@ typing-extensions = [
     {file = "typing_extensions-4.8.0.tar.gz", hash = "sha256:df8e4339e9cb77357558cbdbceca33c303714cf861d1eef15e1070055ae8b7ef"},
 ]
 urllib3 = [
-<<<<<<< HEAD
     {file = "urllib3-2.0.7-py3-none-any.whl", hash = "sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e"},
     {file = "urllib3-2.0.7.tar.gz", hash = "sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84"},
-=======
-    {file = "urllib3-2.0.6-py3-none-any.whl", hash = "sha256:7a7c7003b000adf9e7ca2a377c9688bbc54ed41b985789ed576570342a375cd2"},
-    {file = "urllib3-2.0.6.tar.gz", hash = "sha256:b19e1a85d206b56d7df1d5e683df4a7725252a964e3993648dd0fb5a1c157564"},
->>>>>>> de43ffd1cd2c92b54c9a8e297688ac8ca39f786a
 ]
 wrapt = [
     {file = "wrapt-1.15.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:ca1cccf838cd28d5a0883b342474c630ac48cac5df0ee6eacc9c7290f76b11c1"},

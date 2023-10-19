@@ -10,7 +10,6 @@ import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
 from ska_telmodel.data import TMData
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
@@ -25,7 +24,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._delay: int = 2
-        self._obs_state: ObsState = ObsState.EMPTY
         self._source_sys_param: str = ""
         self._sys_param: str = ""
 
