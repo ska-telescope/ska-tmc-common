@@ -38,19 +38,20 @@ class HelperDishLNDevice(HelperBaseDevice):
     device.
     """
 
-    def init_device(self):
+    def init_device(self) -> None:
         super().init_device()
-        self._delay = 2
-        self._command_delay_info = {
+        self._delay: int = 2
+        self._command_delay_info: dict = {
             CONFIGURE: 2,
             ABORT: 2,
             RESTART: 2,
         }
-        self._command_call_info = []
-        self._command_info = ("", "")
-        self._state_duration_info = []
-        self._offset = {"off_xel": 0.0, "off_el": 0.0}
-        self._actual_pointing = []
+        self._command_call_info: list = []
+        self._command_info: Tuple = ("", "")
+        self._state_duration_info: list = []
+        self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
+        self._actual_pointing: list = []
+        self._kvalue: int = 0
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -68,6 +69,14 @@ class HelperDishLNDevice(HelperBaseDevice):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
+    kValue = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_kValue(self) -> int:
+        """
+        This method reads the k value of the dish.
+        :rtype:int
+        """
+        return self._kvalue
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
@@ -108,6 +117,30 @@ class HelperDishLNDevice(HelperBaseDevice):
     def read_commandDelayInfo(self) -> str:
         """This method is used to read the attribute value for delay."""
         return json.dumps(self._command_delay_info)
+
+    def is_SetKValue_allowed(self) -> bool:
+        """
+        This method checks if the SetKValue Command is allowed in current
+        State.
+        :rtype: bool
+        """
+        return True
+
+    @command(
+        dtype_in="DevLong",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def SetKValue(self, kvalue: int) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This command invokes SetKValue command on  Dish Master.
+
+        :param argin: k value between range 1-2222.
+        :argin dtype: int
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        self._kvalue = kvalue
+        return ([ResultCode.OK], [""])
 
     @command(
         dtype_in=str,
