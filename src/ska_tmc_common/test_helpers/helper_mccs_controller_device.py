@@ -235,7 +235,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ReleaseAll(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
         MCCS controller device

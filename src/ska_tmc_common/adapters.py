@@ -240,7 +240,7 @@ class MCCSControllerAdapter(BaseAdapter):
     for MCCS controller devices.
     """
 
-    def AssignResources(
+    def Allocate(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -248,13 +248,13 @@ class MCCSControllerAdapter(BaseAdapter):
         """
         return self._proxy.Allocate(argin)
 
-    def ReleaseResources(
+    def ReleaseAll(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Release on MCCS controller device proxy.
         """
-        return self._proxy.Release(argin)
+        return self._proxy.ReleaseAll(argin)
 
 
 class DishAdapter(BaseAdapter):
