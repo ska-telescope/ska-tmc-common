@@ -64,7 +64,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event("actualPointing", True, False)
-            self._device.set_change_event("kValue", True, False)
             return (ResultCode.OK, "")
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
@@ -141,7 +140,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         self._kvalue = kvalue
-        self.push_change_event("kValue", self._kvalue)
         return ([ResultCode.OK], [""])
 
     @command(
