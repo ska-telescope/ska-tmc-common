@@ -664,7 +664,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :raises: None
         """
-        self.logger.info("inducing fault ....")
+        self.logger.info("inducing fault .... ")
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
         fault_message = self.defective_params["error_message"]
@@ -677,7 +677,13 @@ class HelperSubArrayDevice(SKASubarray):
             self.logger.info("intermediate_state is: %s", intermediate_state)
 
         if fault_type == FaultType.FAILED_RESULT:
+            self.logger.info("FAILED RESULT Fault type")
+            self.logger.info(
+                "self.defective_params.get(target_obsstate): %s",
+                self.defective_params.get("target_obsstate"),
+            )
             if self.defective_params.get("target_obsstate"):
+                self.logger.info("target_obstate given")
                 # Utilise target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
                 # ResultCode.FAILED
