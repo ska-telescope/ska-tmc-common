@@ -346,7 +346,7 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
-        command_id = "1000_Release"
+        command_id = "1000_ReleaseAll"
 
         thread = threading.Thread(
             target=self.update_lrcr,
