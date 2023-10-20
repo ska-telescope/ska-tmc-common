@@ -3,8 +3,9 @@ import logging
 
 import pytest
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import ObsState
 
-from ska_tmc_common import DevFactory
+from ska_tmc_common import DevFactory, FaultType
 from tests.settings import HELPER_MCCS_CONTROLLER
 
 commands_with_argin = ["Allocate", "ReleaseAll"]
@@ -52,3 +53,19 @@ def test_mccs_controller_command_raise_exception(tango_context, command):
     result, message = mccs_controller_device.command_inout(command, "")
     logger.info(f"result_code:{result}, message:{message}")
     assert result[0] == ResultCode.QUEUED
+
+
+def test_allocate_stuck_in_intermediate_state(tango_context):
+    dev_factory = DevFactory()
+    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
+        "result": ResultCode.FAILED,
+        "intermediate_state": ObsState.RESOURCING,
+    }
+    mccs_controller_device.SetDefective(json.dumps(defect))
+    result, _ = mccs_controller_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert mccs_controller_device.obsState == ObsState.RESOURCING
+    mccs_controller_device.SetDefective(json.dumps({"enabled": False}))
