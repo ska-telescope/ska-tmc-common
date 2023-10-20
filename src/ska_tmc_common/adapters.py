@@ -82,6 +82,11 @@ class BaseAdapter:
 
 
 class CspMasterLeafNodeAdapter(BaseAdapter):
+    """
+    This class is used for creating and managing adapters
+    for CSP master leaf devices.
+    """
+
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes LoadDishCfg Command on the csp master Leaf device proxy.
