@@ -2,12 +2,13 @@
 This module implements the Helper MCCS controller devices for testing
 an integrated TMC
 """
-# pylint: disable=unused-argument
 import json
 import threading
 import time
 from typing import List, Tuple
 
+# pylint: disable=unused-argument
+import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
@@ -219,21 +220,21 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("command_result %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
 
-    # def update_lrcr(
-    #     self ,command_name: str = "" , command_id : str = ""
-    # ) -> None:
-    def update_lrcr(self, command_id: str = "") -> None:
+    def update_lrcr(
+        self, command_name: str = "", command_id: str = ""
+    ) -> None:
+        # def update_lrcr(self, command_id: str = "") -> None:
         """Updates the given data after a delay."""
-        # delay_value = 0
-        # with tango.EnsureOmniThread():
-        #     if command_name in self._command_delay_info:
-        #         delay_value = self._command_delay_info[command_name]
-        #     time.sleep(delay_value)
-        #     self.logger.info(
-        #         "Sleep %s for command %s ", delay_value, command_name
-        #     )
-        #
-        #     time.sleep(0.1)
+        delay_value = 0
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+            time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+
+            time.sleep(0.1)
         self.logger.info("update_lrcr started")
         self.push_command_result(command_id, ResultCode.OK)
         self.logger.info("Command result pushed")
@@ -290,8 +291,8 @@ class HelperMCCSController(HelperBaseDevice):
 
         thread = threading.Thread(
             target=self.update_lrcr,
-            # args = ["Allocate",command_id]
-            args=[command_id],
+            args=["Allocate", command_id]
+            # args=[command_id],
         )
         thread.start()
         self.logger.info("AssignResourse invoked on MCCS Controller")
@@ -350,8 +351,8 @@ class HelperMCCSController(HelperBaseDevice):
 
         thread = threading.Thread(
             target=self.update_lrcr,
-            # args = ["Allocate",command_id]
-            args=[command_id],
+            args=["Allocate", command_id]
+            # args=[command_id],
         )
         thread.start()
         self.logger.info("Release Resource invoked on MCCS Controller")
