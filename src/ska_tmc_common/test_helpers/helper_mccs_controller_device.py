@@ -153,7 +153,7 @@ class HelperMCCSController(HelperBaseDevice):
             # should not be pushed
             if intermediate_state != "NA":
                 self._obs_state = intermediate_state
-                self.push_obs_state_event(intermediate_state)
+                self.push_change_event("obsState", intermediate_state)
                 self.logger.info("Induce_fault activity completed.")
             return [ResultCode.QUEUED], [""]
 
