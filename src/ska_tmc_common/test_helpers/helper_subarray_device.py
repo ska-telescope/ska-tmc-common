@@ -688,6 +688,7 @@ class HelperSubArrayDevice(SKASubarray):
                 # transition to specific obsState while returning
                 # ResultCode.FAILED
                 self._obs_state = self.defective_params.get("target_obsstate")
+                time.sleep(2)
                 self.logger.info(
                     "pushing target obsstate %s event", self._obs_state
                 )
