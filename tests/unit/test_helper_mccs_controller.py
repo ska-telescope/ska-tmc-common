@@ -20,7 +20,7 @@ def test_mccs_controller_commands_with_argument(tango_context, command):
     result, unique_id = mccs_controller_device.command_inout(command, "")
     logger.info(f"Result:{result},message:{unique_id}")
     assert result[0] == ResultCode.QUEUED
-    assert unique_id[0].endswith("commands_with_argin")
+    assert unique_id[0].endswith(commands_with_argin)
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
