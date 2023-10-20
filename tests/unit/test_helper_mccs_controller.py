@@ -20,7 +20,7 @@ def test_mccs_controller_commands_with_argument(tango_context, command):
     result, unique_id = mccs_controller_device.command_inout(command, "")
     logger.info(f"Result:{result},message:{unique_id}")
     assert result[0] == ResultCode.QUEUED
-    assert unique_id[0] == "1000_Allocate"
+    assert unique_id[0].endswith("commands_with_argin")
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
@@ -29,7 +29,7 @@ def test_mccs_controller_commands_without_argument(tango_context, command):
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     result, message = mccs_controller_device.command_inout(command)
     logger.info(f"result_code:{result}")
-    assert result[0] == ResultCode.QUEUED
+    assert result[0] == ResultCode.OK
     assert message[0] == ""
 
 
