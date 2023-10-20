@@ -682,7 +682,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "self.defective_params.get(target_obsstate): %s",
                 self.defective_params.get("target_obsstate"),
             )
-            if self.defective_params.get("target_obsstate"):
+            if "target_obsstate" in self.defective_params.keys():
                 self.logger.info("target_obstate given")
                 # Utilise target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
