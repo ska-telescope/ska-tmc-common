@@ -629,6 +629,7 @@ class HelperSubArrayDevice(SKASubarray):
         "fault_type": FaultType.FAILED_RESULT,
         "error_message": "Default exception.",
         "result": ResultCode.FAILED,
+        "target_obsstate": ObsState.EMPTY,
         }
         )
         defective_params = json.loads(defective)
@@ -667,17 +668,23 @@ class HelperSubArrayDevice(SKASubarray):
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
         fault_message = self.defective_params["error_message"]
-        self.logger.info(
-            "intermediate_state is: %s",
-            self.defective_params.get("intermediate_state"),
-        )
-        intermediate_state = (
-            self.defective_params.get("intermediate_state")
-            # or ObsState.RESOURCING
-        )
-        self.logger.info("intermediate_state is: %s", intermediate_state)
+
+        if self.defective_params.get("intermediate_state"):
+            intermediate_state = (
+                self.defective_params.get("intermediate_state")
+                # or ObsState.RESOURCING
+            )
+            self.logger.info("intermediate_state is: %s", intermediate_state)
 
         if fault_type == FaultType.FAILED_RESULT:
+            if self.defective_params.get("target_obsstate"):
+                # Utilise target_obsstate parameter when Subarray should
+                # transition to specific obsState while returning ResultCode.FAILED
+                self._obs_state = self.defective_params.get("target_obsstate")
+                self.logger.info(
+                    "pushing target obsstate %s event", self._obs_state
+                )
+                self.push_change_event("obsState", self._obs_state)
             return [result], [fault_message]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
