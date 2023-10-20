@@ -240,17 +240,13 @@ class MCCSControllerAdapter(BaseAdapter):
     for MCCS controller devices.
     """
 
-    def Allocate(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Allocate on MCCS controller device proxy.
         """
         return self._proxy.Allocate(argin)
 
-    def ReleaseAll(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def ReleaseAll(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Release on MCCS controller device proxy.
         """

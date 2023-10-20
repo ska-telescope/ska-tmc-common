@@ -3,7 +3,8 @@ This module implements the Helper MCCS master leaf node devices for testing
 an integrated TMC
 """
 # pylint: disable=unused-argument
-import json,time
+import json
+import time
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -44,7 +45,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             """
             super().do()
             return (ResultCode.OK, "")
-        
+
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
     ) -> None:
