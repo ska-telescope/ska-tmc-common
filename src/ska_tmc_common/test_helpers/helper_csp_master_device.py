@@ -40,12 +40,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("sourceSysParam", True, False)
             self._device.set_change_event("sysParam", True, False)
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event(
-                "longRunningCommandResult", True, False
-            )
-            self._device.set_change_event("isSubsystemAvailable", True, False)
             return (ResultCode.OK, "")
 
     def read_sourceSysParam(self) -> str:

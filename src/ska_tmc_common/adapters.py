@@ -24,6 +24,7 @@ class AdapterType(enum.IntEnum):
     CSPMASTER = 5
     SDPSUBARRAY = 6
     MCCS_CONTROLLER = 7
+    CSP_MASTER_LEAF_NODE = 8
 
 
 class BaseAdapter:
@@ -78,6 +79,14 @@ class BaseAdapter:
         Sets device proxies to Disable state.
         """
         return self.proxy.Disable()
+
+
+class CspMasterLeafNodeAdapter(BaseAdapter):
+    def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes LoadDishCfg Command on the csp master Leaf device proxy.
+        """
+        return self._proxy.LoadDishCfg(argin)
 
 
 class CspMasterAdapter(BaseAdapter):
@@ -471,6 +480,10 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.CSPMASTER:
             new_adapter = CspMasterAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.CSP_MASTER_LEAF_NODE:
+            new_adapter = CspMasterLeafNodeAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         else:
