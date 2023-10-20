@@ -679,7 +679,8 @@ class HelperSubArrayDevice(SKASubarray):
         if fault_type == FaultType.FAILED_RESULT:
             if self.defective_params.get("target_obsstate"):
                 # Utilise target_obsstate parameter when Subarray should
-                # transition to specific obsState while returning ResultCode.FAILED
+                # transition to specific obsState while returning
+                # ResultCode.FAILED
                 self._obs_state = self.defective_params.get("target_obsstate")
                 self.logger.info(
                     "pushing target obsstate %s event", self._obs_state
