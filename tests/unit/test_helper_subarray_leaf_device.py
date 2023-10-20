@@ -135,10 +135,14 @@ def test_assign_resources_command_not_allowed(tango_context):
 
     subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
-@pytest.mark.R1
+
 def test_pointing_calibration(tango_context):
     POINTING_CALIBRATION = [0.12345, 0.56789]
     dev_factory = DevFactory()
     sdp_leaf_node = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
-    sdp_leaf_node.SetDirectPointingCalibrations(json.dumps(POINTING_CALIBRATION))
-    assert sdp_leaf_node.pointingCalibrations == json.dumps(POINTING_CALIBRATION)
+    sdp_leaf_node.SetDirectPointingCalibrations(
+        json.dumps(POINTING_CALIBRATION)
+    )
+    assert sdp_leaf_node.pointingCalibrations == json.dumps(
+        POINTING_CALIBRATION
+    )
