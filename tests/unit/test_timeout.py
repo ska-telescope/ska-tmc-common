@@ -93,12 +93,12 @@ def test_command_timeout_success(task_callback):
 
 def test_command_timeout_failure(task_callback):
     cm = DummyComponentManager(logger)
-    cm.timeout = 2
+    cm.timeout = 1
     cm.invoke_command(True, task_callback)
     time.sleep(3)
     task_callback.assert_against_call(status=TaskStatus.QUEUED)
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
         result=ResultCode.FAILED,
-        exception="Timeout has occured, command failed",
+        exception="Timeout has occurred, command failed",
     )
