@@ -249,15 +249,24 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
-
-        # if eb_id not present in JSON, SDP Subarray remains in
-        # obsState=RESOURCING and raises exception
         if "eb_id" not in input["execution_block"]:
             self.logger.info("Missing eb_id in the AssignResources input json")
-
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing eb_id in the AssignResources input json",
+                "SdpSubarry.AssignResources()",
+                tango.ErrSeverity.ERR,
+            )
+
+        # if eb_id in JSON does not start with prefix eb, SDP Subarray
+        # remains in obsState=RESOURCING and raises exception
+        eb_id = input["execution_block"]["eb_id"]
+        if not eb_id.startswith("eb-"):
+            self.logger.info("eb_id is invalid")
+
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Invalid eb_id in the AssignResources input json",
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
