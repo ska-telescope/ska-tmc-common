@@ -51,6 +51,7 @@ class BaseTMCCommand:
         self.logger = logger
         self.tracker_thread: threading.Thread
         self._stop: bool
+        self.state_to_achieve: IntEnum
         self.index: int
 
     def set_command_id(self, command_name: str):
