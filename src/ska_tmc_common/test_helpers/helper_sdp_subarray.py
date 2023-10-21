@@ -261,7 +261,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # if eb_id in JSON does not start with prefix eb, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
         eb_id = input["execution_block"]["eb_id"]
-        if not eb_id.startswith("eb-"):
+        if not eb_id.startswith("eb-mvp"):
             self.logger.info("eb_id is invalid")
 
             raise tango.Except.throw_exception(
