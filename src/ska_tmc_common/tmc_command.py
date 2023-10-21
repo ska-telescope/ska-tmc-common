@@ -209,7 +209,7 @@ class BaseTMCCommand:
         """
         with EnsureOmniThread():
             self.index = 0
-            state_to_achieve = expected_state[self.index]
+            self.state_to_achieve = expected_state[self.index]
             while not self._stop:
                 try:
                     if self.check_abort_event(abort_event):
@@ -226,7 +226,7 @@ class BaseTMCCommand:
                         self.stop_tracker_thread()
 
                     if self.check_final_obsstate(
-                        state_function, state_to_achieve, expected_state
+                        state_function, self.state_to_achieve, expected_state
                     ):
                         self.update_task_status(result=ResultCode.OK)
                         self.stop_tracker_thread()
@@ -314,7 +314,7 @@ class BaseTMCCommand:
             )
             if len(expected_state) > self.index + 1:
                 self.index += 1
-                state_to_achieve = expected_state[self.index]
+                self.state_to_achieve = expected_state[self.index]
             else:
                 self.logger.info(
                     "State change has occurred, command successful"
