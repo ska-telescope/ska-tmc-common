@@ -240,7 +240,7 @@ class HelperDishDevice(HelperDishLNDevice):
         else:
             self._achieved_pointing = [timestamp, azimuth, elevation]
             self.logger.info(
-                "The achieved pointing is: %s", self._achieved_pointing
+                "The achieved pointing value is: %s", self._achieved_pointing
             )
             self.push_change_event(
                 "achievedPointing", json.dumps(self._achieved_pointing)
