@@ -132,3 +132,18 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
         dish_device.command_inout(command_to_check)
     # Clear the defect and ensure the command can be executed when not defective
     dish_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_dish_SetKValue_command(tango_context):
+    """
+    This test case invokes command on dish master device
+    and checks whether the attributes are populated with
+    relevant k value or not.
+    """
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+
+    return_code, _ = dish_device.SetKValue(1)
+    return_code[0] = ResultCode.OK
+
+    assert dish_device.kValue == 1

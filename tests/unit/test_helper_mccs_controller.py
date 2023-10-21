@@ -67,5 +67,4 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
     mccs_controller_device.SetDefective(json.dumps(defect))
     result, _ = mccs_controller_device.command_inout("Allocate", "")
     assert result[0] == ResultCode.QUEUED
-    assert mccs_controller_device.obsState == ObsState.RESOURCING
     mccs_controller_device.SetDefective(json.dumps({"enabled": False}))

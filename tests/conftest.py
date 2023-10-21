@@ -7,6 +7,7 @@ tests.
 
 # pylint: disable=unused-argument
 import logging
+from os.path import dirname, join
 
 import pytest
 import tango
@@ -184,3 +185,25 @@ def csp_sln_dev_name() -> str:
     """
     # testing device
     return "ska_mid/tm_leaf_node/csp_subarray01"
+
+
+def get_input_str(path) -> str:
+    """
+    Returns input json string
+    :rtype: String
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        input_str = f.read()
+    return input_str
+
+
+@pytest.fixture()
+def json_factory():
+    """
+    Json factory for getting json files
+    """
+
+    def _get_json(slug):
+        return get_input_str(join(dirname(__file__), "data", f"{slug}.json"))
+
+    return _get_json

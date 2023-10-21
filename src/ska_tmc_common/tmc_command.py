@@ -51,6 +51,7 @@ class BaseTMCCommand:
         self.logger = logger
         self.tracker_thread: threading.Thread
         self._stop: bool
+        self.index: int
 
     def set_command_id(self, command_name: str):
         """Sets the command id for error propagation."""
@@ -139,7 +140,7 @@ class BaseTMCCommand:
         """Creates and starts a thread that will keep track of the State/
         obsState change to be monitored (For confirming command completion.
         Currently only supports obsState change.), the timeout callback to
-        montior the timeout and the longRunningCommandResult callback to keep
+        monitor the timeout and the longRunningCommandResult callback to keep
         track of LRCR events.
 
         :param expected_state: Expected state of the device in case of
@@ -157,10 +158,10 @@ class BaseTMCCommand:
 
         :param lrcr_callback: An instance of LRCRCallback class that acts
                     as a callable functions to call when
-                    longRunningCommandResult event is recieved.
+                    longRunningCommandResult event is received.
         """
         self.tracker_thread = threading.Thread(
-            target=self.track_transitions,
+            target=self.track_and_update_command_status,
             args=[
                 state_function,
                 expected_state,
@@ -175,7 +176,7 @@ class BaseTMCCommand:
         self.logger.info("Starting tracker thread")
         self.tracker_thread.start()
 
-    def track_transitions(
+    def track_and_update_command_status(
         self,
         state_function: Callable,
         expected_state: List[IntEnum],
@@ -186,7 +187,7 @@ class BaseTMCCommand:
         lrcr_callback: Optional[LRCRCallback] = None,
     ) -> None:
         """Keeps track of the obsState change and the timeout callback to
-        determine whether timeout has occured or the command completed
+        determine whether timeout has occurred or the command completed
         successfully. Logs the result for now.
 
         :param expected_state: Expected state of the device in case of
@@ -207,88 +208,144 @@ class BaseTMCCommand:
                     attribute longRunningCommandResult arrives.
         """
         with EnsureOmniThread():
-            index = 0
-            state_to_achieve = expected_state[index]
+            self.index = 0
+            state_to_achieve = expected_state[self.index]
             while not self._stop:
                 try:
-                    if abort_event.is_set():
-                        self.logger.error(
-                            "Command has been Aborted, "
-                            + "Setting TaskStatus to aborted"
-                        )
+                    if self.check_abort_event(abort_event):
+                        self.update_task_status(status=TaskStatus.ABORTED)
+                        self.stop_tracker_thread()
+
+                    if self.check_command_timeout(
+                        timeout_id, timeout_callback
+                    ):
                         self.update_task_status(
-                            status=TaskStatus.ABORTED,
+                            result=ResultCode.FAILED,
+                            message="Timeout has occurred, command failed",
                         )
-                        self.stop_tracker_thread(timeout_id)
+                        self.stop_tracker_thread()
 
-                    if timeout_id:
-                        if timeout_callback.assert_against_call(
-                            timeout_id, TimeoutState.OCCURED
-                        ):
-                            self.logger.error(
-                                "Timeout has occurred, command failed"
-                            )
-                            self.update_task_status(
-                                result=ResultCode.FAILED,
-                                message="Timeout has occurred, command failed",
-                            )
-                            self.stop_tracker_thread(timeout_id)
+                    if self.check_final_obsstate(
+                        state_function, state_to_achieve, expected_state
+                    ):
+                        self.update_task_status(result=ResultCode.OK)
+                        self.stop_tracker_thread()
 
-                    value = state_function()
-                    self.logger.info(f"value :: {value}")
-                    self.logger.info(f" state_to_achieve:: {state_to_achieve}")
-                    if state_function() == state_to_achieve:
-                        self.logger.info(
-                            "State change has occured, current state is %s",
-                            state_to_achieve,
+                    if self.check_command_exception(command_id, lrcr_callback):
+                        self.update_task_status(
+                            result=ResultCode.FAILED,
+                            message=lrcr_callback.command_data[command_id][
+                                "exception_message"
+                            ],
                         )
-                        if len(expected_state) > index + 1:
-                            index += 1
-                            state_to_achieve = expected_state[index]
-                        else:
-                            self.logger.info(
-                                "State change has occured, command successful"
-                            )
-                            self.update_task_status(result=ResultCode.OK)
-                            self.stop_tracker_thread(timeout_id)
-
-                    if command_id:
-                        if lrcr_callback.assert_against_call(
-                            command_id, ResultCode.FAILED
-                        ):
-                            self.logger.error(
-                                "Exception has occured, command failed"
-                            )
-                            self.update_task_status(
-                                result=ResultCode.FAILED,
-                                message=lrcr_callback.command_data[command_id][
-                                    "exception_message"
-                                ],
-                            )
-                            self.stop_tracker_thread(timeout_id)
+                        self.stop_tracker_thread()
 
                 except Exception as e:
                     self.update_task_status(
                         result=ResultCode.FAILED,
-                        message=lrcr_callback.command_data[command_id][e],
+                        message="Exception occured in track transitions "
+                        + f"thread: {e}",
                     )
-                    self.stop_tracker_thread(timeout_id)
+                    self.stop_tracker_thread()
                     self.logger.error(
-                        "Exception occured in Tracker thread: %s", e
+                        "Exception occurred in Tracker thread: %s", e
                     )
                 time.sleep(0.1)
 
             if command_id:
                 lrcr_callback.remove_data(command_id)
+            if timeout_id:
+                self.component_manager.stop_timer()
 
-    def stop_tracker_thread(self, timeout_id) -> None:
+    def check_abort_event(self, abort_event) -> bool:
+        """Checks for abort event. If abort event detected, sets TaskStatus
+        to ABORTED and stops the tracker thread.
+        :param abort_event: threading.Event class object that is used to check
+        if the command has been aborted.
+        """
+        if abort_event.is_set():
+            self.logger.error(
+                "Command has been Aborted, " + "Setting TaskStatus to aborted"
+            )
+            return True
+        return None
+
+    def check_command_timeout(self, timeout_id, timeout_callback) -> bool:
+        """Checks for command timeout. On timeout, it sets ResultCode
+        to FAILED and stops the tracker thread.
+
+        :param timeout_id: Id for TimeoutCallback class object.
+
+        :param timeout_callback: An instance of TimeoutCallback class that acts
+                    as a callable function to call in the event of timeout.
+        """
+        if timeout_id:
+            if timeout_callback.assert_against_call(
+                timeout_id, TimeoutState.OCCURED
+            ):
+                self.logger.error("Timeout has occurred, command failed")
+                return True
+        return None
+
+    def check_final_obsstate(
+        self,
+        state_function,
+        state_to_achieve,
+        expected_state,
+    ) -> bool:
+        """Waits for expected final obsState with or without
+        transitional obsState. On expected obsState occurrence,
+        it sets ResultCode to OK and stops the tracker thread
+
+        :param state_function: a callable provides current state of
+                                the device.
+
+        :param state_to_achieve: A particular state to needs to be
+                                achieved for command completion.
+
+        :param expected_state: Expected state of the device in case of
+                    successful command execution. It's a list contains
+                    transitional obsState if exists for a command.
+        """
+        if state_function() == state_to_achieve:
+            self.logger.info(
+                "State change has occurred, current state is %s",
+                state_to_achieve,
+            )
+            if len(expected_state) > self.index + 1:
+                self.index += 1
+                state_to_achieve = expected_state[self.index]
+            else:
+                self.logger.info(
+                    "State change has occurred, command successful"
+                )
+                return True
+        return None
+
+    def check_command_exception(self, command_id, lrcr_callback) -> bool:
+        """Checks if command has been failed with an exception.
+        On exception, it sets ResultCode to FAILED and stops
+        the tracker thread.
+
+        :param command_id: Id for LRCRCallback class object.
+
+        :param lrcr_callback: An instance of LRCRCallback class that acts
+                    as a callable function to call when an event from the
+                    attribute longRunningCommandResult arrives.
+        """
+        if command_id and lrcr_callback.assert_against_call(
+            command_id, ResultCode.FAILED
+        ):
+            self.logger.error("Exception has occurred, command failed")
+            return True
+        return None
+
+    def stop_tracker_thread(self) -> None:
         """External stop method for stopping the timer thread as well as the
         tracker thread."""
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
             self._stop = True
-            if timeout_id:
-                self.component_manager.stop_timer()
 
 
 class TMCCommand(BaseTMCCommand):

@@ -104,6 +104,12 @@ class CspMasterAdapter(BaseAdapter):
         """
         return self._proxy.Off(argin)
 
+    def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes LoadDishCfg Command on the csp master device proxy.
+        """
+        return self._proxy.LoadDishCfg(argin)
+
 
 class SubArrayAdapter(BaseAdapter):
     """
@@ -378,6 +384,12 @@ class DishAdapter(BaseAdapter):
         Invokes Reset on device proxy.
         """
         return self._proxy.Reset()
+
+    def SetKValue(self, kvalue: int) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes SetKValue Command on device proxy.
+        """
+        return self._proxy.SetKValue(kvalue)
 
 
 class CspSubarrayAdapter(SubArrayAdapter):
