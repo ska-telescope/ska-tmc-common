@@ -307,7 +307,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseAll(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ReleaseAll(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
         MCCS controller device
@@ -331,7 +331,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = "1000_ReleaseAll"
 
         thread = threading.Thread(
-            target=self.update_lrcr, args=["Allocate", command_id]
+            target=self.update_lrcr, args=["ReleaseAll", command_id]
         )
         thread.start()
         self.logger.info("Release Resource invoked on MCCS Controller")
