@@ -200,7 +200,6 @@ class HelperMCCSController(HelperBaseDevice):
         exception: Exception message to be pushed as an event
         dtype: str
         """
-        # command_id = f"{time.time()}-{command}"
         self.logger.info("push_command_result started")
         if exception:
             command_result = (command_id, exception)
@@ -212,7 +211,6 @@ class HelperMCCSController(HelperBaseDevice):
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
     ) -> None:
-        # def update_lrcr(self, command_id: str = "") -> None:
         """Updates the given data after a delay."""
         delay_value = 0
         with tango.EnsureOmniThread():
@@ -262,13 +260,11 @@ class HelperMCCSController(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        self.logger.info("Allocate command started 1 ")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Allocate",
             )
-        self.logger.info("Allocate command started 2")
         if self._raise_exception:
             thread = threading.Thread(
                 target=self.wait_and_update_exception, args=["Allocate"]
@@ -279,14 +275,10 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = "1000_Allocate"
 
         thread = threading.Thread(
-            target=self.update_lrcr,
-            args=["Allocate", command_id]
-            # args=[command_id],
+            target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
         self.logger.info("AssignResourse invoked on MCCS Controller")
-
-        # return [ ResultCode.QUEUED, command_id ]
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
@@ -339,9 +331,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = "1000_ReleaseAll"
 
         thread = threading.Thread(
-            target=self.update_lrcr,
-            args=["Allocate", command_id]
-            # args=[command_id],
+            target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
         self.logger.info("Release Resource invoked on MCCS Controller")

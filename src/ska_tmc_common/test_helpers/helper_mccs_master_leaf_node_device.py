@@ -113,9 +113,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self.logger.debug("AssignResourses command complete")
         return [ResultCode.OK], [""]
 
-    def is_ReleaseResources_allowed(self) -> bool:
+    def is_ReleaseAllResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseResources` is allowed in the current
+        Check if command `ReleaseAllResources` is allowed in the current
         device state.
 
         :return: ``True`` if the command is allowed
@@ -139,11 +139,11 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseResources(
+    def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ReleaseResources command on MCCS
+        This method invokes ReleaseAllResources command on MCCS
         master leaf node device.
 
         :return: a tuple containing ResultCode and Message
@@ -151,8 +151,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         """
         if self.defective_params["enabled"]:
             return self.induce_fault(
-                "ReleaseResources",
+                "ReleaseAllResources",
             )
-        self.push_command_result(ResultCode.OK, "ReleaseResources")
-        self.logger.info("ReleaseResources command completed.")
+        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        self.logger.info("ReleaseAllResources command completed.")
         return [ResultCode.OK], [""]

@@ -231,7 +231,7 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
         """
         return self._proxy.AssignResources(argin)
 
-    def ReleaseResources(
+    def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
