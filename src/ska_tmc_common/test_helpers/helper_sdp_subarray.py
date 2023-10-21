@@ -244,8 +244,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes AssignResources command on SdpSubarray
         device."""
         # Change obsState to RESOURCING as the command execution is started
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
 
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
@@ -257,6 +255,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_obs_state_event(self._obs_state)
 
         # if eb_id in JSON does not start with prefix eb, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
@@ -271,17 +272,17 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if resources not present in JSON, SDP Subarray moves to
+        # if receive nodes not present in JSON, SDP Subarray moves to
         # obsState=EMPTY and raises exception
-        if "resources" not in input:
+        if input["resources"]["receive_nodes"] == 0:
             self.logger.info(
-                "Missing resources in the AssignResources input json"
+                "Missing receive nodes in the AssignResources input json"
             )
             self._obs_state = ObsState.EMPTY
             self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
-                "Missing resources in the AssignResources input json",
+                "Missing receive nodes in the AssignResources input json",
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
