@@ -15,6 +15,7 @@ from .adapters import (
     AdapterType,
     BaseAdapter,
     CspMasterAdapter,
+    CspMasterLeafNodeAdapter,
     CspSubarrayAdapter,
     DishAdapter,
     MCCSControllerAdapter,
@@ -65,6 +66,7 @@ from .test_helpers.empty_component_manager import EmptyComponentManager
 from .test_helpers.helper_adapter_factory import HelperAdapterFactory
 from .test_helpers.helper_base_device import HelperBaseDevice
 from .test_helpers.helper_csp_master_device import HelperCspMasterDevice
+from .test_helpers.helper_csp_master_leaf_node import HelperCspMasterLeafDevice
 from .test_helpers.helper_csp_subarray_leaf_device import (
     HelperCspSubarrayLeafDevice,
 )
@@ -108,6 +110,7 @@ __all__ = [
     "BaseAdapter",
     "MCCSMasterLeafNodeAdapter",
     "MCCSControllerAdapter",
+    "CspMasterLeafNodeAdapter",
     "Aggregator",
     "DevFactory",
     "DeviceInfo",
@@ -160,6 +163,7 @@ __all__ = [
     "HelperMCCSMasterLeafNode",
     "HelperSubArrayDevice",
     "HelperCspMasterDevice",
+    "HelperCspMasterLeafDevice",
     "EmptySubArrayComponentManager",
     "HelperSubarrayLeafDevice",
     "HelperSdpSubarrayLeafDevice",
