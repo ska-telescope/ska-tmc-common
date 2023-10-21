@@ -59,6 +59,7 @@ def test_obs_state_tranisition_for_configure(tango_context):
     _, _ = subarray_leaf_device.Configure("")
     assert subarray_leaf_device.obsState == ObsState.READY
 
+
 @pytest.mark.R2
 def test_obs_state_tranisition_for_assignresources(tango_context):
     dev_factory = DevFactory()
