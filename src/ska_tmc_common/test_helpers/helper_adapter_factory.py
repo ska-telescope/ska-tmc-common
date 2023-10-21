@@ -12,6 +12,7 @@ from ska_tmc_common.adapters import (
     AdapterType,
     BaseAdapter,
     CspMasterAdapter,
+    CspMasterLeafNodeAdapter,
     CspSubarrayAdapter,
     DishAdapter,
     MCCSControllerAdapter,
@@ -45,6 +46,7 @@ class HelperAdapterFactory(AdapterFactory):
         MCCSControllerAdapter,
         BaseAdapter,
         SdpSubArrayAdapter,
+        CspMasterLeafNodeAdapter,
     ]:
         """
         Method to create adapter for different devices
@@ -77,6 +79,8 @@ class HelperAdapterFactory(AdapterFactory):
             new_adapter = CspMasterAdapter(dev_name, proxy)
         elif adapter_type == AdapterType.SDPSUBARRAY:
             new_adapter = SdpSubArrayAdapter(dev_name, proxy)
+        elif adapter_type == AdapterType.CSP_MASTER_LEAF_NODE:
+            new_adapter = CspMasterLeafNodeAdapter(dev_name, proxy)
         else:
             new_adapter = BaseAdapter(dev_name, proxy)
 
