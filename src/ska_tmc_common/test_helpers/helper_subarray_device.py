@@ -629,7 +629,7 @@ class HelperSubArrayDevice(SKASubarray):
         "fault_type": FaultType.FAILED_RESULT,
         "error_message": "Default exception.",
         "result": ResultCode.FAILED,
-        "target_obsstate": ObsState.EMPTY,
+        "target_obsstates": [ObsState.RESOURCING, ObsState.EMPTY],
         }
         )
         defective_params = json.loads(defective)
@@ -679,20 +679,22 @@ class HelperSubArrayDevice(SKASubarray):
         if fault_type == FaultType.FAILED_RESULT:
             self.logger.info("FAILED RESULT Fault type")
             self.logger.info(
-                "self.defective_params.get(target_obsstate): %s",
-                self.defective_params.get("target_obsstate"),
+                "self.defective_params.get(target_obsstates): %s",
+                self.defective_params.get("target_obsstates"),
             )
-            if "target_obsstate" in self.defective_params.keys():
-                self.logger.info("target_obstate given")
+            if "target_obsstates" in self.defective_params.keys():
+                self.logger.info("target_obstates given")
                 # Utilise target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
                 # ResultCode.FAILED
-                self._obs_state = self.defective_params.get("target_obsstate")
-                time.sleep(2)
-                self.logger.info(
-                    "pushing target obsstate %s event", self._obs_state
-                )
-                self.push_change_event("obsState", self._obs_state)
+                obsstate_list = self.defective_params.get("target_obsstates")
+                for obsstate in obsstate_list:
+                    self._obs_state = obsstate
+                    time.sleep(1)
+                    self.logger.info(
+                        "pushing target obsstate %s event", self._obs_state
+                    )
+                    self.push_change_event("obsState", self._obs_state)
             return [result], [fault_message]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
