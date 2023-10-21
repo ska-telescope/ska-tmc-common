@@ -256,7 +256,7 @@ class MCCSControllerAdapter(BaseAdapter):
         """
         Invokes Release on MCCS controller device proxy.
         """
-        return self._proxy.ReleaseAll()
+        return self._proxy.ReleaseAll("Test")
 
 
 class DishAdapter(BaseAdapter):
