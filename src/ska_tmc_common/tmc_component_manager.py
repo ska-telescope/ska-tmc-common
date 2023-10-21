@@ -215,6 +215,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
         except Exception as exp_msg:
+            self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
                 "Exception occured while starting the timer thread : %s",
                 exp_msg,
