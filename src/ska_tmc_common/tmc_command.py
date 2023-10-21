@@ -209,8 +209,8 @@ class BaseTMCCommand:
         """
         with EnsureOmniThread():
             self.index = 0
-            state_to_achieve = expected_state[self.index]
             while not self._stop:
+                state_to_achieve = expected_state[self.index]
                 try:
                     if self.check_abort_event(abort_event):
                         self.update_task_status(status=TaskStatus.ABORTED)
