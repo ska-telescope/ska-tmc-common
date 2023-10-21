@@ -11,7 +11,6 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
 from tango import EnsureOmniThread
 from tango.server import command
 
@@ -131,10 +130,6 @@ class HelperMCCSController(HelperBaseDevice):
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
         fault_message = self.defective_params["error_message"]
-        intermediate_state = (
-            self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
-        )
 
         if fault_type == FaultType.FAILED_RESULT:
             return [result], [fault_message]
@@ -149,12 +144,6 @@ class HelperMCCSController(HelperBaseDevice):
             return [ResultCode.QUEUED], [""]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            # If device does not have its own Obs-state then obs_state_event
-            # should not be pushed
-            if intermediate_state != "NA":
-                self._obs_state = intermediate_state
-                self.push_change_event("obsState", intermediate_state)
-                self.logger.info("Induce_fault activity completed.")
             return [ResultCode.QUEUED], [""]
 
         return [ResultCode.OK], [""]
