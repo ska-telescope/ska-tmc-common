@@ -1,5 +1,4 @@
 import json
-import logging
 
 import pytest
 from ska_tango_base.commands import ResultCode
@@ -10,8 +9,6 @@ from tests.settings import HELPER_MCCS_CONTROLLER
 
 commands_with_argin = ["Allocate", "ReleaseAll"]
 commands_without_argin = ["On", "Off"]
-
-logger = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize("command", commands_with_argin)
