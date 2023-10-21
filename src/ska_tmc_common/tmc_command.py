@@ -256,6 +256,7 @@ class BaseTMCCommand:
             if command_id:
                 lrcr_callback.remove_data(command_id)
             if timeout_id:
+                self.logger.info("timeout id %s",timeout_id)
                 self.component_manager.stop_timer()
 
     def check_abort_event(self, abort_event) -> bool:

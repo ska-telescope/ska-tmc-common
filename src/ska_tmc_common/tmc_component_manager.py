@@ -237,7 +237,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     def stop_timer(self) -> None:
         """Stops the timer for command execution"""
-        self.logger.info("Stopping timer")
+        self.logger.info("Stopping timer %s",self.timer_object)
+
         self.timer_object.cancel()
 
 
