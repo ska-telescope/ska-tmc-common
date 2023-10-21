@@ -203,7 +203,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                     as a callable functions to call in the event of timeout.
         """
         try:
-            
+
             self.logger.info("timeout %s", timeout)
             self.logger.info("timeout_callback %s", timeout_callback)
 
