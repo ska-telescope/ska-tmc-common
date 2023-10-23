@@ -71,6 +71,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
     kValue = attribute(dtype=int, access=AttrWriteType.READ)
+    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_kValue(self) -> int:
         """
@@ -94,6 +95,14 @@ class HelperDishLNDevice(HelperBaseDevice):
     def read_actualPointing(self) -> str:
         """Read method for actual pointing."""
         return json.dumps(self._actual_pointing)
+
+    def read_isSubsystemAvailable(self) -> bool:
+        """
+        Returns avalability status for the leaf nodes devices
+
+        :rtype: bool
+        """
+        return self._isSubsystemAvailable
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
