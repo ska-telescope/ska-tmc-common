@@ -122,7 +122,7 @@ def test_assign_resources_valid_input(tango_context):
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
 
-def test_assign_resources_invalid_input(tango_context):
+def test_assign_resources_invalid_input_missing_eb_id(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
@@ -130,6 +130,19 @@ def test_assign_resources_invalid_input(tango_context):
     del input_string["execution_block"]["eb_id"]
     with pytest.raises(
         DevFailed, match="Missing eb_id in the AssignResources input json"
+    ):
+        sdp_subarray_device.AssignResources(json.dumps(input_string))
+    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+
+
+def test_assign_resources_invalid_input_missing_resources(tango_context):
+    dev_factory = DevFactory()
+    sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    assign_input_str = get_assign_input_str()
+    input_string = json.loads(assign_input_str)
+    del input_string["resources"]
+    with pytest.raises(
+        DevFailed, match="Missing resources in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.EMPTY
