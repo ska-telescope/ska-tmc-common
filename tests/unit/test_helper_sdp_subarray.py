@@ -140,12 +140,12 @@ def test_assign_resources_invalid_input_missing_resources(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
     input_string = json.loads(assign_input_str)
-    del input_string["resources"]
+    input["resources"]["receive_nodes"] = 0
     with pytest.raises(
-        DevFailed, match="Missing resources in the AssignResources input json"
+        DevFailed, match="Missing receive nodes in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
-    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    assert sdp_subarray_device.obsState == ObsState.EMPTY
 
 
 def test_configure_valid_input(tango_context):
