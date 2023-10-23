@@ -140,7 +140,7 @@ def test_assign_resources_invalid_input_missing_resources(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
     input_string = json.loads(assign_input_str)
-    input["resources"]["receive_nodes"] = 0
+    input_string["resources"]["receive_nodes"] = 0
     with pytest.raises(
         DevFailed,
         match="Missing receive nodes in the AssignResources input json",
