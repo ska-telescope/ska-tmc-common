@@ -19,6 +19,9 @@ GO_TO_IDLE = "GoToIdle"
 SLEW = "Slew"
 RESET = "Reset"
 
+ALLOCATE = "Allocate"
+RELEASE_ALL = "ReleaseAll"
+
 TRACK = "Track"
 TRACK_STOP = "TrackStop"
 ABORT_COMMANDS = "AbortCommands"

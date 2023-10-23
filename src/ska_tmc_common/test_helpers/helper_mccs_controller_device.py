@@ -19,12 +19,12 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 from .constants import (
     ABORT,
-    ASSIGN_RESOURCES,
+    ALLOCATE,
     CONFIGURE,
     END,
-    RELEASE_ALL_RESOURCES,
-    RELEASE_RESOURCES,
+    RELEASE_ALL,
     RESTART,
+
 )
 
 
@@ -47,13 +47,12 @@ class HelperMCCSController(HelperBaseDevice):
         )
         self.defective_params = json.loads(self._defective)
         self._command_delay_info = {
-            ASSIGN_RESOURCES: 2,
             CONFIGURE: 2,
-            RELEASE_RESOURCES: 2,
             ABORT: 2,
             RESTART: 2,
-            RELEASE_ALL_RESOURCES: 2,
             END: 2,
+            ALLOCATE: 2,
+            RELEASE_ALL: 2
         }
 
     class InitCommand(SKABaseDevice.InitCommand):
