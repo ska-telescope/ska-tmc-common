@@ -132,7 +132,7 @@ def test_assign_resources_invalid_input_missing_eb_id(tango_context):
         DevFailed, match="Missing eb_id in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
-    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    assert sdp_subarray_device.obsState == ObsState.EMPTY
 
 
 def test_assign_resources_invalid_input_missing_resources(tango_context):
@@ -145,7 +145,7 @@ def test_assign_resources_invalid_input_missing_resources(tango_context):
         DevFailed, match="Missing resources in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
-    assert sdp_subarray_device.obsState == ObsState.EMPTY
+    assert sdp_subarray_device.obsState == ObsState.RESOURCING
 
 
 def test_configure_valid_input(tango_context):
