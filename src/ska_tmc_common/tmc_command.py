@@ -49,6 +49,9 @@ class BaseTMCCommand:
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.component_manager = component_manager
         self.logger = logger
+        self.tracker_thread: Optional[threading.Thread] = None
+        self._stop: bool = False
+        self.index: int = 0
 
     def set_command_id(self, command_name: str):
         """Sets the command id for error propagation."""
