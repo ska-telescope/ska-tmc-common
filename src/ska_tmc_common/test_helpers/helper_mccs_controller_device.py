@@ -312,7 +312,7 @@ class HelperMCCSController(HelperBaseDevice):
 
         if self._raise_exception:
             thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["Release"]
+                target=self.wait_and_update_exception, args=["ReleaseAll"]
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
