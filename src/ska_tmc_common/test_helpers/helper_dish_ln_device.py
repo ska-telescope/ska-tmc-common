@@ -52,6 +52,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
         self._actual_pointing: list = []
         self._kvalue: int = 0
+        self._isSubsystemAvailable = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -62,6 +63,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             """
             super().do()
             self._device.set_change_event("commandCallInfo", True, False)
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event("actualPointing", True, False)
             return (ResultCode.OK, "")
 
