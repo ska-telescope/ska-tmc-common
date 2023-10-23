@@ -62,7 +62,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             """
             super().do()
             self._device.set_change_event("commandCallInfo", True, False)
-            self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event("actualPointing", True, False)
             return (ResultCode.OK, "")
 
