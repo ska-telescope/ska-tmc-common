@@ -301,13 +301,10 @@ class HelperMCCSController(HelperBaseDevice):
         return True
 
     @command(
-        dtype_in="DevString",
-        doc_in="JSON-encoded string with the resources to remove from the \
-            subarray",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseAll(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ReleaseAll(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
         MCCS controller device
