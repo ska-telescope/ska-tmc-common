@@ -17,15 +17,7 @@ from tango.server import command
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
-from .constants import (
-    ABORT,
-    ALLOCATE,
-    CONFIGURE,
-    END,
-    RELEASE_ALL,
-    RESTART,
-
-)
+from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE_ALL, RESTART
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -52,7 +44,7 @@ class HelperMCCSController(HelperBaseDevice):
             RESTART: 2,
             END: 2,
             ALLOCATE: 2,
-            RELEASE_ALL: 2
+            RELEASE_ALL: 2,
         }
 
     class InitCommand(SKABaseDevice.InitCommand):
@@ -206,6 +198,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_result = (command_id, json.dumps(result))
         self.logger.info("command_result %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
+        self.logger.info("command_result has been pushed")
 
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
@@ -277,7 +270,7 @@ class HelperMCCSController(HelperBaseDevice):
             target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
-        self.logger.info("AssignResourse invoked on MCCS Controller")
+        self.logger.info("Allocate  invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
@@ -330,5 +323,5 @@ class HelperMCCSController(HelperBaseDevice):
             target=self.update_lrcr, args=["ReleaseAll", command_id]
         )
         thread.start()
-        self.logger.info("Release Resource invoked on MCCS Controller")
+        self.logger.info("ReleaseAll invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]

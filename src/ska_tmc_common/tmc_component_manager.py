@@ -203,7 +203,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                     as a callable functions to call in the event of timeout.
         """
         try:
-
             self.logger.info("timeout %s", timeout)
             self.logger.info("timeout_callback %s", timeout_callback)
 
@@ -238,7 +237,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     def stop_timer(self) -> None:
         """Stops the timer for command execution"""
-        self.logger.info("Stopping timer %s",self.timer_object)
+        self.logger.info("Stopping timer %s", self.timer_object)
 
         self.timer_object.cancel()
 
