@@ -132,7 +132,7 @@ def test_assign_resources_invalid_input_missing_eb_id(tango_context):
         DevFailed, match="Missing eb_id in the AssignResources input json"
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
-    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    assert sdp_subarray_device.obsState == ObsState.EMPTY
 
 
 def test_assign_resources_invalid_input_missing_resources(tango_context):
@@ -140,9 +140,10 @@ def test_assign_resources_invalid_input_missing_resources(tango_context):
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     assign_input_str = get_assign_input_str()
     input_string = json.loads(assign_input_str)
-    del input_string["resources"]
+    input_string["resources"]["receive_nodes"] = 0
     with pytest.raises(
-        DevFailed, match="Missing resources in the AssignResources input json"
+        DevFailed,
+        match="Missing receive nodes in the AssignResources input json",
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.EMPTY
@@ -216,3 +217,27 @@ def test_release_resources_defective(tango_context):
     assert sdp_subarray_device.defective
     assert sdp_subarray_device.obsState == ObsState.RESOURCING
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_pointing_offsets(tango_context):
+    POINTING_OFFSETS = [
+        "SKA001",
+        -6.71102309437987,
+        114.11010391244332,
+        -7.090356031104502,
+        104.10028693155607,
+        -4.115211938625473,
+        69.9725295732531,
+        70.1182176899719,
+        78.8829949012184,
+        95.49061976199042,
+        729.5782881970024,
+        119.27311545171803,
+        1065.4074085647912,
+        0.9948872678443994,
+        0.8441090109163307,
+    ]
+    dev_factory = DevFactory()
+    sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.SetDirectPointingOffsets(json.dumps(POINTING_OFFSETS))
+    assert sdp_subarray_device.pointingOffsets == json.dumps(POINTING_OFFSETS)

@@ -82,8 +82,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
         )
         thread.start()
         self.logger.debug(
-            "AssignResourse invoked obsstate is transition \
-                          to Resourcing"
+            "AssignResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -177,8 +178,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
         )
         thread.start()
         self.logger.debug(
-            "ReleaseAllResources invoked obsstate is transition \
-                          to Resourcing"
+            "ReleaseAllResources command invoked, obsState will transition to"
+            + "EMPTY, current obsState is %s",
+            self._obs_state,
         )
         return [ResultCode.OK], [""]
 
@@ -253,8 +255,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
 
             self.push_change_event("obsState", self._obs_state)
         self.logger.debug(
-            "Scan invoked obsstate is transition \
-                          to SCANNING"
+            "Scan command invoked current obsState is %s", self._obs_state
         )
         return [ResultCode.OK], [""]
 

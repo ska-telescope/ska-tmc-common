@@ -7,6 +7,7 @@ tests.
 
 # pylint: disable=unused-argument
 import logging
+from os.path import dirname, join
 
 import pytest
 import tango
@@ -19,6 +20,7 @@ from ska_tmc_common import (
     DummyTmcDevice,
     HelperBaseDevice,
     HelperCspMasterDevice,
+    HelperCspMasterLeafDevice,
     HelperCspSubarrayLeafDevice,
     HelperDishDevice,
     HelperDishLNDevice,
@@ -34,6 +36,7 @@ from tests.settings import (
     DEVICE_LIST,
     DISH_DEVICE,
     DISH_LN_DEVICE,
+    HELPER_CSP_MASTER_LEAF_DEVICE,
     HELPER_MCCS_CONTROLLER,
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
     SDP_LEAF_NODE_DEVICE,
@@ -113,6 +116,12 @@ def devices_to_load():
             ],
         },
         {
+            "class": HelperCspMasterLeafDevice,
+            "devices": [
+                {"name": HELPER_CSP_MASTER_LEAF_DEVICE},
+            ],
+        },
+        {
             "class": HelperCspSubarrayLeafDevice,
             "devices": [
                 {"name": CSP_LEAF_NODE_DEVICE},
@@ -184,3 +193,25 @@ def csp_sln_dev_name() -> str:
     """
     # testing device
     return "ska_mid/tm_leaf_node/csp_subarray01"
+
+
+def get_input_str(path) -> str:
+    """
+    Returns input json string
+    :rtype: String
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        input_str = f.read()
+    return input_str
+
+
+@pytest.fixture()
+def json_factory():
+    """
+    Json factory for getting json files
+    """
+
+    def _get_json(slug):
+        return get_input_str(join(dirname(__file__), "data", f"{slug}.json"))
+
+    return _get_json
