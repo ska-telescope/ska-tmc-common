@@ -266,11 +266,11 @@ class MCCSControllerAdapter(BaseAdapter):
         """
         return self._proxy.Allocate(argin)
 
-    def ReleaseAll(self) -> Tuple[List[ResultCode], List[str]]:
+    def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Release on MCCS controller device proxy.
         """
-        return self._proxy.ReleaseAll()
+        return self._proxy.Release(argin)
 
 
 class DishAdapter(BaseAdapter):

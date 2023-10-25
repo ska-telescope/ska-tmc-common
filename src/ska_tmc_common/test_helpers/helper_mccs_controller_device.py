@@ -296,7 +296,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseAll(self) -> Tuple[List[ResultCode], List[str]]:
+    def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
         MCCS controller device
@@ -312,16 +312,16 @@ class HelperMCCSController(HelperBaseDevice):
 
         if self._raise_exception:
             thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["ReleaseAll"]
+                target=self.wait_and_update_exception, args=["Release"]
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
 
-        command_id = "1000_ReleaseAll"
+        command_id = "1000_Release"
 
         thread = threading.Thread(
-            target=self.update_lrcr, args=["ReleaseAll", command_id]
+            target=self.update_lrcr, args=["Release", command_id]
         )
         thread.start()
-        self.logger.info("ReleaseAll invoked on MCCS Controller")
+        self.logger.info("Release command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
