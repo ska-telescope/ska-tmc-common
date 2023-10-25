@@ -17,7 +17,7 @@ from tango.server import command
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
-from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE_ALL, RESTART
+from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -44,7 +44,7 @@ class HelperMCCSController(HelperBaseDevice):
             RESTART: 2,
             END: 2,
             ALLOCATE: 2,
-            RELEASE_ALL: 2,
+            RELEASE: 2,
         }
 
     class InitCommand(SKABaseDevice.InitCommand):
@@ -196,7 +196,7 @@ class HelperMCCSController(HelperBaseDevice):
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
         command_result = (command_id, json.dumps(result))
-        self.logger.info("command_result %s", command_result)
+        self.logger.info("command_result is %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
         self.logger.info("command_result has been pushed")
 
@@ -214,7 +214,7 @@ class HelperMCCSController(HelperBaseDevice):
             )
 
             time.sleep(0.1)
-        self.logger.info("update_lrcr started")
+        self.logger.info("update_lrcr started for %s", command_name)
         self.push_command_result(command_id, ResultCode.OK)
         self.logger.info("Command result pushed")
 
@@ -258,6 +258,7 @@ class HelperMCCSController(HelperBaseDevice):
                 "Allocate",
             )
         if self._raise_exception:
+            self.logger.info("exception thread")
             thread = threading.Thread(
                 target=self.wait_and_update_exception, args=["Allocate"]
             )
@@ -293,6 +294,8 @@ class HelperMCCSController(HelperBaseDevice):
         return True
 
     @command(
+        dtype_in="DevString",
+        doc_in="JSON-encoded string with the subarray id",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -311,6 +314,7 @@ class HelperMCCSController(HelperBaseDevice):
             )
 
         if self._raise_exception:
+            self.logger.info("exception thread")
             thread = threading.Thread(
                 target=self.wait_and_update_exception, args=["Release"]
             )

@@ -20,7 +20,7 @@ SLEW = "Slew"
 RESET = "Reset"
 
 ALLOCATE = "Allocate"
-RELEASE_ALL = "ReleaseAll"
+RELEASE = "Release"
 
 TRACK = "Track"
 TRACK_STOP = "TrackStop"
