@@ -56,7 +56,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
             component_state_callback,
             **kwargs,
         )
-        self._assigned_resources = []
+        self._assigned_resources: str
 
     def assign(self, resources: list) -> Tuple[ResultCode, str]:
         """
@@ -66,7 +66,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         :rtype:tuple
         """
         self.logger.info("Resources: %s", resources)
-        self._assigned_resources = ["0001"]
+        self._assigned_resources = '["0001"]'
         return ResultCode.OK, ""
 
     def release(self, resources: list) -> Tuple[ResultCode, str]:
@@ -209,7 +209,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         def do(self) -> Tuple[ResultCode, str]:
             """
-            Stateless hook for device initialisation.
+            Stateless hook for device initialization.
             """
             super().do()
             self._device.set_change_event("State", True, False)
@@ -497,7 +497,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def SetDirectState(self, argin: tango.DevState) -> None:
         """
-        Trigger a DevStateif self.dev_state() != argin:
+        Trigger a DevState if self.dev_state() != argin:
             self.set_state(argin)
                 change
         """
@@ -541,6 +541,25 @@ class HelperSubArrayDevice(SKASubarray):
             self._command_in_progress = argin
             self.push_change_event(
                 "commandInProgress", self._command_in_progress
+            )
+
+    @command(
+        dtype_in="DevString",
+        doc_in="assignedResources attribute value",
+    )
+    def SetDirectassignedResources(self, argin: str) -> None:
+        """
+        Trigger a assignedResources change
+        """
+        # import debugpy; debugpy.debug_this_thread()
+        if self._assigned_resources != argin:
+            self._assigned_resources = argin
+            self.push_change_event(
+                "assignedResources", self._assigned_resources
+            )
+            self.logger.info(
+                "Updated assignedResources attribute value to %s",
+                self._assigned_resources,
             )
 
     def is_On_allowed(self) -> bool:
@@ -838,7 +857,7 @@ class HelperSubArrayDevice(SKASubarray):
             command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
-                f"Exception occured on device: {self.get_name()}",
+                f"Exception occurred on device: {self.get_name()}",
             )
             self.push_change_event("longRunningCommandResult", command_result)
 

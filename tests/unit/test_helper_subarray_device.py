@@ -148,3 +148,14 @@ def test_release_resources_raise_exception(tango_context):
     result, message = subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.QUEUED
     assert subarray_device.obsstate == ObsState.RESOURCING
+
+
+@pytest.mark.test1
+def test_assigned_resources_attribute(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.SetDirectassignedResources("[]")
+    assigned_resources = subarray_device.read_attribute(
+        "assignedResources"
+    ).value
+    assert assigned_resources == "[]"
