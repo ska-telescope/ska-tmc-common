@@ -3,7 +3,6 @@
 This module implements the Helper Dish Device for testing an integrated TMC
 """
 import json
-import random
 import threading
 import time
 from typing import List, Tuple
@@ -16,11 +15,7 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import DishMode, PointingState
-from ska_tmc_common.test_helpers.helper_dish_ln_device import (
-    HelperDishLNDevice,
-)
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE,
     CONFIGURE_BAND_2,
@@ -31,6 +26,9 @@ from .constants import (
     SET_STOW_MODE,
     TRACK,
     TRACK_STOP,
+)
+from ska_tmc_common.test_helpers.helper_dish_ln_device import (
+    HelperDishLNDevice,
 )
 
 
@@ -102,6 +100,7 @@ class HelperDishDevice(HelperDishLNDevice):
             elevation,
         )
         self._desired_pointing = [timestamp, azimuth, elevation]
+        self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> str:
         """
@@ -239,10 +238,10 @@ class HelperDishDevice(HelperDishLNDevice):
                 e,
             )
         else:
-            deviation = random.randint(0, 5)
-            azimuth *= (100 + deviation) / 100
-            elevation *= (100 + deviation) / 100
             self._achieved_pointing = [timestamp, azimuth, elevation]
+            self.logger.info(
+                "The achieved pointing value is: %s", self._achieved_pointing
+            )
             self.push_change_event(
                 "achievedPointing", json.dumps(self._achieved_pointing)
             )

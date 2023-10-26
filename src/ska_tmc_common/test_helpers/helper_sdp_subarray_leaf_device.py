@@ -38,6 +38,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
+        self._pointing_calibrations = []
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -48,10 +49,16 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
             """
             super().do()
             self._device.set_change_event("sdpSubarrayObsState", True, False)
+            self._device.set_change_event("pointingCalibrations", True, False)
             return ResultCode.OK, ""
 
     sdpSubarrayObsState = attribute(
         dtype=ObsState,
+        access=AttrWriteType.READ,
+    )
+
+    pointingCalibrations = attribute(
+        dtype="DevString",
         access=AttrWriteType.READ,
     )
 
@@ -71,6 +78,23 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         if self._obs_state != value:
             self._obs_state = value
             self.push_change_event("sdpSubarrayObsState", self._obs_state)
+
+    def read_pointingCalibrations(self):
+        """Reads the current pointing offsets of the SDP subarray"""
+        return json.dumps(self._pointing_calibrations)
+
+    @command(dtype_in="DevString", doc_in="Set the pointing calibrations")
+    def SetDirectPointingCalibrations(self, pointing_calibrations: str):
+        """
+        Manual trigger to change the pointing calibrations
+        """
+        self._pointing_calibrations = json.loads(pointing_calibrations)
+        self.push_change_event(
+            "pointingCalibrations", json.dumps(self._pointing_calibrations)
+        )
+        self.logger.info(
+            "Updated Pointing offsets are: %s", self._pointing_calibrations
+        )
 
     def push_obs_state_event(self, obs_state: ObsState) -> None:
         self.logger.info(
