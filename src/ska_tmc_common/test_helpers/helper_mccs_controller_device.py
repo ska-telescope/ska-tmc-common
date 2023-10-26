@@ -163,11 +163,11 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting the raise exception value to : %s", value)
         self._raise_exception = value
 
-    def wait_and_update_exception(self, command_name):
+    def wait_and_update_exception(self, command_id):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
             time.sleep(5)
-            command_id = f"1000_{command_name}"
+            # command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
                 f"Exception occured on device: {self.get_name()}",
@@ -252,6 +252,7 @@ class HelperMCCSController(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}-Allocate"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -260,12 +261,12 @@ class HelperMCCSController(HelperBaseDevice):
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["Allocate"]
+                target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
 
-        command_id = "1000_Allocate"
+        # command_id = "1000_Allocate"
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["Allocate", command_id]
@@ -307,6 +308,8 @@ class HelperMCCSController(HelperBaseDevice):
         :return: a tuple containing Resultcode and Message
         :rtype: Tuple
         """
+
+        command_id = f"{time.time()}-Release"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
@@ -316,12 +319,12 @@ class HelperMCCSController(HelperBaseDevice):
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["Release"]
+                target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
 
-        command_id = "1000_Release"
+        # command_id = "1000_Release"
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
