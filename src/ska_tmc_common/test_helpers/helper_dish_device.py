@@ -148,8 +148,8 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     def AddTransition(self, state_duration_info: str) -> None:
         """This command will set duration for pointing state such that when
-        respective command for pointing state is triggered then it change pointing state
-        after provided duration
+        respective command for pointing state is triggered then it change
+        pointing state after provided duration
         """
         self.logger.info(
             "Adding pointing state transitions for Dish device: %s",
