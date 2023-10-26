@@ -203,9 +203,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                     as a callable functions to call in the event of timeout.
         """
         try:
-            self.logger.info("timeout %s", timeout)
-            self.logger.info("timeout_callback %s", timeout_callback)
-
             self.timer_object = threading.Timer(
                 interval=timeout,
                 function=self.timeout_handler,

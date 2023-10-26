@@ -15,7 +15,6 @@ class LRCRCallback:
         self.command_data = {}
         self.logger = logger
         self._kwargs = {}
-        self.logger.info("LRCRCallback init")
 
     def __call__(
         self,
@@ -36,7 +35,6 @@ class LRCRCallback:
         :return: Raises ValueError
         """
 
-        self.logger.info("LRCRCallback init")
         self.logger.info(
             f"Updating command data with command id {command_id} and result "
             f"code {result_code} and kwargs {kwargs}"
