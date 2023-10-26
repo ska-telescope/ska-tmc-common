@@ -94,7 +94,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
     def read_actualPointing(self) -> str:
         """Read method for actual pointing."""
-        return json.dumps(self._actual_pointing)
+        return str(self._actual_pointing)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
@@ -564,6 +564,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         :rtype: tuple
         """
         self.logger.info("Processing Configure command")
+        configure_input = json.loads(argin)
+        right_ascension = configure_input["pointing"]["target"]["ra"]
+        declination = configure_input["pointing"]["target"]["dec"]
+        self._actual_pointing = [right_ascension, declination]
+        self.push_change_event("actualPointing", str(self._actual_pointing))
         # to record the command data
         self.logger.info(
             "Instructed Dish simulator to invoke Configure command"

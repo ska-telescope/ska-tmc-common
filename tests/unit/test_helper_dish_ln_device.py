@@ -116,3 +116,16 @@ def test_SetKValue_command_dishln(tango_context):
     return_code[0] = ResultCode.OK
 
     assert dishln_device.kValue == 5
+
+
+def test_dishln_actual_pointing(tango_context, json_factory):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    configure_input = json_factory("dishleafnode_configure")
+    configure_input1 = json.loads(configure_input)
+    ra = configure_input1["pointing"]["target"]["ra"]
+    dec = configure_input1["pointing"]["target"]["dec"]
+    result, message = dish_device.Configure(configure_input)
+    assert dish_device.actualPointing == str([ra, dec])
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
