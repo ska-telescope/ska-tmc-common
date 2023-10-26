@@ -7,7 +7,7 @@ from ska_tango_base.control_model import ObsState
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import HELPER_MCCS_CONTROLLER
 
-commands_with_argin = ["Allocate", "ReleaseAll"]
+commands_with_argin = ["Allocate", "Release"]
 commands_without_argin = ["On", "Off"]
 
 
