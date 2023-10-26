@@ -644,7 +644,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand1(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
@@ -684,14 +684,14 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand2(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand2 command on Dish Master
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
         # to record the command data
-        self.update_command_info(CONFIGURE_BAND_2, argin)
+        self.update_command_info(CONFIGURE_BAND_2)
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand2")
 
@@ -730,7 +730,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand3(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand3(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand3 command on  Dish Master
         """
@@ -768,7 +768,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand4(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand4(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand4 command on Dish Master
         """
@@ -806,9 +806,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand5a(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand5a(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5a command on Dish Master
         """
@@ -845,9 +843,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand5b(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand5b(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5b command on Dish Master
         """
