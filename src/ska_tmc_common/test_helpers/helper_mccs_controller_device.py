@@ -116,6 +116,9 @@ class HelperMCCSController(HelperBaseDevice):
           authorization or permission issues. The device
           should respond with an appropriate error code and message.
 
+          New method is explicitly introduced since MCCS Master Leaf Node
+          does not have Obs State.
+
         :raises: None
         """
         fault_type = self.defective_params["fault_type"]
@@ -167,10 +170,10 @@ class HelperMCCSController(HelperBaseDevice):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
             time.sleep(5)
-            # command_id = f"1000_{command_name}"
+
             command_result = (
                 command_id,
-                f"Exception occured on device: {self.get_name()}",
+                f"Exception occurred on device: {self.get_name()}",
             )
             self.logger.info("exception will be raised as %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
@@ -191,19 +194,21 @@ class HelperMCCSController(HelperBaseDevice):
         exception: Exception message to be pushed as an event
         dtype: str
         """
-        self.logger.info("push_command_result started")
+
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
         command_result = (command_id, json.dumps(result))
-        self.logger.info("command_result is %s", command_result)
+
         self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info("command_result has been pushed")
+        self.logger.info(
+            "command_result has been pushed as %s", command_result
+        )
 
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
     ) -> None:
-        """Updates the given data after a delay."""
+        """Updates the longrunningcommandresult  after a delay."""
         delay_value = 0
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
@@ -214,9 +219,8 @@ class HelperMCCSController(HelperBaseDevice):
             )
 
             time.sleep(0.1)
-        self.logger.info("update_lrcr started for %s", command_name)
+
         self.push_command_result(command_id, ResultCode.OK)
-        self.logger.info("Command result pushed")
 
     def is_Allocate_allowed(self) -> bool:
         """
@@ -265,8 +269,6 @@ class HelperMCCSController(HelperBaseDevice):
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
-
-        # command_id = "1000_Allocate"
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["Allocate", command_id]
@@ -323,8 +325,6 @@ class HelperMCCSController(HelperBaseDevice):
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
-
-        # command_id = "1000_Release"
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
