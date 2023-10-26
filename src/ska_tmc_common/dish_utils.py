@@ -11,6 +11,7 @@ methods used in dish related calculations.
 """
 # Standard Python imports
 
+import datetime
 import logging
 import math
 import re
@@ -193,3 +194,11 @@ class DishHelper:
             raise
 
         return antennas
+
+    def get_current_timestamp(self) -> str:
+        "Method to get current timestamp"
+        utc_now = datetime.datetime.utcnow()
+        utc_timestamp = datetime.datetime.utcfromtimestamp(
+            utc_now.timestamp()
+        ).strftime("%Y-%m-%d %H:%M:%S")
+        return utc_timestamp

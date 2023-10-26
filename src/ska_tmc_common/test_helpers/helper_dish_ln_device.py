@@ -13,6 +13,7 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.dish_utils import DishHelper
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 from .constants import (
@@ -94,7 +95,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
     def read_actualPointing(self) -> str:
         """Read method for actual pointing."""
-        return str(self._actual_pointing)
+        return json.dumps(self._actual_pointing)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
@@ -564,10 +565,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         :rtype: tuple
         """
         self.logger.info("Processing Configure command")
+        dish_helper = DishHelper()
+        utc_timestamp = dish_helper.get_current_timestamp()
         configure_input = json.loads(argin)
         right_ascension = configure_input["pointing"]["target"]["ra"]
         declination = configure_input["pointing"]["target"]["dec"]
-        self._actual_pointing = [right_ascension, declination]
+        self._actual_pointing = [utc_timestamp, right_ascension, declination]
         self.push_change_event("actualPointing", str(self._actual_pointing))
         # to record the command data
         self.logger.info(
