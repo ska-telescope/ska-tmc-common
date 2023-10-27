@@ -118,7 +118,6 @@ def test_SetKValue_command_dishln(tango_context):
     assert dishln_device.kValue == 5
 
 
-@pytest.mark.R1
 def test_dishln_actual_pointing(tango_context, json_factory):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)

@@ -11,10 +11,10 @@ methods used in dish related calculations.
 """
 # Standard Python imports
 
-import datetime
 import logging
 import math
 import re
+from datetime import datetime as dt
 
 import katpoint
 from ska_telmodel.data import TMData
@@ -196,9 +196,5 @@ class DishHelper:
         return antennas
 
     def get_current_timestamp(self) -> str:
-        "Method to get current timestamp"
-        utc_now = datetime.datetime.utcnow()
-        utc_timestamp = datetime.datetime.utcfromtimestamp(
-            utc_now.timestamp()
-        ).strftime("%Y-%m-%d %H:%M:%S")
-        return utc_timestamp
+        "Method to get current timestamp in string format"
+        return dt.utcnow().strftime("%Y-%m-%d %H:%M:%S")
