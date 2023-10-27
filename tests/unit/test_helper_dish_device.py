@@ -82,7 +82,7 @@ def test_dish_commands_without_input(tango_context, command):
 def test_dish_commands_with_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout(command, True)
+    result, message = dish_device.command_inout(command)
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -105,7 +105,7 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout(command_to_check, True)
+    result, message = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
     assert (
         message[0] == "Device is defective, cannot process command completely."
