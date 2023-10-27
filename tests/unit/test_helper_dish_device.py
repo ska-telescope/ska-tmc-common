@@ -27,6 +27,24 @@ COMMANDS = [
     "ConfigureBand5a",
     "ConfigureBand5b",
 ]
+COMMANDS_WITHOUT_INPUT = [
+    "SetStandbyFPMode",
+    "SetStandbyLPMode",
+    "SetOperateMode",
+    "SetStowMode",
+    "Off",
+    "Scan",
+    "AbortCommands",
+]
+COMMANDS_WITH_INPUT = [
+    "Configure",
+    "ConfigureBand1",
+    "ConfigureBand2",
+    "ConfigureBand3",
+    "ConfigureBand4",
+    "ConfigureBand5a",
+    "ConfigureBand5b",
+]
 
 
 def test_set_delay(tango_context):
@@ -49,7 +67,7 @@ def test_desired_pointing(tango_context):
     )
 
 
-@pytest.mark.parametrize("command", COMMANDS)
+@pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
@@ -60,21 +78,34 @@ def test_dish_commands_without_input(tango_context, command):
     assert message[0] == ""
 
 
-@pytest.mark.parametrize("command", COMMANDS)
+@pytest.mark.parametrize("command", COMMANDS_WITH_INPUT)
 def test_dish_commands_with_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout(command)
+    result, message = dish_device.command_inout(command, True)
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
 
-@pytest.mark.parametrize("command_to_check", COMMANDS)
+@pytest.mark.parametrize("command_to_check", COMMANDS_WITHOUT_INPUT)
 def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command_to_check)
+    assert result[0] == ResultCode.FAILED
+    assert (
+        message[0] == "Device is defective, cannot process command completely."
+    )
+    dish_device.SetDefective(json.dumps({"enabled": False}))
+
+
+@pytest.mark.parametrize("command_to_check", COMMANDS_WITH_INPUT)
+def test_command_with_argin_failed_result(tango_context, command_to_check):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
+    result, message = dish_device.command_inout(command_to_check, True)
     assert result[0] == ResultCode.FAILED
     assert (
         message[0] == "Device is defective, cannot process command completely."
