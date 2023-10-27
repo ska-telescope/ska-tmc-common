@@ -16,6 +16,7 @@ class PointingState(IntEnum):
     TRACK = 2
     SCAN = 3
     UNKNOWN = 4
+    NONE = 5
 
 
 @unique
