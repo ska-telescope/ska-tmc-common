@@ -201,20 +201,20 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_name: str = "", command_input: str = ""
+        self, command_name: str = "", command_input=True
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
 
         Args:
             command_name (str): command name
-            command_input (str): Input argin for command
+            command_input: Input argin for command
         """
         self.logger.info(
             "Recording the command data for DishMaster simulators"
         )
 
-        self._command_info = (command_name, command_input)
+        self._command_info = (command_name, str(command_input))
         self._command_call_info.append(self._command_info)
         self.logger.info(
             "Recorded command_call_info list for DishMaster simulators \
@@ -275,7 +275,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         self.logger.info("Processing SetStandbyFPMode Command")
-        self.update_command_info(SET_STANDBY_FP_MODE, "")
+        self.update_command_info(SET_STANDBY_FP_MODE)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyFPMode")
         if self.dev_state() != DevState.STANDBY:
@@ -320,7 +320,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke SetStandbyLPMode command"
         )
-        self.update_command_info(SET_STANDBY_LP_MODE, "")
+        self.update_command_info(SET_STANDBY_LP_MODE)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyLPMode")
         # Set the device state
@@ -369,7 +369,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
-        self.update_command_info(SET_OPERATE_MODE, "")
+        self.update_command_info(SET_OPERATE_MODE)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode")
 
@@ -419,7 +419,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke SetStowMode command"
         )
-        self.update_command_info(SET_STOW_MODE, "")
+        self.update_command_info(SET_STOW_MODE)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode")
 
@@ -462,7 +462,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         self.logger.info("Instructed Dish simulator to invoke Track command")
-        self.update_command_info(TRACK, "")
+        self.update_command_info(TRACK)
         if self.defective_params["enabled"]:
             return self.induce_fault("Track")
 
@@ -509,7 +509,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke TrackStop command"
         )
-        self.update_command_info(TRACK_STOP, "")
+        self.update_command_info(TRACK_STOP)
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop")
 
@@ -562,7 +562,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke AbortCommands command"
         )
-        self.update_command_info(ABORT_COMMANDS, "")
+        self.update_command_info(ABORT_COMMANDS)
 
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands")
@@ -644,7 +644,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand1(self) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand1(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
@@ -684,14 +684,14 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand2(self) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand2(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand2 command on Dish Master
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
         # to record the command data
-        self.update_command_info(CONFIGURE_BAND_2)
+        self.update_command_info(CONFIGURE_BAND_2, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand2")
 
@@ -730,7 +730,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand3(self) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand3(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand3 command on  Dish Master
         """
@@ -768,7 +768,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand4(self) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand4(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand4 command on Dish Master
         """
@@ -806,7 +806,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand5a(self) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand5a(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5a command on Dish Master
         """
@@ -843,7 +843,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand5b(self) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand5b(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5b command on Dish Master
         """
