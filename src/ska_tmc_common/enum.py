@@ -11,12 +11,11 @@ class PointingState(IntEnum):
     This is an enumerator class that contains PointingState values.
     """
 
-    NONE = 0
-    READY = 1
-    SLEW = 2
-    TRACK = 3
-    SCAN = 4
-    UNKNOWN = 5
+    READY = 0
+    SLEW = 1
+    TRACK = 2
+    SCAN = 3
+    UNKNOWN = 4
 
 
 @unique

@@ -201,7 +201,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_name: str = "", command_input=True
+        self, command_name: str = "", command_input=""
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
