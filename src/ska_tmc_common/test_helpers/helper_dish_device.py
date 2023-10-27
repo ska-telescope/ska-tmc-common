@@ -640,7 +640,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -680,7 +680,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -726,7 +726,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -764,7 +764,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -802,7 +802,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
@@ -839,7 +839,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
