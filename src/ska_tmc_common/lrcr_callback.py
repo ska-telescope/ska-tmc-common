@@ -34,7 +34,8 @@ class LRCRCallback:
 
         :return: Raises ValueError
         """
-        self.logger.debug(
+
+        self.logger.info(
             f"Updating command data with command id {command_id} and result "
             f"code {result_code} and kwargs {kwargs}"
         )

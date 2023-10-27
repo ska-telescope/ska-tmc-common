@@ -245,7 +245,7 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
         """
         return self._proxy.AssignResources(argin)
 
-    def ReleaseResources(
+    def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -260,17 +260,13 @@ class MCCSControllerAdapter(BaseAdapter):
     for MCCS controller devices.
     """
 
-    def AssignResources(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Allocate on MCCS controller device proxy.
         """
         return self._proxy.Allocate(argin)
 
-    def ReleaseResources(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Release on MCCS controller device proxy.
         """

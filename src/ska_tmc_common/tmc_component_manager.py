@@ -211,6 +211,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
         except Exception as exp_msg:
+            self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
                 "Exception occured while starting the timer thread : %s",
                 exp_msg,
@@ -233,7 +234,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     def stop_timer(self) -> None:
         """Stops the timer for command execution"""
-        self.logger.info("Stopping timer")
+        self.logger.info("Stopping timer %s", self.timer_object)
+
         self.timer_object.cancel()
 
 
