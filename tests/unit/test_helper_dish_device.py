@@ -77,8 +77,6 @@ def test_dish_commands_without_input(tango_context, command):
 @pytest.mark.aki
 @pytest.mark.parametrize("command", COMMANDS_WITH_INPUT)
 def test_dish_commands_with_input(tango_context, command):
-    import pdb
-
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     result, message = dish_device.command_inout(command, True)
