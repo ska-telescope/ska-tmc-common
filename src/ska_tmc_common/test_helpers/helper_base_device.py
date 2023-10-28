@@ -202,6 +202,32 @@ class HelperBaseDevice(SKABaseDevice):
         self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
 
+    def push_command_result(
+        self, result: ResultCode, command: str, exception: str = ""
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command: The command name for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
+        command_id = f"{time.time()}-{command}"
+        self.logger.info(
+            "The command_id is %s and the ResultCode is %s", command_id, result
+        )
+        if exception:
+            command_result = (command_id, exception)
+            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (command_id, json.dumps(result))
+        self.push_change_event("longRunningCommandResult", command_result)
+
     @command(
         dtype_in="DevState",
         doc_in="state to assign",

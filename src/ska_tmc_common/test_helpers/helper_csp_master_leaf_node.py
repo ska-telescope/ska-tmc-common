@@ -92,6 +92,11 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
 
         }
         """
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "LoadDishCfg",
+            )
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
@@ -111,7 +116,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self.push_change_event("sourceSysParam", self._source_sys_param)
         self.push_change_event("sysParam", self._sys_param)
 
-        return [ResultCode.OK], [""]
+        self.push_command_result(ResultCode.OK, "LoadDishCfg")
 
 
 # ----------
