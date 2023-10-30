@@ -178,6 +178,16 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.logger.info("Standby command completed.")
         return [ResultCode.OK], [""]
 
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ResetSysParams(self):
+        """This Command Reset Sys Param and source sys param"""
+        self._source_sys_param = ""
+        self._sys_param = ""
+        return [ResultCode.OK], [""]
+
     def is_LoadDishCfg_allowed(self) -> bool:
         """
         This method checks if the LoadDishCfg command is allowed
