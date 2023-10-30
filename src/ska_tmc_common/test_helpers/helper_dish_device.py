@@ -7,6 +7,7 @@ import threading
 import time
 from typing import List, Tuple
 
+import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -58,7 +59,7 @@ class HelperDishDevice(HelperDishLNDevice):
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
-    achievedPointing = attribute(dtype=str, access=AttrWriteType.READ)
+    achievedPointing = attribute(dtype=np.ndarray, access=AttrWriteType.READ)
     desiredPointing = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
@@ -102,12 +103,12 @@ class HelperDishDevice(HelperDishLNDevice):
         self._desired_pointing = [timestamp, azimuth, elevation]
         self.set_achieved_pointing()
 
-    def read_achievedPointing(self) -> str:
+    def read_achievedPointing(self) -> np.ndarray:
         """
         This method reads the achievedPointing of dishes.
         :rtype: str
         """
-        return json.dumps(self._achieved_pointing)
+        return np.array(self._achieved_pointing)
 
     def read_dishMode(self) -> DishMode:
         """
@@ -227,24 +228,23 @@ class HelperDishDevice(HelperDishLNDevice):
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
-            # pylint: disable=unbalanced-tuple-unpacking
+            # Unpack the achieved pointing values
             timestamp, azimuth, elevation = self._desired_pointing
-            # pylint: enable=unbalanced-tuple-unpacking
+            # Create a numpy array
+            achieved_pointing = np.array([timestamp, azimuth, elevation])
         except Exception as e:
             self.logger.exception(
                 "The desired pointing has incorrect values: %s,"
-                + "error occured while unpacking: %s",
+                + "error occurred while unpacking: %s",
                 self._desired_pointing,
                 e,
             )
         else:
-            self._achieved_pointing = [timestamp, azimuth, elevation]
+            self._achieved_pointing = achieved_pointing
             self.logger.info(
                 "The achieved pointing value is: %s", self._achieved_pointing
             )
-            self.push_change_event(
-                "achievedPointing", json.dumps(self._achieved_pointing)
-            )
+            self.push_change_event("achievedPointing", self._achieved_pointing)
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -290,7 +290,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return ([ResultCode.OK], [""])
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
-        """
+        """np.array
         This method checks if the is_SetStandbyLPMode_allowed Command is
         allowed in current
         State.
