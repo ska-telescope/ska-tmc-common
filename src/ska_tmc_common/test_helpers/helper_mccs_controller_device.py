@@ -332,3 +332,53 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("Release command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
+
+    def is_RestartSubarray_allowed(self) -> bool:
+        """
+        This method checks if the RestartSubarray command is allowed in the
+        current device state.
+        :rtype:bool
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("RestartSubarray Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def RestartSubarray(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke RestartSubarray command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}-RestartSubarray"
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "RestartSubarray",
+            )
+
+        if self._raise_exception:
+            self.logger.info("exception thread")
+            thread = threading.Thread(
+                target=self.wait_and_update_exception, args=[command_id]
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        thread = threading.Thread(
+            target=self.update_lrcr, args=["RestartSubarray", command_id]
+        )
+        thread.start()
+        self.logger.info("RestartSubarray command invoked on MCCS Controller")
+        return [ResultCode.QUEUED], [command_id]
