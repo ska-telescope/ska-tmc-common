@@ -48,7 +48,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             return (ResultCode.OK, "")
 
     def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
+        self, result: ResultCode, command_id: str, exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
 
@@ -63,11 +63,16 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         exception: Exception message to be pushed as an event
         dtype: str
         """
-        command_id = f"{time.time()}-{command}"
+        self.logger.debug("The values are:%s ,%s, %s",result,command_id,exception)
+        self.logger.info("The values are:%s ,%s, %s",result,command_id,exception)
         if exception:
             command_result = (command_id, exception)
+            self.logger.debug("Inside push_command_result exception.")
+            self.logger.info("Inside push_command_result exception.")
             self.push_change_event("longRunningCommandResult", command_result)
         command_result = (command_id, json.dumps(result))
+        self.logger.debug("Inside push_command_result")
+        self.logger.info("Inside push_command_result")
         self.push_change_event("longRunningCommandResult", command_result)
 
     def is_AssignResources_allowed(self) -> bool:
@@ -106,13 +111,20 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}-AssignResources"
+        self.logger.debug("Inside AssignResources command.")
+        self.logger.info("Inside AssignResources command.")
         if self.defective_params["enabled"]:
+            self.logger.debug("AssignResourses is faulty on MCCSMLN.")
+            self.logger.info("AssignResourses is faulty on MCCSMLN.")
             return self.induce_fault(
                 "AssignResources",
             )
-        self.push_command_result(ResultCode.OK, "AssignResources")
         self.logger.debug("AssignResourses command complete")
-        return [ResultCode.OK], [""]
+        self.logger.info("AssignResourses command complete")
+        self.push_command_result(ResultCode.OK, command_id)
+        self.logger.info("AssignResourses command complete")
+        return [ResultCode.OK], [command_id]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
