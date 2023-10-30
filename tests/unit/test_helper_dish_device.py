@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+import numpy as np
 import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
@@ -52,16 +53,16 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
+@pytest.mark.aki
 def test_desired_pointing(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert dish_device.desiredPointing == "[]"
+    assert np.array_equal(dish_device.desiredPointing, np.array([]))
     timestamp = datetime.utcnow().timestamp()
-    dish_device.desiredPointing = json.dumps(
-        [timestamp, 287.2504396, 77.8694392]
-    )
-    assert dish_device.desiredPointing == json.dumps(
-        [timestamp, 287.2504396, 77.8694392]
+    dish_device.desiredPointing = [timestamp, 287.2504396, 77.8694392]
+    assert np.array_equal(
+        dish_device.desiredPointing,
+        np.array([timestamp, 287.2504396, 77.8694392]),
     )
 
 
