@@ -229,7 +229,9 @@ class HelperDishDevice(HelperDishLNDevice):
         """Sets the achieved pointing for dish."""
         try:
             # Unpack the achieved pointing values
+            # pylint: disable=unbalanced-tuple-unpacking
             timestamp, azimuth, elevation = self._desired_pointing
+            # pylint: enable=unbalanced-tuple-unpacking
             # Create a numpy array
             achieved_pointing = np.array([timestamp, azimuth, elevation])
         except Exception as e:
