@@ -11,7 +11,7 @@ import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevEnum, DevState
+from tango import AttrWriteType, DevEnum, DevState, DevVarDoubleArray
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -59,7 +59,9 @@ class HelperDishDevice(HelperDishLNDevice):
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
-    achievedPointing = attribute(dtype=np.ndarray, access=AttrWriteType.READ)
+    achievedPointing = attribute(
+        dtype=DevVarDoubleArray, access=AttrWriteType.READ
+    )
     desiredPointing = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
