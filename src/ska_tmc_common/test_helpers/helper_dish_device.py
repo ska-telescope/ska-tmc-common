@@ -200,14 +200,14 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_name: str = "", command_input=""
+        self, command_name: str = "", command_input: str|bool|None =None
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
 
         Args:
             command_name (str): command name
-            command_input: Input argin for command
+            command_input(str or bool): Input argin for command
         """
         self.logger.info(
             "Recording the command data for DishMaster simulators"
