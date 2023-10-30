@@ -693,6 +693,9 @@ class HelperDishDevice(HelperDishLNDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand2 command on Dish Master
+        :param argin: The argin is a boolean value,
+        if it is set true it invoke ConfigureBand2 command.
+        :argin dtype: bool
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
