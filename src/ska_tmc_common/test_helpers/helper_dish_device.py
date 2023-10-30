@@ -62,7 +62,9 @@ class HelperDishDevice(HelperDishLNDevice):
     achievedPointing = attribute(
         dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
     )
-    desiredPointing = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
+    desiredPointing = attribute(
+        dtype=(float,), access=AttrWriteType.READ_WRITE, max_dim_x=3
+    )
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -80,22 +82,22 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return json.dumps(self._offset)
 
-    def read_desiredPointing(self) -> str:
+    def read_desiredPointing(self) -> list:
         """
         This method reads the desiredPointing of dishes.
-        :rtype: str
+        :rtype: list
         """
-        return json.dumps(self._desired_pointing)
+        return self._desired_pointing
 
-    def write_desiredPointing(self, value: str) -> None:
+    def write_desiredPointing(self, value: list) -> None:
         """
         This method writes the desiredPointing of dishes.
         :param value: The timestamp, azimuth and elevation values for the \
             desired pointing of dishes.
-        :value dtype: str
+        :value dtype: list
         :rtype: None
         """
-        timestamp, azimuth, elevation = json.loads(value)
+        timestamp, azimuth, elevation = value
         self.logger.info(
             "The desired pointing parameters are: %s, %s, %s",
             timestamp,
