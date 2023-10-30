@@ -59,7 +59,9 @@ class HelperDishDevice(HelperDishLNDevice):
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
-    achievedPointing = attribute(dtype=(float,), access=AttrWriteType.READ)
+    achievedPointing = attribute(
+        dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
+    )
     desiredPointing = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
@@ -200,7 +202,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_name: str = "", command_input: str|bool|None =None
+        self, command_name: str = "", command_input: str | bool | None = None
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
