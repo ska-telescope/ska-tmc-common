@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import pytest
 from ska_tango_base.commands import ResultCode
@@ -55,11 +56,12 @@ def test_desired_pointing(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     assert dish_device.desiredPointing == "[]"
+    timestamp = datetime.utcnow().timestamp()
     dish_device.desiredPointing = json.dumps(
-        ["2019-02-19 06:01:00", 287.2504396, 77.8694392]
+        [timestamp, 287.2504396, 77.8694392]
     )
     assert dish_device.desiredPointing == json.dumps(
-        ["2019-02-19 06:01:00", 287.2504396, 77.8694392]
+        [timestamp, 287.2504396, 77.8694392]
     )
 
 
