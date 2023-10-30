@@ -200,7 +200,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_name: str = "", command_input: str|bool|None =None
+        self, command_name: str = "", command_input: str | bool | None = None
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
@@ -691,6 +691,9 @@ class HelperDishDevice(HelperDishLNDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand2 command on Dish Master
+        :param argin: The argin is a boolean value,
+        if it is set true it invoke ConfigureBand2 command.
+        :argin dtype: bool
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
