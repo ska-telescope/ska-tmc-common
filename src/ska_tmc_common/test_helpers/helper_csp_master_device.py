@@ -242,6 +242,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.push_change_event("sysParam", self._sys_param)
 
         self.push_command_result(ResultCode.OK, "LoadDishCfg")
+        return [ResultCode.QUEUED], [""]
 
 
 # ----------
