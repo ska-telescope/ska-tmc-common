@@ -74,13 +74,14 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self.logger.info(
                 "command_result has been pushed as %s", command_result
             )
-        command_result = (command_id, json.dumps(result))
-        self.logger.debug("Inside push_command_result")
-        self.logger.info("Inside push_command_result")
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
-        )
+        else :
+            command_result = (command_id, json.dumps(result))
+            self.logger.debug("Inside push_command_result")
+            self.logger.info("Inside push_command_result")
+            self.push_change_event("longRunningCommandResult", command_result)
+            self.logger.info(
+                "command_result has been pushed as %s", command_result
+            )
 
     def is_AssignResources_allowed(self) -> bool:
         """
