@@ -25,7 +25,6 @@ class AdapterType(enum.IntEnum):
     SDPSUBARRAY = 6
     MCCS_CONTROLLER = 7
     CSP_MASTER_LEAF_NODE = 8
-    MCCS_SUBARRAY_LEAF_NODE = 9
 
 
 class BaseAdapter:
@@ -273,18 +272,13 @@ class MCCSControllerAdapter(BaseAdapter):
         """
         return self._proxy.Release(argin)
 
-
-class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
-    """
-    This class is used for creating and managing adapters
-    for MCCS subarray leaf node device.
-    """
-
-    def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
+    def RestartSubarray(
+        self, argin: int
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Restart on device proxy.
+        Invokes RestartSubarray on device proxy.
         """
-        return self._proxy.Restart(argin)
+        return self._proxy.RestartSubarray(argin)
 
 
 class DishAdapter(BaseAdapter):
