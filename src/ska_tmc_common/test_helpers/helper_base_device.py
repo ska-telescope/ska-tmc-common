@@ -224,6 +224,7 @@ class HelperBaseDevice(SKABaseDevice):
         )
         if exception:
             command_result = (command_id, exception)
+            self.logger.info("Sending Event %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
         command_result = (command_id, json.dumps(result))
         self.logger.info("Sending Event %s", command_result)
