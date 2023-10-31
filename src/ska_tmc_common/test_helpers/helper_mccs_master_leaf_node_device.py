@@ -66,14 +66,21 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self.logger.debug("The values are:%s ,%s, %s",result,command_id,exception)
         self.logger.info("The values are:%s ,%s, %s",result,command_id,exception)
         if exception:
+
             command_result = (command_id, exception)
             self.logger.debug("Inside push_command_result exception.")
             self.logger.info("Inside push_command_result exception.")
             self.push_change_event("longRunningCommandResult", command_result)
+            self.logger.info(
+                "command_result has been pushed as %s", command_result
+            )
         command_result = (command_id, json.dumps(result))
         self.logger.debug("Inside push_command_result")
         self.logger.info("Inside push_command_result")
         self.push_change_event("longRunningCommandResult", command_result)
+        self.logger.info(
+            "command_result has been pushed as %s", command_result
+        )
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -118,7 +125,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self.logger.debug("AssignResourses is faulty on MCCSMLN.")
             self.logger.info("AssignResourses is faulty on MCCSMLN.")
             return self.induce_fault(
-                "AssignResources",
+                command_id
             )
         self.logger.debug("AssignResourses command complete")
         self.logger.info("AssignResourses command complete")
