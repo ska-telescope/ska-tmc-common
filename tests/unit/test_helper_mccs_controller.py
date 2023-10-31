@@ -5,9 +5,9 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
-from tests.settings import HELPER_MCCS_CONTROLLER
+from tests.settings import HELPER_MCCS_CONTROLLER, wait_for_obstate
 
-commands_with_argin = ["Allocate", "Release", "RestartSubarray"]
+commands_with_argin = ["Allocate", "Release"]
 commands_without_argin = ["On", "Off"]
 
 
@@ -61,3 +61,10 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
     result, _ = mccs_controller_device.command_inout("Allocate", "")
     assert result[0] == ResultCode.QUEUED
     mccs_controller_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_restartsubarray_command(tango_context):
+    dev_factory = DevFactory()
+    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_controller_device.RestartSubarray(1)
+    wait_for_obstate(mccs_controller_device, ObsState.EMPTY)
