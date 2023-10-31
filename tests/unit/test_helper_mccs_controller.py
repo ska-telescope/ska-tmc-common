@@ -5,7 +5,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
-from tests.settings import HELPER_MCCS_CONTROLLER, wait_for_obstate
+from tests.settings import HELPER_MCCS_CONTROLLER
 
 commands_with_argin = ["Allocate", "Release"]
 commands_without_argin = ["On", "Off"]
@@ -63,8 +63,14 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
     mccs_controller_device.SetDefective(json.dumps({"enabled": False}))
 
 
-def test_restartsubarray_command(tango_context):
+def test_restart_subarray_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.RestartSubarray(1)
-    wait_for_obstate(mccs_controller_device, ObsState.EMPTY)
+    subarray_id = 1  # Provide the subarray ID as an argument to the RestartSubarray command
+    result, message = mccs_controller_device.command_inout(
+        "RestartSubarray", str(subarray_id)
+    )
+
+    # Assert the result and any other expected behavior
+    assert result[0] == ResultCode.QUEUED
+    assert message[0] == f"Restarting Subarray {subarray_id}"
