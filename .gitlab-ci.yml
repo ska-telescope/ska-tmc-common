@@ -6,6 +6,7 @@ image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.10
 # Pinning versions for faster pipeline runs
 python-test:
   image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
+  retry: 1
 
 python-lint:
   image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
@@ -46,6 +47,3 @@ include:
   # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
-
-python-test:
-  retry: 1
