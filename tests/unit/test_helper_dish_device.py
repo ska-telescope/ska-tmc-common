@@ -53,7 +53,6 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
-@pytest.mark.aki
 def test_desired_pointing(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
