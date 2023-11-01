@@ -287,11 +287,9 @@ class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
     An Adapter class for the MCCS Subarray Leaf Node Device.
     """
 
-    def RestartSubarray(
-        self, argin: int
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes RestartSubarray on MCCS Controller proxy.
+        Invokes Restart on MCCS Controller proxy.
         """
         return self._proxy.Restart(argin)
 
