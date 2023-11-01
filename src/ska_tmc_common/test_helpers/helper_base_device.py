@@ -206,17 +206,12 @@ class HelperBaseDevice(SKABaseDevice):
         self, result: ResultCode, command: str, exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
+        :param result: The result code to be pushed as an event
+        :type: ResultCode
+        :param command: The command name for which the event is being pushed
+        :type: str
+        :param exception: Exception message to be pushed as an event
+        :type: str
         """
         command_id = f"{time.time()}-{command}"
         self.logger.info(
