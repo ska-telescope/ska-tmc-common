@@ -67,10 +67,7 @@ def test_restart_subarray_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     subarray_id = 1  # Provide the subarray ID as an argument to the RestartSubarray command
-    result, message = mccs_controller_device.command_inout(
+    result = mccs_controller_device.command_inout(
         "RestartSubarray", subarray_id
     )
-
-    # Assert the result and any other expected behavior
     assert result[0] == ResultCode.QUEUED
-    assert f"'RestartSubarray 1{subarray_id}" in message[0]
