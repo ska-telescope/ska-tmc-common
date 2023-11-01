@@ -263,7 +263,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def AssignResources(self, argin):
         """This method invokes AssignResources command on SdpSubarray
         device."""
-        # Change obsState to RESOURCING as the command execution is started
 
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
@@ -309,10 +308,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if self.defective_params["enabled"]:
-        #     self.induce_fault(
-        #         "AssignResources",
-        #     )
+        # TODO: Keeping below condition for now as many repositories are
+        # using it. However this method should not be used for inducing fault
+        # on SDP Subarray. Need to remove it once all the instances in other
+        # repositories are updated
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "AssignResources",
+            )
 
         thread = threading.Timer(
             self._command_delay_info[ASSIGN_RESOURCES],
