@@ -289,7 +289,7 @@ class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
 
     def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Restart on MCCS Controller proxy.
+        Invokes Restart on MCCS Subarray Leaf Node proxy.
         """
         return self._proxy.Restart(argin)
 
