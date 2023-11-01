@@ -15,9 +15,20 @@ from tango import EnsureOmniThread
 from tango.server import command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.test_helpers.helper_adapter_factory import (
+    HelperAdapterFactory,
+)
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
-from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
+from .constants import (
+    ABORT,
+    ALLOCATE,
+    CONFIGURE,
+    END,
+    RELEASE,
+    RESTART,
+    SUBARRAY_DEVICE_PREFIX,
+)
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -28,6 +39,7 @@ class HelperMCCSController(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
+        self.adapter_factory = HelperAdapterFactory()
         self._raise_exception = False
         self._defective = json.dumps(
             {
@@ -269,7 +281,12 @@ class HelperMCCSController(HelperBaseDevice):
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
-
+        mccs_subarray_adapter = self.adapter_factory.get_or_create_adapter(
+            SUBARRAY_DEVICE_PREFIX + "01"
+        )
+        result_code, message = mccs_subarray_adapter.AssignResources("")
+        if result_code != ResultCode.OK:
+            return [ResultCode.FAILED], [message]
         thread = threading.Thread(
             target=self.update_lrcr, args=["Allocate", command_id]
         )
@@ -329,6 +346,12 @@ class HelperMCCSController(HelperBaseDevice):
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
         )
+        mccs_subarray_adapter = self.adapter_factory.get_or_create_adapter(
+            SUBARRAY_DEVICE_PREFIX + "01"
+        )
+        result_code, message = mccs_subarray_adapter.ReleaseAllResources()
+        if result_code != ResultCode.OK:
+            return [ResultCode.FAILED], [message]
         thread.start()
         self.logger.info("Release command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
