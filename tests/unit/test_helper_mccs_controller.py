@@ -61,3 +61,13 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
     result, _ = mccs_controller_device.command_inout("Allocate", "")
     assert result[0] == ResultCode.QUEUED
     mccs_controller_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_restart_subarray_command(tango_context):
+    dev_factory = DevFactory()
+    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    subarray_id = 1  # Provide the subarray ID as an argument to the RestartSubarray command
+    result = mccs_controller_device.command_inout(
+        "RestartSubarray", subarray_id
+    )
+    assert result[0] == ResultCode.QUEUED
