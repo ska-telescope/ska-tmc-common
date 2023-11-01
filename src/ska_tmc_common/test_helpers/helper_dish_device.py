@@ -3,11 +3,11 @@
 This module implements the Helper Dish Device for testing an integrated TMC
 """
 import json
-import random
 import threading
 import time
 from typing import List, Tuple
 
+import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -16,11 +16,7 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import DishMode, PointingState
-from ska_tmc_common.test_helpers.helper_dish_ln_device import (
-    HelperDishLNDevice,
-)
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE,
     CONFIGURE_BAND_2,
@@ -31,6 +27,9 @@ from .constants import (
     SET_STOW_MODE,
     TRACK,
     TRACK_STOP,
+)
+from ska_tmc_common.test_helpers.helper_dish_ln_device import (
+    HelperDishLNDevice,
 )
 
 
@@ -61,8 +60,12 @@ class HelperDishDevice(HelperDishLNDevice):
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
-    achievedPointing = attribute(dtype=str, access=AttrWriteType.READ)
-    desiredPointing = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
+    achievedPointing = attribute(
+        dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
+    )
+    desiredPointing = attribute(
+        dtype=(float,), access=AttrWriteType.READ_WRITE, max_dim_x=3
+    )
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -80,22 +83,22 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return json.dumps(self._offset)
 
-    def read_desiredPointing(self) -> str:
+    def read_desiredPointing(self) -> list:
         """
         This method reads the desiredPointing of dishes.
-        :rtype: str
+        :rtype: list
         """
-        return json.dumps(self._desired_pointing)
+        return self._desired_pointing
 
-    def write_desiredPointing(self, value: str) -> None:
+    def write_desiredPointing(self, value: list) -> None:
         """
         This method writes the desiredPointing of dishes.
         :param value: The timestamp, azimuth and elevation values for the \
             desired pointing of dishes.
-        :value dtype: str
+        :value dtype: list
         :rtype: None
         """
-        timestamp, azimuth, elevation = json.loads(value)
+        timestamp, azimuth, elevation = value
         self.logger.info(
             "The desired pointing parameters are: %s, %s, %s",
             timestamp,
@@ -103,13 +106,14 @@ class HelperDishDevice(HelperDishLNDevice):
             elevation,
         )
         self._desired_pointing = [timestamp, azimuth, elevation]
+        self.set_achieved_pointing()
 
-    def read_achievedPointing(self) -> str:
+    def read_achievedPointing(self) -> np.ndarray:
         """
         This method reads the achievedPointing of dishes.
         :rtype: str
         """
-        return json.dumps(self._achieved_pointing)
+        return np.array(self._achieved_pointing)
 
     def read_dishMode(self) -> DishMode:
         """
@@ -169,19 +173,17 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         This method set the Dish Mode
         """
-        if self._dish_mode != dishMode:
-            self._dish_mode = dishMode
-            time.sleep(0.1)
-            self.push_change_event("dishMode", self._dish_mode)
+        self._dish_mode = dishMode
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
 
     def set_pointing_state(self, pointingState: PointingState) -> None:
         """
         This method set the Pointing State
         """
-        if self._pointing_state != pointingState:
-            self._pointing_state = pointingState
-            self.push_change_event("pointingState", self._pointing_state)
-            self.logger.info("Pointing State: %s", self._pointing_state)
+        self._pointing_state = pointingState
+        self.push_change_event("pointingState", self._pointing_state)
+        self.logger.info("Pointing State: %s", self._pointing_state)
 
     def update_dish_mode(
         self, value: DishMode, command_name: str = ""
@@ -226,20 +228,20 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_pointing_state(value)
 
     def update_command_info(
-        self, command_name: str = "", command_input: str = ""
+        self, command_name: str = "", command_input: str | bool | None = None
     ) -> None:
         """This method updates the commandCallInfo attribute,
         with the respective command information.
 
         Args:
             command_name (str): command name
-            command_input (str): Input argin for command
+            command_input(str or bool): Input argin for command
         """
         self.logger.info(
             "Recording the command data for DishMaster simulators"
         )
 
-        self._command_info = (command_name, command_input)
+        self._command_info = (command_name, str(command_input))
         self._command_call_info.append(self._command_info)
         self.logger.info(
             "Recorded command_call_info list for DishMaster simulators \
@@ -252,24 +254,25 @@ class HelperDishDevice(HelperDishLNDevice):
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
+            # Unpack the achieved pointing values
             # pylint: disable=unbalanced-tuple-unpacking
             timestamp, azimuth, elevation = self._desired_pointing
             # pylint: enable=unbalanced-tuple-unpacking
+            # Create a numpy array
+            achieved_pointing = np.array([timestamp, azimuth, elevation])
         except Exception as e:
             self.logger.exception(
                 "The desired pointing has incorrect values: %s,"
-                + "error occured while unpacking: %s",
+                + "error occurred while unpacking: %s",
                 self._desired_pointing,
                 e,
             )
         else:
-            deviation = random.randint(0, 5)
-            azimuth *= (100 + deviation) / 100
-            elevation *= (100 + deviation) / 100
-            self._achieved_pointing = [timestamp, azimuth, elevation]
-            self.push_change_event(
-                "achievedPointing", json.dumps(self._achieved_pointing)
+            self._achieved_pointing = achieved_pointing
+            self.logger.info(
+                "The achieved pointing value is: %s", self._achieved_pointing
             )
+            self.push_change_event("achievedPointing", self._achieved_pointing)
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -315,7 +318,7 @@ class HelperDishDevice(HelperDishLNDevice):
         return ([ResultCode.OK], [""])
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
-        """
+        """np.array
         This method checks if the is_SetStandbyLPMode_allowed Command is
         allowed in current
         State.
@@ -665,11 +668,13 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand1(
+        self, argin: bool
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand1 command on  Dish Master
         """
@@ -705,13 +710,18 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand2(
+        self, argin: bool
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand2 command on Dish Master
+        :param argin: The argin is a boolean value,
+        if it is set true it invoke ConfigureBand2 command.
+        :argin dtype: bool
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
@@ -751,11 +761,13 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand3(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand3(
+        self, argin: bool
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand3 command on  Dish Master
         """
@@ -789,11 +801,13 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ConfigureBand4(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+    def ConfigureBand4(
+        self, argin: bool
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand4 command on Dish Master
         """
@@ -827,12 +841,12 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand5a(
-        self, argin: str
+        self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5a command on Dish Master
@@ -866,12 +880,12 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=bool,
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def ConfigureBand5b(
-        self, argin: str
+        self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ConfigureBand5b command on Dish Master

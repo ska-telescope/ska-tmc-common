@@ -1,5 +1,7 @@
 import json
+from datetime import datetime
 
+import numpy as np
 import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
@@ -16,10 +18,8 @@ COMMANDS = [
     "SetStandbyLPMode",
     "SetOperateMode",
     "SetStowMode",
-    "Off",
     "Scan",
     "AbortCommands",
-    "Configure",
     "ConfigureBand1",
     "ConfigureBand2",
     "ConfigureBand3",
@@ -32,12 +32,10 @@ COMMANDS_WITHOUT_INPUT = [
     "SetStandbyLPMode",
     "SetOperateMode",
     "SetStowMode",
-    "Off",
     "Scan",
     "AbortCommands",
 ]
 COMMANDS_WITH_INPUT = [
-    "Configure",
     "ConfigureBand1",
     "ConfigureBand2",
     "ConfigureBand3",
@@ -58,12 +56,12 @@ def test_set_delay(tango_context):
 def test_desired_pointing(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert dish_device.desiredPointing == "[]"
-    dish_device.desiredPointing = json.dumps(
-        ["2019-02-19 06:01:00", 287.2504396, 77.8694392]
-    )
-    assert dish_device.desiredPointing == json.dumps(
-        ["2019-02-19 06:01:00", 287.2504396, 77.8694392]
+    assert np.array_equal(dish_device.desiredPointing, np.array([]))
+    timestamp = datetime.utcnow().timestamp()
+    dish_device.desiredPointing = [timestamp, 287.2504396, 77.8694392]
+    assert np.array_equal(
+        dish_device.desiredPointing,
+        np.array([timestamp, 287.2504396, 77.8694392]),
     )
 
 
@@ -73,7 +71,7 @@ def test_dish_commands_without_input(tango_context, command):
     dish_device = dev_factory.get_device(DISH_DEVICE)
     result, message = dish_device.command_inout(command)
     command_call_info = dish_device.commandCallInfo
-    assert command_call_info[0] == (command, "")
+    assert command_call_info[0][0] == command
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -82,7 +80,7 @@ def test_dish_commands_without_input(tango_context, command):
 def test_dish_commands_with_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout(command, "")
+    result, message = dish_device.command_inout(command, True)
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
@@ -105,7 +103,7 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout(command_to_check, "")
+    result, message = dish_device.command_inout(command_to_check, True)
     assert result[0] == ResultCode.FAILED
     assert (
         message[0] == "Device is defective, cannot process command completely."

@@ -49,9 +49,9 @@ class BaseTMCCommand:
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.component_manager = component_manager
         self.logger = logger
-        self.tracker_thread: threading.Thread
-        self._stop: bool
-        self.index: int
+        self.tracker_thread: Optional[threading.Thread] = None
+        self._stop: bool = False
+        self.index: int = 0
 
     def set_command_id(self, command_name: str):
         """Sets the command id for error propagation."""
@@ -266,7 +266,7 @@ class BaseTMCCommand:
                 "Command has been Aborted, " + "Setting TaskStatus to aborted"
             )
             return True
-        return None
+        return False
 
     def check_command_timeout(self, timeout_id, timeout_callback) -> bool:
         """Checks for command timeout. On timeout, it sets ResultCode
@@ -283,7 +283,7 @@ class BaseTMCCommand:
             ):
                 self.logger.error("Timeout has occurred, command failed")
                 return True
-        return None
+        return False
 
     def check_final_obsstate(
         self,
@@ -318,7 +318,7 @@ class BaseTMCCommand:
                     "State change has occurred, command successful"
                 )
                 return True
-        return None
+        return False
 
     def check_command_exception(self, command_id, lrcr_callback) -> bool:
         """Checks if command has been failed with an exception.
@@ -336,7 +336,7 @@ class BaseTMCCommand:
         ):
             self.logger.error("Exception has occurred, command failed")
             return True
-        return None
+        return False
 
     def stop_tracker_thread(self, timeout_id) -> None:
         """External stop method for stopping the timer thread as well as the

@@ -4,6 +4,7 @@ an integrated TMC
 """
 # pylint: disable=unused-argument
 import json
+import time
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
@@ -22,6 +23,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
+        self._delay: int = 2
         self._raise_exception = False
         self._defective = json.dumps(
             {
@@ -44,6 +46,29 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             """
             super().do()
             return (ResultCode.OK, "")
+
+    def push_command_result(
+        self, result: ResultCode, command: str, exception: str = ""
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command: The command name for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
+        command_id = f"{time.time()}-{command}"
+        if exception:
+            command_result = (command_id, exception)
+            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (command_id, json.dumps(result))
+        self.push_change_event("longRunningCommandResult", command_result)
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -85,12 +110,13 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             return self.induce_fault(
                 "AssignResources",
             )
+        self.push_command_result(ResultCode.OK, "AssignResources")
         self.logger.debug("AssignResourses command complete")
         return [ResultCode.OK], [""]
 
-    def is_ReleaseResources_allowed(self) -> bool:
+    def is_ReleaseAllResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseResources` is allowed in the current
+        Check if command `ReleaseAllResources` is allowed in the current
         device state.
 
         :return: ``True`` if the command is allowed
@@ -114,11 +140,11 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseResources(
+    def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ReleaseResources command on MCCS
+        This method invokes ReleaseAllResources command on MCCS
         master leaf node device.
 
         :return: a tuple containing ResultCode and Message
@@ -126,7 +152,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         """
         if self.defective_params["enabled"]:
             return self.induce_fault(
-                "ReleaseResources",
+                "ReleaseAllResources",
             )
-        self.logger.info("ReleaseResources command completed.")
+        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        self.logger.info("ReleaseAllResources command completed.")
         return [ResultCode.OK], [""]
