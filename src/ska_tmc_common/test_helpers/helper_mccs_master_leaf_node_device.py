@@ -4,6 +4,7 @@ an integrated TMC
 """
 # pylint: disable=unused-argument
 import json
+import threading
 import time
 from typing import List, Tuple
 
@@ -63,25 +64,16 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         exception: Exception message to be pushed as an event
         dtype: str
         """
-        self.logger.debug("The values are:%s ,%s, %s",result,command_id,exception)
-        self.logger.info("The values are:%s ,%s, %s",result,command_id,exception)
         if exception:
-
             command_result = (command_id, exception)
-            self.logger.debug("Inside push_command_result exception.")
-            self.logger.info("Inside push_command_result exception.")
             self.push_change_event("longRunningCommandResult", command_result)
-            self.logger.info(
-                "command_result has been pushed as %s", command_result
-            )
-        else :
-            command_result = (command_id, json.dumps(result))
-            self.logger.debug("Inside push_command_result")
-            self.logger.info("Inside push_command_result")
-            self.push_change_event("longRunningCommandResult", command_result)
-            self.logger.info(
-                "command_result has been pushed as %s", command_result
-            )
+        command_result = (command_id, json.dumps(result))
+        thread = threading.Timer(
+            self._delay,
+            function=self.push_change_event,
+            args=["longRunningCommandResult", command_result],
+        )
+        thread.start()
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -120,16 +112,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-AssignResources"
-        self.logger.debug("Inside AssignResources command.")
-        self.logger.info("Inside AssignResources command.")
         if self.defective_params["enabled"]:
-            self.logger.debug("AssignResourses is faulty on MCCSMLN.")
-            self.logger.info("AssignResourses is faulty on MCCSMLN.")
-            return self.induce_fault(
-                command_id
-            )
-        self.logger.debug("AssignResourses command complete")
-        self.logger.info("AssignResourses command complete")
+            return self.induce_fault(command_id)
         self.push_command_result(ResultCode.OK, command_id)
         self.logger.info("AssignResourses command complete")
         return [ResultCode.OK], [command_id]
@@ -170,10 +154,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}-ReleaseResources"
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "ReleaseAllResources",
-            )
-        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
-        self.logger.info("ReleaseAllResources command completed.")
-        return [ResultCode.OK], [""]
+            return self.induce_fault(command_id)
+        self.push_command_result(ResultCode.OK, command_id)
+        self.logger.info("ReleaseResources command complete")
+        return [ResultCode.OK], [command_id]
