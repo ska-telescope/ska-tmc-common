@@ -54,6 +54,8 @@ class HelperCspSubarray(HelperSubArrayDevice):
         self.logger.info("CSP Helper Subarray AssignResources command")
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
+
+            self.logger.info("Inducing fault on CSP Subarray")
             return self.induce_fault(
                 "AssignResources",
             )
