@@ -284,8 +284,7 @@ class MCCSControllerAdapter(BaseAdapter):
 
 class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
     """
-    This class is used for creating and managing adapters
-    for MCCS subarray leaf node device.
+    An Adapter class for the MCCS Subarray Leaf Node Device.
     """
 
     def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
@@ -505,7 +504,7 @@ class AdapterFactory:
             new_adapter = CspMasterAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
-        elif adapter_type == AdapterType.SUBARRAY:
+        elif adapter_type == AdapterType.MCCS_SUBARRAY_LEAF_NODE:
             new_adapter = MCCSSubarrayLeafNodeAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
