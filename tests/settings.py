@@ -38,7 +38,7 @@ TIMEOUT = 10
 
 DishLeafNodePrefix = "ska_mid/tm_leaf_node/d0"
 NumDishes = 10
-
+SUBARRAY_DEVICE_PREFIX = "ska_low/tm_subarray_node/"
 DUMMY_MONITORED_DEVICE = "dummy/monitored/device"
 DUMMY_SUBARRAY_DEVICE = "dummy/subarray/device"
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]

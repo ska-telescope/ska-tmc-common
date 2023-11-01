@@ -41,6 +41,7 @@ from tests.settings import (
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
     SDP_LEAF_NODE_DEVICE,
     SUBARRAY_DEVICE,
+    SUBARRAY_DEVICE_PREFIX,
     TMC_COMMON_DEVICE,
     logger,
 )
@@ -95,6 +96,7 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": SUBARRAY_DEVICE},
+                {"name": SUBARRAY_DEVICE_PREFIX + "01"},
             ],
         },
         {
