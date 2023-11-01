@@ -58,7 +58,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
-        """This Command Reset Sys Param and source sys param"""
+        """This Command Reset sysParam and sourceSysParam attribute"""
         self._source_sys_param = ""
         self._sys_param = ""
         return [ResultCode.OK], [""]
