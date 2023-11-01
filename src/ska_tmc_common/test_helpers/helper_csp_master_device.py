@@ -6,6 +6,7 @@ This module defines a helper device that acts as csp master in our testing.
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import json
+import threading
 import time
 from typing import List, Tuple
 
@@ -251,7 +252,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.push_change_event("sourceSysParam", self._source_sys_param)
         self.push_change_event("sysParam", self._sys_param)
 
-        self.push_command_result(ResultCode.OK, "LoadDishCfg")
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "LoadDishCfg"],
+        )
+        thread.start()
         return [ResultCode.QUEUED], [""]
 
 
