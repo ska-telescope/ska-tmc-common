@@ -25,7 +25,7 @@ class AdapterType(enum.IntEnum):
     SDPSUBARRAY = 6
     MCCS_CONTROLLER = 7
     CSP_MASTER_LEAF_NODE = 8
-    MCCSSubarrayLeafNodeAdapter = 9
+    MCCS_SUBARRAY_LEAF_NODE = 9
 
 
 class BaseAdapter:
@@ -289,7 +289,7 @@ class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
 
     def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes Restart on device proxy.
+        Invokes RestartSubarray on MCCS Subarray device proxy.
         """
         return self._proxy.Restart(argin)
 
@@ -460,6 +460,7 @@ class AdapterFactory:
         SdpSubArrayAdapter,
         MCCSMasterLeafNodeAdapter,
         MCCSControllerAdapter,
+        MCCSSubarrayLeafNodeAdapter,
         BaseAdapter,
     ]:
         """

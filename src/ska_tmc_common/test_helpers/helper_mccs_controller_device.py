@@ -356,7 +356,9 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def RestartSubarray(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
+    def RestartSubarray(
+        self, argin: int
+    ) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke RestartSubarray command.
         :param argin: an integer subarray_id.

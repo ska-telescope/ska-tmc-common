@@ -9,7 +9,7 @@
 name = """ska-tmc-common"""
 version = "0.9.0"
 version_info = version.split(".")
-description = """Added RestartSubarray on MccsController."""
+description = """A set of common classes for TMC devices."""
 author = "Team Himalaya, Team Sahyadri"
 author_email = "adityadange.ska at gmail.com"
 license = """BSD-3-Clause"""
