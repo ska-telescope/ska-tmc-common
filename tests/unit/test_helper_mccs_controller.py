@@ -73,4 +73,4 @@ def test_restart_subarray_command(tango_context):
 
     # Assert the result and any other expected behavior
     assert result[0] == ResultCode.QUEUED
-    assert f"RestartSubarray {subarray_id}" in message[0]
+    assert f"'RestartSubarray 1{subarray_id}" in message[0]
