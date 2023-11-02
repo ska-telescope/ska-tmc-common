@@ -435,10 +435,27 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(CONFIGURE, argin)
         input = json.loads(argin)
         if "scan_type" not in input:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
             self.logger.info("Missing scan_type in the Configure input json")
+            time.sleep(1)
+            self._obs_state = ObsState.IDLE
+            self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing scan_type in the Configure input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
+
+        interface = input["interface"]
+        if interface != "https://schema.skao.int/ska-sdp-configure/0.3":
+            self.logger.info("Missing interface in the Configure input json")
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing interface in the Configure input json",
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
