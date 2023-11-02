@@ -3,13 +3,11 @@ import ast
 import msgpack
 import msgpack_numpy
 import numpy as np
-import pytest
 
 from ska_tmc_common import DevFactory
 from tests.settings import HELPER_SDP_QUEUE_CONNECTOR_DEVICE
 
 
-@pytest.mark.R1
 def test_pointing_offsets(tango_context):
     POINTING_OFFSETS = np.array(
         [
