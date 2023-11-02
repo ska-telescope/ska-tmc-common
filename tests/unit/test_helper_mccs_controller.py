@@ -96,7 +96,8 @@ def test_mccs_controller_command_raise_exception(tango_context):
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetRaiseException(True)
     result, message = mccs_controller_device.command_inout(
-        release_argin_string, ""
+        "Release",
+        release_argin_string
     )
     assert result[0] == ResultCode.QUEUED
 
@@ -125,4 +126,4 @@ def test_restart_subarray_command(tango_context):
     result = mccs_controller_device.command_inout(
         "RestartSubarray", subarray_id
     )
-    assert result[0] == ResultCode.QUEUED
+    assert result[0][0] == ResultCode.QUEUED
