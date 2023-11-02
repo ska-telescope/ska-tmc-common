@@ -34,7 +34,7 @@ release_argin_string = json.dumps({"subarray_id": 1, "release_all": True})
 commands_without_argin = ["On", "Off"]
 
 
-@pytest.mark.kk
+
 def test_mccs_controller_release_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
@@ -48,7 +48,6 @@ def test_mccs_controller_release_command(tango_context):
     assert mccs_subarray_device.obsstate == ObsState.EMPTY
 
 
-@pytest.mark.kk
 def test_mccs_controller_allocate_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
