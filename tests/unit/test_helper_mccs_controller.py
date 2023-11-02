@@ -1,5 +1,4 @@
 import json
-import time
 
 import pytest
 from ska_tango_base.commands import ResultCode
