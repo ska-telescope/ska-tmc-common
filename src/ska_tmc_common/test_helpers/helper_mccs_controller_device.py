@@ -275,7 +275,7 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("Allocate  invoked on MCCS Controller")
         subarray_id = int(argin)
-        mccs_dev_name = "helper/mccssubarray/device01" + f"{subarray_id:02}"
+        mccs_dev_name = "helper/mccssubarray/device" + f"{subarray_id:02}"
         dev_factory = DevFactory()
         mccs_subarray_device = dev_factory.get_device(mccs_dev_name)
         mccs_subarray_device.AssignResources("")
@@ -336,7 +336,7 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("Release command invoked on MCCS Controller")
         subarray_id = int(argin)
-        mccs_dev_name = "helper/mccssubarray/device01" + f"{subarray_id:02}"
+        mccs_dev_name = "helper/mccssubarray/device" + f"{subarray_id:02}"
         dev_factory = DevFactory()
         mccs_subarray_device = dev_factory.get_device(mccs_dev_name)
         mccs_subarray_device.ReleaseAllResources()
