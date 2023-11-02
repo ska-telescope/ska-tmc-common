@@ -435,15 +435,25 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(CONFIGURE, argin)
         input = json.loads(argin)
         if "scan_type" not in input:
+            self.logger.info("Missing scan_type in the Configure input json")
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing scan_type in the Configure input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
+
+        scan_type = input["scan_type"]
+        if scan_type != "science_A":
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
-            self.logger.info("Missing scan_type in the Configure input json")
+            self.logger.info("Wrong scan_type in the Configure input json")
             time.sleep(1)
             self._obs_state = ObsState.IDLE
             self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
-                "Missing scan_type in the Configure input json",
+                "Wrong scan_type in the Configure input json",
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
