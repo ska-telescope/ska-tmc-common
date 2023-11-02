@@ -116,3 +116,23 @@ def test_SetKValue_command_dishln(tango_context):
     return_code[0] = ResultCode.OK
 
     assert dishln_device.kValue == 5
+
+
+def test_SetKValue_command_dishln_defective(tango_context):
+    """
+    This test case invokes command on dish leaf node device
+    and checks whether the attributes are populated with
+    relevant k value or not.
+    """
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
+    return_code, error_message = dishln_device.SetKValue(5)
+
+    assert return_code[0] == ResultCode.FAILED
+    assert (
+        error_message[0]
+        == "Device is defective, cannot process command completely."
+    )
+
+    dishln_device.SetDefective(json.dumps({"enabled": False}))

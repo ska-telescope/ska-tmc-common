@@ -44,6 +44,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._dish_mode = DishMode.STANDBY_LP
         self._desired_pointing = []
         self._achieved_pointing = []
+        self._state_duration_info = []
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -133,7 +134,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
     @command(
         dtype_in=int,
-        doc_in="pointing state to assign",
+        doc_in="Pointing state to assign",
     )
     def SetDirectPointingState(self, argin: PointingState) -> None:
         """
@@ -144,6 +145,29 @@ class HelperDishDevice(HelperDishLNDevice):
         if self._pointing_state != value:
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Pointing State Duration",
+    )
+    def AddTransition(self, state_duration_info: str) -> None:
+        """This command will set duration for pointing state such that when
+        respective command for pointing state is triggered then it change
+        pointing state after provided duration
+        """
+        self.logger.info(
+            "Adding pointing state transitions for Dish device: %s",
+            state_duration_info,
+        )
+        self._state_duration_info = json.loads(state_duration_info)
+
+    @command(
+        doc_in="Reset Pointing State Duration",
+    )
+    def ResetTransitions(self) -> None:
+        """This command will reset PointingState duration which is set"""
+        self.logger.info("Resetting Pointing State Duration")
+        self._state_duration_info = []
 
     def set_dish_mode(self, dishMode: DishMode) -> None:
         """

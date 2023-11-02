@@ -485,6 +485,7 @@ class HelperSubArrayDevice(SKASubarray):
         Trigger a ObsState change
         """
         # import debugpy; debugpy.debug_this_thread()
+        self.logger.info("Setting the obsState to %s", argin)
         value = ObsState(argin)
         if self._obs_state != value:
             self._obs_state = value
@@ -629,6 +630,7 @@ class HelperSubArrayDevice(SKASubarray):
         "fault_type": FaultType.FAILED_RESULT,
         "error_message": "Default exception.",
         "result": ResultCode.FAILED,
+        "target_obsstates": [ObsState.RESOURCING, ObsState.EMPTY],
         }
         )
         defective_params = json.loads(defective)
@@ -663,15 +665,37 @@ class HelperSubArrayDevice(SKASubarray):
 
         :raises: None
         """
+        self.logger.info("Inducing fault for command %s", command_name)
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
         fault_message = self.defective_params["error_message"]
-        intermediate_state = (
-            self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
-        )
+
+        if self.defective_params.get("intermediate_state"):
+            intermediate_state = self.defective_params.get(
+                "intermediate_state"
+            )
+        else:
+            intermediate_state = ObsState.RESOURCING
+            self.logger.info("intermediate_state is: %s", intermediate_state)
 
         if fault_type == FaultType.FAILED_RESULT:
+            self.logger.info("FAILED RESULT Fault type")
+            self.logger.info(
+                "Target obsStates are: %s",
+                self.defective_params.get("target_obsstates"),
+            )
+            if "target_obsstates" in self.defective_params.keys():
+                # Utilise target_obsstate parameter when Subarray should
+                # transition to specific obsState while returning
+                # ResultCode.FAILED
+                obsstate_list = self.defective_params.get("target_obsstates")
+                for obsstate in obsstate_list:
+                    self._obs_state = obsstate
+                    time.sleep(1)
+                    self.logger.info(
+                        "pushing target obsstate %s event", self._obs_state
+                    )
+                    self.push_change_event("obsState", self._obs_state)
             return [result], [fault_message]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
@@ -685,6 +709,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
+            self.logger.info("pushing obsState %s event", intermediate_state)
             self.push_change_event("obsState", intermediate_state)
             return [ResultCode.QUEUED], [""]
 
