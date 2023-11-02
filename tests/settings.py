@@ -64,7 +64,6 @@ HELPER_DISH_DEVICE = "test/dish/1"
 HELPER_CSP_MASTER_DEVICE = "test/csp_master/1"
 DISH_FQDN = "ska_mid/tm_leaf_node/d0001"
 TMC_COMMON_DEVICE = "src/tmc/common"
-HELPER_SDP_QUEUE_CONNECTOR_DEVICE = "test-sdp/queueconnector/01"
 
 FAILED_RESULT_DEFECT = {
     "enabled": True,

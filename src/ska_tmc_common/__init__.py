@@ -80,9 +80,6 @@ from .test_helpers.helper_mccs_master_leaf_node_device import (
 from .test_helpers.helper_mccs_subarray_leaf_node_device import (
     HelperMccsSubarrayLeafNode,
 )
-from .test_helpers.helper_sdp_queue_connector_device import (
-    HelperSdpQueueConnector,
-)
 from .test_helpers.helper_sdp_subarray_leaf_device import (
     HelperSdpSubarrayLeafDevice,
 )
@@ -180,5 +177,4 @@ __all__ = [
     "DummyComponent",
     "DummyComponentManager",
     "DummyTmcDevice",
-    "HelperSdpQueueConnector",
 ]

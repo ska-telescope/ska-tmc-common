@@ -27,8 +27,6 @@ ska-tango-testing = "0.6.0"
 katpoint = "1.0a2"
 ska-telmodel = "1.9.0"
 mock = "^4.0.3"
-msgpack = "1.0.7"
-msgpack_numpy = "0.4.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.3.1"
