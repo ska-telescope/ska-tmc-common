@@ -150,12 +150,11 @@ def test_release_resources_raise_exception(tango_context):
     assert subarray_device.obsstate == ObsState.RESOURCING
 
 
-@pytest.mark.test1
-def test_assigned_resources_attribute(tango_context):
+def test_assigned_resources_attribute_with_change_event(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDirectassignedResources("[]")
+    subarray_device.SetDirectassignedResources(json.dumps([]))
     assigned_resources = subarray_device.read_attribute(
         "assignedResources"
     ).value
-    assert assigned_resources == "[]"
+    assert assigned_resources == json.dumps([])

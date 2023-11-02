@@ -56,7 +56,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
             component_state_callback,
             **kwargs,
         )
-        self._assigned_resources: str
+        self._assigned_resources = []
 
     def assign(self, resources: list) -> Tuple[ResultCode, str]:
         """
@@ -66,7 +66,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         :rtype:tuple
         """
         self.logger.info("Resources: %s", resources)
-        self._assigned_resources = '["0001"]'
+        self._assigned_resources = ["0001"]
         return ResultCode.OK, ""
 
     def release(self, resources: list) -> Tuple[ResultCode, str]:
@@ -553,15 +553,11 @@ class HelperSubArrayDevice(SKASubarray):
         Trigger a assignedResources change
         """
         # import debugpy; debugpy.debug_this_thread()
-        if self._assigned_resources != argin:
-            self._assigned_resources = argin
-            self.push_change_event(
-                "assignedResources", self._assigned_resources
-            )
-            self.logger.info(
-                "Updated assignedResources attribute value to %s",
-                self._assigned_resources,
-            )
+        self.push_change_event("assignedResources", argin)
+        self.logger.info(
+            "Updated assignedResources attribute value to %s",
+            argin,
+        )
 
     def is_On_allowed(self) -> bool:
         """
