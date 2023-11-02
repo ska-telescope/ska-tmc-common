@@ -46,14 +46,21 @@ def test_pointing_offsets(tango_context):
         ]
     )
     dev_factory = DevFactory()
-    sdp_subarray_device = dev_factory.get_device(
+    sdp_queue_connector_device = dev_factory.get_device(
         HELPER_SDP_QUEUE_CONNECTOR_DEVICE
     )
-    pack = msgpack.packb(POINTING_OFFSETS, default=msgpack_numpy.encode)
-    sdp_subarray_device.SetDirectPointingOffsets(str(pack))
-    encoded_string = sdp_subarray_device.pointing_offsets
-    unpack = msgpack.unpackb(
-        ast.literal_eval(encoded_string), object_hook=msgpack_numpy.decode
+    encoded_numpy_ndarray_in_byte_form = msgpack.packb(
+        POINTING_OFFSETS, default=msgpack_numpy.encode
     )
-    comparison = unpack == POINTING_OFFSETS
+    sdp_queue_connector_device.SetDirectPointingOffsets(
+        str(encoded_numpy_ndarray_in_byte_form)
+    )
+    encoded_numpy_ndarray_string_from_qc = (
+        sdp_queue_connector_device.pointing_offsets
+    )
+    decoded_numpy_ndarray = msgpack.unpackb(
+        ast.literal_eval(encoded_numpy_ndarray_string_from_qc),
+        object_hook=msgpack_numpy.decode,
+    )
+    comparison = decoded_numpy_ndarray == POINTING_OFFSETS
     assert comparison.all()
