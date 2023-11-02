@@ -126,4 +126,4 @@ def test_restart_subarray_command(tango_context):
     result = mccs_controller_device.command_inout(
         "RestartSubarray", subarray_id
     )
-    assert result[0][0] == ResultCode.QUEUED
+    assert result[0]== ResultCode.QUEUED
