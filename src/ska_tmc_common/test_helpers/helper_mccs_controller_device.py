@@ -338,7 +338,7 @@ class HelperMCCSController(HelperBaseDevice):
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
         dev_factory = DevFactory()
         mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
-        mccs_subarray_proxy.ReleaseAllResources()
+        mccs_subarray_proxy.ReleaseResources(argin)
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
         )

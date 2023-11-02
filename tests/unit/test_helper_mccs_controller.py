@@ -5,7 +5,11 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
-from tests.settings import HELPER_MCCS_CONTROLLER, MCCS_SUBARRAY_DEVICE
+from tests.settings import (
+    HELPER_MCCS_CONTROLLER,
+    MCCS_SUBARRAY_DEVICE,
+    wait_for_obstate,
+)
 
 allocate_argin_string = json.dumps(
     {
@@ -31,7 +35,7 @@ commands_without_argin = ["On", "Off"]
 
 
 @pytest.mark.kk
-def test_mccs_controller_release_with_argument(tango_context):
+def test_mccs_controller_release_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     result, unique_id = mccs_controller_device.command_inout(
@@ -40,11 +44,12 @@ def test_mccs_controller_release_with_argument(tango_context):
     mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith("Release")
-    assert mccs_subarray_device.obsstate == ObsState.RESOURCING
+    wait_for_obstate(mccs_subarray_device, ObsState.EMPTY)
+    assert mccs_subarray_device.obsstate == ObsState.EMPTY
 
 
 @pytest.mark.kk
-def test_mccs_controller_allocate_with_argument(tango_context):
+def test_mccs_controller_allocate_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     result, unique_id = mccs_controller_device.command_inout(
@@ -54,6 +59,8 @@ def test_mccs_controller_allocate_with_argument(tango_context):
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith("Allocate")
     assert mccs_subarray_device.obsstate == ObsState.RESOURCING
+    wait_for_obstate(mccs_subarray_device, ObsState.IDLE)
+    assert mccs_subarray_device.obsstate == ObsState.IDLE
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
