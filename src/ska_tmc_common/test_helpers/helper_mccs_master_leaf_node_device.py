@@ -23,6 +23,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
+        self._isSubsystemAvailable = False
         self._delay: int = 2
         self._raise_exception = False
         self._defective = json.dumps(
