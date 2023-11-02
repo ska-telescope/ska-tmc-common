@@ -269,16 +269,20 @@ class HelperMCCSController(HelperBaseDevice):
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
+
+        self.logger.info("Allocate invoked on MCCS Controller")
+        argin_json = json.loads(argin)
+        subarray_id = int(argin_json["subarray_id"])
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.AssignResources(argin)
+
         thread = threading.Thread(
             target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
-        self.logger.info("Allocate  invoked on MCCS Controller")
-        subarray_id = int(argin)
-        mccs_dev_name = "helper/mccssubarray/device" + f"{subarray_id:02}"
-        dev_factory = DevFactory()
-        mccs_subarray_device = dev_factory.get_device(mccs_dev_name)
-        mccs_subarray_device.AssignResources("")
+
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
@@ -330,16 +334,17 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
+        self.logger.info("Release command invoked on MCCS Controller")
+        argin_json = json.loads(argin)
+        subarray_id = int(argin_json["subarray_id"])
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.ReleaseAllResources()
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
         )
         thread.start()
-        self.logger.info("Release command invoked on MCCS Controller")
-        subarray_id = int(argin)
-        mccs_dev_name = "helper/mccssubarray/device" + f"{subarray_id:02}"
-        dev_factory = DevFactory()
-        mccs_subarray_device = dev_factory.get_device(mccs_dev_name)
-        mccs_subarray_device.ReleaseAllResources()
         return [ResultCode.QUEUED], [command_id]
 
     def is_RestartSubarray_allowed(self) -> bool:
