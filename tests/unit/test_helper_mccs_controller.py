@@ -15,7 +15,7 @@ commands_without_argin = ["On", "Off"]
 def test_mccs_controller_commands_with_argument(tango_context, command):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    result, unique_id = mccs_controller_device.command_inout(command, "")
+    result, unique_id = mccs_controller_device.command_inout(command, "1")
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith(command)
 
