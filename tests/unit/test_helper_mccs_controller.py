@@ -35,7 +35,7 @@ commands_without_argin = ["On", "Off"]
 
 
 @pytest.mark.kk
-def test_mccs_controller_release_with_argument(tango_context):
+def test_mccs_controller_release_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     result, unique_id = mccs_controller_device.command_inout(
@@ -49,7 +49,7 @@ def test_mccs_controller_release_with_argument(tango_context):
 
 
 @pytest.mark.kk
-def test_mccs_controller_allocate_with_argument(tango_context):
+def test_mccs_controller_allocate_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     result, unique_id = mccs_controller_device.command_inout(
