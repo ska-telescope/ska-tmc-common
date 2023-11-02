@@ -40,7 +40,7 @@ def test_csp_loadDishConfig_command(tango_context, json_factory):
     input_json_str = json_factory("mid_cbf_param_file uri")
     return_code, _ = csp_master_device.LoadDishCfg(input_json_str)
 
-    assert return_code[0] == ResultCode.OK
+    assert return_code[0] == ResultCode.QUEUED
     assert csp_master_device.sourceSysParam == input_json_str
 
     expected_json_str = json_factory("mid_cbf_initial_parameters")

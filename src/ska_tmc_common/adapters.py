@@ -25,6 +25,7 @@ class AdapterType(enum.IntEnum):
     SDPSUBARRAY = 6
     MCCS_CONTROLLER = 7
     CSP_MASTER_LEAF_NODE = 8
+    MCCS_SUBARRAY_LEAF_NODE = 9
 
 
 class BaseAdapter:
@@ -245,7 +246,7 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
         """
         return self._proxy.AssignResources(argin)
 
-    def ReleaseResources(
+    def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -260,21 +261,37 @@ class MCCSControllerAdapter(BaseAdapter):
     for MCCS controller devices.
     """
 
-    def AssignResources(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Allocate on MCCS controller device proxy.
         """
         return self._proxy.Allocate(argin)
 
-    def ReleaseResources(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
+    def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Release on MCCS controller device proxy.
         """
         return self._proxy.Release(argin)
+
+    def RestartSubarray(
+        self, argin: int
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes RestartSubarray on MCCS controller device proxy.
+        """
+        return self._proxy.RestartSubarray(argin)
+
+
+class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
+    """
+    An Adapter class for the MCCS Subarray Leaf Node Device.
+    """
+
+    def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Restart on MCCS Subarray Leaf Node proxy.
+        """
+        return self._proxy.Restart(argin)
 
 
 class DishAdapter(BaseAdapter):
@@ -443,6 +460,7 @@ class AdapterFactory:
         SdpSubArrayAdapter,
         MCCSMasterLeafNodeAdapter,
         MCCSControllerAdapter,
+        MCCSSubarrayLeafNodeAdapter,
         BaseAdapter,
     ]:
         """
@@ -485,6 +503,10 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.CSPMASTER:
             new_adapter = CspMasterAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.MCCS_SUBARRAY_LEAF_NODE:
+            new_adapter = MCCSSubarrayLeafNodeAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.CSP_MASTER_LEAF_NODE:
