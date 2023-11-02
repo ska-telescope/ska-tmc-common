@@ -270,7 +270,6 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
-        self.logger.info("Allocate invoked on MCCS Controller")
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
@@ -282,7 +281,7 @@ class HelperMCCSController(HelperBaseDevice):
             target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
-
+        self.logger.info("Allocate invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
@@ -334,7 +333,6 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
-        self.logger.info("Release command invoked on MCCS Controller")
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
@@ -345,6 +343,7 @@ class HelperMCCSController(HelperBaseDevice):
             target=self.update_lrcr, args=["Release", command_id]
         )
         thread.start()
+        self.logger.info("Release command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
     def is_RestartSubarray_allowed(self) -> bool:
