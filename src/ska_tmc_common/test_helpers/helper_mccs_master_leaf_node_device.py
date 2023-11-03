@@ -46,6 +46,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             :rtype:tuple
             """
             super().do()
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             return (ResultCode.OK, "")
 
     def push_command_result(
