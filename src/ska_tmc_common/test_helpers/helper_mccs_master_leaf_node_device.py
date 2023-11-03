@@ -154,9 +154,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        command_id = f"{time.time()}-ReleaseResources"
+        command_id = f"{time.time()}-ReleaseAllResources"
         if self.defective_params["enabled"]:
             return self.induce_fault(command_id)
         self.push_command_result(ResultCode.OK, command_id)
-        self.logger.info("ReleaseResources command complete")
+        self.logger.info("ReleaseAllResources command complete")
         return [ResultCode.OK], [command_id]
