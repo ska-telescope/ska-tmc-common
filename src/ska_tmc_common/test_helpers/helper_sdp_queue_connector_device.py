@@ -6,7 +6,7 @@ Queue Connector in our testing.
 import logging
 
 from tango import AttrWriteType, CmdArgType
-from tango.server import Device, attribute, command
+from tango.server import Device, attribute, command, run
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +74,19 @@ class HelperSdpQueueConnector(Device):
         logger.info(
             "Received pointing offsets data is: %s", self._pointing_offsets
         )
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperSdpQueueConnector Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperSdpQueueConnector,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()
