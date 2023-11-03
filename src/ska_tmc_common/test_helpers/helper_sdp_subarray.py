@@ -443,6 +443,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
+        self._obs_state = ObsState.CONFIGURING
+        self.push_obs_state_event(self._obs_state)
+
         scan_type = input["scan_type"]
         if scan_type != "science_A":
             self._obs_state = ObsState.CONFIGURING
@@ -470,23 +473,51 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Configure",
+        # if scan_type in JSON does not start with prefix science, SDP Subarray
+        # remains in obsState=CONFIGURING and raises exception
+        eb_id = input["sdp"]["scan_type"]
+        if not eb_id.startswith("science"):
+            self.logger.info("eb_id is invalid")
+
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Invalid eb_id in the AssignResources input json",
+                "SdpSubarry.AssignResources()",
+                tango.ErrSeverity.ERR,
             )
+
+        # if interface not present in JSON, SDP Subarray moves to
+        # obsState=IDLE and raises exception
+        if "ska-sdp-configure" not in input["sdp"]["interface"]:
+            self.logger.info("Invalid interface present for sdp")
+            self._obs_state = ObsState.IDLE
+            # Wait before pushing obsState EMPTY event
+            time.sleep(1)
+            self.push_obs_state_event(self._obs_state)
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing receive nodes in the AssignResources input json",
+                "SdpSubarry.AssignResources()",
+                tango.ErrSeverity.ERR,
+            )
+
+        # if self.defective_params["enabled"]:
+        #     self.induce_fault(
+        #         "Configure",
+        #     )
+        # else:
+        if self._state_duration_info:
+            self._follow_state_duration()
         else:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._obs_state = ObsState.CONFIGURING
-                self.push_obs_state_event(self._obs_state)
-                thread = threading.Timer(
-                    self._command_delay_info[CONFIGURE],
-                    self.update_device_obsstate,
-                    args=[ObsState.READY],
-                )
-                thread.start()
-                self.push_command_result(ResultCode.OK, "Configure")
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(
+                self._command_delay_info[CONFIGURE],
+                self.update_device_obsstate,
+                args=[ObsState.READY],
+            )
+            thread.start()
+            self.push_command_result(ResultCode.OK, "Configure")
 
     def is_Scan_allowed(self):
         """
