@@ -19,14 +19,14 @@ class HelperSdpQueueConnector(Device):
 
     def init_device(self):
         super().init_device()
-        self._pointing_offsets = ""
+        self._pointing_offsets = ("msgpack_numpy", b"")
         self.set_change_event("pointing_offsets", True, False)
 
     @attribute(
-        dtype=str,
+        dtype=CmdArgType.DevEncoded,
         access=AttrWriteType.READ,
     )
-    def pointing_offsets(self) -> str:
+    def pointing_offsets(self) -> tuple[str, bytes]:
         """This method is used to read the attribute value for
         pointing_offsets from QueueConnector SDP device.
         The string contains a numpy ndarray in encoded
@@ -44,7 +44,7 @@ class HelperSdpQueueConnector(Device):
         return self._pointing_offsets
 
     @command(
-        dtype_in=str,
+        dtype_in=CmdArgType.DevEncoded,
         doc_in="Set pointing offsets",
     )
     def SetDirectPointingOffsets(
@@ -64,9 +64,12 @@ class HelperSdpQueueConnector(Device):
         Fitted_Height,Fitted_Height_Std
         ]
         """
-        # pylint: disable=attribute-defined-outside-init
         self._pointing_offsets = pointing_offsets_data
-        self.push_change_event("pointing_offsets", self._pointing_offsets)
+        self.push_change_event(
+            "pointing_offsets",
+            self._pointing_offsets[0],
+            self._pointing_offsets[1],
+        )
         logger.info(
             "Received pointing offsets data is: %s", self._pointing_offsets
         )

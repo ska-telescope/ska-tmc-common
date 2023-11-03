@@ -1,13 +1,14 @@
-import ast
-
 import msgpack
 import msgpack_numpy
+import numpy
 import numpy as np
+import pytest
 
 from ska_tmc_common import DevFactory
 from tests.settings import HELPER_SDP_QUEUE_CONNECTOR_DEVICE
 
 
+@pytest.mark.R1
 def test_pointing_offsets(tango_context):
     POINTING_OFFSETS = np.array(
         [
@@ -43,6 +44,7 @@ def test_pointing_offsets(tango_context):
             ],
         ]
     )
+
     dev_factory = DevFactory()
     sdp_queue_connector_device = dev_factory.get_device(
         HELPER_SDP_QUEUE_CONNECTOR_DEVICE
@@ -51,14 +53,13 @@ def test_pointing_offsets(tango_context):
         POINTING_OFFSETS, default=msgpack_numpy.encode
     )
     sdp_queue_connector_device.SetDirectPointingOffsets(
-        str(encoded_numpy_ndarray_in_byte_form)
+        ("mesgpack_numpy", encoded_numpy_ndarray_in_byte_form)
     )
     encoded_numpy_ndarray_string_from_qc = (
         sdp_queue_connector_device.pointing_offsets
     )
     decoded_numpy_ndarray = msgpack.unpackb(
-        ast.literal_eval(encoded_numpy_ndarray_string_from_qc),
+        encoded_numpy_ndarray_string_from_qc[1],
         object_hook=msgpack_numpy.decode,
     )
-    comparison = decoded_numpy_ndarray == POINTING_OFFSETS
-    assert comparison.all()
+    assert numpy.array_equal(decoded_numpy_ndarray, POINTING_OFFSETS)
