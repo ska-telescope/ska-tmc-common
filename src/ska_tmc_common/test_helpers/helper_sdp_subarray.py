@@ -263,7 +263,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def AssignResources(self, argin):
         """This method invokes AssignResources command on SdpSubarray
         device."""
-        # Change obsState to RESOURCING as the command execution is started
 
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
@@ -309,10 +308,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if self.defective_params["enabled"]:
-        #     self.induce_fault(
-        #         "AssignResources",
-        #     )
+        # TODO: Keeping below condition for now as many repositories are
+        # using it. However this method should not be used for inducing fault
+        # on SDP Subarray. Need to remove it once all the instances in other
+        # repositories are updated
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "AssignResources",
+            )
 
         thread = threading.Timer(
             self._command_delay_info[ASSIGN_RESOURCES],
@@ -436,6 +439,33 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing scan_type in the Configure input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
+
+        scan_type = input["scan_type"]
+        if scan_type != "science_A":
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            self.logger.info("Wrong scan_type in the Configure input json")
+            time.sleep(1)
+            self._obs_state = ObsState.IDLE
+            self.push_obs_state_event(self._obs_state)
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Wrong scan_type in the Configure input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
+
+        interface = input["interface"]
+        if interface != "https://schema.skao.int/ska-sdp-configure/0.3":
+            self.logger.info("Missing interface in the Configure input json")
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing interface in the Configure input json",
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )

@@ -6,6 +6,7 @@ This module defines a helper device that acts as csp master in our testing.
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
 import json
+import threading
 import time
 from typing import List, Tuple
 
@@ -178,6 +179,16 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.logger.info("Standby command completed.")
         return [ResultCode.OK], [""]
 
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
+        """This Command Reset Sys Param and source sys param"""
+        self._source_sys_param = ""
+        self._sys_param = ""
+        return [ResultCode.OK], [""]
+
     def is_LoadDishCfg_allowed(self) -> bool:
         """
         This method checks if the LoadDishCfg command is allowed
@@ -217,6 +228,11 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
         }
         """
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "LoadDishCfg",
+            )
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
@@ -236,7 +252,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.push_change_event("sourceSysParam", self._source_sys_param)
         self.push_change_event("sysParam", self._sys_param)
 
-        return [ResultCode.OK], [""]
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "LoadDishCfg"],
+        )
+        thread.start()
+        return [ResultCode.QUEUED], [""]
 
 
 # ----------
