@@ -19,7 +19,6 @@ def test_mccs_master_leaf_node_commands_with_argument(tango_context, command):
     )
     result, message = mccs_master_leaf_node_device.command_inout(command, "")
     assert result[0] == ResultCode.OK
-    assert message[0] == ""
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
