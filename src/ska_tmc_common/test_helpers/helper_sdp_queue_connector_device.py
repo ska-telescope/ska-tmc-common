@@ -64,6 +64,7 @@ class HelperSdpQueueConnector(Device):
         Fitted_Height,Fitted_Height_Std
         ]
         """
+        # pylint: disable=attribute-defined-outside-init
         self._pointing_offsets = pointing_offsets_data
         self.push_change_event(
             "pointing_offsets",
