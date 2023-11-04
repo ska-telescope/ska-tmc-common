@@ -255,7 +255,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.push_command_result,
-            args=[ResultCode.OK, "LoadDishCfg"],
+            args=[
+                [ResultCode.OK, "command LoadDishCfg completed"],
+                "LoadDishCfg",
+            ],
         )
         thread.start()
         return [ResultCode.QUEUED], [""]
