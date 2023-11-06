@@ -5,7 +5,7 @@ from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import DevFactory
-from tests.settings import SUBARRAY_DEVICE, logger
+from tests.settings import SUBARRAY_DEVICE
 
 commands_with_argin = [
     "AssignResources",
@@ -154,6 +154,4 @@ def test_assigned_resources_attribute_with_change_event(tango_context):
     assigned_resources = subarray_device.read_attribute(
         "assignedResources"
     ).value
-    logger.info("assigned_resources::: %s", assigned_resources)
     assert '{"channels": [0]}' in assigned_resources[0]
-    assert False

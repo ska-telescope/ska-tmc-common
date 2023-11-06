@@ -548,7 +548,6 @@ class HelperSubArrayDevice(SKASubarray):
         """
         Triggers an assignedResources attribute change
         """
-        # import debugpy; debugpy.debug_this_thread()
         if self._assigned_resources != argin:
             self._assigned_resources = argin
             self.push_change_event("assignedResources", argin)
