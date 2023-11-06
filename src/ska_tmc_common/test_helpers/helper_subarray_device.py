@@ -246,7 +246,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     scanId = attribute(dtype="DevLong", access=AttrWriteType.READ)
 
-    @attribute(dtype=("str",))
+    @attribute(dtype=("str",), max_dim_x=1024)
     def assignedResources(self) -> list:
         return self._assigned_resources
 
