@@ -247,12 +247,8 @@ class HelperSubArrayDevice(SKASubarray):
     scanId = attribute(dtype="DevLong", access=AttrWriteType.READ)
 
     @attribute(dtype=("str",))
-    def assignedResources(self) -> DevString:
+    def assignedResources(self) -> list:
         return self._assigned_resources
-
-    # @assignedResources.write
-    # def assignedResources(self, assignResources: DevString = None) -> None:
-    #     self._assigned_resources = assignResources
 
     def read_scanId(self) -> int:
         """This method is used to read the attribute value for scanId."""

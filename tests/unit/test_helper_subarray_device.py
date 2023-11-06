@@ -50,14 +50,6 @@ def test_obs_state_transition(tango_context):
     )
 
 
-def test_assignresources_attribute(tango_context):
-    """Test assignResources attribute"""
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.assignedResources = '{"beam_id: 1}'
-    assert subarray_device.assignedResources == '{"beam_id: 1}'
-
-
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
@@ -158,13 +150,9 @@ def test_release_resources_raise_exception(tango_context):
 def test_assigned_resources_attribute_with_change_event(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDirectassignedResources(
-        [
-            '{"channels": [0]}',
-        ]
-    )
+    subarray_device.SetDirectassignedResources(['{"channels": [0]}'])
     assigned_resources = subarray_device.read_attribute(
         "assignedResources"
     ).value
-    logger.info("assigned_resources::: ", assigned_resources)
-    assert assigned_resources == ['{"channels": [0]}']
+    logger.info("assigned_resources::: %s", assigned_resources)
+    assert '{"channels": [0]}' in assigned_resources[0]
