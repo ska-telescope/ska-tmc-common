@@ -557,7 +557,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._assigned_resources = argin
             self.push_change_event("assignedResources", argin)
             self.logger.info(
-                f"Updated assignedResources attribute value to {argin}",
+                "Updated assignedResources attribute value to %s", str(argin)
             )
 
     def is_On_allowed(self) -> bool:
