@@ -162,4 +162,5 @@ def test_assigned_resources_attribute_with_change_event(tango_context):
     assigned_resources = subarray_device.read_attribute(
         "assignedResources"
     ).value
+    print("assigned_resources: ", assigned_resources)
     assert assigned_resources == ['{"channels": [0]}']
