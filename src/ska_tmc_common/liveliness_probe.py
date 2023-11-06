@@ -128,9 +128,7 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
         ) as executor:
             while not self._stop:
                 try:
-                    self._logger.info("run started")
                     dev_info = self._component_manager.get_device()
-                    self._logger.info("dev_info = %s", dev_info)
                 except Exception as exp_msg:
                     self._logger.error(
                         "Exception occured while getting device info: %s",
