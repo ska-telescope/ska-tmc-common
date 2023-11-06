@@ -530,7 +530,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.logger.info("Pushed updated HealthState value for simulator")
 
     @command(
-        dtype_in="DevString",
+        dtype_in=List,
         doc_in="command in progress",
     )
     def SetDirectCommandInProgress(self, argin: str) -> None:
@@ -545,19 +545,20 @@ class HelperSubArrayDevice(SKASubarray):
             )
 
     @command(
-        dtype_in="DevString",
+        dtype_in=list,
         doc_in="assignedResources attribute value",
     )
-    def SetDirectassignedResources(self, argin: str) -> None:
+    def SetDirectassignedResources(self, argin: list) -> None:
         """
-        Trigger a assignedResources change
+        Triggers an assignedResources attribute change
         """
         # import debugpy; debugpy.debug_this_thread()
-        self.push_change_event("assignedResources", argin)
-        self.logger.info(
-            "Updated assignedResources attribute value to %s",
-            argin,
-        )
+        if self._assigned_resources != argin:
+            self._assigned_resources = argin
+            self.push_change_event("assignedResources", argin)
+            self.logger.info(
+                f"Updated assignedResources attribute value to {argin}",
+            )
 
     def is_On_allowed(self) -> bool:
         """
