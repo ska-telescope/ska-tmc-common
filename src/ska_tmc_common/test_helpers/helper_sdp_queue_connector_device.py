@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 class HelperSdpQueueConnector(Device):
-    """A helper SdpSubarray device intended to provide pointing
-    offsets data from  Science Data Processor (SDP).
-    It can be used to mock SdpQueueConnector's bahavior to test data
-    which is coming from exposed pointing_offsets attribute."""
+    """A helper device that emulates the behavior of pointing_offsets attribute 
+    from SdpQueueConnector device for testing. 
+    Queue Connector is a tango device of SDP.
+    """
 
     def init_device(self):
         super().init_device()
@@ -27,10 +27,11 @@ class HelperSdpQueueConnector(Device):
         access=AttrWriteType.READ,
     )
     def pointing_offsets(self) -> tuple[str, bytes]:
-        """This method is used to read the attribute value for
+        """Returns the attribute value for
         pointing_offsets from QueueConnector SDP device.
-        The string contains a numpy ndarray in encoded
-        byte form with below values in each array:
+        The returned tuple contains a string literal msgpack_numpy
+        and a numpy ndarray in encoded byte form with 
+        below values in each array:
         [
         "Antenna_Name,"
         "CrossElevation_Offset,CrossElevation_Offset_Std,"
@@ -50,10 +51,9 @@ class HelperSdpQueueConnector(Device):
     def SetDirectPointingOffsets(
         self, pointing_offsets_data
     ) -> CmdArgType.DevVoid:
-        """This method is used to write the attribute value for
-        pointing_offsets for testing purpose.
-        :param pointing_offsets_data: The variable contains a
-        string which holds a numpy ndarray in encoded byte form
+        """Sets the attribute value for pointing_offsets for testing purposes.
+        :param pointing_offsets_data: The variable contains a string literal
+        msgpack_numpy and a numpy ndarray in encoded byte form
         with below values in each array:
         [
         Antenna_Name,

@@ -53,7 +53,7 @@ def test_pointing_offsets(tango_context):
         POINTING_OFFSETS, default=msgpack_numpy.encode
     )
     sdp_queue_connector_device.SetDirectPointingOffsets(
-        ("mesgpack_numpy", encoded_numpy_ndarray_in_byte_form)
+        ("msgpack_numpy", encoded_numpy_ndarray_in_byte_form)
     )
     encoded_numpy_ndarray_string_from_qc = (
         sdp_queue_connector_device.pointing_offsets
