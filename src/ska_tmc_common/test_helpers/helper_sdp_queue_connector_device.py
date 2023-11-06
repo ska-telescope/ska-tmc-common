@@ -1,6 +1,6 @@
 """
 This module defines a helper device that acts as SDP
-Queue Connector in our testing.
+Queue Connector in testing.
 """
 
 import logging
