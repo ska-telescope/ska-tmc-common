@@ -156,3 +156,4 @@ def test_assigned_resources_attribute_with_change_event(tango_context):
     ).value
     logger.info("assigned_resources::: %s", assigned_resources)
     assert '{"channels": [0]}' in assigned_resources[0]
+    assert False
