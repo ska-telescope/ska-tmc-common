@@ -530,7 +530,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.logger.info("Pushed updated HealthState value for simulator")
 
     @command(
-        dtype_in=List,
+        dtype_in="DevString",
         doc_in="command in progress",
     )
     def SetDirectCommandInProgress(self, argin: str) -> None:
