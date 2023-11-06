@@ -250,9 +250,9 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes ReleaseResources on device proxy.
+        Invokes ReleaseAllResources on device proxy.
         """
-        return self._proxy.ReleaseResources(argin)
+        return self._proxy.ReleaseAllResources(argin)
 
 
 class MCCSControllerAdapter(BaseAdapter):

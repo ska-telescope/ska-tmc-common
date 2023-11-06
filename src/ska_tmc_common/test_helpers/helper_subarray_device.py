@@ -903,16 +903,19 @@ class HelperSubArrayDevice(SKASubarray):
         return True
 
     @command(
+        dtype_in="str",
+        doc_in="The input string in JSON format consists of receptorIDList.",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
+    def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseResources command on subarray device
         """
         self.logger.info(
             "Instructed simulator to invoke ReleaseResources command"
         )
+        self.logger.info(argin)
         self.update_command_info(RELEASE_RESOURCES, "")
         if self.defective_params["enabled"]:
             return self.induce_fault(

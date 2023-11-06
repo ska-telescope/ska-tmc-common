@@ -7,7 +7,13 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import SUBARRAY_DEVICE
 
-commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
+commands_with_argin = [
+    "AssignResources",
+    "Scan",
+    "Configure",
+    "Scan",
+    "ReleaseResources",
+]
 commands_without_argin = [
     "On",
     "Off",
@@ -20,7 +26,6 @@ commands_without_argin = [
     "Abort",
     "Restart",
     "GoToIdle",
-    "ReleaseResources",
 ]
 
 
