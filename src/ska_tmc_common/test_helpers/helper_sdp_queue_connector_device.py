@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 class HelperSdpQueueConnector(Device):
-    """A helper device that emulates the behavior of pointing_offsets attribute 
-    from SdpQueueConnector device for testing. 
+    """A helper device that emulates the behavior of pointing_offsets attribute
+    from SdpQueueConnector device for testing.
     Queue Connector is a tango device of SDP.
     """
 
@@ -30,7 +30,7 @@ class HelperSdpQueueConnector(Device):
         """Returns the attribute value for
         pointing_offsets from QueueConnector SDP device.
         The returned tuple contains a string literal msgpack_numpy
-        and a numpy ndarray in encoded byte form with 
+        and a numpy ndarray in encoded byte form with
         below values in each array:
         [
         "Antenna_Name,"
