@@ -14,7 +14,7 @@ import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
-from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
+from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
