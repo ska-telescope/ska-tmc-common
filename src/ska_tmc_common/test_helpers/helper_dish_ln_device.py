@@ -149,6 +149,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         :argin dtype: int
         :rtype: Tuple[List[ResultCode], List[str]]
         """
+        if self.defective_params["enabled"]:
+            return [ResultCode.FAILED], [
+                self.defective_params["error_message"]
+            ]
         self._kvalue = kvalue
         return ([ResultCode.OK], [""])
 

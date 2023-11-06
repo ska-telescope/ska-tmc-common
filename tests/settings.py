@@ -38,14 +38,15 @@ TIMEOUT = 10
 
 DishLeafNodePrefix = "ska_mid/tm_leaf_node/d0"
 NumDishes = 10
-
 DUMMY_MONITORED_DEVICE = "dummy/monitored/device"
 DUMMY_SUBARRAY_DEVICE = "dummy/subarray/device"
 DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
 SUBARRAY_DEVICE = "helper/subarray/device"
+MCCS_SUBARRAY_DEVICE = "low-mccs/subarray/01"
 SDP_SUBARRAY_DEVICE = "helper/sdpsubarray/device"
 CSP_SUBARRAY_DEVICE = "helper/cspsubarray/device"
 SUBARRAY_LEAF_DEVICE = "helper/subarrayleaf/device"
+MCCS_SUBARRAY_LEAF_NODE = "ska_low/tm_leaf_node/mccs_subarray01"
 DISH_DEVICE = "helper/dish/device"
 DISH_LN_DEVICE = "helper/dishln/device"
 CSP_DEVICE = "helper/csp/device"
@@ -56,6 +57,7 @@ HELPER_SUBARRAY_DEVICE = "test/subarray/1"
 HELPER_SDP_SUBARRAY_DEVICE = "test/sdpsubarray/1"
 HELPER_CSP_SUBARRAY_DEVICE = "test/cspsubarray/1"
 HELPER_MCCS_MASTER_LEAF_NODE_DEVICE = "helper/mccsmasterleafnode/device"
+HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE = "helper/mccssubarrayleafnode/device"
 HELPER_MCCS_CONTROLLER = "helper/mccs/device"
 HELPER_BASE_DEVICE = "test/base/1"
 HELPER_DISH_DEVICE = "test/dish/1"

@@ -241,15 +241,15 @@ class BaseTMCCommand:
                         self.stop_tracker_thread(timeout_id)
 
                 except Exception as e:
+                    self.logger.error(
+                        "Exception occurred in Tracker thread: %s", e
+                    )
                     self.update_task_status(
                         result=ResultCode.FAILED,
                         message="Exception occured in track transitions "
                         + f"thread: {e}",
                     )
                     self.stop_tracker_thread(timeout_id)
-                    self.logger.error(
-                        "Exception occurred in Tracker thread: %s", e
-                    )
                 time.sleep(0.1)
 
             if command_id:

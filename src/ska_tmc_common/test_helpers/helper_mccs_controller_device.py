@@ -14,7 +14,7 @@ from ska_tango_base.commands import ResultCode
 from tango import EnsureOmniThread
 from tango.server import command
 
-from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
@@ -270,11 +270,18 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
+        argin_json = json.loads(argin)
+        subarray_id = int(argin_json["subarray_id"])
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.AssignResources(argin)
+
         thread = threading.Thread(
             target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
-        self.logger.info("Allocate  invoked on MCCS Controller")
+        self.logger.info("Allocate invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
@@ -326,9 +333,69 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
+        argin_json = json.loads(argin)
+        subarray_id = int(argin_json["subarray_id"])
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.ReleaseResources(argin)
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
         )
         thread.start()
         self.logger.info("Release command invoked on MCCS Controller")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_RestartSubarray_allowed(self) -> bool:
+        """
+        This method checks if the RestartSubarray command is allowed in the
+        current device state.
+        :rtype:bool
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("RestartSubarray Command is allowed")
+        return True
+
+    @command(
+        dtype_in=int,
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def RestartSubarray(
+        self, argin: int
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke RestartSubarray command.
+        :param argin: an integer subarray_id.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}-RestartSubarray"
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault(
+                "RestartSubarray",
+            )
+
+        if self._raise_exception:
+            self.logger.info("exception thread")
+            thread = threading.Thread(
+                target=self.wait_and_update_exception, args=[command_id]
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [""]
+
+        thread = threading.Thread(
+            target=self.update_lrcr, args=["RestartSubarray", command_id]
+        )
+        thread.start()
+        self.logger.info("RestartSubarray command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
