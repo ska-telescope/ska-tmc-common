@@ -696,6 +696,18 @@ class HelperSubArrayDevice(SKASubarray):
                         "pushing target obsstate %s event", self._obs_state
                     )
                     self.push_change_event("obsState", self._obs_state)
+
+                command_id = f"1000_{command_name}"
+                command_result = (
+                    command_id,
+                    f"Exception occured on device: {self.get_name()}",
+                )
+                self.logger.info(
+                    "pushing longRunningCommandResult %s event", command_result
+                )
+                self.push_change_event(
+                    "longRunningCommandResult", command_result
+                )
             return [result], [fault_message]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
@@ -711,6 +723,16 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = intermediate_state
             self.logger.info("pushing obsState %s event", intermediate_state)
             self.push_change_event("obsState", intermediate_state)
+
+            command_id = f"1000_{command_name}"
+            command_result = (
+                command_id,
+                f"Exception occured on device: {self.get_name()}",
+            )
+            self.logger.info(
+                "pushing longRunningCommandResult %s event", command_result
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.QUEUED], [""]
 
         return [ResultCode.OK], [""]
