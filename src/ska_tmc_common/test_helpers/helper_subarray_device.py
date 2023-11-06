@@ -545,7 +545,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
 
     @command(
-        dtype_in="(str,)",
+        dtype_in=("str",),
         doc_in="assignedResources attribute value",
     )
     def SetDirectassignedResources(self, argin: list) -> None:
