@@ -659,8 +659,8 @@ class HelperSubArrayDevice(SKASubarray):
 
         - STUCK_IN_OBS_STATE:
           This fault type represents a scenario where the
-          device gets stuck in a transitional obsstate as there is some failure.
-          It also raise exception of the same.
+          device gets stuck in a transitional obsstate as there is
+          some failure. It also raise exception of the same.
 
         - COMMAND_NOT_ALLOWED:
           This fault type represents a situation where the
