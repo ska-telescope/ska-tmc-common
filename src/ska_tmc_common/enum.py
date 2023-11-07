@@ -76,3 +76,4 @@ class FaultType(IntEnum):
     STUCK_IN_INTERMEDIATE_STATE = 4
     # UNRESPONSIVE = 5
     # COMMAND_REJECTED = 6
+    STUCK_IN_OBSTATE = 5

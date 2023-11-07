@@ -657,6 +657,11 @@ class HelperSubArrayDevice(SKASubarray):
           well-defined states. This can help test the device's state
           recovery and error handling mechanisms.
 
+        - STUCK_IN_OBS_STATE:
+          This fault type represents a scenario where the
+          device gets stuck in a transitional obsstate as there is some failure.
+          It also raise exception of the same.
+
         - COMMAND_NOT_ALLOWED:
           This fault type represents a situation where the
           given command is not allowed to be executed due to some
@@ -720,6 +725,12 @@ class HelperSubArrayDevice(SKASubarray):
             return [ResultCode.QUEUED], [""]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            self._obs_state = intermediate_state
+            self.logger.info("pushing obsState %s event", intermediate_state)
+            self.push_change_event("obsState", intermediate_state)
+            return [ResultCode.QUEUED], [""]
+
+        if fault_type == FaultType.STUCK_IN_OBSTATE:
             self._obs_state = intermediate_state
             self.logger.info("pushing obsState %s event", intermediate_state)
             self.push_change_event("obsState", intermediate_state)
