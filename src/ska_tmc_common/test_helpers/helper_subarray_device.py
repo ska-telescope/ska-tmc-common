@@ -14,7 +14,7 @@ import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
-from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
+from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -209,7 +209,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         def do(self) -> Tuple[ResultCode, str]:
             """
-            Stateless hook for device initialisation.
+            Stateless hook for device initialization.
             """
             super().do()
             self._device.set_change_event("State", True, False)
@@ -246,13 +246,9 @@ class HelperSubArrayDevice(SKASubarray):
 
     scanId = attribute(dtype="DevLong", access=AttrWriteType.READ)
 
-    @attribute(dtype="DevString")
-    def assignedResources(self) -> DevString:
+    @attribute(dtype=("DevString"), max_dim_x=1024)
+    def assignedResources(self) -> list:
         return self._assigned_resources
-
-    @assignedResources.write
-    def assignedResources(self, assignResources: DevString = None) -> None:
-        self._assigned_resources = assignResources
 
     def read_scanId(self) -> int:
         """This method is used to read the attribute value for scanId."""
@@ -498,7 +494,7 @@ class HelperSubArrayDevice(SKASubarray):
     )
     def SetDirectState(self, argin: tango.DevState) -> None:
         """
-        Trigger a DevStateif self.dev_state() != argin:
+        Trigger a DevState if self.dev_state() != argin:
             self.set_state(argin)
                 change
         """
@@ -542,6 +538,22 @@ class HelperSubArrayDevice(SKASubarray):
             self._command_in_progress = argin
             self.push_change_event(
                 "commandInProgress", self._command_in_progress
+            )
+
+    @command(
+        dtype_in=("DevString"),
+        doc_in="assignedResources attribute value",
+    )
+    def SetDirectassignedResources(self, argin: str) -> None:
+        """
+        Triggers an assignedResources attribute change.
+        Note: This method should be used only in case of low.
+        """
+        if self._assigned_resources != argin:
+            self._assigned_resources = argin
+            self.push_change_event("assignedResources", argin)
+            self.logger.info(
+                "Updated assignedResources attribute value to %s", str(argin)
             )
 
     def is_On_allowed(self) -> bool:
@@ -896,7 +908,7 @@ class HelperSubArrayDevice(SKASubarray):
             command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
-                f"Exception occured on device: {self.get_name()}",
+                f"Exception occurred on device: {self.get_name()}",
             )
             self.push_change_event("longRunningCommandResult", command_result)
 
