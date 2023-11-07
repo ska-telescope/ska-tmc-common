@@ -66,6 +66,7 @@ class HelperSdpQueueConnector(Device):
         """
         # pylint: disable=attribute-defined-outside-init
         self._pointing_offsets = pointing_offsets_data
+        # Below syntax is as per the pytango docs for DevEncoded data type
         self.push_change_event(
             "pointing_offsets",
             self._pointing_offsets[0],

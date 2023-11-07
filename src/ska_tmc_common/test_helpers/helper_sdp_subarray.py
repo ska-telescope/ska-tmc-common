@@ -14,8 +14,7 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType, HelperSubArrayDevice
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ASSIGN_RESOURCES,
     CONFIGURE,
@@ -51,7 +50,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             }
         )
         self.defective_params = json.loads(self._defective)
-        self._pointing_offsets = []
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = (
@@ -76,7 +74,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
             self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event("pointingOffsets", True, False)
             self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
@@ -90,9 +87,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc="Host addresses for visibility receive as a JSON string.",
     )
 
-    # The actual attribute names are not yet finalised,using as below for now.
-    pointingOffsets = attribute(dtype=str, access=AttrWriteType.READ)
-
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
@@ -101,50 +95,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method is used to read the attribute value for delay."""
         return self._delay
 
-    def read_pointingOffsets(self) -> str:
-        """This method is used to read the attribute value for
-        pointing_offsets from QueueConnector SDP device.
-        The string contains is an array of
-        lists with below values in each array:
-        [
-        Antenna_Name,Azimuth_Offset,Azimuth_Offset_Std,
-        Elevation_Offset,Elevation_Offset_Std,
-        CrossElevation_Offset,CrossElevation_Offset_Std,
-        Expected_Width_H,Expected_Width_VFitted_Width_H,
-        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
-        Fitted_Height,Fitted_Height_Std
-        ]
-        """
-        return json.dumps(self._pointing_offsets)
-
-    @command(
-        dtype_in=str,
-        doc_in="Set pointing offsets",
-    )
-    def SetDirectPointingOffsets(self, pointing_offsets: str) -> None:
-        """This method is used to write the attribute value for
-        pointing_offsets for testing purpose.
-        :param pointing_offsets: The variable contains is an array of
-        lists with below values in each array:
-        [
-        Antenna_Name,Azimuth_Offset,Azimuth_Offset_Std,
-        Elevation_Offset,Elevation_Offset_Std,
-        CrossElevation_Offset,CrossElevation_Offset_Std,
-        Expected_Width_H,Expected_Width_VFitted_Width_H,
-        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
-        Fitted_Height,Fitted_Height_Std
-        ]
-        """
-
-        pointing_offsets_data = json.loads(pointing_offsets)
-        self._pointing_offsets = pointing_offsets_data
-        self.push_change_event(
-            "pointingOffsets", json.dumps(self._pointing_offsets)
-        )
-        self.logger.info(
-            "Received pointing offsets are: " + "%s",
-            pointing_offsets_data,
-        )
+    @command(dtype_in=str, doc_in="Set the receive_addresses")
+    def SetDirectreceiveAddresses(self, argin: str) -> None:
+        """Set the receivedAddresses"""
+        self._receive_addresses = argin
+        self.push_change_event("receiveAddresses", argin)
 
     def read_receiveAddresses(self):
         """Returns receive addresses."""
