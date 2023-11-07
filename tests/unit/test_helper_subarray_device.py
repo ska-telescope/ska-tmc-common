@@ -150,8 +150,8 @@ def test_release_resources_raise_exception(tango_context):
 def test_assigned_resources_attribute_with_change_event(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDirectassignedResources(['{"channels": [0]}'])
+    subarray_device.SetDirectassignedResources('{"channels": [0]}')
     assigned_resources = subarray_device.read_attribute(
         "assignedResources"
     ).value
-    assert '{"channels": [0]}' in assigned_resources[0]
+    assert assigned_resources == '{"channels": [0]}'

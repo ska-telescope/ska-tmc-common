@@ -246,7 +246,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     scanId = attribute(dtype="DevLong", access=AttrWriteType.READ)
 
-    @attribute(dtype=("str",), max_dim_x=1024)
+    @attribute(dtype=("DevString"), max_dim_x=1024)
     def assignedResources(self) -> list:
         return self._assigned_resources
 
@@ -541,12 +541,13 @@ class HelperSubArrayDevice(SKASubarray):
             )
 
     @command(
-        dtype_in=("str",),
+        dtype_in=("DevString"),
         doc_in="assignedResources attribute value",
     )
-    def SetDirectassignedResources(self, argin: list) -> None:
+    def SetDirectassignedResources(self, argin: str) -> None:
         """
-        Triggers an assignedResources attribute change
+        Triggers an assignedResources attribute change.
+        Note: This method should be used only in case of low.
         """
         if self._assigned_resources != argin:
             self._assigned_resources = argin
