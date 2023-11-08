@@ -393,6 +393,11 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{argin:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.Restart()
+
         thread = threading.Thread(
             target=self.update_lrcr, args=["RestartSubarray", command_id]
         )
