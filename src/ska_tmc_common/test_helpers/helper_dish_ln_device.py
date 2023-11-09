@@ -199,7 +199,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_change_event("commandCallInfo", self._command_call_info)
 
     def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
+        self,
+        result: ResultCode,
+        command: str,
+        exception: str = "",
+        command_id=None,
     ) -> None:
         """Push long running command result event for given command.
 
@@ -220,7 +224,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self.logger.info(
                 "Command %s failed, ResultCode: %d", command, result
             )
-        command_id = f"{time.time()}-{command}"
+        command_id = command_id or f"{time.time()}-{command}"
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
@@ -583,8 +587,9 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         thread = threading.Timer(
             self._delay,
-            self.push_change_event,
-            args=["longRunningCommandResult", (command_id, ResultCode.OK)],
+            self.push_command_result,
+            args=[ResultCode.OK, "Configure"],
+            kwargs={"command_id": command_id},
         )
         thread.start()
         self.logger.info("Configure command completed.")
