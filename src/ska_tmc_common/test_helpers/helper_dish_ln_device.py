@@ -4,6 +4,7 @@ This module implements the Helper Dish Leaf Node Device for testing an
 integrated TMC.
 """
 import json
+import threading
 import time
 from typing import List, Tuple
 
@@ -567,6 +568,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method invokes Configure command on  Dish Master
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Configure"
         self.logger.info("Processing Configure command")
         # to record the command data
         self.logger.info(
@@ -576,8 +578,14 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
 
+        thread = threading.Timer(
+            self._delay,
+            self.push_change_event,
+            args=["longRunningCommandResult", (command_id, ResultCode.OK)],
+        )
+        thread.start()
         self.logger.info("Configure command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
