@@ -263,7 +263,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def AssignResources(self, argin):
         """This method invokes AssignResources command on SdpSubarray
         device."""
-
+        initial_obstate = self._obs_state
+        self.logger.info("Initial obstate is: %s", initial_obstate)
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
         if "eb_id" not in input["execution_block"]:
@@ -297,7 +298,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.logger.info(
                 "Missing receive nodes in the AssignResources input json"
             )
-            self._obs_state = ObsState.EMPTY
+            # Return to the initial obsState
+            self._obs_state = initial_obstate
             # Wait before pushing obsState EMPTY event
             time.sleep(1)
             self.push_obs_state_event(self._obs_state)
