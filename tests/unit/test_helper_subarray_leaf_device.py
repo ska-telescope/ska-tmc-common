@@ -6,7 +6,7 @@ from ska_tango_base.control_model import ObsState
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory, FaultType
-from tests.settings import SDP_LEAF_NODE_DEVICE
+from tests.settings import SDP_LEAF_NODE_DEVICE, wait_for_obstate
 
 commands_with_argin = ["AssignResources", "Scan", "Configure"]
 commands_without_argin = [
@@ -57,6 +57,7 @@ def test_obs_state_tranisition_for_configure(tango_context):
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
     subarray_leaf_device.AddTransition('[["READY", 0.0]]')
     _, _ = subarray_leaf_device.Configure("")
+    wait_for_obstate(subarray_leaf_device, ObsState.READY)
     assert subarray_leaf_device.obsState == ObsState.READY
 
 
@@ -65,6 +66,7 @@ def test_obs_state_tranisition_for_assignresources(tango_context):
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
     subarray_leaf_device.AddTransition('[["READY", 0.0]]')
     _, _ = subarray_leaf_device.AssignResources("")
+    wait_for_obstate(subarray_leaf_device, ObsState.READY)
     assert subarray_leaf_device.obsState == ObsState.READY
 
 
@@ -116,6 +118,7 @@ def test_assign_resources_stuck_in_intermediate_state(tango_context):
     subarray_leaf_device.SetDefective(json.dumps(defect))
     result, _ = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.QUEUED
+    wait_for_obstate(subarray_leaf_device, ObsState.RESOURCING)
     assert subarray_leaf_device.obsState == ObsState.RESOURCING
     subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
