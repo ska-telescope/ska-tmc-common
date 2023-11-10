@@ -62,7 +62,15 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
             '"function":"visibilities","host":[[0,'
             '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}}}'
+            '"port":[[0,9000,1]]}}}',
+            '{"science_B":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
+            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
+            '"function":"visibilities","host":[[0,'
+            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
+            '"function":"visibilities","host":[[0,'
+            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+            '"port":[[0,9000,1]]}}}',
         )
         # pylint:enable=line-too-long
         self.push_change_event("receiveAddresses", self._receive_addresses)
