@@ -218,6 +218,7 @@ def test_release_resources_defective(tango_context):
     assert sdp_subarray_device.obsState == ObsState.RESOURCING
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
+
 def test_sdp_receive_addresses(tango_context, json_factory):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
