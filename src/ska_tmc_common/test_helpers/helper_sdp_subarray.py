@@ -458,7 +458,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
             self.logger.info("Wrong scan_type in the Configure input json")
-            time.sleep(1)
+            time.sleep(5)
             self._obs_state = ObsState.IDLE
             self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
