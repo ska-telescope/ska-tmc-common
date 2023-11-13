@@ -1,0 +1,154 @@
+{
+    ".default": {
+        "vis0": {
+            "function": "visibilities",
+            "host": [
+                [0, "192.168.0.1"],
+                [400, "192.168.0.2"],
+                [744, "192.168.0.3"],
+                [1144, "192.168.0.4"]
+            ],
+            "port": [
+                [0, 9000, 1],
+                [400, 9000, 1],
+                [744, 9000, 1],
+                [1144, 9000, 1]
+            ],
+            "mac": [
+                [0, "06-00-00-00-00-00"],
+                [744, "06-00-00-00-00-01"]
+            ],
+            "delay_cal": "low-sdp/telstate/rcal0/delay",
+            "pointing_cal": "tango://low-sdp/queueconnector/01/pointing_offsets"
+        },
+        "pss1": {
+            "function": "pulsar search",
+            "search_beam_id": 1,
+            "host": [
+                [0, "192.168.60.0"]
+            ],
+            "port": [
+                [0, 8000]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"],
+                [400, "low-sdp/telstate/rcal0/jones1"],
+                [744, "low-sdp/telstate/rcal0/jones2"],
+                [1144, "low-sdp/telstate/rcal0/jones2"]
+            ]
+        },
+        "pss2": {
+            "function": "pulsar search",
+            "search_beam_id": 2,
+            "host": [
+                [0, "192.168.60.1"]
+            ],
+            "port": [
+                [0, 8000]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"],
+                [400, "low-sdp/telstate/rcal0/jones1"],
+                [744, "low-sdp/telstate/rcal0/jones2"],
+                [1144, "low-sdp/telstate/rcal0/jones2"]
+            ]
+        },
+        "pst1": {
+            "function": "pulsar timing",
+            "timing_beam_id": 1,
+            "host": [
+                [0, "192.168.60.2"]
+            ],
+            "port": [
+                [0, 8001]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"],
+                [400, "low-sdp/telstate/rcal0/jones1"],
+                [744, "low-sdp/telstate/rcal0/jones2"],
+                [1144, "low-sdp/telstate/rcal0/jones2"]
+            ]
+        },
+        "pst2": {
+            "function": "pulsar timing",
+            "timing_beam_id": 2,
+            "host": [
+                [0, "192.168.60.3"]
+            ],
+            "port": [
+                [0, 8002]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"],
+                [400, "low-sdp/telstate/rcal0/jones1"],
+                [744, "low-sdp/telstate/rcal0/jones2"],
+                [1144, "low-sdp/telstate/rcal0/jones2"]
+            ]
+        }
+    },
+    "calibration": {
+        "vis0": {
+            "function": "visibilities",
+            "host": [
+                [0, "192.168.1.1"]
+            ],
+            "port": [
+                [0, 9000, 1]
+            ],
+            "delay_cal": "low-sdp/telstate/rcal0/delay",
+            "pointing_cal": "tango://low-sdp/queueconnector/01/pointing_offsets"
+        },
+        "pss1": {
+            "function": "pulsar search",
+            "search_beam_id": 1,
+            "host": [
+                [0, "192.168.60.0"]
+            ],
+            "port": [
+                [0, 8003]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"]
+            ]
+        },
+        "pss2": {
+            "function": "pulsar search",
+            "search_beam_id": 2,
+            "host": [
+                [0, "192.168.60.1"]
+            ],
+            "port": [
+                [0, 8002]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"]
+            ]
+        },
+        "pst1": {
+            "function": "pulsar timing",
+            "timing_beam_id": 0,
+            "host": [
+                [0, "192.168.60.2"]
+            ],
+            "port": [
+                [0, 8001]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"]
+            ]
+        },
+        "pst2": {
+            "function": "pulsar timing",
+            "timing_beam_id": 1,
+            "host": [
+                [0, "192.168.60.3"]
+            ],
+            "port": [
+                [0, 8000]
+            ],
+            "jones_cal": [
+                [0, "low-sdp/telstate/rcal0/jones0"]
+            ]
+        }
+    }
+}

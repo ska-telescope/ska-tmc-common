@@ -218,18 +218,9 @@ def test_release_resources_defective(tango_context):
     assert sdp_subarray_device.obsState == ObsState.RESOURCING
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
-
-def test_sdp_receive_addresses(tango_context):
+def test_sdp_receive_addresses(tango_context, json_factory):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
-    receive_addr = (
-        '{".default":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-        '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities"'
-        ',"host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]]'
-        ',"port":[[0,9000,1]],"pointing_cal":"test-sdp/queueconnector/01",}},'
-        '"calibration:b":{"vis0":{"function":"visibilities","host":'
-        '[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-        '"port":[[0,9000,1]]}}}'
-    )
+    receive_addr = json_factory("ReceiveAddresses_mid")
     sdp_subarray_device.SetDirectreceiveAddresses(receive_addr)
     assert sdp_subarray_device.receiveAddresses == receive_addr
