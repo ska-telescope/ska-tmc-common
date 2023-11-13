@@ -19,6 +19,8 @@ class HelperSdpQueueConnector(Device):
 
     def init_device(self):
         super().init_device()
+        # The 0th index is a placeholder and the data at
+        # index 1 is in byte format
         self._pointing_offsets = ("msgpack_numpy", b"")
         self.set_change_event("pointing_offsets", True, False)
 
@@ -67,10 +69,11 @@ class HelperSdpQueueConnector(Device):
         # pylint: disable=attribute-defined-outside-init
         self._pointing_offsets = pointing_offsets_data
         # Below syntax is as per the pytango docs for DevEncoded data type
+        # Syntax: push_change_event(self, attr_name, str_data, data)
         self.push_change_event(
             "pointing_offsets",
-            self._pointing_offsets[0],
-            self._pointing_offsets[1],
+            data_string=self._pointing_offsets[0],
+            byte_data=self._pointing_offsets[1],
         )
         logger.info(
             "Received pointing offsets data is: %s", self._pointing_offsets
