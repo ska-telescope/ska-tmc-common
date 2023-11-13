@@ -72,8 +72,8 @@ class HelperSdpQueueConnector(Device):
         # Syntax: push_change_event(self, attr_name, str_data, data)
         self.push_change_event(
             "pointing_offsets",
-            data_string=self._pointing_offsets[0],
-            byte_data=self._pointing_offsets[1],
+            self._pointing_offsets[0],
+            self._pointing_offsets[1],
         )
         logger.info(
             "Received pointing offsets data is: %s", self._pointing_offsets

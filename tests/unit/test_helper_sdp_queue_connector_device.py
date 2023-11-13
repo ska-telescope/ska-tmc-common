@@ -2,6 +2,7 @@ import msgpack
 import msgpack_numpy
 import numpy
 import numpy as np
+import pytest
 
 from ska_tmc_common import DevFactory
 from tests.settings import HELPER_SDP_QUEUE_CONNECTOR_DEVICE
@@ -42,6 +43,7 @@ POINTING_OFFSETS = np.array(
 )
 
 
+@pytest.mark.R12
 def test_pointing_offsets(tango_context):
     dev_factory = DevFactory()
     sdp_queue_connector_device = dev_factory.get_device(
@@ -52,9 +54,13 @@ def test_pointing_offsets(tango_context):
     encoded_numpy_ndarray_in_byte_form = msgpack.packb(
         POINTING_OFFSETS, default=msgpack_numpy.encode
     )
+
+    # Raise event on pointing_offsets attribute
     sdp_queue_connector_device.SetDirectPointingOffsets(
         ("msgpack_numpy", encoded_numpy_ndarray_in_byte_form)
     )
+
+    # Store the data received on the pointing_offsets attribute
     encoded_numpy_ndarray_string_from_qc = (
         sdp_queue_connector_device.pointing_offsets
     )
