@@ -7,7 +7,13 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common import DevFactory
 from tests.settings import SUBARRAY_DEVICE
 
-commands_with_argin = ["AssignResources", "Scan", "Configure", "Scan"]
+commands_with_argin = [
+    "AssignResources",
+    "Scan",
+    "Configure",
+    "Scan",
+    "ReleaseResources",
+]
 commands_without_argin = [
     "On",
     "Off",
@@ -20,7 +26,6 @@ commands_without_argin = [
     "Abort",
     "Restart",
     "GoToIdle",
-    "ReleaseResources",
 ]
 
 
@@ -43,14 +48,6 @@ def test_obs_state_transition(tango_context):
     assert (
         subarray_device.obsStateTransitionDuration == '[["CONFIGURING", 0.1]]'
     )
-
-
-def test_assignresources_attribute(tango_context):
-    """Test assignResources attribute"""
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.assignedResources = '{"beam_id: 1}'
-    assert subarray_device.assignedResources == '{"beam_id: 1}'
 
 
 def test_set_delay(tango_context):
@@ -148,3 +145,13 @@ def test_release_resources_raise_exception(tango_context):
     result, message = subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.QUEUED
     assert subarray_device.obsstate == ObsState.RESOURCING
+
+
+def test_assigned_resources_attribute_with_change_event(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.SetDirectassignedResources('{"channels": [0]}')
+    assigned_resources = subarray_device.read_attribute(
+        "assignedResources"
+    ).value
+    assert assigned_resources == '{"channels": [0]}'

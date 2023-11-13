@@ -198,6 +198,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         return True
 
+    def push_sys_param_and_source_sys_param(self):
+        """Push sys param and source sys param event"""
+        self.push_change_event("sourceSysParam", self._source_sys_param)
+        self.push_change_event("sysParam", self._sys_param)
+        self.logger.info("Pushed sysParam and sourceSysParam event")
+
     @command(
         dtype_in="str",
         doc_in="The string in JSON format.\
@@ -249,15 +255,23 @@ class HelperCspMasterDevice(HelperBaseDevice):
         )
         self._source_sys_param = argin
         self._sys_param = mid_cbf_initial_parameters_str
-        self.push_change_event("sourceSysParam", self._source_sys_param)
-        self.push_change_event("sysParam", self._sys_param)
 
-        thread = threading.Timer(
-            self._delay,
-            self.push_command_result,
-            args=[ResultCode.OK, "LoadDishCfg"],
+        push_sys_param_thread = threading.Timer(
+            self._delay, self.push_sys_param_and_source_sys_param
         )
-        thread.start()
+        push_sys_param_thread.start()
+
+        # Provided additional 1 sec delay to push
+        # command result after sys param event pushed
+        push_command_result_thread = threading.Timer(
+            self._delay + 1,
+            self.push_command_result,
+            args=[
+                [ResultCode.OK, "command LoadDishCfg completed"],
+                "LoadDishCfg",
+            ],
+        )
+        push_command_result_thread.start()
         return [ResultCode.QUEUED], [""]
 
 

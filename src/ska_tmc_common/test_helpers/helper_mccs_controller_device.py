@@ -14,7 +14,7 @@ from ska_tango_base.commands import ResultCode
 from tango import EnsureOmniThread
 from tango.server import command
 
-from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
@@ -270,11 +270,18 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
+        argin_json = json.loads(argin)
+        subarray_id = int(argin_json["subarray_id"])
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.AssignResources(argin)
+
         thread = threading.Thread(
             target=self.update_lrcr, args=["Allocate", command_id]
         )
         thread.start()
-        self.logger.info("Allocate  invoked on MCCS Controller")
+        self.logger.info("Allocate invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
     def is_Release_allowed(self) -> bool:
@@ -326,6 +333,12 @@ class HelperMCCSController(HelperBaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [""]
 
+        argin_json = json.loads(argin)
+        subarray_id = int(argin_json["subarray_id"])
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.ReleaseResources(argin)
         thread = threading.Thread(
             target=self.update_lrcr, args=["Release", command_id]
         )
@@ -379,6 +392,11 @@ class HelperMCCSController(HelperBaseDevice):
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
+
+        mccs_subarray_device_name = "low-mccs/subarray/" + f"{argin:02}"
+        dev_factory = DevFactory()
+        mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
+        mccs_subarray_proxy.Restart()
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["RestartSubarray", command_id]
