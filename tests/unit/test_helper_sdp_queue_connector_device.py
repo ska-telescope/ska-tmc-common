@@ -43,7 +43,6 @@ POINTING_OFFSETS = np.array(
 )
 
 
-@pytest.mark.R12
 def test_pointing_offsets(tango_context):
     dev_factory = DevFactory()
     sdp_queue_connector_device = dev_factory.get_device(
