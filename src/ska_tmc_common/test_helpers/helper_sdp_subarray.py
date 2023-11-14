@@ -257,7 +257,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_obs_state_event(self._obs_state)
             # Wait before pushing obsState EMPTY event
             time.sleep(1)
-            self._obs_state = ObsState.IDLE
+            self._obs_state = ObsState.EMPTY
             self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
