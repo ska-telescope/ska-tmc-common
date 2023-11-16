@@ -4,6 +4,7 @@ This module implements the Helper Dish Leaf Node Device for testing an
 integrated TMC.
 """
 import json
+import threading
 import time
 from typing import List, Tuple
 
@@ -64,6 +65,9 @@ class HelperDishLNDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event(
+                "longRunningCommandResult", True, False
+            )
             self._device.set_change_event("actualPointing", True, False)
             return (ResultCode.OK, "")
 
@@ -195,7 +199,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_change_event("commandCallInfo", self._command_call_info)
 
     def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
+        self,
+        result: ResultCode,
+        command: str,
+        exception: str = "",
+        command_id=None,
     ) -> None:
         """Push long running command result event for given command.
 
@@ -216,7 +224,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self.logger.info(
                 "Command %s failed, ResultCode: %d", command, result
             )
-        command_id = f"{time.time()}-{command}"
+        command_id = command_id or f"{time.time()}-{command}"
         if exception:
             command_result = (command_id, exception)
             self.push_change_event("longRunningCommandResult", command_result)
@@ -567,6 +575,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method invokes Configure command on  Dish Master
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Configure"
         self.logger.info("Processing Configure command")
         # to record the command data
         self.logger.info(
@@ -576,8 +585,15 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
 
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "Configure"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("Configure command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
