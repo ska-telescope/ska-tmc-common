@@ -56,21 +56,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # pylint:disable=line-too-long
         self._receive_addresses = (
             '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"science_B":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
+            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities"'
+            ',"host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]]'
+            ',"port":[[0,9000,1]],"pointing_cal":"test-sdp/queueconnector/01"}},'
+            '"calibration:b":{"vis0":{"function":"visibilities","host":'
+            '[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
             '"port":[[0,9000,1]]}}}'
         )
+
         # pylint:enable=line-too-long
         self.push_change_event("receiveAddresses", self._receive_addresses)
 
@@ -480,23 +473,23 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if self.defective_params["enabled"]:
-        #     self.induce_fault(
-        #         "Configure",
-        #     )
-        # else:
-        if self._state_duration_info:
-            self._follow_state_duration()
-        else:
-            self._obs_state = ObsState.CONFIGURING
-            self.push_obs_state_event(self._obs_state)
-            thread = threading.Timer(
-                self._command_delay_info[CONFIGURE],
-                self.update_device_obsstate,
-                args=[ObsState.READY],
+        if self.defective_params["enabled"]:
+            self.induce_fault(
+                "Configure",
             )
-            thread.start()
-            self.push_command_result(ResultCode.OK, "Configure")
+        else:
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._obs_state = ObsState.CONFIGURING
+                self.push_obs_state_event(self._obs_state)
+                thread = threading.Timer(
+                    self._command_delay_info[CONFIGURE],
+                    self.update_device_obsstate,
+                    args=[ObsState.READY],
+                )
+                thread.start()
+                self.push_command_result(ResultCode.OK, "Configure")
 
     def is_Scan_allowed(self):
         """

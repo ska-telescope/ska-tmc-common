@@ -575,25 +575,20 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return self.induce_fault(
                 "End",
             )
-        self._obs_state = ObsState.IDLE
-        self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "End")
-        self.logger.info("End command completed.")
-        return [ResultCode.OK], [""]
 
-        # self._obs_state = ObsState.CONFIGURING
-        # self.push_obs_state_event(self._obs_state)
-        # thread = threading.Timer(
-        #     self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
-        # )
-        # thread.start()
-        # self.push_command_result(ResultCode.OK, "End")
-        # self.logger.debug(
-        #     "End command invoked, obsState will transition to"
-        #     + "IDLE, current obsState is %s",
-        #     self._obs_state,
-        # )
-        # return [ResultCode.OK], [""]
+        self._obs_state = ObsState.CONFIGURING
+        self.push_obs_state_event(self._obs_state)
+        thread = threading.Timer(
+            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+        )
+        thread.start()
+        self.push_command_result(ResultCode.OK, "End")
+        self.logger.debug(
+            "End command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
+        )
+        return [ResultCode.OK], [""]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
