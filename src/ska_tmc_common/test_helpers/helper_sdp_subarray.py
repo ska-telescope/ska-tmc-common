@@ -241,10 +241,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
 
-        # if eb_id in JSON does not start with prefix eb, SDP Subarray
+        # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
         eb_id = input["execution_block"]["eb_id"]
-        if not eb_id.startswith("eb-mvp"):
+        invalid_eb_id = "eb-xxx"
+        if eb_id.startswith(invalid_eb_id):
             self.logger.info("eb_id is invalid")
 
             raise tango.Except.throw_exception(
@@ -409,8 +410,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._obs_state = ObsState.CONFIGURING
         self.push_obs_state_event(self._obs_state)
 
+        # if scan_type in JSON is invalid , SDP Subarray moves to
+        # obsState=IDLE and raises exception
         scan_type = input["scan_type"]
-        if scan_type != "science_A":
+        invalid_scan_type = "xxxxxxx_X"
+        if scan_type == invalid_scan_type:
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
             self.logger.info("Wrong scan_type in the Configure input json")
@@ -424,8 +428,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
+        # if eb_id in JSON does not have valid interface, SDP Subarray
+        # remains in obsState=CONFIGURING and raises exception
         interface = input["interface"]
-        if interface != "https://schema.skao.int/ska-sdp-configure/0.3":
+        invalid_interface = "https://schema.skao.int/ska-sdp-configure/x.x"
+        if interface == invalid_interface:
             self.logger.info("Missing interface in the Configure input json")
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
