@@ -433,12 +433,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
             self.logger.info("Wrong scan_type in the Configure input json")
-            # time.sleep(5)
             self._obs_state = ObsState.IDLE
             thread = threading.Timer(
                 5, self.push_obs_state_event, args=[self._obs_state]
             )
-            # self.push_obs_state_event(self._obs_state)
             thread.start()
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
