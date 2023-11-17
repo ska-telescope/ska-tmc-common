@@ -52,22 +52,15 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.defective_params = json.loads(self._defective)
         self._state = DevState.OFF
         # pylint:disable=line-too-long
-        self._receive_addresses = (
-            '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"xxxxxxx_X":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}},"calibration:b":{"vis0":{'
-            '"function":"visibilities","host":[[0,'
-            '"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}}}'
+        self._receive_addresses = json.dumps(
+            {"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],
+            "port":[[0,9000,1],[2000,9000,1]]},"target:a":
+            {"vis0":{"function":"visibilities","host":
+            [[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]]
+            ,"port":[[0,9000,1]]}},"calibration:b":
+            {"vis0":{"function":"visibilities","host":
+            [[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]]
+            ,"port":[[0,9000,1]]}}}
         )
 
         # pylint:enable=line-too-long
@@ -418,9 +411,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
             self.logger.info("Wrong scan_type in the Configure input json")
-            time.sleep(5)
+            #time.sleep(5)
             self._obs_state = ObsState.IDLE
-            self.push_obs_state_event(self._obs_state)
+            thread = threading.Timer(5,self.push_obs_state_event,args=[self._obs_state])
+            #self.push_obs_state_event(self._obs_state)
+            thread.start()
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Wrong scan_type in the Configure input json",
