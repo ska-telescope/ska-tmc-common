@@ -1291,7 +1291,7 @@ class HelperSubArrayDevice(SKASubarray):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources Command is allowed")
+        self.logger.info("Abort Command is allowed")
         return True
 
     @command(

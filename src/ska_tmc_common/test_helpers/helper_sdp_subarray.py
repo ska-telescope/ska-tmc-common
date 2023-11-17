@@ -52,15 +52,39 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.defective_params = json.loads(self._defective)
         self._state = DevState.OFF
         # pylint:disable=line-too-long
-        self._receive_addresses = (
-            '{"science_A":{"host":[[0,"192.168.0.1"],[2000,"192.168.0.1"]],"port":['
-            '[0,9000,1],[2000,9000,1]]},"target:a":{"vis0":{"function":"visibilities"'
-            ',"host":[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]]'
-            ',"port":[[0,9000,1]],"pointing_cal":"test-sdp/queueconnector/01"}},'
-            '"calibration:b":{"vis0":{"function":"visibilities","host":'
-            '[[0,"proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp"]],'
-            '"port":[[0,9000,1]]}}}'
+        self._receive_addresses = json.dumps(
+            {
+                "science_A": {
+                    "host": [[0, "192.168.0.1"], [2000, "192.168.0.1"]],
+                    "port": [[0, 9000, 1], [2000, 9000, 1]],
+                },
+                "target:a": {
+                    "vis0": {
+                        "function": "visibilities",
+                        "host": [
+                            [
+                                0,
+                                "proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp",
+                            ]
+                        ],
+                        "port": [[0, 9000, 1]],
+                    }
+                },
+                "calibration:b": {
+                    "vis0": {
+                        "function": "visibilities",
+                        "host": [
+                            [
+                                0,
+                                "proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp",
+                            ]
+                        ],
+                        "port": [[0, 9000, 1]],
+                    }
+                },
+            }
         )
+
         # pylint:enable=line-too-long
         self.push_change_event("receiveAddresses", self._receive_addresses)
 
@@ -232,10 +256,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
 
-        # if eb_id in JSON does not start with prefix eb, SDP Subarray
+        # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
         eb_id = input["execution_block"]["eb_id"]
-        if not eb_id.startswith("eb-mvp"):
+        invalid_eb_id = "eb-xxx"
+        if eb_id.startswith(invalid_eb_id):
             self.logger.info("eb_id is invalid")
 
             raise tango.Except.throw_exception(
@@ -393,6 +418,44 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing scan_type in the Configure input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
+
+        self._obs_state = ObsState.CONFIGURING
+        self.push_obs_state_event(self._obs_state)
+
+        # if scan_type in JSON is invalid , SDP Subarray moves to
+        # obsState=IDLE and raises exception
+        scan_type = input["scan_type"]
+        invalid_scan_type = "xxxxxxx_X"
+        if scan_type == invalid_scan_type:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            self.logger.info("Wrong scan_type in the Configure input json")
+            self._obs_state = ObsState.IDLE
+            thread = threading.Timer(
+                5, self.push_obs_state_event, args=[self._obs_state]
+            )
+            thread.start()
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Wrong scan_type in the Configure input json",
+                "SdpSubarry.Configure()",
+                tango.ErrSeverity.ERR,
+            )
+
+        # if eb_id in JSON does not have valid interface, SDP Subarray
+        # remains in obsState=CONFIGURING and raises exception
+        interface = input["interface"]
+        invalid_interface = "https://schema.skao.int/ska-sdp-configure/x.x"
+        if interface == invalid_interface:
+            self.logger.info("Missing interface in the Configure input json")
+            self._obs_state = ObsState.CONFIGURING
+            self.push_obs_state_event(self._obs_state)
+            raise tango.Except.throw_exception(
+                "Incorrect input json string",
+                "Missing interface in the Configure input json",
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
