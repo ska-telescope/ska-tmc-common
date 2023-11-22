@@ -70,7 +70,7 @@ class HelperMccsSubarrayLeafNode(HelperSubarrayLeafDevice):
 
             thread = threading.Thread(
                 target=self.update_device_obsstate,
-                args=[ObsState.EMPTY, RESTART],
+                args=[ObsState.EMPTY],
             )
             thread.start()
 
