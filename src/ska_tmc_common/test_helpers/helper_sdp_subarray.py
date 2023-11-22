@@ -448,7 +448,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # if eb_id in JSON does not have valid interface, SDP Subarray
         # remains in obsState=CONFIGURING and raises exception
         interface = input["interface"]
+        self.logger.debug("Valid interface:%s", interface)
         invalid_interface = "https://schema.skao.int/ska-sdp-configure/x.x"
+        self.logger.debug("invalid interface:%s", invalid_interface)
         if interface == invalid_interface:
             self.logger.info("Missing interface in the Configure input json")
             # self._obs_state = ObsState.CONFIGURING
