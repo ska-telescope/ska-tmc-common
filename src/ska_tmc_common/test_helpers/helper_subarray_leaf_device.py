@@ -215,6 +215,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :type: str
         """
         self.logger.info("Setting device obsState to %s", value)
+        self.push_change_event("obsState", self._obs_state)
         self._obs_state = value
 
     @command(
