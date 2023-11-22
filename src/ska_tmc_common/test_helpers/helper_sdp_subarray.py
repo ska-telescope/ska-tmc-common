@@ -451,8 +451,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         invalid_interface = "https://schema.skao.int/ska-sdp-configure/x.x"
         if interface == invalid_interface:
             self.logger.info("Missing interface in the Configure input json")
-            self._obs_state = ObsState.CONFIGURING
-            self.push_obs_state_event(self._obs_state)
+            # self._obs_state = ObsState.CONFIGURING
+            # self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing interface in the Configure input json",
