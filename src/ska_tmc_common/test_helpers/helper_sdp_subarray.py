@@ -70,6 +70,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                         "port": [[0, 9000, 1]],
                     }
                 },
+                "calibration:b": {
+                    "vis0": {
+                        "function": "visibilities",
+                        "host": [
+                            [
+                                0,
+                                "proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp",
+                            ]
+                        ],
+                        "port": [[0, 9000, 1]],
+                    }
+                },
             }
         )
 
