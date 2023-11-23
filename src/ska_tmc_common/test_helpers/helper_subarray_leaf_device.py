@@ -260,6 +260,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             "Pushing change event for HelperSubarrayLeafDeviceObsState: %s",
             obs_state,
         )
+        self._obs_state = obs_state
         self.push_change_event("obsState", self._obs_state)
 
     def update_device_obsstate(self, obs_state: ObsState):
