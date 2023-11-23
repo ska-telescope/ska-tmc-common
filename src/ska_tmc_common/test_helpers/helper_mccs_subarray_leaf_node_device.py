@@ -2,12 +2,13 @@
 This module contains the implementation of the HelperMccsSubarrayLeafNode class
 which exposes commands and attributes of the Mccs Subarray Leaf Node devices.
 """
-
 import threading
+import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
+from tango import EnsureOmniThread
 from tango.server import command
 
 from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
@@ -26,6 +27,17 @@ class HelperMccsSubarrayLeafNode(HelperSubarrayLeafDevice):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._obs_state = ObsState.EMPTY
+
+    def wait_and_update_command_result(self, command_name):
+        """Waits for 5 secs before pushing a longRunningCommandResult event."""
+        with EnsureOmniThread():
+            time.sleep(5)
+            command_id = f"1000_{command_name}"
+            command_result = (
+                command_id,
+                str([ResultCode.OK, f"command {command_name} completed"]),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
 
     @command(
         dtype_in=int,
@@ -58,7 +70,7 @@ class HelperMccsSubarrayLeafNode(HelperSubarrayLeafDevice):
 
             thread = threading.Thread(
                 target=self.update_device_obsstate,
-                args=[ObsState.EMPTY, RESTART],
+                args=[ObsState.EMPTY],
             )
             thread.start()
 
