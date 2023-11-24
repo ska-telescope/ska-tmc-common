@@ -243,7 +243,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes AssignResources command on SdpSubarray
         device."""
         initial_obstate = self._obs_state
-        self.logger.info("Initial obstate is: %s", initial_obstate)
+        self.logger.info(
+            "Initial obstate of SdpSubarray is: %s", initial_obstate
+        )
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
         if "eb_id" not in input["execution_block"]:
