@@ -492,17 +492,17 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if eb_id in JSON does not have valid interface, SDP Subarray
+        # if scan_type in JSON does not have valid value, SDP Subarray
         # remains in obsState=CONFIGURING and raises exception
-        interface = input["interface"]
-        invalid_interface = "https://schema.skao.int/ska-sdp-configure/x.x"
-        if interface == invalid_interface:
-            self.logger.info("Missing interface in the Configure input json")
+        scan_type = input["scan_type"]
+        invalid_scan_type = "zzzzzzz_Z"
+        if scan_type == invalid_scan_type:
+            self.logger.info("Wrong scan_type in the Configure input json")
             self._obs_state = ObsState.CONFIGURING
             self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
-                "Missing interface in the Configure input json",
+                "Wrong scan_type in the Configure input json",
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
