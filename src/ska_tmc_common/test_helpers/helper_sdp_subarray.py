@@ -120,6 +120,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method is used to read the attribute value for delay."""
         return self._delay
 
+    @command(dtype_in=str, doc_in="Set the receive_addresses")
+    def SetDirectreceiveAddresses(self, argin: str) -> None:
+        """Set the receivedAddresses"""
+        self._receive_addresses = argin
+        self.push_change_event("receiveAddresses", argin)
+
     def read_receiveAddresses(self):
         """Returns receive addresses."""
         return self._receive_addresses
