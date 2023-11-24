@@ -244,7 +244,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         initial_obstate = self._obs_state
         self.logger.info(
-            "Initial obstate of SdpSubarray is: %s", initial_obstate
+            "Initial obsstate of SdpSubarray for AssignResources command is:"
+            + "%s",
+            initial_obstate,
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
         input = json.loads(argin)
