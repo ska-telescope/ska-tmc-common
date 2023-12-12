@@ -165,6 +165,7 @@ class DummyTmcDevice(HelperBaseDevice):
         handler()
 
 
+# pylint: disable=attribute-defined-outside-init
 class CommandDelayBehaviour(SKABaseDevice):
     """Command Delay Behaviour"""
 
