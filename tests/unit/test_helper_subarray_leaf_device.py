@@ -76,7 +76,7 @@ def test_clear_commandCallInfo(tango_context):
     _, _ = subarray_leaf_device.command_inout("Configure", "")
     subarray_leaf_device.command_inout("ClearCommandCallInfo")
     command_call_info = subarray_leaf_device.commandCallInfo
-    assert command_call_info is None
+    assert command_call_info == ()
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
