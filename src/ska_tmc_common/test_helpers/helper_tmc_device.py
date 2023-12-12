@@ -3,14 +3,17 @@ This module contains a dummy TMC device for testing the integrated TMC.
 """
 # pylint: disable=unused-argument
 
+import json
 import logging
 from logging import Logger
 from typing import Any, Optional, Tuple
 
+from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode, SlowCommand
+from tango import AttrWriteType
 
 # from tango import DevState
-from tango.server import command
+from tango.server import attribute, command
 
 from ska_tmc_common.device_info import (
     DeviceInfo,
@@ -21,6 +24,16 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 from ska_tmc_common.tmc_component_manager import (
     TmcComponent,
     TmcComponentManager,
+)
+
+from .constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    END,
+    RELEASE_ALL_RESOURCES,
+    RELEASE_RESOURCES,
+    RESTART,
 )
 
 logger = logging.getLogger(__name__)
@@ -150,3 +163,63 @@ class DummyTmcDevice(HelperBaseDevice):
         """
         handler = self.get_command_object("SetData")
         handler()
+
+
+class CommandDelayBehaviour(SKABaseDevice):
+    """Command Delay Behaviour"""
+
+    def init_device(self):
+        super().init_device()
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
+        }
+
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+
+    def read_commandDelayInfo(self):
+        """This method is used to read the attribute value for delay."""
+
+        return json.dumps(self._command_delay_info)
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, command_delay_info: str) -> None:
+        """Update delay value"""
+        self.logger.info(
+            "Setting the Delay value for Csp Subarray from Behaviour class \
+                or Sdp Subarray simulator to : %s",
+            command_delay_info,
+        )
+        # set command info
+        command_delay_info_dict = json.loads(command_delay_info)
+        for key, value in command_delay_info_dict.items():
+            self._command_delay_info[key] = value
+        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
+
+    @command(
+        doc_in="Reset Delay",
+    )
+    def ResetDelay(self) -> None:
+        """Reset Delay to it's default values"""
+        self.logger.info(
+            "Resetting Command Delays for \
+            Csp Subarray or Sdp Simulators"
+        )
+        # Reset command info
+        self._command_delay_info = {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
+        }

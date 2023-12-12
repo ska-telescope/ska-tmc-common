@@ -18,6 +18,7 @@ from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.test_helpers.helper_tmc_device import CommandDelayBehaviour
 
 from .constants import (
     ABORT,
@@ -167,7 +168,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
 
 # pylint: disable=too-many-instance-attributes
-class HelperSubArrayDevice(SKASubarray):
+class HelperSubArrayDevice(SKASubarray, CommandDelayBehaviour):
     """A generic subarray device for triggering state changes with a command.
     It can be used as helper device for element subarray node"""
 
@@ -177,15 +178,15 @@ class HelperSubArrayDevice(SKASubarray):
         self._health_state = HealthState.OK
         self._command_in_progress = ""
         self._defective = False
-        self._command_delay_info = {
-            ASSIGN_RESOURCES: 2,
-            CONFIGURE: 2,
-            RELEASE_RESOURCES: 2,
-            ABORT: 2,
-            RESTART: 2,
-            RELEASE_ALL_RESOURCES: 2,
-            END: 2,
-        }
+        # self._command_delay_info = {
+        #     ASSIGN_RESOURCES: 2,
+        #     CONFIGURE: 2,
+        #     RELEASE_RESOURCES: 2,
+        #     ABORT: 2,
+        #     RESTART: 2,
+        #     RELEASE_ALL_RESOURCES: 2,
+        #     END: 2,
+        # }
         self._scan_id = None
         self._assigned_resources = "{ }"
         # tuple of list
@@ -229,7 +230,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     defective = attribute(dtype=bool, access=AttrWriteType.READ)
 
-    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+    # commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
@@ -292,10 +293,10 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._command_call_info
 
-    def read_commandDelayInfo(self):
-        """This method is used to read the attribute value for delay."""
+    # def read_commandDelayInfo(self):
+    #     """This method is used to read the attribute value for delay."""
 
-        return json.dumps(self._command_delay_info)
+    #     return json.dumps(self._command_delay_info)
 
     def read_raiseException(self) -> bool:
         """This method is used to read the attribute value for raise exception
@@ -424,42 +425,42 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Setting the raise exception value to : %s", value)
         self._raise_exception = value
 
-    @command(
-        dtype_in=str,
-        doc_in="Set Delay",
-    )
-    def SetDelay(self, command_delay_info: str) -> None:
-        """Update delay value"""
-        self.logger.info(
-            "Setting the Delay value for Csp Subarray \
-                or Sdp Subarray simulator to : %s",
-            command_delay_info,
-        )
-        # set command info
-        command_delay_info_dict = json.loads(command_delay_info)
-        for key, value in command_delay_info_dict.items():
-            self._command_delay_info[key] = value
-        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
+    # @command(
+    #     dtype_in=str,
+    #     doc_in="Set Delay",
+    # )
+    # def SetDelay(self, command_delay_info: str) -> None:
+    #     """Update delay value"""
+    #     self.logger.info(
+    #         "Setting the Delay value for Csp Subarray \
+    #             or Sdp Subarray simulator to : %s",
+    #         command_delay_info,
+    #     )
+    #     # set command info
+    #     command_delay_info_dict = json.loads(command_delay_info)
+    #     for key, value in command_delay_info_dict.items():
+    #         self._command_delay_info[key] = value
+    #     self.logger.info("Command Delay Info Set %s", self._command_delay_info)
 
-    @command(
-        doc_in="Reset Delay",
-    )
-    def ResetDelay(self) -> None:
-        """Reset Delay to it's default values"""
-        self.logger.info(
-            "Resetting Command Delays for \
-            Csp Subarray or Sdp Simulators"
-        )
-        # Reset command info
-        self._command_delay_info = {
-            ASSIGN_RESOURCES: 2,
-            CONFIGURE: 2,
-            RELEASE_RESOURCES: 2,
-            ABORT: 2,
-            RESTART: 2,
-            RELEASE_ALL_RESOURCES: 2,
-            END: 2,
-        }
+    # @command(
+    #     doc_in="Reset Delay",
+    # )
+    # def ResetDelay(self) -> None:
+    #     """Reset Delay to it's default values"""
+    #     self.logger.info(
+    #         "Resetting Command Delays for \
+    #         Csp Subarray or Sdp Simulators"
+    #     )
+    #     # Reset command info
+    #     self._command_delay_info = {
+    #         ASSIGN_RESOURCES: 2,
+    #         CONFIGURE: 2,
+    #         RELEASE_RESOURCES: 2,
+    #         ABORT: 2,
+    #         RESTART: 2,
+    #         RELEASE_ALL_RESOURCES: 2,
+    #         END: 2,
+    #     }
 
     @command(
         doc_in="Clears commandCallInfo",
