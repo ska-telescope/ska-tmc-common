@@ -466,7 +466,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             kwargs,
         )
         self._device = None
-        self.start_liveliness_probe(_liveliness_probe)
 
     def reset(self) -> None:
         """
