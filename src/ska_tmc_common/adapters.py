@@ -282,18 +282,6 @@ class MCCSControllerAdapter(BaseAdapter):
         return self._proxy.RestartSubarray(argin)
 
 
-class MCCSSubarrayLeafNodeAdapter(SubArrayAdapter):
-    """
-    An Adapter class for the MCCS Subarray Leaf Node Device.
-    """
-
-    def Restart(self, argin: int) -> Tuple[List[ResultCode], List[str]]:
-        """
-        Invokes Restart on MCCS Subarray Leaf Node proxy.
-        """
-        return self._proxy.Restart(argin)
-
-
 class DishAdapter(BaseAdapter):
     """
     This class is used for creating and managing adapters
@@ -460,7 +448,6 @@ class AdapterFactory:
         SdpSubArrayAdapter,
         MCCSMasterLeafNodeAdapter,
         MCCSControllerAdapter,
-        MCCSSubarrayLeafNodeAdapter,
         BaseAdapter,
     ]:
         """
@@ -506,7 +493,7 @@ class AdapterFactory:
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.MCCS_SUBARRAY_LEAF_NODE:
-            new_adapter = MCCSSubarrayLeafNodeAdapter(
+            new_adapter = SubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.CSP_MASTER_LEAF_NODE:
