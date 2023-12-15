@@ -25,7 +25,6 @@ class AdapterType(enum.IntEnum):
     SDPSUBARRAY = 6
     MCCS_CONTROLLER = 7
     CSP_MASTER_LEAF_NODE = 8
-    MCCS_SUBARRAY_LEAF_NODE = 9
 
 
 class BaseAdapter:
@@ -126,7 +125,7 @@ class CspMasterAdapter(BaseAdapter):
         return self._proxy.LoadDishCfg(argin)
 
 
-class SubArrayAdapter(BaseAdapter):
+class SubarrayAdapter(BaseAdapter):
     """
     This class is used for creating and managing adapters
     for Subarray devices.
@@ -197,7 +196,7 @@ class SubArrayAdapter(BaseAdapter):
         return self._proxy.ObsReset()
 
 
-class SdpSubArrayAdapter(SubArrayAdapter):
+class SdpSubArrayAdapter(SubarrayAdapter):
     """
     This class is used for creating and managing adapters
     for SdpSubarray devices.
@@ -415,7 +414,7 @@ class DishAdapter(BaseAdapter):
         return self._proxy.SetKValue(kvalue)
 
 
-class CspSubarrayAdapter(SubArrayAdapter):
+class CspSubarrayAdapter(SubarrayAdapter):
     """
     This class is used for creating and managing adapterss
     for CSP subarray devices proxy.
@@ -442,7 +441,7 @@ class AdapterFactory:
         self, dev_name: str, adapter_type: AdapterType = AdapterType.BASE
     ) -> Union[
         DishAdapter,
-        SubArrayAdapter,
+        SubarrayAdapter,
         CspMasterAdapter,
         CspSubarrayAdapter,
         SdpSubArrayAdapter,
@@ -469,7 +468,7 @@ class AdapterFactory:
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.SUBARRAY:
-            new_adapter = SubArrayAdapter(
+            new_adapter = SubarrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.CSPSUBARRAY:
@@ -490,10 +489,6 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.CSPMASTER:
             new_adapter = CspMasterAdapter(
-                dev_name, self._dev_factory.get_device(dev_name)
-            )
-        elif adapter_type == AdapterType.MCCS_SUBARRAY_LEAF_NODE:
-            new_adapter = SubArrayAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         elif adapter_type == AdapterType.CSP_MASTER_LEAF_NODE:

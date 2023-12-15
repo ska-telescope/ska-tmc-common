@@ -21,7 +21,7 @@ from .adapters import (
     MCCSControllerAdapter,
     MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubArrayAdapter,
+    SubarrayAdapter,
 )
 from .aggregators import Aggregator
 from .dev_factory import DevFactory
@@ -108,7 +108,7 @@ __all__ = [
     "DishAdapter",
     "CspMasterAdapter",
     "CspSubarrayAdapter",
-    "SubArrayAdapter",
+    "SubarrayAdapter",
     "SdpSubArrayAdapter",
     "BaseAdapter",
     "MCCSMasterLeafNodeAdapter",

@@ -18,7 +18,7 @@ from ska_tmc_common import (
     MCCSControllerAdapter,
     MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubArrayAdapter,
+    SubarrayAdapter,
     TmcLeafNodeCommand,
 )
 from ska_tmc_common.test_helpers.helper_csp_subarray import HelperCspSubarray
@@ -90,7 +90,7 @@ def test_get_or_create_subarray_adapter(tango_context):
     subarray_adapter = factory.get_or_create_adapter(
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
-    assert isinstance(subarray_adapter, SubArrayAdapter)
+    assert isinstance(subarray_adapter, SubarrayAdapter)
 
 
 def test_get_or_create_dish_adapter(tango_context):
