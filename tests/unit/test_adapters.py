@@ -182,6 +182,6 @@ def test_call_adapter_method_exception(tango_context):
         message[0]
         == "The invocation of the AssignResources command is failed on "
         + "test/subarray/1 device test/subarray/1.\n"
-        + "The following exception occurred - SubArrayAdapter.AssignResources() "
+        + "The following exception occurred - SubarrayAdapter.AssignResources() "
         + "missing 1 required positional argument: 'argin'."
     )
