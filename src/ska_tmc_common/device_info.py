@@ -61,8 +61,8 @@ class DeviceInfo:
         self.exception = None
         self._unresponsive = _unresponsive
         self.lock = threading.Lock()
-        self._source_dish_vcc_param = ""
-        self._dish_vcc_param = ""
+        self._source_dish_vcc_config = ""
+        self._dish_vcc_config = ""
 
     def from_dev_info(self, dev_info) -> None:
         """
@@ -109,27 +109,27 @@ class DeviceInfo:
         self._ping = value
 
     @property
-    def source_dish_vcc_param(self) -> str:
-        """Returns the source_dish_vcc_param value for Dish master device"""
-        return self._source_dish_vcc_param
+    def source_dish_vcc_config(self) -> str:
+        """Returns the source_dish_vcc_config value for Dish master device"""
+        return self._source_dish_vcc_config
 
-    @source_dish_vcc_param.setter
-    def source_dish_vcc_param(self, value: str):
-        """Sets the value of source_dish_vcc_param  for Dish master device"""
-        if self._source_dish_vcc_param != value:
-            self._source_dish_vcc_param = value
+    @source_dish_vcc_config.setter
+    def source_dish_vcc_config(self, value: str):
+        """Sets the value of source_dish_vcc_config  for Dish master device"""
+        if self._source_dish_vcc_config != value:
+            self._source_dish_vcc_config = value
 
     @property
-    def dish_vcc_param(self) -> str:
-        """Returns the dish_vcc_param  value for Dish master device"""
-        return self._dish_vcc_param
+    def dish_vcc_config(self) -> str:
+        """Returns the dish_vcc_config  value for Dish master device"""
+        return self._dish_vcc_config
 
-    @dish_vcc_param.setter
-    def dish_vcc_param(self, value: str):
-        """Sets the value of dish_vcc_param attribute value
+    @dish_vcc_config.setter
+    def dish_vcc_config(self, value: str):
+        """Sets the value of dish_vcc_config attribute value
         for Dish master device"""
-        if self._dish_vcc_param != value:
-            self._dish_vcc_param = value
+        if self._dish_vcc_config != value:
+            self._dish_vcc_config = value
 
     @property
     def unresponsive(self) -> bool:
