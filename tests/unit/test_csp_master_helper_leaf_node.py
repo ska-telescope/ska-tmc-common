@@ -23,11 +23,11 @@ def test_csp_master_leaf_node_loadDishConfig_command(
     return_code, _ = csp_master_leaf_device.LoadDishCfg(input_json_str)
 
     assert return_code[0] == ResultCode.QUEUED
-    assert csp_master_leaf_device.sourceSysParam == input_json_str
+    assert csp_master_leaf_device.sourceDishVccConfig == input_json_str
 
     expected_json_str = json_factory("mid_cbf_initial_parameters")
     expected_json = json.loads(expected_json_str)
-    sysParam = json.loads(csp_master_leaf_device.sysParam)
+    dishVccConfig = json.loads(csp_master_leaf_device.dishVccConfig)
 
     # comparing dictionary instead of strings to avoid the issues with whitespaces
-    assert expected_json == sysParam
+    assert expected_json == dishVccConfig
