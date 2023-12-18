@@ -25,7 +25,9 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._source_dish_vcc_param: str = ""
         self._dish_vcc_param: str = ""
 
-    sourceDishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
+    sourceDishVccConfig = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
     dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     class InitCommand(HelperBaseDevice.InitCommand):
@@ -59,7 +61,8 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
-        """This Command Reset dishVccConfig and sourceDishVccConfig attribute"""
+        """
+        This Command Reset dishVccConfig and sourceDishVccConfig attribute"""
         self._source_dish_vcc_param = ""
         self._dish_vcc_param = ""
         return [ResultCode.OK], [""]
@@ -124,7 +127,9 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         )
         self._source_dish_vcc_param = argin
         self._dish_vcc_param = mid_cbf_initial_parameters_str
-        self.push_change_event("sourceDishVccConfig", self._source_dish_vcc_param)
+        self.push_change_event(
+            "sourceDishVccConfig", self._source_dish_vcc_param
+        )
         self.push_change_event("dishVccConfig", self._dish_vcc_param)
 
         thread = threading.Timer(

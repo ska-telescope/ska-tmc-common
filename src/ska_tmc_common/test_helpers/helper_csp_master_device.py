@@ -28,7 +28,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self._source_dish_vcc_param: str = ""
         self._dish_vcc_param: str = ""
 
-    sourceDishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
+    sourceDishVccConfig = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
     dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     class InitCommand(HelperBaseDevice.InitCommand):
@@ -200,7 +202,9 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
     def push_dish_vcc_param_and_source_dish_vcc_param(self):
         """Push sys param and source sys param event"""
-        self.push_change_event("sourceDishVccConfig", self._source_dish_vcc_param)
+        self.push_change_event(
+            "sourceDishVccConfig", self._source_dish_vcc_param
+        )
         self.push_change_event("dishVccConfig", self._dish_vcc_param)
         self.logger.info("Pushed dishVccConfig and sourceDishVccConfig event")
 
