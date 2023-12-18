@@ -120,13 +120,13 @@ class DeviceInfo:
             self._source_dish_vcc_param = value
 
     @property
-    def sys_param(self) -> str:
-        """Returns the sys_param  value for Dish master device"""
+    def dish_vcc_param(self) -> str:
+        """Returns the dish_vcc_param  value for Dish master device"""
         return self._dish_vcc_param
 
-    @sys_param.setter
-    def sys_param(self, value: str):
-        """Sets the value of sys_param attribute value
+    @dish_vcc_param.setter
+    def dish_vcc_param(self, value: str):
+        """Sets the value of dish_vcc_param attribute value
         for Dish master device"""
         if self._dish_vcc_param != value:
             self._dish_vcc_param = value
