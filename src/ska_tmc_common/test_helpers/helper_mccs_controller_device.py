@@ -29,15 +29,12 @@ class HelperMCCSController(HelperBaseDevice):
         super().init_device()
         self.dev_name = self.get_name()
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,

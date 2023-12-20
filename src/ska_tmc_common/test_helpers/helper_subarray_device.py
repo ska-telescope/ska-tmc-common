@@ -176,7 +176,6 @@ class HelperSubArrayDevice(SKASubarray):
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._command_in_progress = ""
-        self._defective = False
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
             CONFIGURE: 2,
@@ -194,15 +193,12 @@ class HelperSubArrayDevice(SKASubarray):
         self._state_duration_info = []
         self._delay = 2
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -227,7 +223,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
 
-    defective = attribute(dtype=bool, access=AttrWriteType.READ)
+    defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -316,7 +312,7 @@ class HelperSubArrayDevice(SKASubarray):
         This method is used to read the value of the attribute defective
         :rtype:bool
         """
-        return self._defective
+        return json.dumps(self.defective_params)
 
     def read_receiveAddresses(self) -> str:
         """
@@ -701,7 +697,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Target obsStates are: %s",
                 self.defective_params.get("target_obsstates"),
             )
-            if "target_obsstates" in self.defective_params.keys():
+            if "target_obsstates" in self.defective_params:
                 # Utilise target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
                 # ResultCode.FAILED

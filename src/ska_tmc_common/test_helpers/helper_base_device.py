@@ -29,15 +29,12 @@ class HelperBaseDevice(SKABaseDevice):
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperBaseDevice's init_device() command."""
@@ -66,7 +63,7 @@ class HelperBaseDevice(SKABaseDevice):
         )
         return cm
 
-    defective = attribute(dtype=bool, access=AttrWriteType.READ)
+    defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
 
@@ -79,13 +76,13 @@ class HelperBaseDevice(SKABaseDevice):
         """
         return self._raise_exception
 
-    def read_defective(self) -> bool:
+    def read_defective(self) -> str:
         """
         Returns defective status of devices
 
         :rtype: bool
         """
-        return self._defective
+        return json.dumps(self.defective_params)
 
     def read_isSubsystemAvailable(self) -> bool:
         """

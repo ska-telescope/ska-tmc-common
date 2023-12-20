@@ -27,15 +27,12 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self._isSubsystemAvailable = False
         self._delay: int = 2
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""

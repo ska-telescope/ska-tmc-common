@@ -94,7 +94,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         :rtype: dict
         """
-        return self._defective
+        return json.dumps(self.defective_params)
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
