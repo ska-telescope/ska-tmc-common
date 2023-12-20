@@ -120,6 +120,7 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
         "result": ResultCode.FAILED,
+        "error_message": "Device is stuck in Resourcing state",
         "intermediate_state": ObsState.RESOURCING,
     }
     mccs_controller_device.SetDefective(json.dumps(defect))

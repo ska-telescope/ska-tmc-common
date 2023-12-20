@@ -113,6 +113,7 @@ def test_assign_resources_stuck_in_intermediate_state(tango_context):
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
         "result": ResultCode.FAILED,
+        "error_message": "Device is stuck in Resourcing state",
         "intermediate_state": ObsState.RESOURCING,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
