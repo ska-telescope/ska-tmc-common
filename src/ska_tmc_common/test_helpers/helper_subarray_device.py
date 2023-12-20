@@ -768,8 +768,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         input_dict = json.loads(values)
         self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
+        self.defective_params = input_dict
 
     @command(
         dtype_out="DevVarLongStringArray",
