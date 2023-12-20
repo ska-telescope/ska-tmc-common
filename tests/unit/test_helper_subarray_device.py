@@ -5,7 +5,7 @@ from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import DevFactory
-from tests.settings import SUBARRAY_DEVICE
+from tests.settings import DEFAULT_DEFECT, SUBARRAY_DEVICE
 
 commands_with_argin = [
     "AssignResources",
@@ -70,7 +70,7 @@ def test_clear_commandCallInfo(tango_context):
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(json.dumps({"enabled": True}))
+    subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT))
     result, message = subarray_device.command_inout("AssignResources", "")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."
@@ -106,7 +106,7 @@ def test_command_without_argin(tango_context, command):
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(json.dumps({"enabled": True}))
+    subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT))
     result, message = subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."
@@ -123,7 +123,7 @@ def test_scan_command(tango_context):
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDefective(json.dumps({"enabled": True}))
+    subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT))
     result, message = subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."

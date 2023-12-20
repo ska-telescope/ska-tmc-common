@@ -6,6 +6,7 @@ from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import (
+    DEFAULT_DEFECT,
     HELPER_MCCS_CONTROLLER,
     MCCS_SUBARRAY_DEVICE,
     wait_for_obstate,
@@ -73,7 +74,7 @@ def test_mccs_controller_commands_without_argument(tango_context, command):
 def test_mccs_controller_allocate_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetDefective(json.dumps({"enabled": True}))
+    mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT))
     result, message = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
@@ -84,7 +85,7 @@ def test_mccs_controller_allocate_defective(tango_context):
 def test_mccs_controller_release_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetDefective(json.dumps({"enabled": True}))
+    mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT))
     result, message = mccs_controller_device.command_inout(
         "Release", release_argin_string
     )
