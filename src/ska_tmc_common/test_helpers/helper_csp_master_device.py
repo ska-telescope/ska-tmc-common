@@ -25,11 +25,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._delay: int = 2
-        self._source_sys_param: str = ""
-        self._sys_param: str = ""
+        self._source_dish_vcc_config: str = ""
+        self._dish_vcc_config: str = ""
 
-    sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
-    sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
+    sourceDishVccConfig = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+    dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperCspMasterDevice's init_device() command."""
@@ -39,23 +41,23 @@ class HelperCspMasterDevice(HelperBaseDevice):
             Stateless hook for device initialisation.
             """
             super().do()
-            self._device.set_change_event("sourceSysParam", True, False)
-            self._device.set_change_event("sysParam", True, False)
+            self._device.set_change_event("sourceDishVccConfig", True, False)
+            self._device.set_change_event("dishVccConfig", True, False)
             return (ResultCode.OK, "")
 
-    def read_sourceSysParam(self) -> str:
+    def read_sourceDishVccConfig(self) -> str:
         """
-        This method reads the sourceSysParam value of the dish.
+        This method reads the sourceDishVccConfig value of the dish.
         :rtype:str
         """
-        return self._source_sys_param
+        return self._source_dish_vcc_config
 
-    def read_sysParam(self) -> str:
+    def read_dishVccConfig(self) -> str:
         """
-        This method reads the sysParam value of the dish.
+        This method reads the dishVccConfig value of the dish.
         :rtype:str
         """
-        return self._sys_param
+        return self._dish_vcc_config
 
     def is_On_allowed(self) -> bool:
         """
@@ -185,8 +187,8 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
         """This Command Reset Sys Param and source sys param"""
-        self._source_sys_param = ""
-        self._sys_param = ""
+        self._source_dish_vcc_config = ""
+        self._dish_vcc_config = ""
         return [ResultCode.OK], [""]
 
     def is_LoadDishCfg_allowed(self) -> bool:
@@ -198,11 +200,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         return True
 
-    def push_sys_param_and_source_sys_param(self):
+    def push_dish_vcc_config_and_source_dish_vcc_config(self):
         """Push sys param and source sys param event"""
-        self.push_change_event("sourceSysParam", self._source_sys_param)
-        self.push_change_event("sysParam", self._sys_param)
-        self.logger.info("Pushed sysParam and sourceSysParam event")
+        self.push_change_event(
+            "sourceDishVccConfig", self._source_dish_vcc_config
+        )
+        self.push_change_event("dishVccConfig", self._dish_vcc_config)
+        self.logger.info("Pushed dishVccConfig and sourceDishVccConfig event")
 
     @command(
         dtype_in="str",
@@ -213,7 +217,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     )
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This command updates attribute sourceSysParam and sysParam
+        This command updates attribute sourceDishVccConfig and dishVccConfig
         :rtype: Tuple
 
         :param argin: json with File URI.
@@ -248,18 +252,18 @@ class HelperCspMasterDevice(HelperBaseDevice):
         mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
         mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
         self.logger.debug(
-            "Updating sourceSysParam attribute with:%s"
-            + "and sysParam attribute with:%s",
+            "Updating sourceDishVccConfig attribute with:%s"
+            + "and dishVccConfig attribute with:%s",
             argin,
             mid_cbf_initial_parameters_str,
         )
-        self._source_sys_param = argin
-        self._sys_param = mid_cbf_initial_parameters_str
+        self._source_dish_vcc_config = argin
+        self._dish_vcc_config = mid_cbf_initial_parameters_str
 
-        push_sys_param_thread = threading.Timer(
-            self._delay, self.push_sys_param_and_source_sys_param
+        push_dish_vcc_config_thread = threading.Timer(
+            self._delay, self.push_dish_vcc_config_and_source_dish_vcc_config
         )
-        push_sys_param_thread.start()
+        push_dish_vcc_config_thread.start()
 
         # Provided additional 1 sec delay to push
         # command result after sys param event pushed
