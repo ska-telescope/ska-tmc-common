@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pytest
@@ -12,6 +13,7 @@ from ska_tmc_common import (
     DishAdapter,
     HelperBaseDevice,
     HelperCspMasterDevice,
+    HelperCspMasterLeafDevice,
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
     HelperMccsSubarrayLeafNode,
@@ -31,6 +33,7 @@ from ska_tmc_common.test_helpers.helper_subarray_device import (
 from tests.settings import (
     HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_DEVICE,
+    HELPER_CSP_MASTER_LEAF_DEVICE,
     HELPER_CSP_SUBARRAY_DEVICE,
     HELPER_DISH_DEVICE,
     HELPER_MCCS_CONTROLLER,
@@ -81,6 +84,10 @@ def devices_to_load():
             "class": HelperCspSubarray,
             "devices": [{"name": HELPER_CSP_SUBARRAY_DEVICE}],
         },
+        {
+            "class": HelperCspMasterLeafDevice,
+            "devices": [{"name": HELPER_CSP_MASTER_LEAF_DEVICE}],
+        },
     )
 
 
@@ -122,6 +129,21 @@ def test_get_or_create_mccs_master_leaf_node_adapter(tango_context):
         HELPER_MCCS_MASTER_LEAF_NODE_DEVICE, AdapterType.MCCS_MASTER_LEAF_NODE
     )
     assert isinstance(mccs_master_leaf_node_adapter, MCCSMasterLeafNodeAdapter)
+
+
+def test_csp_master_leaf_node_memorized_dish_vcc_attribute(tango_context):
+    """Validate dish vcc map memorized attribute set using adapter"""
+    factory = AdapterFactory()
+    csp_master_leaf_node_adapter = factory.get_or_create_adapter(
+        HELPER_CSP_MASTER_LEAF_DEVICE, AdapterType.CSP_MASTER_LEAF_NODE
+    )
+    csp_master_leaf_node_adapter.memorizedDishVccMap = json.dumps(
+        {"uri": "dummy_url"}
+    )
+
+    assert csp_master_leaf_node_adapter.memorizedDishVccMap == json.dumps(
+        {"uri": "dummy_url"}
+    )
 
 
 def test_get_or_create_mccs_subarray_leaf_node_adapter(tango_context):
