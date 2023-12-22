@@ -175,6 +175,7 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
+        self._isSubsystemAvailable = False
         self._command_in_progress = ""
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
@@ -217,6 +218,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("assignedResources", True, False)
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -255,6 +257,30 @@ class HelperSubArrayDevice(SKASubarray):
     def read_obsStateTransitionDuration(self):
         """Read transition"""
         return json.dumps(self._state_duration_info)
+
+    def read_isSubsystemAvailable(self) -> bool:
+        """
+        Returns avalability status for the leaf nodes devices
+
+        :rtype: bool
+        """
+        return self._isSubsystemAvailable
+
+    @command(
+        dtype_in=bool,
+        doc_in="Set Availability of the device",
+    )
+    def SetisSubsystemAvailable(self, value: bool) -> None:
+        """
+        Sets Availability of the device
+        :rtype: bool
+        """
+        self.logger.info("Setting the avalability value to : %s", value)
+        if self._isSubsystemAvailable != value:
+            self._isSubsystemAvailable = value
+            self.push_change_event(
+                "isSubsystemAvailable", self._isSubsystemAvailable
+            )
 
     @command(
         dtype_in=str,
