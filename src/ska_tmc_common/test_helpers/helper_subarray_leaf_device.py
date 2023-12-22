@@ -67,6 +67,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     obsState = attribute(dtype=ObsState, access=AttrWriteType.READ)
 
+    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+
     obsStateTransitionDuration = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
