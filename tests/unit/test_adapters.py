@@ -137,6 +137,8 @@ def test_csp_master_leaf_node_memorized_dish_vcc_attribute(tango_context):
     csp_master_leaf_node_adapter = factory.get_or_create_adapter(
         HELPER_CSP_MASTER_LEAF_DEVICE, AdapterType.CSP_MASTER_LEAF_NODE
     )
+    assert csp_master_leaf_node_adapter.memorizedDishVccMap == ""
+
     csp_master_leaf_node_adapter.memorizedDishVccMap = json.dumps(
         {"uri": "dummy_url"}
     )

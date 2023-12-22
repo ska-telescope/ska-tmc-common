@@ -24,6 +24,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._delay: int = 2
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
+        self._memorized_dish_vcc_map: str = ""
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
