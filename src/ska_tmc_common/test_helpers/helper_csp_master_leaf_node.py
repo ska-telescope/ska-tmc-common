@@ -24,11 +24,35 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._delay: int = 2
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
+        self._memorized_dish_vcc_map: str = ""
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
     dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    @attribute(
+        dtype="DevString",
+        access=AttrWriteType.READ_WRITE,
+        memorized=True,
+        hw_memorized=True,
+    )
+    def memorizedDishVccMap(self):
+        """
+        This attribute is used for storing latest dish vcc map version data
+        into tango DB.Made this attribute memorized so that when device
+        restart then previous set dish vcc map version will be used for loading
+        dish vcc config on csp master
+        """
+        return self._memorized_dish_vcc_map
+
+    @memorizedDishVccMap.write
+    def memorizedDishVccMap(self, value: str):
+        """Set memorized dish vcc map
+        :param value: dish vcc config json string
+        :type str
+        """
+        self._memorized_dish_vcc_map = value
 
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperCspMasterDevice's init_device() command."""
