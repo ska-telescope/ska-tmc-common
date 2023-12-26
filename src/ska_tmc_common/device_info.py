@@ -8,7 +8,7 @@ from typing import Any
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
-from ska_tmc_common.enum import DishMode, PointingState
+from ska_tmc_common.enum import Band, DishMode, PointingState
 
 
 def dev_state_2_str(value: DevState) -> str:
@@ -249,6 +249,7 @@ class DishDeviceInfo(DeviceInfo):
         self.device_id = -1
         self.pointing_state = PointingState.NONE
         self._dish_mode = DishMode.UNKNOWN
+        self.configured_band = Band.NONE
         self.rx_capturing_data = 0
         self.achieved_pointing = []
         self.desired_pointing = []
@@ -282,6 +283,7 @@ class DishDeviceInfo(DeviceInfo):
             self.device_id = dish_device_info.device_id
             self.pointing_state = dish_device_info.pointing_state
             self.dish_mode = dish_device_info._dish_mode
+            self.configured_band = dish_device_info.configured_band
             self.rx_capturing_data = dish_device_info.rx_capturing_data
             self.achieved_pointing = dish_device_info.achieved_pointing
             self.desired_pointing = dish_device_info.desired_pointing
@@ -299,6 +301,7 @@ class DishDeviceInfo(DeviceInfo):
         super_dict["device_id"] = self.device_id
         super_dict["pointingState"] = str(PointingState(self.pointing_state))
         super_dict["dishMode"] = str(DishMode(self.dish_mode))
+        super_dict["configuredBand"] = str(Band(self.configured_band))
         super_dict["rxCapturingData"] = self.rx_capturing_data
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["desiredPointing"] = self.desired_pointing

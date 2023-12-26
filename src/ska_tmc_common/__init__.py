@@ -34,6 +34,7 @@ from .device_info import (
 )
 from .dish_utils import AntennaLocation, AntennaParams, DishHelper
 from .enum import (
+    Band,
     DishMode,
     FaultType,
     LivelinessProbeType,
@@ -130,6 +131,7 @@ __all__ = [
     "DishHelper",
     "DishMode",
     "PointingState",
+    "Band",
     "LivelinessProbeType",
     "TimeoutState",
     "FaultType",
