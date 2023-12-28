@@ -299,7 +299,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # on SDP Subarray. Need to remove it once all the instances in other
         # repositories are updated
         if self.defective_params["enabled"]:
-            self.induce_fault(
+            return self.induce_fault(
                 "AssignResources",
             )
 
