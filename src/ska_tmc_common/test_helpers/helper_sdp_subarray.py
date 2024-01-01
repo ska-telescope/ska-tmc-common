@@ -310,6 +310,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "AssignResources")
+        return [ResultCode.OK], [""]
 
     def is_ReleaseResources_allowed(self):
         """
