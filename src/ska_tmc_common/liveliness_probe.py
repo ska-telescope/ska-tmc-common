@@ -130,24 +130,26 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""
         with tango.EnsureOmniThread():
-            with futures.ThreadPoolExecutor(max_workers=1) as executor:
-                while not self._stop:
+            while not self._stop:
+                try:
+                    dev_info = self._component_manager.get_device()
+                except Exception as exp_msg:
+                    self._logger.error(
+                        "Exception occured while getting device info: %s",
+                        exp_msg,
+                    )
+                else:
                     try:
-                        dev_info = self._component_manager.get_device()
+                        if dev_info.dev_name is None:
+                            continue
+                        threading.Thread(
+                            target=self.device_task,
+                            args=(dev_info),
+                        )
                     except Exception as exp_msg:
                         self._logger.error(
-                            "Exception occured while getting device info: %s",
+                            "Error in submitting the task for %s: %s",
+                            dev_info.dev_name,
                             exp_msg,
                         )
-                    else:
-                        try:
-                            if dev_info.dev_name is None:
-                                continue
-                            executor.submit(self.device_task, dev_info)
-                        except Exception as exp_msg:
-                            self._logger.error(
-                                "Error in submitting the task for %s: %s",
-                                dev_info.dev_name,
-                                exp_msg,
-                            )
-                    sleep(self._sleep_time)
+                sleep(self._sleep_time)
