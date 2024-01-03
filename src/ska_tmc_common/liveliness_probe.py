@@ -65,6 +65,7 @@ class BaseLivelinessProbe:
         """
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
+
             proxy.set_timeout_millis(self._proxy_timeout)
             self._component_manager.update_ping_info(
                 proxy.ping(), dev_info.dev_name
@@ -125,10 +126,12 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""
         with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
-            max_workers=1
+            max_workers=5
         ) as executor:
             while not self._stop:
                 try:
+                    self._logger.info(threading.get_ident())
+
                     dev_info = self._component_manager.get_device()
                 except Exception as exp_msg:
                     self._logger.error(
@@ -146,4 +149,5 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                             dev_info.dev_name,
                             exp_msg,
                         )
+                self._logger.info(threading.active_count())
                 sleep(self._sleep_time)
