@@ -168,6 +168,9 @@ class HelperDishDevice(HelperDishLNDevice):
         if self._configured_band != value:
             self._configured_band = Band(argin)
             self.push_change_event("configuredBand", self._configured_band)
+            self.logger.info(
+                "Dish configuredBand %s event is pushed", self._configured_band
+            )
 
     @command(
         dtype_in=str,
