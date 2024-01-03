@@ -108,9 +108,6 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                         dev_info = self._component_manager.get_device(dev_name)
                         executor.submit(self.device_task, dev_info)
                         not_read_devices_twice.append(dev_info)
-                    for dev_info in self._component_manager.devices:
-                        if dev_info not in not_read_devices_twice:
-                            executor.submit(self.device_task, dev_info)
                 except Empty:
                     pass
                 except Exception as exp_msg:
