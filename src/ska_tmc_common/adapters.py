@@ -87,6 +87,18 @@ class CspMasterLeafNodeAdapter(BaseAdapter):
     for CSP master leaf devices.
     """
 
+    @property
+    def memorizedDishVccMap(self):
+        """Return memorizedDishVccMap value of master
+        leaf node proxy
+        """
+        return self._proxy.memorizedDishVccMap
+
+    @memorizedDishVccMap.setter
+    def memorizedDishVccMap(self, value):
+        "Set value to memorized dish vcc map"
+        self._proxy.memorizedDishVccMap = value
+
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes LoadDishCfg Command on the csp master Leaf device proxy.

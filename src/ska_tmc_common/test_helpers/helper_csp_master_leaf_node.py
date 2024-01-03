@@ -22,11 +22,37 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._delay: int = 2
-        self._source_sys_param: str = ""
-        self._sys_param: str = ""
+        self._source_dish_vcc_config: str = ""
+        self._dish_vcc_config: str = ""
+        self._memorized_dish_vcc_map: str = ""
 
-    sourceSysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
-    sysParam = attribute(dtype="DevString", access=AttrWriteType.READ)
+    sourceDishVccConfig = attribute(
+        dtype="DevString", access=AttrWriteType.READ
+    )
+    dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    @attribute(
+        dtype="DevString",
+        access=AttrWriteType.READ_WRITE,
+        memorized=True,
+        hw_memorized=True,
+    )
+    def memorizedDishVccMap(self):
+        """
+        This attribute is used for storing latest dish vcc map version data
+        into tango DB.Made this attribute memorized so that when device
+        restart then previous set dish vcc map version will be used for loading
+        dish vcc config on csp master
+        """
+        return self._memorized_dish_vcc_map
+
+    @memorizedDishVccMap.write
+    def memorizedDishVccMap(self, value: str):
+        """Set memorized dish vcc map
+        :param value: dish vcc config json string
+        :type str
+        """
+        self._memorized_dish_vcc_map = value
 
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperCspMasterDevice's init_device() command."""
@@ -36,32 +62,33 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             Stateless hook for device initialisation.
             """
             super().do()
-            self._device.set_change_event("sourceSysParam", True, False)
-            self._device.set_change_event("sysParam", True, False)
+            self._device.set_change_event("sourceDishVccConfig", True, False)
+            self._device.set_change_event("dishVccConfig", True, False)
             return (ResultCode.OK, "")
 
-    def read_sourceSysParam(self) -> str:
+    def read_sourceDishVccConfig(self) -> str:
         """
-        This method reads the sourceSysParam value of the dish.
+        This method reads the sourceDishVccConfig value of the dish.
         :rtype:str
         """
-        return self._source_sys_param
+        return self._source_dish_vcc_config
 
-    def read_sysParam(self) -> str:
+    def read_dishVccConfig(self) -> str:
         """
-        This method reads the sysParam value of the dish.
+        This method reads the dishVccConfig value of the dish.
         :rtype:str
         """
-        return self._sys_param
+        return self._dish_vcc_config
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
-        """This Command Reset sysParam and sourceSysParam attribute"""
-        self._source_sys_param = ""
-        self._sys_param = ""
+        """
+        This Command Reset dishVccConfig and sourceDishVccConfig attribute"""
+        self._source_dish_vcc_config = ""
+        self._dish_vcc_config = ""
         return [ResultCode.OK], [""]
 
     def is_LoadDishCfg_allowed(self) -> bool:
@@ -82,7 +109,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     )
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This command updates attribute sourceSysParam and sysParam
+        This command updates attribute sourceDishVccConfig and dishVccConfig
         :rtype: Tuple
 
         :param argin: json with File URI.
@@ -117,15 +144,17 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
         mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
         self.logger.debug(
-            "Updating sourceSysParam attribute with:%s"
-            + "and sysParam attribute with:%s",
+            "Updating sourceDishVccConfig attribute with:%s"
+            + "and dishVccConfig attribute with:%s",
             argin,
             mid_cbf_initial_parameters_str,
         )
-        self._source_sys_param = argin
-        self._sys_param = mid_cbf_initial_parameters_str
-        self.push_change_event("sourceSysParam", self._source_sys_param)
-        self.push_change_event("sysParam", self._sys_param)
+        self._source_dish_vcc_config = argin
+        self._dish_vcc_config = mid_cbf_initial_parameters_str
+        self.push_change_event(
+            "sourceDishVccConfig", self._source_dish_vcc_config
+        )
+        self.push_change_event("dishVccConfig", self._dish_vcc_config)
 
         thread = threading.Timer(
             self._delay,

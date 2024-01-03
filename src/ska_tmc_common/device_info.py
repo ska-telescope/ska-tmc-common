@@ -61,8 +61,8 @@ class DeviceInfo:
         self.exception = None
         self._unresponsive = _unresponsive
         self.lock = threading.Lock()
-        self._source_sys_param = ""
-        self._sys_param = ""
+        self._source_dish_vcc_config = ""
+        self._dish_vcc_config = ""
 
     def from_dev_info(self, dev_info) -> None:
         """
@@ -109,27 +109,27 @@ class DeviceInfo:
         self._ping = value
 
     @property
-    def source_sys_param(self) -> str:
-        """Returns the source_sys_param value for Dish master device"""
-        return self._source_sys_param
+    def source_dish_vcc_config(self) -> str:
+        """Returns the source_dish_vcc_config value for Dish master device"""
+        return self._source_dish_vcc_config
 
-    @source_sys_param.setter
-    def source_sys_param(self, value: str):
-        """Sets the value of source_sys_param  for Dish master device"""
-        if self._source_sys_param != value:
-            self._source_sys_param = value
+    @source_dish_vcc_config.setter
+    def source_dish_vcc_config(self, value: str):
+        """Sets the value of source_dish_vcc_config  for Dish master device"""
+        if self._source_dish_vcc_config != value:
+            self._source_dish_vcc_config = value
 
     @property
-    def sys_param(self) -> str:
-        """Returns the sys_param  value for Dish master device"""
-        return self._sys_param
+    def dish_vcc_config(self) -> str:
+        """Returns the dish_vcc_config  value for Dish master device"""
+        return self._dish_vcc_config
 
-    @sys_param.setter
-    def sys_param(self, value: str):
-        """Sets the value of sys_param attribute value
+    @dish_vcc_config.setter
+    def dish_vcc_config(self, value: str):
+        """Sets the value of dish_vcc_config attribute value
         for Dish master device"""
-        if self._sys_param != value:
-            self._sys_param = value
+        if self._dish_vcc_config != value:
+            self._dish_vcc_config = value
 
     @property
     def unresponsive(self) -> bool:
