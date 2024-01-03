@@ -64,15 +64,17 @@ class BaseLivelinessProbe:
         Checks device status and logs error messages on state change
         """
         try:
-            ping = tango.DeviceProxy(dev_info.dev_name).ping()
-            self._component_manager.update_ping_info(ping, dev_info.dev_name)
-            sleep(self._sleep_time)
+            proxy = self._dev_factory.get_device(dev_info.dev_name)
+            proxy.set_timeout_millis(self._proxy_timeout)
+            self._component_manager.update_ping_info(
+                proxy.ping(), dev_info.dev_name
+            )
         except Exception as err:
             self._logger.exception(f"Error on {dev_info.dev_name}: {err} ")
+            del self._dev_factory.dev_proxys[dev_info.dev_name]
             self._component_manager.device_failed(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
-            sleep(self._sleep_time)
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
@@ -133,7 +135,6 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                         "Exception occured while getting device info: %s",
                         exp_msg,
                     )
-                    sleep(self._sleep_time)
                 else:
                     try:
                         if dev_info.dev_name is None:
@@ -145,4 +146,4 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                             dev_info.dev_name,
                             exp_msg,
                         )
-                        sleep(self._sleep_time)
+                sleep(self._sleep_time)
