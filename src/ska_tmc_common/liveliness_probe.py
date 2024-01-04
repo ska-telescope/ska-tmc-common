@@ -127,6 +127,7 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""
         with tango.EnsureOmniThread():
+            self._logger.info("Starting run method")
             while not self._stop:
                 with futures.ThreadPoolExecutor(max_workers=1) as executor:
                     try:
