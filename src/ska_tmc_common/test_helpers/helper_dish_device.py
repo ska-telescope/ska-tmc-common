@@ -19,6 +19,7 @@ from ska_tmc_common.enum import Band, DishMode, PointingState
 from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE,
+    CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
     SCAN,
     SET_OPERATE_MODE,
@@ -710,19 +711,28 @@ class HelperDishDevice(HelperDishLNDevice):
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ConfigureBand1 command on  Dish Master
+        This method invokes ConfigureBand1 command on Dish Master
+        :param argin: The argin is a boolean value,
+        if it is set true it invoke ConfigureBand1 command.
+        :argin dtype: bool
+        :rtype: tuple
         """
-        self.logger.info(
-            "Instructed Dish simulator to invoke ConfigureBand1 command"
-        )
-
+        self.logger.info("Processing ConfigureBand1 Command")
+        # to record the command data
+        self.update_command_info(CONFIGURE_BAND_1, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand1")
 
-        # Set dish mode
+        # Set the Dish Mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B1)
+        thread = threading.Thread(
+            target=self.update_dish_mode,
+            args=[current_dish_mode, CONFIGURE],
+        )
+        thread.start()
         self.push_command_result(ResultCode.OK, "ConfigureBand1")
         self.logger.info("ConfigureBand1 command completed.")
         return ([ResultCode.OK], [""])
