@@ -125,29 +125,28 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
 
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""
-        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
-            max_workers=5
-        ) as executor:
+        with tango.EnsureOmniThread():
             while not self._stop:
-                try:
-                    self._logger.info(threading.get_ident())
-
-                    dev_info = self._component_manager.get_device()
-                except Exception as exp_msg:
-                    self._logger.error(
-                        "Exception occured while getting device info: %s",
-                        exp_msg,
-                    )
-                else:
+                with futures.ThreadPoolExecutor(max_workers=1) as executor:
                     try:
-                        if dev_info.dev_name is None:
-                            continue
-                        executor.submit(self.device_task, dev_info)
+                        self._logger.info(threading.get_ident())
+
+                        dev_info = self._component_manager.get_device()
                     except Exception as exp_msg:
                         self._logger.error(
-                            "Error in submitting the task for %s: %s",
-                            dev_info.dev_name,
+                            "Exception occured while getting device info: %s",
                             exp_msg,
                         )
+                    else:
+                        try:
+                            if dev_info.dev_name is None:
+                                continue
+                            executor.submit(self.device_task, dev_info)
+                        except Exception as exp_msg:
+                            self._logger.error(
+                                "Error in submitting the task for %s: %s",
+                                dev_info.dev_name,
+                                exp_msg,
+                            )
                 self._logger.info(threading.active_count())
                 sleep(self._sleep_time)
