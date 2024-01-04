@@ -56,8 +56,6 @@ class BaseLivelinessProbe:
         try:
             self._logger.info("stopping")
             self._stop = True
-            if self._thread.is_alive():
-                self._thread.join()
             self._logger.info("stopped")
         except Exception as e:
             self._logger.info(str(e))
