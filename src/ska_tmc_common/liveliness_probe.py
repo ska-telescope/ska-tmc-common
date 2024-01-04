@@ -44,21 +44,14 @@ class BaseLivelinessProbe:
         """
         Starts the sub devices
         """
-        self._logger.info("starting thread")
         if not self._thread.is_alive():
-            self._logger.info(f"starting{id(self._thread)}")
             self._thread.start()
 
     def stop(self) -> None:
         """
         Stops the sub devices
         """
-        try:
-            self._logger.info("stopping")
-            self._stop = True
-            self._logger.info("stopped")
-        except Exception as e:
-            self._logger.info(str(e))
+        self._stop = True
 
     def run(self) -> NotImplementedError:
         """
@@ -71,7 +64,7 @@ class BaseLivelinessProbe:
         Checks device status and logs error messages on state change
         """
         try:
-            proxy = tango.DeviceProxy(dev_info.dev_name)
+            proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
             self._component_manager.update_ping_info(
                 proxy.ping(), dev_info.dev_name
@@ -130,29 +123,26 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
 
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""
-        with tango.EnsureOmniThread():
-            self._logger.info("Starting run method")
+        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
+            max_workers=1
+        ) as executor:
             while not self._stop:
-                with futures.ThreadPoolExecutor(max_workers=1) as executor:
+                try:
+                    dev_info = self._component_manager.get_device()
+                except Exception as exp_msg:
+                    self._logger.error(
+                        "Exception occured while getting device info: %s",
+                        exp_msg,
+                    )
+                else:
                     try:
-                        self._logger.info(threading.get_ident())
-
-                        dev_info = self._component_manager.get_device()
+                        if dev_info.dev_name is None:
+                            continue
+                        executor.submit(self.device_task, dev_info)
                     except Exception as exp_msg:
                         self._logger.error(
-                            "Exception occured while getting device info: %s",
+                            "Error in submitting the task for %s: %s",
+                            dev_info.dev_name,
                             exp_msg,
                         )
-                    else:
-                        try:
-                            if dev_info.dev_name is None:
-                                continue
-                            executor.submit(self.device_task, dev_info)
-                        except Exception as exp_msg:
-                            self._logger.error(
-                                "Error in submitting the task for %s: %s",
-                                dev_info.dev_name,
-                                exp_msg,
-                            )
-                self._logger.info(threading.active_count())
                 sleep(self._sleep_time)

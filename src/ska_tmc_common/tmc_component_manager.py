@@ -105,7 +105,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.proxy_timeout = proxy_timeout
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
-        self.lock = threading.RLock()
+        self.lock = threading.Lock()
 
         if self.event_receiver:
             self.event_receiver_object = EventReceiver(
@@ -152,29 +152,26 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
         :param lp: enum of class LivelinessProbeType
         """
-        try:
-            if lp == LivelinessProbeType.SINGLE_DEVICE:
-                self.liveliness_probe_object = SingleDeviceLivelinessProbe(
-                    self,
-                    logger=self.logger,
-                    proxy_timeout=self.proxy_timeout,
-                    sleep_time=self.sleep_time,
-                )
-                self.liveliness_probe_object.start()
+        if lp == LivelinessProbeType.SINGLE_DEVICE:
+            self.liveliness_probe_object = SingleDeviceLivelinessProbe(
+                self,
+                logger=self.logger,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.liveliness_probe_object.start()
 
-            elif lp == LivelinessProbeType.MULTI_DEVICE:
-                self.liveliness_probe_object = MultiDeviceLivelinessProbe(
-                    self,
-                    logger=self.logger,
-                    max_workers=self.max_workers,
-                    proxy_timeout=self.proxy_timeout,
-                    sleep_time=self.sleep_time,
-                )
-                self.liveliness_probe_object.start()
-            else:
-                self.logger.warning("Liveliness Probe is not running")
-        except Exception as e:
-            self.logger.info(f"error{e}")
+        elif lp == LivelinessProbeType.MULTI_DEVICE:
+            self.liveliness_probe_object = MultiDeviceLivelinessProbe(
+                self,
+                logger=self.logger,
+                max_workers=self.max_workers,
+                proxy_timeout=self.proxy_timeout,
+                sleep_time=self.sleep_time,
+            )
+            self.liveliness_probe_object.start()
+        else:
+            self.logger.warning("Liveliness Probe is not running")
 
     def stop_liveliness_probe(self) -> None:
         """Stops the liveliness probe"""
