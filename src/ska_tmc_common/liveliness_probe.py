@@ -46,7 +46,7 @@ class BaseLivelinessProbe:
         """
         self._logger.info("starting thread")
         if not self._thread.is_alive():
-            self._logger.info(f"starting{self._thread.getName()}")
+            self._logger.info(f"starting{id(self._thread)}")
             self._thread.start()
 
     def stop(self) -> None:
