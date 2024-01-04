@@ -48,6 +48,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             """
             super().do()
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
     def push_command_result(
