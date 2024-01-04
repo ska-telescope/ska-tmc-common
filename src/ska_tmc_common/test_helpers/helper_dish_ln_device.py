@@ -113,8 +113,8 @@ class HelperDishLNDevice(HelperBaseDevice):
     commandCallInfo = attribute(
         dtype=(("str",),),
         access=AttrWriteType.READ,
-        max_dim_x=100,
-        max_dim_y=100,
+        max_dim_x=1000,
+        max_dim_y=1000,
     )
 
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
