@@ -57,6 +57,7 @@ class BaseLivelinessProbe:
             self._logger.info("stopping")
             self._stop = True
             self._thread.join()
+            self._logger.info("stopped")
         except Exception as e:
             self._logger.info(str(e))
 
