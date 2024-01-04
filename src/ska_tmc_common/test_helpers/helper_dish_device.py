@@ -233,12 +233,12 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: None
         """
         with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
+            # if command_name in self._command_delay_info:
+            #     delay_value = self._command_delay_info[command_name]
+            time.sleep(0.4)
+            # self.logger.info(
+            #     "Sleep %s for command %s ", delay_value, command_name
+            # )
         self.set_dish_mode(value)
 
     def update_pointing_state(
@@ -726,13 +726,13 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set the Dish Mode
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
-        # Set dish configured band
-        self.set_configured_band(Band.B1)
         thread = threading.Thread(
             target=self.update_dish_mode,
             args=[current_dish_mode, CONFIGURE],
         )
         thread.start()
+        # Set dish configured band
+        self.set_configured_band(Band.B1)
         self.push_command_result(ResultCode.OK, "ConfigureBand1")
         self.logger.info("ConfigureBand1 command completed.")
         return ([ResultCode.OK], [""])
@@ -779,13 +779,13 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set the Dish Mode
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
-        # Set dish configured band
-        self.set_configured_band(Band.B2)
         thread = threading.Thread(
             target=self.update_dish_mode,
             args=[current_dish_mode, CONFIGURE],
         )
         thread.start()
+        # Set dish configured band
+        self.set_configured_band(Band.B2)
         self.push_command_result(ResultCode.OK, "ConfigureBand2")
         self.logger.info("ConfigureBand2 command completed.")
         return ([ResultCode.OK], [""])
