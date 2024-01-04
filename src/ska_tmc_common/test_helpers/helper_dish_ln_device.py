@@ -69,6 +69,7 @@ class HelperDishLNDevice(HelperBaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("actualPointing", True, False)
+            self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
