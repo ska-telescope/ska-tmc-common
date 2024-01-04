@@ -44,7 +44,9 @@ class BaseLivelinessProbe:
         """
         Starts the sub devices
         """
+        self._logger.info("starting thread")
         if not self._thread.is_alive():
+            self._logger.info(f"starting{self._thread.getName()}")
             self._thread.start()
 
     def stop(self) -> None:
