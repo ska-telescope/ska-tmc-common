@@ -231,13 +231,13 @@ class HelperDishDevice(HelperDishLNDevice):
 
         :rtype: None
         """
-        # with tango.EnsureOmniThread():
-        # if command_name in self._command_delay_info:
-        #     delay_value = self._command_delay_info[command_name]
-        # time.sleep(0.05)
-        # self.logger.info(
-        #     "Sleep %s for command %s ", delay_value, command_name
-        # )
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+            time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
         self.set_dish_mode(value)
 
     def update_pointing_state(
