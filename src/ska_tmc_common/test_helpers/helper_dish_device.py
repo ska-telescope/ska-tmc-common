@@ -16,9 +16,8 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import Band, DishMode, PointingState
-from ska_tmc_common.test_helpers.constants import (
+from ska_tmc_common.test_helpers.constants import (  # CONFIGURE,
     ABORT_COMMANDS,
-    CONFIGURE,
     CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
     SCAN,
@@ -727,8 +726,8 @@ class HelperDishDevice(HelperDishLNDevice):
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
-            target=self.update_dish_mode,
-            args=[current_dish_mode, CONFIGURE],
+            target=self.set_dish_mode,
+            args=current_dish_mode,
         )
         thread.start()
         # Set dish configured band
@@ -780,8 +779,8 @@ class HelperDishDevice(HelperDishLNDevice):
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
-            target=self.update_dish_mode,
-            args=[current_dish_mode, CONFIGURE],
+            target=self.set_dish_mode,
+            args=current_dish_mode,
         )
         thread.start()
         # Set dish configured band
