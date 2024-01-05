@@ -15,10 +15,10 @@ from tango import AttrWriteType, DevEnum, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-from ska_tmc_common.enum import DishMode, PointingState
-from ska_tmc_common.test_helpers.constants import (
+from ska_tmc_common.enum import Band, DishMode, PointingState
+from ska_tmc_common.test_helpers.constants import (  # CONFIGURE,
     ABORT_COMMANDS,
-    CONFIGURE,
+    CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
     SCAN,
     SET_OPERATE_MODE,
@@ -41,6 +41,7 @@ class HelperDishDevice(HelperDishLNDevice):
     def init_device(self):
         super().init_device()
         self._pointing_state = PointingState.NONE
+        self._configured_band = Band.NONE
         self._dish_mode = DishMode.STANDBY_LP
         self._desired_pointing = []
         self._achieved_pointing = []
@@ -56,10 +57,12 @@ class HelperDishDevice(HelperDishLNDevice):
             super().do()
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
+            self._device.set_change_event("configuredBand", True, False)
             self._device.set_change_event("achievedPointing", True, False)
             return (ResultCode.OK, "")
 
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
+    configuredBand = attribute(dtype=Band, access=AttrWriteType.READ)
     achievedPointing = attribute(
         dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
     )
@@ -75,6 +78,13 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: PointingState
         """
         return self._pointing_state
+
+    def read_configuredBand(self) -> Band:
+        """
+        This method reads the configuredBand of dish.
+        :rtype: Band
+        """
+        return self._configured_band
 
     def read_offset(self) -> str:
         """
@@ -147,6 +157,22 @@ class HelperDishDevice(HelperDishLNDevice):
             self.push_change_event("pointingState", self._pointing_state)
 
     @command(
+        dtype_in=int,
+        doc_in="Band to assign",
+    )
+    def SetDirectConfiguredBand(self, argin: Band) -> None:
+        """
+        Trigger a ConfiguredBand change
+        """
+        value = Band(argin)
+        if self._configured_band != value:
+            self._configured_band = Band(argin)
+            self.push_change_event("configuredBand", self._configured_band)
+            self.logger.info(
+                "Dish configuredBand %s event is pushed", self._configured_band
+            )
+
+    @command(
         dtype_in=str,
         doc_in="Set Pointing State Duration",
     )
@@ -184,6 +210,14 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = pointingState
         self.push_change_event("pointingState", self._pointing_state)
         self.logger.info("Pointing State: %s", self._pointing_state)
+
+    def set_configured_band(self, configured_band: Band) -> None:
+        """
+        This method set the Configured Band
+        """
+        self._configured_band = configured_band
+        self.push_change_event("configuredBand", self._configured_band)
+        self.logger.info("Configured Band: %s", self._configured_band)
 
     def update_dish_mode(
         self, value: DishMode, command_name: str = ""
@@ -676,17 +710,28 @@ class HelperDishDevice(HelperDishLNDevice):
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ConfigureBand1 command on  Dish Master
+        This method invokes ConfigureBand1 command on Dish Master
+        :param argin: The argin is a boolean value,
+        if it is set true it invoke ConfigureBand1 command.
+        :argin dtype: bool
+        :rtype: tuple
         """
-        self.logger.info(
-            "Instructed Dish simulator to invoke ConfigureBand1 command"
-        )
-
+        self.logger.info("Processing ConfigureBand1 Command")
+        # to record the command data
+        self.update_command_info(CONFIGURE_BAND_1, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand1")
 
-        # Set dish mode
+        # Set the Dish Mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=current_dish_mode,
+        )
+        thread.start()
+        # Set dish configured band
+        self.set_configured_band(Band.B1)
         self.push_command_result(ResultCode.OK, "ConfigureBand1")
         self.logger.info("ConfigureBand1 command completed.")
         return ([ResultCode.OK], [""])
@@ -734,10 +779,12 @@ class HelperDishDevice(HelperDishLNDevice):
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
-            target=self.update_dish_mode,
-            args=[current_dish_mode, CONFIGURE],
+            target=self.set_dish_mode,
+            args=current_dish_mode,
         )
         thread.start()
+        # Set dish configured band
+        self.set_configured_band(Band.B2)
         self.push_command_result(ResultCode.OK, "ConfigureBand2")
         self.logger.info("ConfigureBand2 command completed.")
         return ([ResultCode.OK], [""])
@@ -778,6 +825,8 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
+        # Set dish configured band
+        self.set_configured_band(Band.B3)
         self.push_command_result(ResultCode.OK, "ConfigureBand3")
         self.logger.info("ConfigureBand3 command completed.")
         return ([ResultCode.OK], [""])
@@ -818,6 +867,8 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
+        # Set dish configured band
+        self.set_configured_band(Band.B4)
         self.push_command_result(ResultCode.OK, "ConfigureBand4")
         self.logger.info("ConfigureBand4 command completed.")
         return ([ResultCode.OK], [""])
@@ -857,6 +908,8 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("ConfigureBand5a")
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
+        # Set dish configured band
+        self.set_configured_band(Band.B5a)
         self.push_command_result(ResultCode.OK, "ConfigureBand5a")
         self.logger.info("ConfigureBand5a command completed.")
         return ([ResultCode.OK], [""])
@@ -896,6 +949,8 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("ConfigureBand5b")
         # Set dish mode
         self.set_dish_mode(DishMode.CONFIG)
+        # Set dish configured band
+        self.set_configured_band(Band.B5b)
         self.push_command_result(ResultCode.OK, "ConfigureBand5b")
         self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
