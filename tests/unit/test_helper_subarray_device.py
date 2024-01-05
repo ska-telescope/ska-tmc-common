@@ -64,7 +64,7 @@ def test_clear_commandCallInfo(tango_context):
     _, _ = subarray_device.command_inout("Configure", "")
     subarray_device.command_inout("ClearCommandCallInfo")
     command_call_info = subarray_device.commandCallInfo
-    assert command_call_info is None
+    assert command_call_info == ()
 
 
 def test_set_defective(tango_context):

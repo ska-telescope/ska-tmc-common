@@ -338,7 +338,9 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         return self._component.get_device(device_name)
 
-    def update_device_ping_failure(self, device_info: DeviceInfo, exception: str) -> None:
+    def update_device_ping_failure(
+        self, device_info: DeviceInfo, exception: str
+    ) -> None:
         """
         Set a device to failed and call the relative callback if available
 
