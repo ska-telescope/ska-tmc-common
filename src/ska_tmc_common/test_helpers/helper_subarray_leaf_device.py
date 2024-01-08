@@ -59,6 +59,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandCallInfo", True, False)
+            self._device.op_state_model.perform_action("component_on")
             return ResultCode.OK, ""
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)

@@ -40,6 +40,21 @@ class DishMode(IntEnum):
     UNKNOWN = 8
 
 
+class Band(IntEnum):
+    """
+    This is an enumerator class that contains Dish Band values.
+    """
+
+    NONE = 0
+    B1 = 1
+    B2 = 2
+    B3 = 3
+    B4 = 4
+    B5a = 5
+    B5b = 6
+    UNKNOWN = 7
+
+
 @unique
 class LivelinessProbeType(IntEnum):
     """
