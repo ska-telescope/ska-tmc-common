@@ -70,7 +70,7 @@ class BaseLivelinessProbe:
             )
         except Exception as err:
             self._logger.exception(f"Error on {dev_info.dev_name}: {err} ")
-            self._component_manager.device_failed(
+            self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
 

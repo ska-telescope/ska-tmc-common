@@ -145,7 +145,6 @@ def test_csp_master_leaf_node_memorized_dish_vcc_attribute(tango_context):
     )
 
 
-@pytest.mark.temp
 def test_get_or_create_mccs_subarray_leaf_node_adapter(tango_context):
     factory = AdapterFactory()
     mccs_subarray_leaf_node_adapter = factory.get_or_create_adapter(
