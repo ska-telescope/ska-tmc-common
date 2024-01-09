@@ -20,9 +20,8 @@ from .adapters import (
     DishAdapter,
     MCCSControllerAdapter,
     MCCSMasterLeafNodeAdapter,
-    MCCSSubarrayLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubArrayAdapter,
+    SubarrayAdapter,
 )
 from .aggregators import Aggregator
 from .dev_factory import DevFactory
@@ -78,9 +77,6 @@ from .test_helpers.helper_mccs_controller_device import HelperMCCSController
 from .test_helpers.helper_mccs_master_leaf_node_device import (
     HelperMCCSMasterLeafNode,
 )
-from .test_helpers.helper_mccs_subarray_leaf_node_device import (
-    HelperMccsSubarrayLeafNode,
-)
 from .test_helpers.helper_sdp_queue_connector_device import (
     HelperSdpQueueConnector,
 )
@@ -113,13 +109,12 @@ __all__ = [
     "DishAdapter",
     "CspMasterAdapter",
     "CspSubarrayAdapter",
-    "SubArrayAdapter",
+    "SubarrayAdapter",
     "SdpSubArrayAdapter",
     "BaseAdapter",
     "MCCSMasterLeafNodeAdapter",
     "MCCSControllerAdapter",
     "CspMasterLeafNodeAdapter",
-    "MCCSSubarrayLeafNodeAdapter",
     "Aggregator",
     "DevFactory",
     "DeviceInfo",
@@ -171,7 +166,6 @@ __all__ = [
     "HelperDishLNDevice",
     "HelperMCCSController",
     "HelperMCCSMasterLeafNode",
-    "HelperMccsSubarrayLeafNode",
     "HelperSubArrayDevice",
     "HelperCspMasterDevice",
     "HelperCspMasterLeafDevice",
