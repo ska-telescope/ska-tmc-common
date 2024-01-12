@@ -76,4 +76,9 @@ TMC Common AdapterFactory
     :members:
     :undoc-members:
 
-
+11. DishLeafAdapter
+--------------------
+.. automodule:: ska_tmc_common.adapters
+.. autoclass:: ska_tmc_common.adapters.DishLeafAdapter
+    :members:
+    :undoc-members:

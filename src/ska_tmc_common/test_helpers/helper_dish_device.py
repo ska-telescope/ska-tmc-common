@@ -652,19 +652,19 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevString"),
+        dtype_in=("DevVarFloatArray"),
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def TrackLoadStaticOff(
-        self, argin: str
+        self, argin: List[float]
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackLoadStaticOff command on Dish Master.
 
         :param argin: A list containing scan_id/ time, cross elevation and
             elevation offsets.
-        :argin dtype: str(List)
+        :argin dtype: List(float)
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info(
@@ -675,9 +675,8 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("TrackLoadStaticOff")
 
         # Set offsets.
-        input_offsets = json.loads(argin)
-        cross_elevation = input_offsets[0]
-        elevation = input_offsets[1]
+        cross_elevation = argin[0]
+        elevation = argin[1]
         self.set_offset(cross_elevation, elevation)
         self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
         self.logger.info("TrackLoadStaticOff command completed.")

@@ -11,6 +11,7 @@ from ska_tmc_common import (
     CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
+    DishLeafAdapter,
     HelperBaseDevice,
     HelperCspMasterDevice,
     HelperCspMasterLeafDevice,
@@ -110,6 +111,14 @@ def test_get_or_create_dish_adapter(tango_context):
         HELPER_DISH_DEVICE, AdapterType.DISH
     )
     assert isinstance(dish_adapter, DishAdapter)
+
+
+def test_get_or_create_dish_leaf_node_adapter(tango_context):
+    factory = AdapterFactory()
+    dish_adapter = factory.get_or_create_adapter(
+        HELPER_DISH_DEVICE, AdapterType.DISH_LEAF_NODE
+    )
+    assert isinstance(dish_adapter, DishLeafAdapter)
 
 
 def test_get_or_create_mccs_controller_adapter(tango_context):

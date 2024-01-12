@@ -22,6 +22,7 @@ from ska_tmc_common.adapters import (
     CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
+    DishLeafAdapter,
     MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
     SubarrayAdapter,
@@ -73,6 +74,7 @@ class BaseTMCCommand:
     ) -> Optional[
         Union[
             DishAdapter,
+            DishLeafAdapter,
             SubarrayAdapter,
             CspMasterAdapter,
             CspSubarrayAdapter,
