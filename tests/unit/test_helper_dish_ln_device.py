@@ -43,11 +43,18 @@ def test_dish_commands_without_input(tango_context, command):
     assert message[0] == ""
 
 
-def test_dish_commands_with_input(tango_context):
+def test_dish_configure_command(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
     result, _ = dish_device.command_inout("Configure", "")
     assert result[0] == ResultCode.QUEUED
+
+
+def test_dish_ln_track_load_static_off_command(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    result, _ = dish_device.command_inout("TrackLoadStaticOff", "[0.1, 0.2]")
+    assert result[0] == ResultCode.OK
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS_WITHOUT_INPUT)

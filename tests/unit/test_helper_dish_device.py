@@ -65,6 +65,13 @@ def test_desired_pointing(tango_context):
     )
 
 
+def test_dish_track_load_static_off_command(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    result, _ = dish_device.command_inout("TrackLoadStaticOff", [0.1, 0.2])
+    assert result[0] == ResultCode.OK
+
+
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
