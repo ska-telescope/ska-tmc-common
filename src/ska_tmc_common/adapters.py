@@ -299,12 +299,13 @@ class DishLeafAdapter(BaseAdapter):
     This class is used for creating and managing adapters
     for Dishes proxy.
     """
+
     def kValue(self) -> int:
         """
         Invokes SetStandbyFPMode on device proxy.
         """
         return self._proxy.kValue
-    
+
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStandbyFPMode on device proxy.
