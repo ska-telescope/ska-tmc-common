@@ -24,12 +24,17 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._delay: int = 2
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
+        self._dish_vcc_map_validation_result = ResultCode.STARTED
         self._memorized_dish_vcc_map: str = ""
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
     dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    DishVccMapValidationResult = attribute(
+        dtype="str", access=AttrWriteType.READ
+    )
 
     @attribute(
         dtype="DevString",
@@ -64,6 +69,9 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("sourceDishVccConfig", True, False)
             self._device.set_change_event("dishVccConfig", True, False)
+            self._device.set_change_event(
+                "DishVccMapValidationResult", True, False
+            )
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
@@ -80,6 +88,12 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         :rtype:str
         """
         return self._dish_vcc_config
+
+    def read_DishVccMapValidationResult(self) -> bool:
+        """
+        :rtype: bool
+        """
+        return str(int(self._dish_vcc_map_validation_result))
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -164,6 +178,29 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         )
         thread.start()
         return [ResultCode.QUEUED], [""]
+
+    def push_dish_vcc_validation_result(self):
+        """Push Dish Vcc Validation result event
+        If memorized dish vcc already set then push Result Code as OK
+        else push result code event as UNKNOWN
+        """
+        if self._memorized_dish_vcc_map:
+            self._dish_vcc_map_validation_result = ResultCode.OK
+        else:
+            self._dish_vcc_map_validation_result = ResultCode.UNKNOWN
+
+        self.logger.info(
+            "Push Dish Vcc Validation Result as %s",
+            self._dish_vcc_map_validation_result,
+        )
+        self.push_change_event(
+            "DishVccMapValidationResult", self._dish_vcc_map_validation_result
+        )
+
+    def start_dish_vcc_validation(self):
+        """Push Dish Vcc Validation result after Initialization"""
+        start_thread = threading.Timer(5, self.push_dish_vcc_validation_result)
+        start_thread.start()
 
 
 # ----------
