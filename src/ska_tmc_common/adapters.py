@@ -113,6 +113,16 @@ class CspMasterAdapter(BaseAdapter):
     for CSP master devices.
     """
 
+    @property
+    def sourceDishVccConfig(self):
+        """Return sourceDishVccConfig value of Csp Master proxy"""
+        return self._proxy.sourceDishVccConfig
+
+    @property
+    def dishVccConfig(self):
+        """Return dishVccConfig value of Csp Master proxy"""
+        return self._proxy.dishVccConfig
+
     def On(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state
