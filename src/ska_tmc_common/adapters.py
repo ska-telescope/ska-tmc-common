@@ -300,9 +300,10 @@ class DishLeafAdapter(BaseAdapter):
     for Dishes proxy.
     """
 
+    @property
     def kValue(self) -> int:
         """
-        Invokes SetStandbyFPMode on device proxy.
+        Get the kValue from the dish manager.
         """
         return self._proxy.kValue
 
