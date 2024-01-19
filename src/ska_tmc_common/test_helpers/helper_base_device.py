@@ -80,7 +80,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         Returns defective status of devices
 
-        :rtype: bool
+        :rtype: str
         """
         return json.dumps(self.defective_params)
 

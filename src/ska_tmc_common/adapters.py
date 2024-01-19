@@ -25,6 +25,7 @@ class AdapterType(enum.IntEnum):
     SDPSUBARRAY = 6
     MCCS_CONTROLLER = 7
     CSP_MASTER_LEAF_NODE = 8
+    DISH_LEAF_NODE = 9
 
 
 class BaseAdapter:
@@ -293,7 +294,7 @@ class MCCSControllerAdapter(BaseAdapter):
         return self._proxy.RestartSubarray(argin)
 
 
-class DishAdapter(BaseAdapter):
+class DishLeafAdapter(BaseAdapter):
     """
     This class is used for creating and managing adapters
     for Dishes proxy.
@@ -426,6 +427,18 @@ class DishAdapter(BaseAdapter):
         return self._proxy.SetKValue(kvalue)
 
 
+class DishAdapter(DishLeafAdapter):
+    """This class is used as an Adapter for Dish Master Devices."""
+
+    def TrackLoadStaticOff(
+        self, argin: List[float]
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes TrackLoadStaticOff on device proxy.
+        """
+        return self._proxy.TrackLoadStaticOff(argin)
+
+
 class CspSubarrayAdapter(SubarrayAdapter):
     """
     This class is used for creating and managing adapterss
@@ -453,6 +466,7 @@ class AdapterFactory:
         self, dev_name: str, adapter_type: AdapterType = AdapterType.BASE
     ) -> Union[
         DishAdapter,
+        DishLeafAdapter,
         SubarrayAdapter,
         CspMasterAdapter,
         CspSubarrayAdapter,
@@ -505,6 +519,10 @@ class AdapterFactory:
             )
         elif adapter_type == AdapterType.CSP_MASTER_LEAF_NODE:
             new_adapter = CspMasterLeafNodeAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
+        elif adapter_type == AdapterType.DISH_LEAF_NODE:
+            new_adapter = DishLeafAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
         else:
