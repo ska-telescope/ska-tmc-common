@@ -42,15 +42,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = json.dumps(
@@ -136,7 +133,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :rtype: str
         """
-        return self._defective
+        return json.dumps(self.defective_params)
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
