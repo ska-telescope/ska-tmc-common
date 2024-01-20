@@ -178,6 +178,11 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             args=[ResultCode.OK, "LoadDishCfg"],
         )
         thread.start()
+        self._dish_vcc_map_validation_result = ResultCode.OK
+        self.push_change_event(
+            "DishVccMapValidationResult",
+            str(int(self._dish_vcc_map_validation_result)),
+        )
         return [ResultCode.QUEUED], [""]
 
     def push_dish_vcc_validation_result(self):
