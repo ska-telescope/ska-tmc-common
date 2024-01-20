@@ -154,12 +154,12 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
-        self.logger.debug(
+        self.logger.info(
             "Received source:%s and file path:%s", sources, filepath
         )
         mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
         mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
-        self.logger.debug(
+        self.logger.info(
             "Updating sourceDishVccConfig attribute with:%s"
             + "and dishVccConfig attribute with:%s",
             argin,
