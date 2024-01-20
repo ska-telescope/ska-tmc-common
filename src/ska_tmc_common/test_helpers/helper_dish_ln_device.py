@@ -14,9 +14,7 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
     CONFIGURE,
@@ -30,6 +28,7 @@ from .constants import (
     TRACK,
     TRACK_STOP,
 )
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -54,6 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing: list = []
         self._kvalue: int = 0
         self._isSubsystemAvailable = False
+        self._kValueValidationResult = "1"
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -66,6 +66,9 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event(
+                "kValueValidationResult", True, False
+            )
+            self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("actualPointing", True, False)
@@ -77,6 +80,13 @@ class HelperDishLNDevice(HelperBaseDevice):
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
     kValue = attribute(dtype=int, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+    kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
+
+    def read_kValueValidationResult(self) -> str:
+        """Get the k-value validation result.
+        :rtype:str
+        """
+        return self._kValueValidationResult
 
     def read_kValue(self) -> int:
         """
@@ -117,6 +127,23 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_x=1000,
         max_dim_y=1000,
     )
+
+    @command(
+        dtype_in=str,
+        doc_in="(ReturnType, 'ResultCode')",
+    )
+    def SetDirectkValueValidationResult(self, result_code: str) -> None:
+        """Set the kValuValidationResult
+        :argin dtype: str
+        :rtype:None
+        """
+        self._kValueValidationResult = result_code
+        self.push_change_event(
+            "kValueValidationResult", self._kValueValidationResult
+        )
+        self.logger.debug(
+            "kValueValidationResult set to: %s", self._kValueValidationResult
+        )
 
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
         """Sets the offset for Dish."""

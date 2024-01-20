@@ -130,3 +130,13 @@ def test_SetKValue_command_dishln_defective(tango_context):
     )
 
     dishln_device.SetDefective(json.dumps({"enabled": False}))
+
+def test_to_check_kvalidationresult_push_event(tango_context):
+    """
+    This test case checks kvaluvalidation event gets pushed after
+    invoking SetDirectkValueValidationResult command.
+    """
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.SetDirectkValueValidationResult(str(int(ResultCode.OK)))
+    assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
