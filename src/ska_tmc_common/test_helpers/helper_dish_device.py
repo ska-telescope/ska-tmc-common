@@ -702,11 +702,11 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_offset(cross_elevation, elevation)
         command_id = f"{time.time()}-TrackLoadStaticOff"
         thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[ResultCode.OK,"TrackLoadStaticOff"],
-                kwargs={"command_id":command_id}
-            )
+            self._delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "TrackLoadStaticOff"],
+            kwargs={"command_id": command_id},
+        )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return ([ResultCode.QUEUED], [""])
