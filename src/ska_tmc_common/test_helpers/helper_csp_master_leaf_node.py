@@ -195,7 +195,8 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             self._dish_vcc_map_validation_result,
         )
         self.push_change_event(
-            "DishVccMapValidationResult", self._dish_vcc_map_validation_result
+            "DishVccMapValidationResult",
+            str(int(self._dish_vcc_map_validation_result)),
         )
 
     def start_dish_vcc_validation(self):
