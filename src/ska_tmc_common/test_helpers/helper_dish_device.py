@@ -679,9 +679,16 @@ class HelperDishDevice(HelperDishLNDevice):
         cross_elevation = input_offsets[0]
         elevation = input_offsets[1]
         self.set_offset(cross_elevation, elevation)
-        self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
-        self.logger.info("TrackLoadStaticOff command completed.")
-        return ([ResultCode.OK], [""])
+        command_id = f"{time.time()}-TrackLoadStaticOff"
+        thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[ResultCode.OK,"TrackLoadStaticOff"],
+                kwargs={"command_id":command_id}
+            )
+        thread.start()
+        self.logger.info("Invocation of TrackLoadStaticOff command completed.")
+        return ([ResultCode.QUEUED], [""])
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
