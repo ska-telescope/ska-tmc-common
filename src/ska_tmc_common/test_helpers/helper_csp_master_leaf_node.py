@@ -73,6 +73,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
                 "DishVccMapValidationResult", True, False
             )
             self._device.op_state_model.perform_action("component_on")
+            self._device.start_dish_vcc_validation()
             return (ResultCode.OK, "")
 
     def read_sourceDishVccConfig(self) -> str:
