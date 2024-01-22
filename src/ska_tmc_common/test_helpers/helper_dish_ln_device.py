@@ -53,7 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing: list = []
         self._kvalue: int = 0
         self._isSubsystemAvailable = False
-        self._kValueValidationResult = "4"
+        self._kValueValidationResult = int(str(ResultCode.UNKNOWN))
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
