@@ -53,7 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing: list = []
         self._kvalue: int = 0
         self._isSubsystemAvailable = False
-        self._kValueValidationResult = str(int(ResultCode.UNKNOWN))
+        self._kvalue_validation_result = str(int(ResultCode.UNKNOWN))
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -86,7 +86,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """Get the k-value validation result.
         :rtype:str
         """
-        return self._kValueValidationResult
+        return self._kvalue_validation_result
 
     def read_kValue(self) -> int:
         """
@@ -137,12 +137,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         :argin dtype: str
         :rtype:None
         """
-        self._kValueValidationResult = result_code
+        self._kvalue_validation_result = result_code
         self.push_change_event(
-            "kValueValidationResult", self._kValueValidationResult
+            "kValueValidationResult", self._kvalue_validation_result
         )
         self.logger.debug(
-            "kValueValidationResult set to: %s", self._kValueValidationResult
+            "kValueValidationResult set to: %s", self._kvalue_validation_result
         )
 
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
