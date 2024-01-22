@@ -90,9 +90,9 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         """
         return self._dish_vcc_config
 
-    def read_DishVccMapValidationResult(self) -> bool:
+    def read_DishVccMapValidationResult(self) -> str:
         """
-        :rtype: bool
+        :rtype: str
         """
         return str(int(self._dish_vcc_map_validation_result))
 
