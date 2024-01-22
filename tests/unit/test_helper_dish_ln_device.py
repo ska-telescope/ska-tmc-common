@@ -131,6 +131,7 @@ def test_SetKValue_command_dishln_defective(tango_context):
 
     dishln_device.SetDefective(json.dumps({"enabled": False}))
 
+
 def test_to_check_kvalidationresult_push_event(tango_context):
     """
     This test case checks kValuvalidationResult event gets pushed after
