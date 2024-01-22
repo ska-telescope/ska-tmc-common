@@ -44,5 +44,4 @@ def test_csp_master_leaf_node_SetDishVccValidationResult_command(
         HELPER_CSP_MASTER_LEAF_DEVICE
     )
     csp_master_leaf_device.SetDishVccValidationResult("0")
-
     assert csp_master_leaf_device.DishVccMapValidationResult == "0"
