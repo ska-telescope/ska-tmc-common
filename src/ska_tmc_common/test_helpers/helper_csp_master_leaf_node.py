@@ -189,13 +189,16 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         dtype_in="str",
         doc_in="Set DishVccValidationResult and push event",
     )
-    def SetDishVccValidationResult(self, result: str):
+    def SetDishVccValidationResult(
+        self, result: str
+    ) -> Tuple[List[ResultCode], List[str]]:
         """Set DishVccValidationResult and push event for same"""
         self._dish_vcc_map_validation_result = int(result)
         self.push_change_event(
             "DishVccMapValidationResult",
             result,
         )
+        return [ResultCode.OK], [""]
 
     def push_dish_vcc_validation_result(self):
         """Push Dish Vcc Validation result event
