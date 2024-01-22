@@ -24,12 +24,17 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._delay: int = 2
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
+        self._dish_vcc_map_validation_result = ResultCode.STARTED
         self._memorized_dish_vcc_map: str = ""
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
     dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
+
+    DishVccMapValidationResult = attribute(
+        dtype="str", access=AttrWriteType.READ
+    )
 
     @attribute(
         dtype="DevString",
@@ -64,7 +69,11 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("sourceDishVccConfig", True, False)
             self._device.set_change_event("dishVccConfig", True, False)
+            self._device.set_change_event(
+                "DishVccMapValidationResult", True, False
+            )
             self._device.op_state_model.perform_action("component_on")
+            self._device.start_dish_vcc_validation()
             return (ResultCode.OK, "")
 
     def read_sourceDishVccConfig(self) -> str:
@@ -80,6 +89,12 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         :rtype:str
         """
         return self._dish_vcc_config
+
+    def read_DishVccMapValidationResult(self) -> str:
+        """
+        :rtype: str
+        """
+        return str(int(self._dish_vcc_map_validation_result))
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -139,12 +154,12 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
-        self.logger.debug(
+        self.logger.info(
             "Received source:%s and file path:%s", sources, filepath
         )
         mid_cbf_initial_parameters = TMData(sources)[filepath].get_dict()
         mid_cbf_initial_parameters_str = json.dumps(mid_cbf_initial_parameters)
-        self.logger.debug(
+        self.logger.info(
             "Updating sourceDishVccConfig attribute with:%s"
             + "and dishVccConfig attribute with:%s",
             argin,
@@ -163,7 +178,51 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             args=[ResultCode.OK, "LoadDishCfg"],
         )
         thread.start()
+        self._dish_vcc_map_validation_result = ResultCode.OK
+        self.push_change_event(
+            "DishVccMapValidationResult",
+            str(int(self._dish_vcc_map_validation_result)),
+        )
         return [ResultCode.QUEUED], [""]
+
+    @command(
+        dtype_in="str",
+        doc_in="Set DishVccValidationResult and push event",
+    )
+    def SetDishVccValidationResult(
+        self, result: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """Set DishVccValidationResult and push event for same"""
+        self._dish_vcc_map_validation_result = int(result)
+        self.push_change_event(
+            "DishVccMapValidationResult",
+            result,
+        )
+        return [ResultCode.OK], [""]
+
+    def push_dish_vcc_validation_result(self):
+        """Push Dish Vcc Validation result event
+        If memorized dish vcc already set then push Result Code as OK
+        else push result code event as UNKNOWN
+        """
+        if self._memorized_dish_vcc_map:
+            self._dish_vcc_map_validation_result = ResultCode.OK
+        else:
+            self._dish_vcc_map_validation_result = ResultCode.UNKNOWN
+
+        self.logger.info(
+            "Push Dish Vcc Validation Result as %s",
+            self._dish_vcc_map_validation_result,
+        )
+        self.push_change_event(
+            "DishVccMapValidationResult",
+            str(int(self._dish_vcc_map_validation_result)),
+        )
+
+    def start_dish_vcc_validation(self):
+        """Push Dish Vcc Validation result after Initialization"""
+        start_thread = threading.Timer(5, self.push_dish_vcc_validation_result)
+        start_thread.start()
 
 
 # ----------
