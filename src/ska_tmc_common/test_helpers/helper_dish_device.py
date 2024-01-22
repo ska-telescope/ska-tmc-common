@@ -285,6 +285,35 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
+    def push_command_status(
+        self,
+        status,
+        command: str,
+        command_id=None,
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command: The command name for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
+        if status == "COMPLETED":
+            self.logger.info("Successfully processed %s command", command)
+        elif status == "FAILED":
+            self.logger.info(
+                "Command %s failed, TaskStatus: %d", command, status
+            )
+        command_id = command_id or f"{time.time()}-{command}"
+        command_status = (command_id, status)
+        self.push_change_event("longRunningCommandStatus", command_status)
+
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
@@ -693,20 +722,24 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
 
-        if self.defective_params["enabled"]:
-            return self.induce_fault("TrackLoadStaticOff")
-
         # Set offsets.
         cross_elevation = argin[0]
         elevation = argin[1]
         self.set_offset(cross_elevation, elevation)
-        command_id = f"{time.time()}-TrackLoadStaticOff"
-        thread = threading.Timer(
-            self._delay,
-            function=self.push_command_result,
-            args=[ResultCode.OK, "TrackLoadStaticOff"],
-            kwargs={"command_id": command_id},
-        )
+        if self.defective_params[
+            "enabled"
+        ]:  # Temporary change to set status as failed.
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_status,
+                args=["FAILED", "TrackLoadStaticOff"],
+            )
+        else:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_status,
+                args=["COMPLETED", "TrackLoadStaticOff"],
+            )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return ([ResultCode.QUEUED], [""])
