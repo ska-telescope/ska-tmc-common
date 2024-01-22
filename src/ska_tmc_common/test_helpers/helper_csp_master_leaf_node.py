@@ -185,6 +185,18 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [""]
 
+    @command(
+        dtype_in="str",
+        doc_in="Set DishVccValidationResult and push event",
+    )
+    def SetDishVccValidationResult(self, result: str):
+        """Set DishVccValidationResult and push event for same"""
+        self._dish_vcc_map_validation_result = int(result)
+        self.push_change_event(
+            "DishVccMapValidationResult",
+            result,
+        )
+
     def push_dish_vcc_validation_result(self):
         """Push Dish Vcc Validation result event
         If memorized dish vcc already set then push Result Code as OK
