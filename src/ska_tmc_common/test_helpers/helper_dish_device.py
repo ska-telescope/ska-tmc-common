@@ -308,6 +308,28 @@ class HelperDishDevice(HelperDishLNDevice):
             )
             self.push_change_event("achievedPointing", self._achieved_pointing)
 
+    def _update_poiniting_state_in_sequence(self) -> None:
+        """This method update pointing state in sequence as per
+        state duration info
+        """
+        with tango.EnsureOmniThread():
+            for poiniting_state, duration in self._state_duration_info:
+                pointing_state_enum = PointingState[poiniting_state]
+                self.logger.info(
+                    "Sleep %s sec for pointing state %s",
+                    duration,
+                    poiniting_state,
+                )
+                time.sleep(duration)
+                self.set_pointing_state(pointing_state_enum)
+
+    def _follow_state_duration(self):
+        """This method will update pointing state as per state duration"""
+        thread = threading.Thread(
+            target=self._update_poiniting_state_in_sequence,
+        )
+        thread.start()
+
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
         This method checks if the is_SetStandbyFPMode_allowed Command is
