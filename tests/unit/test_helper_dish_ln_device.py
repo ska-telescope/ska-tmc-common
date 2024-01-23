@@ -141,9 +141,16 @@ def test_to_check_kvalidationresult_push_event(tango_context):
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     # Wait for the device to initialize.
-    time.sleep(10)
+    flag = True
+    while flag:
+        if (
+            str(int(ResultCode.UNKNOWN))
+            == dishln_device.kValueValidationResult
+        ):
+            flag = False
+        time.sleep(2)
     # Assert initial value is getting set
-    assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
+    assert dishln_device.kValueValidationResult == str(int(ResultCode.UNKNOWN))
     # Assert command is working as expected
     dishln_device.SetDirectkValueValidationResult(str(int(ResultCode.FAILED)))
     assert dishln_device.kValueValidationResult == str(int(ResultCode.FAILED))

@@ -79,7 +79,6 @@ class HelperDishLNDevice(HelperBaseDevice):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
-    kValue = attribute(dtype=int, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
     kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -89,12 +88,27 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         return self._dish_kvalue_validation_result
 
-    def read_kValue(self) -> int:
+    @attribute(
+        dtype="DevString",
+        access=AttrWriteType.READ_WRITE,
+        memorized=True,
+        hw_memorized=True,
+    )
+    def kValue(self):
         """
-        This method reads the k value of the dish.
-        :rtype:int
+        This attribute is used for storing dish kvalue
+        into tango DB.Made this attribute memorized so that when device
+        restart then previous set kvalue will be used validation.
         """
         return self._kvalue
+
+    @kValue.write
+    def kValue(self, kvalue: str):
+        """Set memorized dish vcc map
+        :param value: dish vcc config json string
+        :type str
+        """
+        self._kvalue = kvalue
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
@@ -162,13 +176,31 @@ class HelperDishLNDevice(HelperBaseDevice):
         """This method is used to read the attribute value for delay."""
         return json.dumps(self._command_delay_info)
 
+    def push_dish_kvalue_validation_result(self):
+        """Push Dish k-value Validation result event
+        If memorized k-value already set then push Result Code as OK
+        else push result code event as UNKNOWN
+        """
+        if self._kvalue:
+            self._dish_kvalue_validation_result = str(int(ResultCode.OK))
+        else:
+            self._dish_kvalue_validation_result = str(int(ResultCode.UNKNOWN))
+
+        self.logger.info(
+            "Push Dish kvalue Validation Result as %s",
+            self._dish_kvalue_validation_result,
+        )
+        self.push_change_event(
+            "kValueValidationResult",
+            str(int(self._dish_vcc_map_validation_result)),
+        )
+
     def push_dish_kvalue_val_result_after_initialization(self):
         """This method gets invoked only once after initialization
         and push the k-value validation result.
         """
-        result_code = str(int(ResultCode.OK))
         start_thread = threading.Timer(
-            5, self.SetDirectkValueValidationResult, args=(result_code)
+            5, self.push_dish_kvalue_validation_result
         )
         start_thread.start()
 
