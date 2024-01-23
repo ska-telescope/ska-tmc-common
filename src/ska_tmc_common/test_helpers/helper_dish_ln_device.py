@@ -89,12 +89,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._dish_kvalue_validation_result
 
     @attribute(
-        dtype="DevString",
+        dtype=int,
         access=AttrWriteType.READ_WRITE,
         memorized=True,
         hw_memorized=True,
     )
-    def kValue(self):
+    def kValue(self) -> int:
         """
         This attribute is used for storing dish kvalue
         into tango DB.Made this attribute memorized so that when device
@@ -103,7 +103,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._kvalue
 
     @kValue.write
-    def kValue(self, kvalue: str):
+    def kValue(self, kvalue: str) -> None:
         """Set memorized dish vcc map
         :param value: dish vcc config json string
         :type str
