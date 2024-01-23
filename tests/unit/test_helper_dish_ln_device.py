@@ -1,4 +1,5 @@
 import json
+import time
 
 import pytest
 from ska_tango_base.commands import ResultCode
@@ -132,6 +133,7 @@ def test_SetKValue_command_dishln_defective(tango_context):
     dishln_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.test
 def test_to_check_kvalidationresult_push_event(tango_context):
     """
     This test case checks kValuvalidationResult event gets pushed after
@@ -139,5 +141,9 @@ def test_to_check_kvalidationresult_push_event(tango_context):
     """
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
-    dishln_device.SetDirectkValueValidationResult(str(int(ResultCode.OK)))
+    time.sleep(15)
+    # Assert initial value is getting set
     assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
+    # Assert command is working as expected
+    dishln_device.SetDirectkValueValidationResult(str(int(ResultCode.FAILED)))
+    assert dishln_device.kValueValidationResult == str(int(ResultCode.FAILED))

@@ -53,7 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing: list = []
         self._kvalue: int = 0
         self._isSubsystemAvailable = False
-        self._kvalue_validation_result = str(int(ResultCode.UNKNOWN))
+        self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -73,6 +73,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             )
             self._device.set_change_event("actualPointing", True, False)
             self._device.op_state_model.perform_action("component_on")
+            self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
@@ -86,7 +87,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """Get the k-value validation result.
         :rtype:str
         """
-        return self._kvalue_validation_result
+        return self._dish_kvalue_validation_result
 
     def read_kValue(self) -> int:
         """
@@ -137,12 +138,13 @@ class HelperDishLNDevice(HelperBaseDevice):
         :argin dtype: str
         :rtype:None
         """
-        self._kvalue_validation_result = result_code
+        self._dish_kvalue_validation_result = result_code
         self.push_change_event(
-            "kValueValidationResult", self._kvalue_validation_result
+            "kValueValidationResult", self._dish_kvalue_validation_result
         )
         self.logger.debug(
-            "kValueValidationResult set to: %s", self._kvalue_validation_result
+            "kValueValidationResult set to: %s",
+            self._dish_kvalue_validation_result,
         )
 
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
@@ -159,6 +161,16 @@ class HelperDishLNDevice(HelperBaseDevice):
     def read_commandDelayInfo(self) -> str:
         """This method is used to read the attribute value for delay."""
         return json.dumps(self._command_delay_info)
+
+    def push_dish_kvalue_val_result_after_initialization(self):
+        """This method gets invoked only once after initialization
+        and push the k-value validation result.
+        """
+        result_code = str(int(ResultCode.OK))
+        start_thread = threading.Timer(
+            10, self.SetDirectkValueValidationResult, args=(result_code)
+        )
+        start_thread.start()
 
     def is_SetKValue_allowed(self) -> bool:
         """
