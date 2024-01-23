@@ -198,6 +198,10 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self.defective_params["error_message"]
             ]
         self._kvalue = kvalue
+        self._dish_kvalue_validation_result = str(int(ResultCode.OK))
+        self.push_change_event(
+            "kValueValidationResult", self._dish_kvalue_validation_result
+        )
         return ([ResultCode.OK], [""])
 
     @command(
