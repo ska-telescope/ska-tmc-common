@@ -31,3 +31,18 @@ def test_csp_master_leaf_node_loadDishConfig_command(
 
     # comparing dictionary instead of strings to avoid the issues with whitespaces
     assert expected_json == dishVccConfig
+
+
+def test_csp_master_leaf_node_SetDishVccValidationResult_command(
+    tango_context, json_factory
+):
+    """
+    This test case validate SetDishVccValidation command.
+    """
+    dev_factory = DevFactory()
+    csp_master_leaf_device = dev_factory.get_device(
+        HELPER_CSP_MASTER_LEAF_DEVICE
+    )
+    csp_master_leaf_device.SetDishVccValidationResult("0")
+
+    assert csp_master_leaf_device.DishVccMapValidationResult == "0"
