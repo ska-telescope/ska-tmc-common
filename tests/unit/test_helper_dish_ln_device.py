@@ -133,6 +133,7 @@ def test_SetKValue_command_dishln_defective(tango_context):
     dishln_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.test
 def test_to_check_kvalidationresult_push_event(tango_context):
     """
     This test case checks kValuvalidationResult event gets pushed after
@@ -141,14 +142,17 @@ def test_to_check_kvalidationresult_push_event(tango_context):
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     # Wait for the device to initialize.
-    flag = True
-    while flag:
+    start_time = time.time()
+    elapsed_time = 0
+    timeout = 20
+    while elapsed_time <= timeout:
         if (
             str(int(ResultCode.UNKNOWN))
             == dishln_device.kValueValidationResult
         ):
-            flag = False
-        time.sleep(2)
+            break
+        time.sleep(1)
+        elapsed_time = time.time() - start_time
     # Assert initial value is getting set
     assert dishln_device.kValueValidationResult == str(int(ResultCode.UNKNOWN))
     # Assert command is working as expected
