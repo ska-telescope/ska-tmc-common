@@ -197,7 +197,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.push_change_event,
-            args=[result],
+            args=["DishVccMapValidationResult", result],
         )
         thread.start()
         return [ResultCode.QUEUED], [""]
