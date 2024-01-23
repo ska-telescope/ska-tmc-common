@@ -168,7 +168,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         result_code = str(int(ResultCode.OK))
         start_thread = threading.Timer(
-            10, self.SetDirectkValueValidationResult, args=(result_code)
+            5, self.SetDirectkValueValidationResult, args=(result_code)
         )
         start_thread.start()
 
