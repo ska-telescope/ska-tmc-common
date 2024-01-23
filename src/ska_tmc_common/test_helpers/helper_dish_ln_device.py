@@ -192,7 +192,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.push_change_event(
             "kValueValidationResult",
-            str(int(self._dish_vcc_map_validation_result)),
+            str(int(self._dish_kvalue_validation_result)),
         )
 
     def push_dish_kvalue_val_result_after_initialization(self):
