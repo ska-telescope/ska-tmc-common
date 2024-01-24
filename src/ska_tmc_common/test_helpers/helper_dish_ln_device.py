@@ -232,12 +232,11 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self.defective_params["error_message"]
             ]
         self._kvalue = kvalue
-        self.logger.info("DLN: %s", self._dishln_name)
         db = Database()
         value = {"kValue": {"__value": [self._kvalue]}}
         db.put_device_attribute_property(self._dishln_name, value)
         value = db.get_device_attribute_property(self._dishln_name, "kValue")
-        self.logger.info("k-value memorized successfully: %s", value)
+        self.logger.info("%s: memorized k-value %s", self._dishln_name, value)
         self._dish_kvalue_validation_result = str(int(ResultCode.OK))
         self.push_change_event(
             "kValueValidationResult", self._dish_kvalue_validation_result

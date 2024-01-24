@@ -98,6 +98,24 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.skip(
+    reason="This test case will not pass as SetKValue command tango have database api"
+)
+def test_SetKValue_command_dishln(tango_context):
+    """
+    This test case invokes command on dish leaf node device
+    and checks whether the attributes are populated with
+    relevant k value or not.
+    """
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+
+    return_code, _ = dishln_device.SetKValue(5)
+    return_code[0] = ResultCode.OK
+
+    assert dishln_device.kValue == 5
+
+
 def test_SetKValue_command_dishln_defective(tango_context):
     """
     This test case invokes command on dish leaf node device
