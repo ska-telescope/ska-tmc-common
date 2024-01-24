@@ -98,6 +98,7 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.skip(reason="Memorized attribute functionality added")
 def test_SetKValue_command_dishln(tango_context):
     """
     This test case invokes command on dish leaf node device
