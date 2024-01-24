@@ -133,7 +133,7 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
 
 
 @pytest.mark.skip(
-    reason="This test case will not pass as SetKValue command tango have database api"
+    reason="This test case will not pass as SetKValue command have tango database api"
 )
 def test_dish_SetKValue_command(tango_context):
     """
