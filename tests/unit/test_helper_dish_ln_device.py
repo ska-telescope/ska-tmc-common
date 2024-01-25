@@ -98,6 +98,9 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
+@pytest.mark.skip(
+    reason="This test case will not pass as SetKValue command have tango database api"
+)
 def test_SetKValue_command_dishln(tango_context):
     """
     This test case invokes command on dish leaf node device
@@ -157,3 +160,25 @@ def test_to_check_kvalidationresult_push_event(tango_context):
     # Assert command is working as expected
     dishln_device.SetDirectkValueValidationResult(str(int(ResultCode.FAILED)))
     assert dishln_device.kValueValidationResult == str(int(ResultCode.FAILED))
+
+
+def test_to_check_kvalidationresult_result_code_ok(tango_context):
+    """
+    This test case checks kValuvalidationResult event gets pushed after
+    invoking SetDirectkValueValidationResult command.
+    """
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    # Wait for the device to initialize.
+    dishln_device.kValue = 5
+    dishln_device.init()
+    start_time = time.time()
+    elapsed_time = 0
+    timeout = 20
+    while elapsed_time <= timeout:
+        if str(int(ResultCode.OK)) == dishln_device.kValueValidationResult:
+            break
+        time.sleep(1)
+        elapsed_time = time.time() - start_time
+    # Assert initial value is getting set
+    assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
