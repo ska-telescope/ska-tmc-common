@@ -14,9 +14,7 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
     CONFIGURE,
@@ -30,6 +28,7 @@ from .constants import (
     TRACK,
     TRACK_STOP,
 )
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
@@ -54,6 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing: list = []
         self._kvalue: int = 0
         self._isSubsystemAvailable = False
+        self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
@@ -66,24 +66,49 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event(
+                "kValueValidationResult", True, False
+            )
+            self._device.set_change_event(
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("actualPointing", True, False)
             self._device.op_state_model.perform_action("component_on")
+            self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
-    kValue = attribute(dtype=int, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+    kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
 
-    def read_kValue(self) -> int:
+    def read_kValueValidationResult(self) -> str:
+        """Get the k-value validation result.
+        :rtype:str
         """
-        This method reads the k value of the dish.
-        :rtype:int
+        return self._dish_kvalue_validation_result
+
+    @attribute(
+        dtype=int,
+        access=AttrWriteType.READ_WRITE,
+        memorized=True,
+        hw_memorized=True,
+    )
+    def kValue(self) -> int:
+        """
+        This attribute is used for storing dish kvalue
+        into tango DB.Made this attribute memorized so that when device
+        restart then previous set kvalue will be used validation.
         """
         return self._kvalue
+
+    @kValue.write
+    def kValue(self, kvalue: str) -> None:
+        """Set memorized dish vcc map
+        :param value: dish vcc config json string
+        :type str
+        """
+        self._kvalue = kvalue
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
@@ -118,6 +143,24 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_y=1000,
     )
 
+    @command(
+        dtype_in=str,
+        doc_in="(ReturnType, 'ResultCode')",
+    )
+    def SetDirectkValueValidationResult(self, result_code: str) -> None:
+        """Set the kValuValidationResult
+        :argin dtype: str
+        :rtype:None
+        """
+        self._dish_kvalue_validation_result = result_code
+        self.push_change_event(
+            "kValueValidationResult", self._dish_kvalue_validation_result
+        )
+        self.logger.debug(
+            "kValueValidationResult set to: %s",
+            self._dish_kvalue_validation_result,
+        )
+
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
         """Sets the offset for Dish."""
         self._offset["off_xel"] = cross_elevation
@@ -132,6 +175,34 @@ class HelperDishLNDevice(HelperBaseDevice):
     def read_commandDelayInfo(self) -> str:
         """This method is used to read the attribute value for delay."""
         return json.dumps(self._command_delay_info)
+
+    def push_dish_kvalue_validation_result(self):
+        """Push Dish k-value Validation result event
+        If memorized k-value already set then push Result Code as OK
+        else push result code event as UNKNOWN
+        """
+        if self._kvalue:
+            self._dish_kvalue_validation_result = str(int(ResultCode.OK))
+        else:
+            self._dish_kvalue_validation_result = str(int(ResultCode.UNKNOWN))
+
+        self.logger.info(
+            "Push Dish kvalue Validation Result as %s",
+            self._dish_kvalue_validation_result,
+        )
+        self.push_change_event(
+            "kValueValidationResult",
+            str(int(self._dish_kvalue_validation_result)),
+        )
+
+    def push_dish_kvalue_val_result_after_initialization(self):
+        """This method gets invoked only once after initialization
+        and push the k-value validation result.
+        """
+        start_thread = threading.Timer(
+            5, self.push_dish_kvalue_validation_result
+        )
+        start_thread.start()
 
     def is_SetKValue_allowed(self) -> bool:
         """
@@ -159,6 +230,10 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self.defective_params["error_message"]
             ]
         self._kvalue = kvalue
+        self._dish_kvalue_validation_result = str(int(ResultCode.OK))
+        self.push_change_event(
+            "kValueValidationResult", self._dish_kvalue_validation_result
+        )
         return ([ResultCode.OK], [""])
 
     @command(
