@@ -10,7 +10,7 @@ from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState
+from tango import AttrWriteType, Database, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -63,6 +63,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             Stateless hook for device initialisation.
             """
             super().do()
+            self._device._dishln_name = self._device.get_name()
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event(
@@ -182,6 +183,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         else push result code event as UNKNOWN
         """
         if self._kvalue:
+            self.logger.info("Memorized k-value=%s", self._kvalue)
             self._dish_kvalue_validation_result = str(int(ResultCode.OK))
         else:
             self._dish_kvalue_validation_result = str(int(ResultCode.UNKNOWN))
@@ -230,6 +232,11 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self.defective_params["error_message"]
             ]
         self._kvalue = kvalue
+        db = Database()
+        value = {"kValue": {"__value": [self._kvalue]}}
+        db.put_device_attribute_property(self._dishln_name, value)
+        value = db.get_device_attribute_property(self._dishln_name, "kValue")
+        self.logger.info("%s: memorized k-value %s", self._dishln_name, value)
         self._dish_kvalue_validation_result = str(int(ResultCode.OK))
         self.push_change_event(
             "kValueValidationResult", self._dish_kvalue_validation_result
