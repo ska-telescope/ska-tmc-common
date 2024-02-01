@@ -72,6 +72,43 @@ class HelperDishDevice(HelperDishLNDevice):
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
 
+    @attribute(dtype=int, access=AttrWriteType.READ)
+    def kValue(self) -> int:
+        """
+        This attribute is used for storing dish kvalue
+        into tango DB.Made this attribute memorized so that when device
+        restart then previous set kvalue will be used validation.
+        """
+        return self._kvalue
+
+    def is_SetKValue_allowed(self) -> bool:
+        """
+        This method checks if the SetKValue Command is allowed in current
+        State.
+        :rtype: bool
+        """
+        return True
+
+    @command(
+        dtype_in="DevLong",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def SetKValue(self, kvalue: int) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This command invokes SetKValue command on  Dish Master.
+
+        :param argin: k value between range 1-2222.
+        :argin dtype: int
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        if self.defective_params["enabled"]:
+            return [ResultCode.FAILED], [
+                self.defective_params["error_message"]
+            ]
+        self._kvalue = kvalue
+        return ([ResultCode.OK], [""])
+
     def read_pointingState(self) -> PointingState:
         """
         This method reads the pointingState of dishes.
