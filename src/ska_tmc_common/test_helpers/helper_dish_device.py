@@ -1149,17 +1149,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
-
-        if self._pointing_state != PointingState.SCAN:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._pointing_state = PointingState.SCAN
-                self.push_change_event("pointingState", self._pointing_state)
-                self.logger.info("Pointing State: %s", self._pointing_state)
-
-        # Set dish mode
-        self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "Scan")
         self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])
