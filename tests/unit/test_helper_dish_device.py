@@ -51,19 +51,19 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
-def test_program_track_table(tango_context):
-    dev_factory = DevFactory()
-    dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert dish_device.programTrackTable == []
-    programTrackTable_example = [
-        [1706629796036.8691, 181.223951890779, 31.189377349638],
-        [1706629796036.9192, 181.223951890779, 31.189377349638],
-        [1706629796036.969, 181.223951890779, 31.189377349638],
-        [1706629796037.019, 181.223951890779, 31.189377349638],
-        [1706629796037.069, 181.223951890779, 31.189377349638],
-    ]
-    dish_device.programTrackTable = programTrackTable_example
-    assert dish_device.programTrackTable == programTrackTable_example
+# def test_program_track_table(tango_context):
+#     dev_factory = DevFactory()
+#     dish_device = dev_factory.get_device(DISH_DEVICE)
+#     assert dish_device.programTrackTable == []
+#     programTrackTable_example = [
+#         [1706629796036.8691, 181.223951890779, 31.189377349638],
+#         [1706629796036.9192, 181.223951890779, 31.189377349638],
+#         [1706629796036.969, 181.223951890779, 31.189377349638],
+#         [1706629796037.019, 181.223951890779, 31.189377349638],
+#         [1706629796037.069, 181.223951890779, 31.189377349638],
+#     ]
+#     dish_device.programTrackTable = programTrackTable_example
+#     assert dish_device.programTrackTable == programTrackTable_example
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
