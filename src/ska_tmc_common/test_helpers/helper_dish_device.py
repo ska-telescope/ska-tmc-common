@@ -1149,7 +1149,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
-        self.push_command_result(ResultCode.OK, "Scan")
+        self.push_command_status(ResultCode.OK, "Scan")
         self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])
 
