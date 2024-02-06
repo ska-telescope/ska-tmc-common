@@ -132,7 +132,6 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
-@pytest.mark.test
 def test_dish_SetKValue_command(tango_context):
     """
     This test case invokes command on dish master device
