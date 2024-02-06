@@ -11,7 +11,7 @@ import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevEnum, DevState
+from tango import SPECTRUM, AttrWriteType, DevEnum, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -43,9 +43,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = PointingState.NONE
         self._configured_band = Band.NONE
         self._dish_mode = DishMode.STANDBY_LP
-        self._desired_pointing = []
         self._achieved_pointing = []
         self._state_duration_info = []
+        self._program_track_table = []
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -66,11 +66,14 @@ class HelperDishDevice(HelperDishLNDevice):
     achievedPointing = attribute(
         dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
     )
-    desiredPointing = attribute(
-        dtype=(float,), access=AttrWriteType.READ_WRITE, max_dim_x=3
-    )
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
+    programTrackTable = attribute(
+        dtype=SPECTRUM,
+        access=AttrWriteType.READ_WRITE,
+        max_dim_x=150,
+        max_dim_y=3,
+    )
 
     @attribute(dtype=int, access=AttrWriteType.READ)
     def kValue(self) -> int:
@@ -130,29 +133,26 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return json.dumps(self._offset)
 
-    def read_desiredPointing(self) -> list:
+    def read_programTrackTable(self) -> list:
         """
-        This method reads the desiredPointing of dishes.
+        This method reads the programTrackTable attribute of a dish.
         :rtype: list
         """
-        return self._desired_pointing
+        return self._program_track_table
 
-    def write_desiredPointing(self, value: list) -> None:
+    def write_programTrackTable(self, value: list) -> None:
         """
-        This method writes the desiredPointing of dishes.
-        :param value: The timestamp, azimuth and elevation values for the \
-            desired pointing of dishes.
+        This method writes the programTrackTable attribute of dish.
+        :param value: 50 entries of (timestamp, azimuth and elevation)
+        values of the desired pointing of dishes.
         :value dtype: list
         :rtype: None
         """
-        timestamp, azimuth, elevation = value
+        self._program_track_table = value
         self.logger.info(
-            "The desired pointing parameters are: %s, %s, %s",
-            timestamp,
-            azimuth,
-            elevation,
+            "The programTrackTable attribute value: %s",
+            self._program_track_table,
         )
-        self._desired_pointing = [timestamp, azimuth, elevation]
         self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> np.ndarray:
@@ -354,25 +354,26 @@ class HelperDishDevice(HelperDishLNDevice):
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
-            # Unpack the achieved pointing values
-            # pylint: disable=unbalanced-tuple-unpacking
-            timestamp, azimuth, elevation = self._desired_pointing
-            # pylint: enable=unbalanced-tuple-unpacking
-            # Create a numpy array
-            achieved_pointing = np.array([timestamp, azimuth, elevation])
+            for entry in self._program_track_table:
+                start_time = time.time()
+                self._achieved_pointing = entry
+                self.logger.info(
+                    "The achieved pointing value is: %s",
+                    self._achieved_pointing,
+                )
+                self.push_change_event(
+                    "achievedPointing", self._achieved_pointing
+                )
+                end_time = time.time()
+                execution_time = end_time - start_time
+                # 0.05 seconds is the pointing interval, hence used below
+                if execution_time < 0.05:
+                    time_to_sleep = 0.05 - execution_time
+                    time.sleep(time_to_sleep)
         except Exception as e:
             self.logger.exception(
-                "The desired pointing has incorrect values: %s,"
-                + "error occurred while unpacking: %s",
-                self._desired_pointing,
-                e,
+                "Exception occurred while updating achieved pointing: %s", e
             )
-        else:
-            self._achieved_pointing = achieved_pointing
-            self.logger.info(
-                "The achieved pointing value is: %s", self._achieved_pointing
-            )
-            self.push_change_event("achievedPointing", self._achieved_pointing)
 
     def _update_poiniting_state_in_sequence(self) -> None:
         """This method update pointing state in sequence as per
