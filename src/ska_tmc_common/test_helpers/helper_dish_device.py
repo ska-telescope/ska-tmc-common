@@ -69,7 +69,7 @@ class HelperDishDevice(HelperDishLNDevice):
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
     programTrackTable = attribute(
-        dtype=SPECTRUM,
+        dtype=((float,),),
         access=AttrWriteType.READ_WRITE,
         max_dim_x=150,
         max_dim_y=3,
