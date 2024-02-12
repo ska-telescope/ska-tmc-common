@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
@@ -54,23 +55,25 @@ def test_set_delay(tango_context):
 def test_program_track_table(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    programTrackTable_example = [
-        1706629796036.8691,
-        181.223951890779,
-        31.189377349638,
-        1706629796036.9192,
-        181.223951890779,
-        31.189377349638,
-        1706629796036.969,
-        181.223951890779,
-        31.189377349638,
-        1706629796037.019,
-        181.223951890779,
-        31.189377349638,
-        1706629796037.069,
-        181.223951890779,
-        31.189377349638,
-    ]
+    programTrackTable_example = np.array(
+        [
+            1706629796036.8691,
+            181.223951890779,
+            31.189377349638,
+            1706629796036.9192,
+            181.223951890779,
+            31.189377349638,
+            1706629796036.969,
+            181.223951890779,
+            31.189377349638,
+            1706629796037.019,
+            181.223951890779,
+            31.189377349638,
+            1706629796037.069,
+            181.223951890779,
+            31.189377349638,
+        ]
+    )
     dish_device.programTrackTable = programTrackTable_example
     assert dish_device.programTrackTable == programTrackTable_example
 
