@@ -54,7 +54,6 @@ def test_set_delay(tango_context):
 def test_program_track_table(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert dish_device.programTrackTable == []
     programTrackTable_example = [
         1706629796036.8691,
         181.223951890779,

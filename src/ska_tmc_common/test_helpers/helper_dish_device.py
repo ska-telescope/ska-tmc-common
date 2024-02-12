@@ -352,9 +352,12 @@ class HelperDishDevice(HelperDishLNDevice):
 
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
+        program_track_table = [
+            self._program_track_table[x : x + 3]
+            for x in range(0, len(self._program_track_table), 3)
+        ]
         try:
-            for entry in self._program_track_table:
-                start_time = time.time()
+            for entry in program_track_table:
                 self._achieved_pointing = entry
                 self.logger.info(
                     "The achieved pointing value is: %s",
@@ -363,12 +366,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 self.push_change_event(
                     "achievedPointing", self._achieved_pointing
                 )
-                end_time = time.time()
-                execution_time = end_time - start_time
-                # 0.05 seconds is the pointing interval, hence used below
-                if execution_time < 0.05:
-                    time_to_sleep = 0.05 - execution_time
-                    time.sleep(time_to_sleep)
+                time.sleep(0.05)
         except Exception as e:
             self.logger.exception(
                 "Exception occurred while updating achieved pointing: %s", e
