@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.12.9"
+version = "0.11.9"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -16,13 +16,13 @@ url = 'https://artefact.skao.int/repository/pypi-internal/simple'
 [tool.poetry.dependencies]
 python = "~3.10"
 numpy = "^1.23.0"
-pytango = "9.4.2"
+pytango = "9.3.3"
 jsonschema = "^4.0.1"
 marshmallow = "^3.14.1"
 fire = "^0.4.0"
 black = "^23.3.0"
 ska-ser-logging = "^0.4.1"
-ska-tango-base = "0.19.1"
+ska-tango-base = "0.18.1"
 ska-tango-testing = "0.6.0"
 katpoint = "1.0a2"
 ska-telmodel = "1.11.2"

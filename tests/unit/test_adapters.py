@@ -11,17 +11,18 @@ from ska_tmc_common import (
     CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
-    DishLeafAdapter,
     HelperBaseDevice,
     HelperCspMasterDevice,
     HelperCspMasterLeafDevice,
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
+    HelperMccsSubarrayLeafNode,
     HelperSubArrayDevice,
     MCCSControllerAdapter,
     MCCSMasterLeafNodeAdapter,
+    MCCSSubarrayLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubarrayAdapter,
+    SubArrayAdapter,
     TmcLeafNodeCommand,
 )
 from ska_tmc_common.test_helpers.helper_csp_subarray import HelperCspSubarray
@@ -37,9 +38,9 @@ from tests.settings import (
     HELPER_DISH_DEVICE,
     HELPER_MCCS_CONTROLLER,
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
+    HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE,
     HELPER_SDP_SUBARRAY_DEVICE,
     HELPER_SUBARRAY_DEVICE,
-    MCCS_SUBARRAY_LEAF_NODE,
 )
 
 logger = logging.getLogger(__name__)
@@ -50,10 +51,7 @@ def devices_to_load():
     return (
         {
             "class": HelperSubArrayDevice,
-            "devices": [
-                {"name": HELPER_SUBARRAY_DEVICE},
-                {"name": MCCS_SUBARRAY_LEAF_NODE},
-            ],
+            "devices": [{"name": HELPER_SUBARRAY_DEVICE}],
         },
         {
             "class": HelperBaseDevice,
@@ -69,6 +67,10 @@ def devices_to_load():
         {
             "class": HelperMCCSMasterLeafNode,
             "devices": [{"name": HELPER_MCCS_MASTER_LEAF_NODE_DEVICE}],
+        },
+        {
+            "class": HelperMccsSubarrayLeafNode,
+            "devices": [{"name": HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE}],
         },
         {
             "class": HelperCspMasterDevice,
@@ -102,7 +104,7 @@ def test_get_or_create_subarray_adapter(tango_context):
     subarray_adapter = factory.get_or_create_adapter(
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
-    assert isinstance(subarray_adapter, SubarrayAdapter)
+    assert isinstance(subarray_adapter, SubArrayAdapter)
 
 
 def test_get_or_create_dish_adapter(tango_context):
@@ -111,14 +113,6 @@ def test_get_or_create_dish_adapter(tango_context):
         HELPER_DISH_DEVICE, AdapterType.DISH
     )
     assert isinstance(dish_adapter, DishAdapter)
-
-
-def test_get_or_create_dish_leaf_node_adapter(tango_context):
-    factory = AdapterFactory()
-    dish_adapter = factory.get_or_create_adapter(
-        HELPER_DISH_DEVICE, AdapterType.DISH_LEAF_NODE
-    )
-    assert isinstance(dish_adapter, DishLeafAdapter)
 
 
 def test_get_or_create_mccs_controller_adapter(tango_context):
@@ -157,10 +151,12 @@ def test_csp_master_leaf_node_memorized_dish_vcc_attribute(tango_context):
 def test_get_or_create_mccs_subarray_leaf_node_adapter(tango_context):
     factory = AdapterFactory()
     mccs_subarray_leaf_node_adapter = factory.get_or_create_adapter(
-        MCCS_SUBARRAY_LEAF_NODE,
-        AdapterType.SUBARRAY,
+        HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE,
+        AdapterType.MCCS_SUBARRAY_LEAF_NODE,
     )
-    assert isinstance(mccs_subarray_leaf_node_adapter, SubarrayAdapter)
+    assert isinstance(
+        mccs_subarray_leaf_node_adapter, MCCSSubarrayLeafNodeAdapter
+    )
 
 
 def test_get_or_create_csp_adapter(tango_context):
@@ -228,6 +224,6 @@ def test_call_adapter_method_exception(tango_context):
         message[0]
         == "The invocation of the AssignResources command is failed on "
         + "test/subarray/1 device test/subarray/1.\n"
-        + "The following exception occurred - SubarrayAdapter.AssignResources() "
+        + "The following exception occurred - SubArrayAdapter.AssignResources() "
         + "missing 1 required positional argument: 'argin'."
     )
