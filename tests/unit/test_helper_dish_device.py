@@ -1,4 +1,5 @@
 import json
+import logging
 
 import numpy as np
 import pytest
@@ -11,6 +12,8 @@ from tests.settings import (
     DISH_DEVICE,
     FAILED_RESULT_DEFECT,
 )
+
+logger = logging.getLogger(__name__)
 
 COMMANDS = [
     "SetStandbyFPMode",
@@ -74,8 +77,14 @@ def test_program_track_table(tango_context):
             31.189377349638,
         ]
     )
+
     dish_device.programTrackTable = programTrackTable_example
+    logger.info(f"ProgramTrackTable: {dish_device.programTrackTable}")
     assert dish_device.programTrackTable == programTrackTable_example
+    assert np.array_equal(
+        dish_device.programTrackTable, np.array(programTrackTable_example)
+    )
+    assert 0
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
