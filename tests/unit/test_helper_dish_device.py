@@ -80,7 +80,7 @@ def test_program_track_table(tango_context):
 
     dish_device.programTrackTable = programTrackTable_example
     logger.info(f"ProgramTrackTable: {dish_device.programTrackTable}")
-    assert dish_device.programTrackTable == programTrackTable_example
+    # assert dish_device.programTrackTable == programTrackTable_example
     assert np.array_equal(
         dish_device.programTrackTable, np.array(programTrackTable_example)
     )
