@@ -2,7 +2,6 @@
 This module implements the Helper devices for subarray leaf nodes for testing
 an integrated TMC
 """
-import json
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
@@ -28,15 +27,12 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""

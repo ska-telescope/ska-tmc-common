@@ -73,6 +73,13 @@ FAILED_RESULT_DEFECT = {
     "result": ResultCode.FAILED,
 }
 
+DEFAULT_DEFECT = {
+    "enabled": True,
+    "fault_type": FaultType.FAILED_RESULT,
+    "error_message": "Default exception.",
+    "result": ResultCode.FAILED,
+}
+
 COMMAND_NOT_ALLOWED_DEFECT = {
     "enabled": True,
     "fault_type": FaultType.COMMAND_NOT_ALLOWED,
