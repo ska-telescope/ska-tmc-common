@@ -22,9 +22,10 @@ from ska_tmc_common.adapters import (
     CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
+    DishLeafAdapter,
     MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubArrayAdapter,
+    SubarrayAdapter,
 )
 from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
@@ -73,7 +74,8 @@ class BaseTMCCommand:
     ) -> Optional[
         Union[
             DishAdapter,
-            SubArrayAdapter,
+            DishLeafAdapter,
+            SubarrayAdapter,
             CspMasterAdapter,
             CspSubarrayAdapter,
             MCCSMasterLeafNodeAdapter,
