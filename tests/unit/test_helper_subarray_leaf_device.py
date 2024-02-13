@@ -76,7 +76,7 @@ def test_clear_commandCallInfo(tango_context):
     _, _ = subarray_leaf_device.command_inout("Configure", "")
     subarray_leaf_device.command_inout("ClearCommandCallInfo")
     command_call_info = subarray_leaf_device.commandCallInfo
-    assert command_call_info == ()
+    assert command_call_info is None
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
@@ -113,7 +113,6 @@ def test_assign_resources_stuck_in_intermediate_state(tango_context):
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
         "result": ResultCode.FAILED,
-        "error_message": "Device is stuck in Resourcing state",
         "intermediate_state": ObsState.RESOURCING,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))

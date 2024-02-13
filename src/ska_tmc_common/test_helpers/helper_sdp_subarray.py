@@ -42,12 +42,15 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
-        self.defective_params = {
-            "enabled": False,
-            "fault_type": FaultType.FAILED_RESULT,
-            "error_message": "Default exception.",
-            "result": ResultCode.FAILED,
-        }
+        self._defective = json.dumps(
+            {
+                "enabled": False,
+                "fault_type": FaultType.FAILED_RESULT,
+                "error_message": "Default exception.",
+                "result": ResultCode.FAILED,
+            }
+        )
+        self.defective_params = json.loads(self._defective)
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = json.dumps(
@@ -133,7 +136,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :rtype: str
         """
-        return json.dumps(self.defective_params)
+        return self._defective
 
     def push_command_result(
         self, result: ResultCode, command: str, exception: str = ""
@@ -440,7 +443,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.logger.info("Wrong scan_type in the Configure input json")
             self._obs_state = ObsState.IDLE
             thread = threading.Timer(
-                1, self.push_obs_state_event, args=[self._obs_state]
+                5, self.push_obs_state_event, args=[self._obs_state]
             )
             thread.start()
             raise tango.Except.throw_exception(
@@ -589,6 +592,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             if self._state_duration_info:
                 self._follow_state_duration()
             else:
+                self._obs_state = ObsState.CONFIGURING
+                self.push_obs_state_event(self._obs_state)
                 thread = threading.Timer(
                     self._command_delay_info[END],
                     self.update_device_obsstate,

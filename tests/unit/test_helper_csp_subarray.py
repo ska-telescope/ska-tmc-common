@@ -6,7 +6,7 @@ from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import DevFactory
 from ska_tmc_common.test_helpers.helper_csp_subarray import HelperCspSubarray
-from tests.settings import CSP_SUBARRAY_DEVICE, DEFAULT_DEFECT
+from tests.settings import CSP_SUBARRAY_DEVICE
 
 
 @pytest.fixture(scope="module")
@@ -47,7 +47,7 @@ def test_set_delay(tango_context):
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    csp_subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT))
+    csp_subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."
@@ -82,7 +82,7 @@ def test_command_without_argin(tango_context, command):
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    csp_subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT))
+    csp_subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."
@@ -100,7 +100,7 @@ def test_scan_command(tango_context):
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    csp_subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT))
+    csp_subarray_device.SetDefective(json.dumps({"enabled": True}))
     result, message = csp_subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
     assert message[0] == "Default exception."
