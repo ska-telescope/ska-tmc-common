@@ -175,8 +175,8 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
+        self._isSubsystemAvailable = False
         self._command_in_progress = ""
-        self._defective = False
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
             CONFIGURE: 2,
@@ -194,15 +194,12 @@ class HelperSubArrayDevice(SKASubarray):
         self._state_duration_info = []
         self._delay = 2
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
+        self.defective_params = {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -221,13 +218,14 @@ class HelperSubArrayDevice(SKASubarray):
             )
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("assignedResources", True, False)
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             return ResultCode.OK, ""
 
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
 
-    defective = attribute(dtype=bool, access=AttrWriteType.READ)
+    defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -246,6 +244,8 @@ class HelperSubArrayDevice(SKASubarray):
 
     scanId = attribute(dtype="DevLong", access=AttrWriteType.READ)
 
+    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+
     @attribute(dtype=("DevString"), max_dim_x=1024)
     def assignedResources(self) -> list:
         return self._assigned_resources
@@ -257,6 +257,30 @@ class HelperSubArrayDevice(SKASubarray):
     def read_obsStateTransitionDuration(self):
         """Read transition"""
         return json.dumps(self._state_duration_info)
+
+    def read_isSubsystemAvailable(self) -> bool:
+        """
+        Returns avalability status for the leaf nodes devices
+
+        :rtype: bool
+        """
+        return self._isSubsystemAvailable
+
+    @command(
+        dtype_in=bool,
+        doc_in="Set Availability of the device",
+    )
+    def SetisSubsystemAvailable(self, value: bool) -> None:
+        """
+        Sets Availability of the device
+        :rtype: bool
+        """
+        self.logger.info("Setting the avalability value to : %s", value)
+        if self._isSubsystemAvailable != value:
+            self._isSubsystemAvailable = value
+            self.push_change_event(
+                "isSubsystemAvailable", self._isSubsystemAvailable
+            )
 
     @command(
         dtype_in=str,
@@ -316,7 +340,7 @@ class HelperSubArrayDevice(SKASubarray):
         This method is used to read the value of the attribute defective
         :rtype:bool
         """
-        return self._defective
+        return json.dumps(self.defective_params)
 
     def read_receiveAddresses(self) -> str:
         """
@@ -701,7 +725,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Target obsStates are: %s",
                 self.defective_params.get("target_obsstates"),
             )
-            if "target_obsstates" in self.defective_params.keys():
+            if "target_obsstates" in self.defective_params:
                 # Utilise target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
                 # ResultCode.FAILED
@@ -772,8 +796,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         input_dict = json.loads(values)
         self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
+        self.defective_params = input_dict
 
     @command(
         dtype_out="DevVarLongStringArray",
