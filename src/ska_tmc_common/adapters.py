@@ -114,6 +114,16 @@ class CspMasterAdapter(BaseAdapter):
     """
 
     @property
+    def adminMode(self):
+        """Return AdminMode of CSP Master"""
+        return self._proxy.adminMode
+
+    @property
+    def state(self):
+        """Return current state of CSP Master"""
+        return self._proxy.state()
+
+    @property
     def sourceDishVccConfig(self):
         """Return sourceDishVccConfig value of Csp Master proxy"""
         return self._proxy.sourceDishVccConfig
