@@ -11,7 +11,6 @@ commands_with_argin = [
     "AssignResources",
     "Scan",
     "Configure",
-    "Scan",
     "ReleaseResources",
 ]
 commands_without_argin = [
