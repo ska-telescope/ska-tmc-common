@@ -16,7 +16,7 @@ from ska_tango_base.control_model import ObsState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
+from ska_tmc_common.test_helpers.helper_subarray_device import HelperSubArrayDevice
 
 from .constants import (
     ASSIGN_RESOURCES,
@@ -29,7 +29,7 @@ from .constants import (
 )
 
 
-class HelperMccsSubarrayDevice(HelperBaseDevice):
+class HelperMccsSubarrayDevice(HelperSubArrayDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes
     devices."""
 
@@ -42,7 +42,7 @@ class HelperMccsSubarrayDevice(HelperBaseDevice):
         self._command_call_info = []
         self._command_info = ("", "")
 
-    class InitCommand(HelperBaseDevice.InitCommand):
+    class InitCommand(HelperSubArrayDevice.InitCommand):
         """A class for the HelperMccsSubarrayDevice's init_device()
         "command"."""
 
@@ -53,7 +53,6 @@ class HelperMccsSubarrayDevice(HelperBaseDevice):
             super().do()
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandCallInfo", True, False)
-            self._device.op_state_model.perform_action("component_on")
             return ResultCode.OK, ""
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
