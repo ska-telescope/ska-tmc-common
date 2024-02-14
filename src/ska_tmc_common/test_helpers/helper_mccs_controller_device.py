@@ -173,7 +173,12 @@ class HelperMCCSController(HelperBaseDevice):
 
             command_result = (
                 command_id,
-                f"Exception occurred on device: {self.get_name()}",
+                json.dumps(
+                    [
+                        ResultCode.FAILED,
+                        f"Exception occured on device: {self.get_name()}",
+                    ]
+                ),
             )
             self.logger.info("exception will be raised as %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
@@ -196,9 +201,12 @@ class HelperMCCSController(HelperBaseDevice):
         """
 
         if exception:
-            command_result = (command_id, exception)
+            command_result = (
+                command_id,
+                json.dumps([ResultCode.FAILED, exception]),
+            )
             self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
+        command_result = (command_id, json.dumps([result, ""]))
 
         self.push_change_event("longRunningCommandResult", command_result)
         self.logger.info(
@@ -217,8 +225,6 @@ class HelperMCCSController(HelperBaseDevice):
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
             )
-
-            time.sleep(0.1)
 
         self.push_command_result(command_id, ResultCode.OK)
 
