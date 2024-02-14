@@ -8,9 +8,9 @@ commands_with_argin = [
     "AssignResources",
     "Scan",
     "Configure",
-    "ReleaseAllResources",
 ]
 commands_without_argin = [
+    "ReleaseAllResources",
     "EndScan",
     "Restart",
     "End",
