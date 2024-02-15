@@ -59,6 +59,7 @@ class HelperMCCSController(HelperBaseDevice):
     def induce_fault(
         self,
         command_name: str,
+        command_id: str,
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -129,15 +130,15 @@ class HelperMCCSController(HelperBaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name, fault_message],
+                args=[command_id, result, fault_message],
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
-        return [ResultCode.OK], [""]
+        return [ResultCode.OK], [command_id]
 
     @command(
         dtype_in=str,
@@ -261,16 +262,14 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Allocate"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "Allocate",
-            )
+            return self.induce_fault("Allocate", command_id)
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Thread(
                 target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
@@ -323,9 +322,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Release"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "Release",
-            )
+            return self.induce_fault("Release", command_id)
 
         if self._raise_exception:
             self.logger.info("exception thread")
@@ -333,7 +330,7 @@ class HelperMCCSController(HelperBaseDevice):
                 target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
@@ -383,9 +380,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-RestartSubarray"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "RestartSubarray",
-            )
+            return self.induce_fault("RestartSubarray", command_id)
 
         if self._raise_exception:
             self.logger.info("exception thread")
@@ -393,7 +388,7 @@ class HelperMCCSController(HelperBaseDevice):
                 target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{argin:02}"
         dev_factory = DevFactory()
