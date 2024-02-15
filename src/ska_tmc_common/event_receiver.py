@@ -4,6 +4,7 @@ from the sub devices managed by a TMC node.
 """
 
 import threading
+from concurrent import futures
 from logging import Logger
 from time import sleep
 from typing import Callable, Optional
@@ -71,21 +72,27 @@ class EventReceiver:
         The run method for the Event Receiver thread. Runs in a loop to
         subscribe events on the devices.
         """
-        with tango.EnsureOmniThread():
+        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
+            max_workers=self._max_workers
+        ) as executor:
             while not self._stop:
                 try:
                     if hasattr(self._component_manager, "devices"):
                         for dev_info in self._component_manager.devices:
-                            self.submit_task(dev_info)
+                            self.submit_task(executor, dev_info)
                     else:
                         dev_info = self._component_manager.get_device()
-                        self.submit_task(dev_info)
+                        self.submit_task(executor, dev_info)
                 except Exception as e:
                     self._logger.warning("Exception occurred: %s", e)
                 sleep(self._sleep_time)
 
-    def submit_task(self, device_info: DeviceInfo) -> None:
+    def submit_task(
+        self, executor: futures.ThreadPoolExecutor, device_info: DeviceInfo
+    ) -> None:
         """Submits the task to the executor for the given device info object.
+
+        :param executor: Threadpoolexecutor object
 
         :param device_info: DeviceInfo object for the device on which events
             are to be subscribed.
@@ -94,7 +101,8 @@ class EventReceiver:
         :rtype: None
         """
         if device_info.last_event_arrived is None:
-            self.subscribe_events(
+            executor.submit(
+                self.subscribe_events,
                 dev_info=device_info,
                 attribute_dictionary=(self.attribute_dictionary),
             )

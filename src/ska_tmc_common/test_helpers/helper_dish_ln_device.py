@@ -121,7 +121,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         :rtype: str
         """
-        return json.dumps(self.defective_params)
+        return self._defective
 
     def read_actualPointing(self) -> str:
         """Read method for actual pointing."""

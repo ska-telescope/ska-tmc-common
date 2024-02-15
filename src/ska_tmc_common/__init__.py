@@ -18,11 +18,11 @@ from .adapters import (
     CspMasterLeafNodeAdapter,
     CspSubarrayAdapter,
     DishAdapter,
-    DishLeafAdapter,
     MCCSControllerAdapter,
     MCCSMasterLeafNodeAdapter,
+    MCCSSubarrayLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubarrayAdapter,
+    SubArrayAdapter,
 )
 from .aggregators import Aggregator
 from .dev_factory import DevFactory
@@ -78,7 +78,9 @@ from .test_helpers.helper_mccs_controller_device import HelperMCCSController
 from .test_helpers.helper_mccs_master_leaf_node_device import (
     HelperMCCSMasterLeafNode,
 )
-from .test_helpers.helper_mccs_subarray_device import HelperMccsSubarrayDevice
+from .test_helpers.helper_mccs_subarray_leaf_node_device import (
+    HelperMccsSubarrayLeafNode,
+)
 from .test_helpers.helper_sdp_queue_connector_device import (
     HelperSdpQueueConnector,
 )
@@ -109,15 +111,15 @@ __all__ = [
     "AdapterFactory",
     "AdapterType",
     "DishAdapter",
-    "DishLeafAdapter",
     "CspMasterAdapter",
     "CspSubarrayAdapter",
-    "SubarrayAdapter",
+    "SubArrayAdapter",
     "SdpSubArrayAdapter",
     "BaseAdapter",
     "MCCSMasterLeafNodeAdapter",
     "MCCSControllerAdapter",
     "CspMasterLeafNodeAdapter",
+    "MCCSSubarrayLeafNodeAdapter",
     "Aggregator",
     "DevFactory",
     "DeviceInfo",
@@ -169,6 +171,7 @@ __all__ = [
     "HelperDishLNDevice",
     "HelperMCCSController",
     "HelperMCCSMasterLeafNode",
+    "HelperMccsSubarrayLeafNode",
     "HelperSubArrayDevice",
     "HelperCspMasterDevice",
     "HelperCspMasterLeafDevice",
@@ -180,5 +183,4 @@ __all__ = [
     "DummyComponentManager",
     "DummyTmcDevice",
     "HelperSdpQueueConnector",
-    "HelperMccsSubarrayDevice",
 ]
