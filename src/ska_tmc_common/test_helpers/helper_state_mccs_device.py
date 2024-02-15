@@ -1,41 +1,29 @@
 """
-This module implements the Helper MCCS master leaf node devices for testing
+This module implements the Helper MCCS subarray devices for testing
 an integrated TMC
 """
 # pylint: disable=unused-argument
 import json
-import threading
-import time
 from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango.server import command
+from tango import AttrWriteType
+from tango.server import attribute, command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
-class HelperMCCSMasterLeafNode(HelperBaseDevice):
-    """A helper MCCS master leafnode device for triggering state
-    changes with a command"""
+class HelperMCCSStateDevice(HelperBaseDevice):
+    """A generic device for triggering state changes with a command"""
 
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
-        self._delay: int = 2
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
@@ -47,36 +35,18 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             :rtype:tuple
             """
             super().do()
-            self._device.set_change_event("isSubsystemAvailable", True, False)
-            self._device.op_state_model.perform_action("component_on")
+            self._device._assigned_resources = "{ }"
+            self._device.set_change_event("assignedResources", True, False)
             return (ResultCode.OK, "")
 
-    def push_command_result(
-        self, result: ResultCode, command_id: str, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
+    assignedResources = attribute(dtype="DevString", access=AttrWriteType.READ)
 
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
+    def read_assignedResources(self) -> str:
         """
-        if exception:
-            command_result = (command_id, exception)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
-        thread = threading.Timer(
-            self._delay,
-            function=self.push_change_event,
-            args=["longRunningCommandResult", command_result],
-        )
-        thread.start()
+        Reads the values of the assignedResources
+        :rtype:str
+        """
+        return self._device._assigned_resources
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -108,22 +78,27 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes AssignResources command on MCCS
-        master leaf node device.
+        This method invokes AssignResources command on subarray device
 
         :return: a tuple containing ResultCode and Message
         :rtype: Tuple
         """
-        command_id = f"{time.time()}-AssignResources"
-        if self.defective_params["enabled"]:
-            return self.induce_fault(command_id)
-        self.push_command_result(ResultCode.OK, command_id)
-        self.logger.info("AssignResourses command complete")
-        return [ResultCode.OK], [command_id]
+        # pylint:disable=line-too-long
+        assigned_resources = {
+            "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
+            "subarray_beam_ids": [1],
+            "station_ids": [[1, 2]],
+            "channel_blocks": [3],
+        }
+        # pylint:enable=line-too-long
+        self._assigned_resources = json.dumps(assigned_resources)
+        self.push_change_event("assignedResources", self._assigned_resources)
+        self.logger.info("AssignResources command completed.")
+        return [ResultCode.OK], [""]
 
-    def is_ReleaseAllResources_allowed(self) -> bool:
+    def is_ReleaseResources_allowed(self) -> bool:
         """
-        Check if command `ReleaseAllResources` is allowed in the current
+        Check if command `ReleaseResources` is allowed in the current
         device state.
 
         :return: ``True`` if the command is allowed
@@ -147,19 +122,23 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def ReleaseAllResources(
+    def ReleaseResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes ReleaseAllResources command on MCCS
-        master leaf node device.
+        This method invokes ReleaseResources command on subarray device
 
-        :return: a tuple containing ResultCode and Message
+        :return: a tuple conataining Resultcose and Message
         :rtype: Tuple
         """
-        command_id = f"{time.time()}-ReleaseAllResources"
-        if self.defective_params["enabled"]:
-            return self.induce_fault(command_id)
-        self.push_command_result(ResultCode.OK, command_id)
-        self.logger.info("ReleaseAllResources command complete")
-        return [ResultCode.OK], [command_id]
+        # pylint:disable=line-too-long
+        tmpDict = {
+            "interface": "https://schema.skatelescope.org/ska-low-mccs-assignedresources/1.0",
+            "subarray_beam_ids": [],
+            "station_ids": [],
+            "channel_blocks": [],
+        }
+        # pylint:enable=line-too-long
+        self._assigned_resources = json.dumps(tmpDict)
+        self.logger.info("ReleaseResources command completed.")
+        return [ResultCode.OK], [""]

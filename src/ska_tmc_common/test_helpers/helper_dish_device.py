@@ -43,9 +43,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = PointingState.NONE
         self._configured_band = Band.NONE
         self._dish_mode = DishMode.STANDBY_LP
+        self._desired_pointing = []
         self._achieved_pointing = []
         self._state_duration_info = []
-        self._program_track_table = []
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -66,20 +66,16 @@ class HelperDishDevice(HelperDishLNDevice):
     achievedPointing = attribute(
         dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
     )
+    desiredPointing = attribute(
+        dtype=(float,), access=AttrWriteType.READ_WRITE, max_dim_x=3
+    )
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
-    programTrackTable = attribute(
-        dtype=(float,),
-        access=AttrWriteType.READ_WRITE,
-        max_dim_x=150,
-    )
 
     @attribute(dtype=int, access=AttrWriteType.READ)
     def kValue(self) -> int:
         """
-        This attribute is used for storing dish kvalue
-        into tango DB.Made this attribute memorized so that when device
-        restart then previous set kvalue will be used validation.
+        Attribute for the dish k-value.
         """
         return self._kvalue
 
@@ -132,26 +128,29 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return json.dumps(self._offset)
 
-    def read_programTrackTable(self) -> list:
+    def read_desiredPointing(self) -> list:
         """
-        This method reads the programTrackTable attribute of a dish.
+        This method reads the desiredPointing of dishes.
         :rtype: list
         """
-        return self._program_track_table
+        return self._desired_pointing
 
-    def write_programTrackTable(self, value: list) -> None:
+    def write_desiredPointing(self, value: list) -> None:
         """
-        This method writes the programTrackTable attribute of dish.
-        :param value: 50 entries of (timestamp, azimuth and elevation)
-        values of the desired pointing of dishes.
+        This method writes the desiredPointing of dishes.
+        :param value: The timestamp, azimuth and elevation values for the \
+            desired pointing of dishes.
         :value dtype: list
         :rtype: None
         """
-        self._program_track_table = value
+        timestamp, azimuth, elevation = value
         self.logger.info(
-            "The programTrackTable attribute value: %s",
-            self._program_track_table,
+            "The desired pointing parameters are: %s, %s, %s",
+            timestamp,
+            azimuth,
+            elevation,
         )
+        self._desired_pointing = [timestamp, azimuth, elevation]
         self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> np.ndarray:
@@ -321,78 +320,28 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
-    def push_command_status(
-        self,
-        status,
-        command: str,
-        command_id=None,
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-        if status == "COMPLETED":
-            self.logger.info("Successfully processed %s command", command)
-        elif status == "FAILED":
-            self.logger.info(
-                "Command %s failed, TaskStatus: %d", command, status
-            )
-        command_id = command_id or f"{time.time()}-{command}"
-        command_status = (command_id, status)
-        self.push_change_event("longRunningCommandStatus", command_status)
-
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
-        program_track_table = [
-            self._program_track_table[x : x + 3]
-            for x in range(0, len(self._program_track_table), 3)
-        ]
         try:
-            for entry in program_track_table:
-                self._achieved_pointing = entry
-                self.logger.info(
-                    "The achieved pointing value is: %s",
-                    self._achieved_pointing,
-                )
-                self.push_change_event(
-                    "achievedPointing", self._achieved_pointing
-                )
-                time.sleep(0.05)
+            # Unpack the achieved pointing values
+            # pylint: disable=unbalanced-tuple-unpacking
+            timestamp, azimuth, elevation = self._desired_pointing
+            # pylint: enable=unbalanced-tuple-unpacking
+            # Create a numpy array
+            achieved_pointing = np.array([timestamp, azimuth, elevation])
         except Exception as e:
             self.logger.exception(
-                "Exception occurred while updating achieved pointing: %s", e
+                "The desired pointing has incorrect values: %s,"
+                + "error occurred while unpacking: %s",
+                self._desired_pointing,
+                e,
             )
-
-    def _update_poiniting_state_in_sequence(self) -> None:
-        """This method update pointing state in sequence as per
-        state duration info
-        """
-        with tango.EnsureOmniThread():
-            for poiniting_state, duration in self._state_duration_info:
-                pointing_state_enum = PointingState[poiniting_state]
-                self.logger.info(
-                    "Sleep %s sec for pointing state %s",
-                    duration,
-                    poiniting_state,
-                )
-                time.sleep(duration)
-                self.set_pointing_state(pointing_state_enum)
-
-    def _follow_state_duration(self):
-        """This method will update pointing state as per state duration"""
-        thread = threading.Thread(
-            target=self._update_poiniting_state_in_sequence,
-        )
-        thread.start()
+        else:
+            self._achieved_pointing = achieved_pointing
+            self.logger.info(
+                "The achieved pointing value is: %s", self._achieved_pointing
+            )
+            self.push_change_event("achievedPointing", self._achieved_pointing)
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -738,46 +687,36 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevVarFloatArray"),
+        dtype_in=("DevString"),
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def TrackLoadStaticOff(
-        self, argin: List[float]
+        self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackLoadStaticOff command on Dish Master.
 
         :param argin: A list containing scan_id/ time, cross elevation and
             elevation offsets.
-        :argin dtype: List(float)
+        :argin dtype: str(List)
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info(
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
 
+        if self.defective_params["enabled"]:
+            return self.induce_fault("TrackLoadStaticOff")
+
         # Set offsets.
-        cross_elevation = argin[0]
-        elevation = argin[1]
+        input_offsets = json.loads(argin)
+        cross_elevation = input_offsets[0]
+        elevation = input_offsets[1]
         self.set_offset(cross_elevation, elevation)
-        if self.defective_params[
-            "enabled"
-        ]:  # Temporary change to set status as failed.
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_status,
-                args=["FAILED", "TrackLoadStaticOff"],
-            )
-        else:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_status,
-                args=["COMPLETED", "TrackLoadStaticOff"],
-            )
-        thread.start()
-        self.logger.info("Invocation of TrackLoadStaticOff command completed.")
-        return ([ResultCode.QUEUED], [""])
+        self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
+        self.logger.info("TrackLoadStaticOff command completed.")
+        return ([ResultCode.OK], [""])
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
@@ -1147,7 +1086,8 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
-        self.push_command_status("COMPLETED", "Scan")
+
+            # TBD: Add your dish mode change logic here if required
         self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])
 

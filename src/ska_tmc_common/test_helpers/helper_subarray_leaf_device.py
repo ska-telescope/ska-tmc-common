@@ -68,8 +68,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     obsState = attribute(dtype=ObsState, access=AttrWriteType.READ)
 
-    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
-
     obsStateTransitionDuration = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
@@ -97,7 +95,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         :rtype: dict
         """
-        return json.dumps(self.defective_params)
+        return self._defective
 
     def read_delay(self) -> int:
         """This method is used to read the attribute value for delay."""
