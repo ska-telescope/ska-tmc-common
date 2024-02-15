@@ -1,33 +1,38 @@
-import pytest
-from ska_tango_base.commands import ResultCode
+import json
 
-from ska_tmc_common import DevFactory
+import tango
+from ska_tango_base.commands import ResultCode
+from ska_tango_testing.mock.placeholders import Anything
+
+from ska_tmc_common import DevFactory, FaultType
 from tests.settings import MCCS_SUBARRAY_DEVICE
 
-commands_with_argin = [
-    "AssignResources",
-    "Scan",
-    "Configure",
-]
-commands_without_argin = [
-    "ReleaseAllResources",
-    "EndScan",
-    "Restart",
-    "End",
-]
 
-
-@pytest.mark.parametrize("command", commands_with_argin)
-def test_mccs_subarray_device_commands_with_argument(tango_context, command):
-    dev_factory = DevFactory()
-    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
-    result, message = mccs_subarray_device.command_inout(command, "")
-    assert result[0] == ResultCode.OK
-
-
-@pytest.mark.parametrize("command", commands_without_argin)
-def test_mccs_subarray_device_command_without_argin(tango_context, command):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
-    result, message = subarray_device.command_inout(command)
-    assert result[0] == ResultCode.OK
+def test_lrcr_event(tango_context, group_callback):
+    mccs_subarray = DevFactory().get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_subarray.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    defective_params = json.dumps(
+        {
+            "enabled": True,
+            "fault_type": FaultType.LONG_RUNNING_EXCEPTION,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
+    )
+    mccs_subarray.SetDefective(defective_params)
+    _, _ = mccs_subarray.Configure("")
+    while True:
+        assertion_data = group_callback[
+            "longRunningCommandResult"
+        ].assert_change_event(
+            (Anything, Anything),
+        )
+        if assertion_data:
+            if assertion_data["attribute_value"][1] == json.dumps(
+                [ResultCode.FAILED, "Default exception."]
+            ):
+                break

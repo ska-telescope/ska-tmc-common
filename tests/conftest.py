@@ -12,6 +12,9 @@ from os.path import dirname, join
 import pytest
 import tango
 from ska_tango_testing.mock import MockCallable
+from ska_tango_testing.mock.tango.event_callback import (
+    MockTangoEventCallbackGroup,
+)
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
@@ -26,6 +29,7 @@ from ska_tmc_common import (
     HelperDishLNDevice,
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
+    HelperMccsSubarrayDevice,
     HelperSdpQueueConnector,
     HelperSdpSubarrayLeafDevice,
     HelperSubArrayDevice,
@@ -98,6 +102,11 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": SUBARRAY_DEVICE},
+            ],
+        },
+        {
+            "class": HelperMccsSubarrayDevice,
+            "devices": [
                 {"name": MCCS_SUBARRAY_DEVICE},
             ],
         },
@@ -171,6 +180,19 @@ def tango_context(devices_to_load, request):
             yield context
     else:
         yield None
+
+
+@pytest.fixture
+def group_callback() -> MockTangoEventCallbackGroup:
+    """Creates a mock callback group for asynchronous testing
+
+    :rtype: MockTangoEventCallbackGroup
+    """
+    group_callback = MockTangoEventCallbackGroup(
+        "longRunningCommandResult",
+        timeout=50,
+    )
+    return group_callback
 
 
 @pytest.fixture
