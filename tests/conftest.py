@@ -12,6 +12,9 @@ from os.path import dirname, join
 import pytest
 import tango
 from ska_tango_testing.mock import MockCallable
+from ska_tango_testing.mock.tango.event_callback import (
+    MockTangoEventCallbackGroup,
+)
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
@@ -26,7 +29,7 @@ from ska_tmc_common import (
     HelperDishLNDevice,
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
-    HelperMccsSubarrayLeafNode,
+    HelperMccsSubarrayDevice,
     HelperSdpQueueConnector,
     HelperSdpSubarrayLeafDevice,
     HelperSubArrayDevice,
@@ -41,7 +44,6 @@ from tests.settings import (
     HELPER_CSP_MASTER_LEAF_DEVICE,
     HELPER_MCCS_CONTROLLER,
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
-    HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE,
     HELPER_SDP_QUEUE_CONNECTOR_DEVICE,
     MCCS_SUBARRAY_DEVICE,
     SDP_LEAF_NODE_DEVICE,
@@ -100,6 +102,11 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": SUBARRAY_DEVICE},
+            ],
+        },
+        {
+            "class": HelperMccsSubarrayDevice,
+            "devices": [
                 {"name": MCCS_SUBARRAY_DEVICE},
             ],
         },
@@ -152,12 +159,6 @@ def devices_to_load():
             ],
         },
         {
-            "class": HelperMccsSubarrayLeafNode,
-            "devices": [
-                {"name": HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE},
-            ],
-        },
-        {
             "class": HelperSdpQueueConnector,
             "devices": [
                 {"name": HELPER_SDP_QUEUE_CONNECTOR_DEVICE},
@@ -179,6 +180,19 @@ def tango_context(devices_to_load, request):
             yield context
     else:
         yield None
+
+
+@pytest.fixture
+def group_callback() -> MockTangoEventCallbackGroup:
+    """Creates a mock callback group for asynchronous testing
+
+    :rtype: MockTangoEventCallbackGroup
+    """
+    group_callback = MockTangoEventCallbackGroup(
+        "longRunningCommandResult",
+        timeout=50,
+    )
+    return group_callback
 
 
 @pytest.fixture

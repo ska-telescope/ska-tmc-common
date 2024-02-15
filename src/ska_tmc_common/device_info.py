@@ -252,7 +252,7 @@ class DishDeviceInfo(DeviceInfo):
         self.configured_band = Band.NONE
         self.rx_capturing_data = 0
         self.achieved_pointing = []
-        self.desired_pointing = []
+        self.program_track_table = []
         self._kvalue = 0
 
     @property
@@ -286,7 +286,7 @@ class DishDeviceInfo(DeviceInfo):
             self.configured_band = dish_device_info.configured_band
             self.rx_capturing_data = dish_device_info.rx_capturing_data
             self.achieved_pointing = dish_device_info.achieved_pointing
-            self.desired_pointing = dish_device_info.desired_pointing
+            self.program_track_table = dish_device_info.program_track_table
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DishDeviceInfo, DeviceInfo)):
@@ -304,5 +304,5 @@ class DishDeviceInfo(DeviceInfo):
         super_dict["configuredBand"] = str(Band(self.configured_band))
         super_dict["rxCapturingData"] = self.rx_capturing_data
         super_dict["achievedPointing"] = self.achieved_pointing
-        super_dict["desiredPointing"] = self.desired_pointing
+        super_dict["program_track_table"] = self.program_track_table
         return super_dict
