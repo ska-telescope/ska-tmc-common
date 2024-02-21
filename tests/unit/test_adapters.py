@@ -154,6 +154,24 @@ def test_csp_master_leaf_node_memorized_dish_vcc_attribute(tango_context):
     )
 
 
+def test_dish_adapter_program_track_table(tango_context):
+    """Test program_track_table property on dish adapter"""
+    factory = AdapterFactory()
+    dish_adapter = factory.get_or_create_adapter(
+        HELPER_DISH_DEVICE, AdapterType.DISH
+    )
+    dish_adapter.program_track_table = [
+        1706629796036.8691,
+        181.223951890779,
+        31.189377349638,
+    ]
+    assert dish_adapter.program_track_table == [
+        1706629796036.8691,
+        181.223951890779,
+        31.189377349638,
+    ]
+
+
 def test_get_or_create_mccs_subarray_leaf_node_adapter(tango_context):
     factory = AdapterFactory()
     mccs_subarray_leaf_node_adapter = factory.get_or_create_adapter(
