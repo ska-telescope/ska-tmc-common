@@ -465,6 +465,20 @@ class DishAdapter(DishLeafAdapter):
         """
         return self._proxy.TrackLoadStaticOff(argin)
 
+    @property
+    def program_track_table(self) -> List[float]:
+        """
+        Returns Dish Manager's programTrackTable attribute value.
+        """
+        return self._proxy.programTrackTable
+
+    @program_track_table.setter
+    def program_track_table(self, program_track_table) -> None:
+        """
+        Sets Dish Manager's programTrackTable attribute.
+        """
+        self._proxy.programTrackTable = program_track_table
+
 
 class CspSubarrayAdapter(SubarrayAdapter):
     """
