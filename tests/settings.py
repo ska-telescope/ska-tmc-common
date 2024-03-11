@@ -73,7 +73,7 @@ FAILED_RESULT_DEFECT = {
     "result": ResultCode.FAILED,
 }
 
-DEFAULT_DEFECT = {
+DEFAULT_DEFECT_SETTINGS = {
     "enabled": True,
     "fault_type": FaultType.FAILED_RESULT,
     "error_message": "Default exception.",
