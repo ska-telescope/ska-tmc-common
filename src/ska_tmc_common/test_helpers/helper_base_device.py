@@ -195,7 +195,6 @@ class HelperBaseDevice(SKABaseDevice):
             self._obs_state = intermediate_state
             self.push_obs_state_event(intermediate_state)
             return [ResultCode.QUEUED], [""]
-        self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
 
     def push_command_result(

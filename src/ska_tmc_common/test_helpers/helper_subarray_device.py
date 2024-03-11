@@ -797,7 +797,12 @@ class HelperSubArrayDevice(SKASubarray):
             command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
-                f"Exception occured on device: {self.get_name()}",
+                json.dumps(
+                    [
+                        ResultCode.FAILED,
+                        f"Exception occured on device: {self.get_name()}",
+                    ]
+                ),
             )
             self.logger.info(
                 "pushing longRunningCommandResult %s event", command_result
