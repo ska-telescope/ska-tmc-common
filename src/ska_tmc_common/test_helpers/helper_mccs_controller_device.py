@@ -180,36 +180,6 @@ class HelperMCCSController(HelperBaseDevice):
             self.logger.info("exception will be raised as %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
 
-    def push_command_result(
-        self, command_id: str, result: ResultCode, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-
-        if exception:
-            command_result = (
-                command_id,
-                json.dumps([ResultCode.FAILED, exception]),
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps([result, ""]))
-
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
-        )
-
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
     ) -> None:

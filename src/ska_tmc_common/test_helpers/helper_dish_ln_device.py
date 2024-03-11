@@ -281,39 +281,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
 
-    def push_command_result(
-        self,
-        result: ResultCode,
-        command: str,
-        exception: str = "",
-        command_id=None,
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-        if result == ResultCode.OK:
-            self.logger.info("Successfully processed %s command", command)
-        else:
-            self.logger.info(
-                "Command %s failed, ResultCode: %d", command, result
-            )
-        command_id = command_id or f"{time.time()}-{command}"
-        if exception:
-            command_result = (command_id, exception)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
-        self.push_change_event("longRunningCommandResult", command_result)
-
     def is_Off_allowed(self) -> bool:
         if self.defective_params["enabled"]:
             if (
