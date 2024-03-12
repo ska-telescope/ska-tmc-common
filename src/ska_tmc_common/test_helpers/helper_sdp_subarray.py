@@ -42,12 +42,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         super().init_device()
         self._delay = 2
         self._obs_state = ObsState.EMPTY
-        self.defective_params = {
-            "enabled": False,
-            "fault_type": FaultType.FAILED_RESULT,
-            "error_message": "Default exception.",
-            "result": ResultCode.FAILED,
-        }
         self._state = DevState.OFF
         # pylint:disable=line-too-long
         self._receive_addresses = json.dumps(

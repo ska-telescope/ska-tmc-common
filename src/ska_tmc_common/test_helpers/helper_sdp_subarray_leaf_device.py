@@ -12,7 +12,6 @@ from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType
 from tango.server import attribute, command, run
 
-from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
     HelperSubarrayLeafDevice,
 )
@@ -27,12 +26,6 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
         self._raise_exception = False
-        self.defective_params = {
-            "enabled": False,
-            "fault_type": FaultType.FAILED_RESULT,
-            "error_message": "Default exception.",
-            "result": ResultCode.FAILED,
-        }
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
