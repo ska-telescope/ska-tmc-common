@@ -270,7 +270,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_in=bool,
         doc_in="Set Availability of the device",
     )
-    def SetisSubsystemAvailable(self, value: bool) -> None:
+    def SetSubsystemAvailable(self, value: bool) -> None:
         """
         Sets Availability of the device
         :rtype: bool

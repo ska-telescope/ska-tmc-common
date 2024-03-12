@@ -352,24 +352,17 @@ class HelperDishDevice(HelperDishLNDevice):
 
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
-        program_track_table = [
-            self._program_track_table[x : x + 3]
-            for x in range(0, len(self._program_track_table), 3)
-        ]
         try:
-            for entry in program_track_table:
-                self._achieved_pointing = entry
+            for i in range(0, len(self._program_track_table), 3):
+                entry = self._program_track_table[i : i + 3]  # noqa
                 self.logger.info(
                     "The achieved pointing value is: %s",
-                    self._achieved_pointing,
+                    entry,
                 )
-                self.push_change_event(
-                    "achievedPointing", self._achieved_pointing
-                )
-                time.sleep(0.05)
+                self.push_change_event("achievedPointing", entry)
         except Exception as e:
             self.logger.exception(
-                "Exception occurred while updating achieved pointing: %s", e
+                "Exception occurred while pushing achieved pointing: %s", e
             )
 
     def _update_poiniting_state_in_sequence(self) -> None:
