@@ -61,13 +61,10 @@ class HelperMCCSController(HelperBaseDevice):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
+        :param command_id: command id
+        :type command_id: str
 
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
+        :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(
@@ -195,7 +192,7 @@ class HelperMCCSController(HelperBaseDevice):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (
@@ -255,7 +252,7 @@ class HelperMCCSController(HelperBaseDevice):
         device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (

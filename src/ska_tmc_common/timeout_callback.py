@@ -29,7 +29,7 @@ class TimeoutCallback:
 
         :param timeout_state: Enum of TimeoutState class.
 
-        :return: Raises ValueError
+        :raises ValueError: Raises ValueError
         """
         if self._timeout_id == timeout_id:
             self._timeout_state = timeout_state

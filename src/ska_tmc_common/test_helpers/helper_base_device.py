@@ -53,7 +53,7 @@ class HelperBaseDevice(SKABaseDevice):
     def create_component_manager(self) -> EmptyComponentManager:
         """
         Creates an instance of EmptyComponentManager
-        :rtype:class
+        :rtype: EmptyComponentManager
         """
         cm = EmptyComponentManager(
             logger=self.logger,
@@ -123,12 +123,7 @@ class HelperBaseDevice(SKABaseDevice):
          command for which a fault is being induced.
         :type command_name: str
 
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
+        :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(

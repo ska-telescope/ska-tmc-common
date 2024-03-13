@@ -106,7 +106,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     @kValue.write
     def kValue(self, kvalue: str) -> None:
         """Set memorized dish vcc map
-        :param value: dish vcc config json string
+        :param kvalue: dish vcc config json string
         :type str
         """
         self._kvalue = kvalue
@@ -223,8 +223,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This command invokes SetKValue command on  Dish Master.
 
-        :param argin: k value between range 1-2222.
-        :argin dtype: int
+        :param kvalue: k value between range 1-2222.
+        :kvalue dtype: int
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         if self.defective_params["enabled"]:

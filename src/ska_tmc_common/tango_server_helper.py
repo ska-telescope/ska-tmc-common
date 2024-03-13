@@ -58,8 +58,6 @@ class TangoServerHelper:
         Set the Tango class object as a device
 
         :param device: Tango class object
-
-        :return: None
         """
         if not self.device:
             self.device = device
@@ -97,8 +95,6 @@ class TangoServerHelper:
         :param property_name: String. Name of the Tango device property
 
         :param value: Value of the property to be set
-
-        :returns: None
 
         :throws: Devfailed exception in case command failed error.
                  ValueError exception in case value error.
@@ -160,9 +156,7 @@ class TangoServerHelper:
         """
         Sets the Status attribute of the Tango device with given value.
 
-        :param new_status: String. New value for Status attribute.
-
-        :return: None.
+        :param new_status: String. New value for Status attribute.s
 
         :throws: DevFailed on failure in setting device status.
         """
@@ -204,8 +198,6 @@ class TangoServerHelper:
 
         :param new_state: (DevState). New value for State attribute.
 
-        :return: None.
-
         :throws: DevFailed on failure in setting device state.
         """
         try:
@@ -229,8 +221,6 @@ class TangoServerHelper:
         Name of the attribute on which change event is to be raised.
 
         :param value: Changed values of the attribute.
-
-        :return: None.
 
         :throws: Devfailed exception in case of error.
         """
@@ -256,8 +246,6 @@ class TangoServerHelper:
         :param value: New value of the attribute.
 
         :param push_change_event: Change event value.
-
-        :return: None.
 
         :throws: ValueError exception in case of error.
         """

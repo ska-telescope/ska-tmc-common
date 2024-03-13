@@ -31,8 +31,6 @@ class LRCRCallback:
         :param result_code: Enum of ResultCode class.
 
         :param exception_msg: String of execption message. (Optional)
-
-        :return: Raises ValueError
         """
 
         self.logger.info(

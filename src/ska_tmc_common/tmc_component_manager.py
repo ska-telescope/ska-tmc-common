@@ -138,9 +138,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
         :param command_name: command_name
         :type command_name: str
-        :return: True if command is allowed
-
-        :rtype: boolean
         """
         raise NotImplementedError(
             "is_command_allowed is abstract; method must be implemented in \
@@ -478,7 +475,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         Return the device info our of the monitoring loop with name device_name
 
-        :param None:
         :return: a device info
         :rtype: DeviceInfo
         """

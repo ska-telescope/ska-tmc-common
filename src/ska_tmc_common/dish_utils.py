@@ -106,7 +106,9 @@ class DishHelper:
         :dtype: str, example -> 30:42:46.5307
 
         :return: Angle in degree decimals.
-        :rtype: str, example -> 30.7129252.
+        :rtype: str
+
+        example -> 30.7129252.
 
         :raises: ConversionError if the conversion fails.
         """
