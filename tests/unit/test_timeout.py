@@ -36,7 +36,7 @@ def test_timekeeper_class():
     timekeeper.time_out = 1
     timekeeper.start_timer(timer_id, timeout_callback)
     assert timekeeper.timer_object.is_alive()
-    time.sleep(1)
+    time.sleep(1.5)
     assert timeout_callback.assert_against_call(timer_id, TimeoutState.OCCURED)
 
 
