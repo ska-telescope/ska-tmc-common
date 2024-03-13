@@ -29,7 +29,7 @@ COMMANDS_WITHOUT_INPUT = [
     "SetStowMode",
     "Off",
     "AbortCommands",
-    "Scan",
+    "EndScan",
 ]
 
 
@@ -49,6 +49,14 @@ def test_dish_commands_with_input(tango_context):
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
     result, _ = dish_device.command_inout("Configure", "")
     assert result[0] == ResultCode.QUEUED
+
+
+def test_dish_ln_commands_scan(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    result, message = dish_device.command_inout("Scan", "")
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS_WITHOUT_INPUT)

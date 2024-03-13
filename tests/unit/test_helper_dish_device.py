@@ -34,8 +34,8 @@ COMMANDS_WITHOUT_INPUT = [
     "SetStandbyLPMode",
     "SetOperateMode",
     "SetStowMode",
-    "Scan",
     "AbortCommands",
+    "EndScan",
 ]
 COMMANDS_WITH_INPUT = [
     "ConfigureBand1",
@@ -100,6 +100,14 @@ def test_dish_commands_with_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     result, message = dish_device.command_inout(command, True)
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
+
+
+def test_dish_commands_scan(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    result, message = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.OK
     assert message[0] == ""
 
