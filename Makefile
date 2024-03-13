@@ -25,4 +25,5 @@ PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE)
 -include .make/release.mk
 -include .make/make.mk
 -include .make/help.mk
+-include .make/base.mk
 -include PrivateRules.mak
