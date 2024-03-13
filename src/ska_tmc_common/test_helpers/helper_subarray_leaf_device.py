@@ -251,6 +251,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self.push_obs_state_event(self._obs_state)
 
     def is_On_allowed(self) -> bool:
+        """
+        This method checks if the On command is allowed or not
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -280,6 +284,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off command is allowed or not
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -309,6 +317,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
+        """
+        This method checks if the Standby command is allowed or not
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -340,6 +352,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def is_AssignResources_allowed(self) -> bool:
         """
         This method checks if the AssignResources command is allowed or not
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -395,6 +408,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks the Configure is allowed in the current device
         state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -447,6 +461,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the Scan command is allowed in the current
         device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -489,6 +504,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the EndScan command is allowed in the current
         device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -529,6 +545,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the End command is allowed in the current
         device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -577,6 +594,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the GoToIdle command is allowed in the current
         device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -616,6 +634,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the Abort command is allowed in the current
         device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -664,6 +683,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the Restart command is allowed in the current
         device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -709,6 +729,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         the current device state.
         :return: ResultCode, message
         :rtype: tuple
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -758,6 +779,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         current device state.
         :return: ResultCode, message
         :rtype: tuple
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

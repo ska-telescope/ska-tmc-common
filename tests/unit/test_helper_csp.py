@@ -47,5 +47,6 @@ def test_csp_loadDishConfig_command(tango_context, json_factory):
     expected_json = json.loads(expected_json_str)
     dishVccConfig = json.loads(csp_master_device.dishVccConfig)
 
-    # comparing dictionary instead of strings to avoid the issues with whitespaces
+    # comparing dictionary instead of strings
+    # to avoid the issues with whitespaces
     assert expected_json == dishVccConfig

@@ -327,7 +327,9 @@ def set_device_state(
 def wait_for_obstate(device: tango.DeviceProxy, expected_obsstate: ObsState):
     """
     Waits for Device ObsState to transition to Expected ObsState.
-    Raises an Exception in case of failure."""
+    Raises an Exception in case of failure.
+    :raises Exception: Exception is raised for timeout
+    """
     device_obsstate = device.read_attribute("obsState").value
     start_time = time.time()
     elapsed_time = 0

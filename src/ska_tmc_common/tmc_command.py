@@ -85,6 +85,8 @@ class BaseTMCCommand:
     ]:
         """
         Method to create adapters for device.
+        :raises ConnectionFailed: Exception is raised when connection fails
+        :raises DevFailed: Exception is raised when device fails
         """
         elapsed_time = 0
 
@@ -115,6 +117,7 @@ class BaseTMCCommand:
     def do(self, argin=None) -> NotImplementedError:
         """
         Base method for do method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError(
             "This method must be implemented by command class"
@@ -124,7 +127,10 @@ class BaseTMCCommand:
         self,
         **kwargs,
     ) -> NotImplementedError:
-        """Method to update the task status for command."""
+        """
+        Method to update the task status for command.
+        :raises NotImplementedError: Not implemented error
+        """
         raise NotImplementedError(
             "This method must be implemented by command class"
         )
@@ -358,30 +364,35 @@ class TMCCommand(BaseTMCCommand):
     def init_adapters(self):
         """
         Base method for init_adapters method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_mid(self):
         """
         Base method for init_adapters_mid method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_low(self):
         """
         Base method for init_adapters_low method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
         """
         Base method for do_mid method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
         """
         Base method for do_low method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -394,30 +405,35 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     def init_adapter(self):
         """
         Base method for init_adapter method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def do_mid(self, argin=None):
         """
         Base method for do_mid method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
         """
         Base method for do_low method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_mid(self):
         """
         Base method for init_adapter_mid method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_low(self):
         """
         Base method for init_adapter_low method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 

@@ -48,18 +48,21 @@ class TmcComponent:
         """
         Retrieve information about a specific device.
         This is a base method that should be implemented by derived classes.
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device(self, dev_info):
         """
         Base method for update_device method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device_exception(self, device_info, exception):
         """
         Base method for update_device_exception method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -72,6 +75,7 @@ class TmcComponent:
     def to_dict(self):
         """
         Base method for to_dict method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -138,9 +142,9 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
         :param command_name: command_name
         :type command_name: str
-        :return: True if command is allowed
 
         :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
         """
         raise NotImplementedError(
             "is_command_allowed is abstract; method must be implemented in \
@@ -477,8 +481,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def get_device(self) -> DeviceInfo:
         """
         Return the device info our of the monitoring loop with name device_name
-
-        :param None:
         :return: a device info
         :rtype: DeviceInfo
         """

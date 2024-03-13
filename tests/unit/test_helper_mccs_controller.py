@@ -14,7 +14,7 @@ from tests.settings import (
 
 allocate_argin_string = json.dumps(
     {
-        "interface": "https://schema.skao.int/ska-low-mccs-controller-allocate/3.0",
+        "interface": "https://schema.skao.int/ska-low-mccs-controller-allocate/3.0",  # noqa
         "subarray_id": 1,
         "subarray_beams": [
             {
@@ -135,7 +135,8 @@ def test_restart_subarray_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
-    subarray_id = 1  # Provide the subarray ID as an argument to the RestartSubarray command
+    # Provide the subarray ID as an argument to the RestartSubarray command
+    subarray_id = 1
     result = mccs_controller_device.command_inout(
         "RestartSubarray", subarray_id
     )

@@ -63,6 +63,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         This method checks if the On command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -104,6 +105,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         This method checks if the Off command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -145,6 +147,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         This method checks if the Standby command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: Standby command not allowed
         """
         if self.defective_params["enabled"]:
             if (

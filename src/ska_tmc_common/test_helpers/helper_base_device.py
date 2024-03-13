@@ -123,13 +123,6 @@ class HelperBaseDevice(SKABaseDevice):
          command for which a fault is being induced.
         :type command_name: str
 
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
-
         Example:
         defective = json.dumps(
         {
@@ -288,6 +281,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method checks if the On command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -326,6 +320,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method checks if the Off command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -364,6 +359,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method checks if the Standby command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -399,6 +395,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method checks if the Disable command is allowed in current state.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

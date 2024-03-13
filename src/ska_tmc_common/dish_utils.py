@@ -76,6 +76,7 @@ class DishHelper:
             Example: 30.7129252
         :return: Number in deg:min:sec format.
             Example: 30:42:46.5307 is returned value for input 30.7129252.
+        :raises ConversionError: raise when conversion error occurs.
         """
         dms_str = ""  # degree:minutes:seconds
         try:
@@ -108,7 +109,7 @@ class DishHelper:
         :return: Angle in degree decimals.
         :rtype: str, example -> 30.7129252.
 
-        :raises: ConversionError if the conversion fails.
+        :raises ConversionError: raises error if the conversion fails.
         """
         try:
             dms_list = re.split(":", argin)
@@ -143,6 +144,8 @@ class DishHelper:
             Example: 37.96199884
         :return: Number in Hours:Minutes:Seconds format.
             Example: 2:31:50.88 is returned value for input 37.96199884.
+        :raises ConversionError: conversion of decimal degree
+            to HH:MM:SS is not successful
         """
         try:
             fractions, ra_hours = math.modf(argin / 15.0)
@@ -166,6 +169,8 @@ class DishHelper:
         information from TelModel library.Each antenna in the list
         represents an antenna and have information station name, latitude,
         longitude, dish diameter, height.
+        :raises OSError: Os error is raised
+        :raises ValueError: value error is raised
         """
         antennas = []
         try:

@@ -100,8 +100,8 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         This command invokes SetKValue command on  Dish Master.
 
-        :param argin: k value between range 1-2222.
-        :argin dtype: int
+        :param kvalue: k value between range 1-2222.
+        :type: int
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         if self.defective_params["enabled"]:
@@ -398,6 +398,7 @@ class HelperDishDevice(HelperDishLNDevice):
         allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -441,6 +442,7 @@ class HelperDishDevice(HelperDishLNDevice):
         allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -490,6 +492,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the SetOperateMode Command is allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -540,6 +543,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the SetStowMode Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -585,6 +589,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the Track Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -630,6 +635,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the TrackStop Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -683,6 +689,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the AbortCommands command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -722,6 +729,7 @@ class HelperDishDevice(HelperDishLNDevice):
         current State.
 
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -782,6 +790,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the ConfigureBand1 command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -835,6 +844,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the ConfigureBand2 Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -888,6 +898,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the ConfigureBand3 Command is allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -930,6 +941,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the ConfigureBand4 Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -972,6 +984,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the ConfigureBand5a Command is allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1013,6 +1026,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This method checks if the ConfigureBand5b Command is allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1118,6 +1132,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         This method checks if the Scan Command is allowed in current State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

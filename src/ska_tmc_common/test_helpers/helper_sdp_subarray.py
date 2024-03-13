@@ -1,4 +1,5 @@
 # pylint: disable=attribute-defined-outside-init, too-many-ancestors
+
 """Helper device for SdpSubarray device"""
 import json
 import logging
@@ -43,7 +44,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._delay = 2
         self._obs_state = ObsState.EMPTY
         self._state = DevState.OFF
-        # pylint:disable=line-too-long
+        # pylint: disable=line-too-long
         self._receive_addresses = json.dumps(
             {
                 "science_A": {
@@ -56,7 +57,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                         "host": [
                             [
                                 0,
-                                "proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp",
+                                "proc-pb-test-20220916-00000-test-"
+                                + "receive-0.receive.test-sdp",
                             ]
                         ],
                         "port": [[0, 9000, 1]],
@@ -68,7 +70,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                         "host": [
                             [
                                 0,
-                                "proc-pb-test-20220916-00000-test-receive-0.receive.test-sdp",
+                                "proc-pb-test-20220916-00000-test-"
+                                + "receive-0.receive.test-sdp",
                             ]
                         ],
                         "port": [[0, 9000, 1]],
@@ -77,7 +80,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             }
         )
 
-        # pylint:enable=line-too-long
         self.push_change_event("receiveAddresses", self._receive_addresses)
 
     class InitCommand(SKASubarray.InitCommand):
@@ -102,7 +104,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         access=AttrWriteType.READ,
         doc="Host addresses for visibility receive as a JSON string.",
     )
-
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
@@ -132,6 +133,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def push_obs_state_event(self, obs_state: ObsState):
         """Place holder method. This method will be implemented in the child
         classes."""
+        self._obs_state = obs_state
         self.push_change_event("obsState", self._obs_state)
 
     def update_device_obsstate(self, obs_state: ObsState):
@@ -142,6 +144,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_obs_state_event(self._obs_state)
 
     def is_On_allowed(self) -> bool:
+        """
+        Check if command On is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -167,6 +177,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_command_result(ResultCode.OK, "On")
 
     def is_Off_allowed(self) -> bool:
+        """
+        Check if command Off is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -205,8 +223,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc_in="The input string in JSON format.",
     )
     def AssignResources(self, argin):
-        """This method invokes AssignResources command on SdpSubarray
-        device."""
+        """
+        This method invokes AssignResources command on SdpSubarray
+        device.
+        :raises throw_exception: when input json is wrong
+        """
         initial_obstate = self._obs_state
         self.logger.info(
             "Initial obsstate of SdpSubarray for AssignResources command is:"
@@ -284,6 +305,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -326,6 +348,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -365,6 +388,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -383,7 +407,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc_in="The input string in JSON format.",
     )
     def Configure(self, argin):
-        """This method invokes Configure command on SdpSubarray device."""
+        """
+        This method invokes Configure command on SdpSubarray device.
+        :raises throw_exception: when input json is wrong
+        """
         self.update_command_info(CONFIGURE, argin)
         input = json.loads(argin)
         if "scan_type" not in input:
@@ -457,6 +484,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -475,7 +503,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         doc_in="The input string in JSON format.",
     )
     def Scan(self, argin):
-        """This method invokes Scan command on SdpSubarray device."""
+        """
+        This method invokes Scan command on SdpSubarray device.
+        :raises throw_exception: when input json is wrong
+        """
         self.update_command_info(SCAN, argin)
         input = json.loads(argin)
         if "scan_id" not in input:
@@ -501,6 +532,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -533,6 +565,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -576,6 +609,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -613,6 +647,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

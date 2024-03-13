@@ -90,8 +90,6 @@ class EventReceiver:
         :param device_info: DeviceInfo object for the device on which events
             are to be subscribed.
         :type device_info: DeviceInfo class object.
-
-        :rtype: None
         """
         if device_info.last_event_arrived is None:
             self.subscribe_events(
@@ -103,9 +101,6 @@ class EventReceiver:
         self, dev_info: DeviceInfo, attribute_dictionary: dict[str, Callable]
     ) -> None:
         """A method to subscribe to attribute events from lower level devices.
-
-        :param device_info: The device info object of the given device.
-        :type device_info: DeviceInfo class object
 
         :param attribute_dictionary: A dictionary containing the attributes to
             subscribe to as keys and their handler functions as values.

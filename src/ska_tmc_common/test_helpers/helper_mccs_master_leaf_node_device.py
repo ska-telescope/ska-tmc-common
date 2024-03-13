@@ -76,6 +76,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -119,6 +120,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

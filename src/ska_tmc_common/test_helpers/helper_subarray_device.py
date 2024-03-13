@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
@@ -76,6 +77,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         :returns: ResultCode, message
         :rtype:tuple
         """
+        self.logger.info("Released Resources: %s", resources)
         return ResultCode.OK, ""
 
     def release_all(self) -> Tuple[ResultCode, str]:
@@ -610,6 +612,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -651,6 +654,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -674,13 +678,6 @@ class HelperSubArrayDevice(SKASubarray):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
-
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(
@@ -854,6 +851,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -897,6 +895,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -970,6 +969,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1016,6 +1016,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1078,6 +1079,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1129,6 +1131,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1172,6 +1175,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1213,6 +1217,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1257,6 +1262,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1298,6 +1304,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1332,6 +1339,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1375,6 +1383,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

@@ -16,5 +16,6 @@ class Aggregator:
     def aggregate(self) -> NotImplementedError:
         """
         Abstract method for Aggregators
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("To be defined in the lower level classes")

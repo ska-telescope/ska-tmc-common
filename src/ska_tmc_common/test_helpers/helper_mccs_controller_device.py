@@ -62,12 +62,9 @@ class HelperMCCSController(HelperBaseDevice):
          command for which a fault is being induced.
         :type command_name: str
 
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
+        :param command_id: The id of the
+         command for which a fault is being induced.
+        :type command_id: str
 
         Example:
         defective = json.dumps(
@@ -196,6 +193,7 @@ class HelperMCCSController(HelperBaseDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -256,6 +254,7 @@ class HelperMCCSController(HelperBaseDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -314,6 +313,7 @@ class HelperMCCSController(HelperBaseDevice):
         This method checks if the RestartSubarray command is allowed in the
         current device state.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

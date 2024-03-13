@@ -106,7 +106,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     @kValue.write
     def kValue(self, kvalue: str) -> None:
         """Set memorized dish vcc map
-        :param value: dish vcc config json string
+        :param kvalue: dish vcc config json string
         :type str
         """
         self._kvalue = kvalue
@@ -223,8 +223,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This command invokes SetKValue command on  Dish Master.
 
-        :param argin: k value between range 1-2222.
-        :argin dtype: int
+        :param kvalue: k value between range 1-2222.
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         if self.defective_params["enabled"]:
@@ -282,6 +281,13 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_change_event("commandCallInfo", self._command_call_info)
 
     def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off Command is
+        allowed in current
+        State.
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -318,6 +324,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -359,6 +366,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -402,6 +410,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the SetOperateMode Command is allowed in current
         State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -446,6 +455,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the SetStowMode Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -490,6 +500,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the Track Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -526,6 +537,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the TrackStop Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -564,6 +576,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the AbortCommands command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -602,6 +615,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the Configure Command is allowed in current
         State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -650,6 +664,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the TrackLoadStaticOff command is allowed in
         current State.
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -788,6 +803,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the Scan Command is allowed in current State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
