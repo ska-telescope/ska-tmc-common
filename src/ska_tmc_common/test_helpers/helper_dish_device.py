@@ -46,6 +46,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._achieved_pointing = []
         self._state_duration_info = []
         self._program_track_table = []
+        self._program_track_table_lock = threading.Lock()
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -101,7 +102,7 @@ class HelperDishDevice(HelperDishLNDevice):
         This command invokes SetKValue command on  Dish Master.
 
         :param kvalue: k value between range 1-2222.
-        :type: int
+        :kvalue dtype: int
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         if self.defective_params["enabled"]:
@@ -147,12 +148,13 @@ class HelperDishDevice(HelperDishLNDevice):
         :value dtype: list
         :rtype: None
         """
-        self._program_track_table = value
-        self.logger.info(
-            "The programTrackTable attribute value: %s",
-            self._program_track_table,
-        )
-        self.set_achieved_pointing()
+        with self._program_track_table_lock:
+            self._program_track_table = value
+            self.logger.info(
+                "The programTrackTable attribute value: %s",
+                self._program_track_table,
+            )
+            self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> np.ndarray:
         """
@@ -374,15 +376,15 @@ class HelperDishDevice(HelperDishLNDevice):
         """This method update pointing state in sequence as per
         state duration info
         """
-        with tango.EnsureOmniThread():
-            for poiniting_state, duration in self._state_duration_info:
-                pointing_state_enum = PointingState[poiniting_state]
-                self.logger.info(
-                    "Sleep %s sec for pointing state %s",
-                    duration,
-                    poiniting_state,
-                )
-                time.sleep(duration)
+        for poiniting_state, duration in self._state_duration_info:
+            pointing_state_enum = PointingState[poiniting_state]
+            self.logger.info(
+                "Sleep %s sec for pointing state %s",
+                duration,
+                poiniting_state,
+            )
+            time.sleep(duration)
+            with tango.EnsureOmniThread():
                 self.set_pointing_state(pointing_state_enum)
 
     def _follow_state_duration(self):

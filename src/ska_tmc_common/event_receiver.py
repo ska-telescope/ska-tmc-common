@@ -87,9 +87,11 @@ class EventReceiver:
     def submit_task(self, device_info: DeviceInfo) -> None:
         """Submits the task to the executor for the given device info object.
 
-        :param device_info: DeviceInfo object for the device on which events
+        :param device_info: DeviceInfo for the device on which events
             are to be subscribed.
-        :type device_info: DeviceInfo class object.
+        :type device_info: DeviceInfo
+
+        :rtype: None
         """
         if device_info.last_event_arrived is None:
             self.subscribe_events(
@@ -101,6 +103,9 @@ class EventReceiver:
         self, dev_info: DeviceInfo, attribute_dictionary: dict[str, Callable]
     ) -> None:
         """A method to subscribe to attribute events from lower level devices.
+
+        :param dev_info: The device info object of the given device.
+        :type dev_info: DeviceInfo
 
         :param attribute_dictionary: A dictionary containing the attributes to
             subscribe to as keys and their handler functions as values.

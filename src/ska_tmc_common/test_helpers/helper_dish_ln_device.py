@@ -224,6 +224,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This command invokes SetKValue command on  Dish Master.
 
         :param kvalue: k value between range 1-2222.
+        :kvalue dtype: int
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         if self.defective_params["enabled"]:

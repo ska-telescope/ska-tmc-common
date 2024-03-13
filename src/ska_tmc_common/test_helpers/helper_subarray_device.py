@@ -94,7 +94,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Configure the component.
         :param configuration: the configuration to be configured
-        :type configuration: dict
+        :type configuration: str
         :returns: ResultCode, message
         :rtype:tuple
         """
@@ -162,7 +162,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         Return the resources assigned to the component.
 
         :return: the resources assigned to the component
-        :rtype: list of str
+        :rtype: list
         """
         # import debugpy; debugpy.debug_this_thread()
         return self._assigned_resources
@@ -340,7 +340,7 @@ class HelperSubArrayDevice(SKASubarray):
     def read_defective(self) -> str:
         """
         This method is used to read the value of the attribute defective
-        :rtype:bool
+        :rtype: str
         """
         return json.dumps(self.defective_params)
 
@@ -455,7 +455,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method is used to create an instance of
         EmptySubarrayComponentManager         :return:
-        :rtype: class
+        :rtype: EmptySubArrayComponentManager
         """
         cm = EmptySubArrayComponentManager(
             logger=self.logger,
@@ -611,7 +611,7 @@ class HelperSubArrayDevice(SKASubarray):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -653,7 +653,7 @@ class HelperSubArrayDevice(SKASubarray):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -678,6 +678,8 @@ class HelperSubArrayDevice(SKASubarray):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
+
+        :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(
@@ -850,7 +852,7 @@ class HelperSubArrayDevice(SKASubarray):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -894,7 +896,7 @@ class HelperSubArrayDevice(SKASubarray):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -968,7 +970,7 @@ class HelperSubArrayDevice(SKASubarray):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1015,7 +1017,7 @@ class HelperSubArrayDevice(SKASubarray):
         device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1078,7 +1080,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `Configure` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1130,7 +1132,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `Scan` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1174,7 +1176,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `EndScan` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1216,7 +1218,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `End` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1261,7 +1263,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `GoToIdle` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1303,7 +1305,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `ObsReset` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1338,7 +1340,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `Abort` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1382,7 +1384,7 @@ class HelperSubArrayDevice(SKASubarray):
         Check if command `Restart` is allowed in the current device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:

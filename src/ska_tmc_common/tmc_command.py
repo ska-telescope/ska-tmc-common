@@ -55,7 +55,11 @@ class BaseTMCCommand:
         self.index: int = 0
 
     def set_command_id(self, command_name: str):
-        """Sets the command id for error propagation."""
+        """Sets the command id for error propagation.
+
+        :param command_name: name of the command.
+        :type command_name: str
+        """
         command_id = f"{time.time()}-{command_name}"
         self.logger.info(
             "Setting command id as %s for command: %s",

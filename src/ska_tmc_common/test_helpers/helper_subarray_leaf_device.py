@@ -95,7 +95,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         Returns defective status of devices
 
-        :rtype: dict
+        :rtype: str
         """
         return json.dumps(self.defective_params)
 
@@ -728,8 +728,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the ReleaseAllResources command is allowed in
         the current device state.
         :return: ResultCode, message
-        :rtype: tuple
         :raises CommandNotAllowed: command is not allowed
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (
@@ -778,8 +778,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         This method checks if the ReleaseResources command is allowed in the
         current device state.
         :return: ResultCode, message
-        :rtype: tuple
         :raises CommandNotAllowed: command is not allowed
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (

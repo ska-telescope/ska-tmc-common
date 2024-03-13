@@ -149,7 +149,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -182,7 +182,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:

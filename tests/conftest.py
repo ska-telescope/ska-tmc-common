@@ -171,6 +171,7 @@ def devices_to_load():
 def tango_context(devices_to_load, request):
     """
     It provides the tango context to invoke any command.
+    :yields: device_context
     """
     true_context = request.config.getoption("--true-context")
     if not true_context:
@@ -230,7 +231,7 @@ def csp_sln_dev_name() -> str:
 def get_input_str(path) -> str:
     """
     Returns input json string
-    :rtype: String
+    :rtype: str
     """
     with open(path, "r", encoding="utf-8") as f:
         input_str = f.read()

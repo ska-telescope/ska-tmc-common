@@ -110,7 +110,7 @@ class DummyComponentManager(TmcComponentManager):
         Return the sample data.
 
         :return: The value of sample data
-        :rtype: string
+        :rtype: str
         """
         # import debugpy; debugpy.debug_this_thread()
         return self._sample_data
