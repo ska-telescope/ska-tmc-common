@@ -268,10 +268,15 @@ class BaseTMCCommand:
                 lrcr_callback.remove_data(command_id)
 
     def check_abort_event(self, abort_event) -> bool:
-        """Checks for abort event. If abort event detected, sets TaskStatus
-        to ABORTED and stops the tracker thread.
-        :param abort_event: threading.Event class object that is used to check
-        if the command has been aborted.
+        """
+        Checks for abort event and if abort event detected, sets TaskStatus
+        to ABORTED and stops the tracker thread
+
+        :param abort_event: threadingEvent class object that is used to check
+            if the command has been aborted.
+        :dtype abort_event: bool
+        :return: if command is aborted or not
+        :rtype: bool
         """
         if abort_event.is_set():
             self.logger.error(
