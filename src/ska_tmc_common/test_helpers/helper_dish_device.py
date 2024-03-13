@@ -46,6 +46,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._achieved_pointing = []
         self._state_duration_info = []
         self._program_track_table = []
+        self._program_track_table_lock = threading.Lock()
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -147,12 +148,13 @@ class HelperDishDevice(HelperDishLNDevice):
         :value dtype: list
         :rtype: None
         """
-        self._program_track_table = value
-        self.logger.info(
-            "The programTrackTable attribute value: %s",
-            self._program_track_table,
-        )
-        self.set_achieved_pointing()
+        with self._program_track_table_lock:
+            self._program_track_table = value
+            self.logger.info(
+                "The programTrackTable attribute value: %s",
+                self._program_track_table,
+            )
+            self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> np.ndarray:
         """
