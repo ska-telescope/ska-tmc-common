@@ -6,7 +6,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState
 from ska_tango_base.executor import TaskStatus
 
-from ska_tmc_common import TimeoutCallback, TimeoutState
+from ska_tmc_common import TimeKeeper, TimeoutCallback, TimeoutState
 from tests.settings import DummyComponentManager, State
 
 logger = logging.getLogger(__name__)
@@ -21,6 +21,23 @@ def test_timer_thread():
     cm.stop_timer()
     time.sleep(0.5)
     assert not cm.timer_object.is_alive()
+
+
+def test_timekeeper_class():
+    timekeeper = TimeKeeper(10, logger)
+    timer_id = f"{time.time()}-{TimeKeeper.__name__}"
+    timeout_callback = TimeoutCallback(timer_id, logger)
+    timekeeper.start_timer(timer_id, timeout_callback)
+    assert timekeeper.timer_object.is_alive()
+    timekeeper.stop_timer()
+    time.sleep(0.5)
+    assert not timekeeper.timer_object.is_alive()
+
+    timekeeper.time_out = 1
+    timekeeper.start_timer(timer_id, timeout_callback)
+    assert timekeeper.timer_object.is_alive()
+    time.sleep(1)
+    assert timeout_callback.assert_against_call(timer_id, TimeoutState.OCCURED)
 
 
 def test_timeout_callback():
