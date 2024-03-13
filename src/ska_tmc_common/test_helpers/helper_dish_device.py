@@ -374,15 +374,15 @@ class HelperDishDevice(HelperDishLNDevice):
         """This method update pointing state in sequence as per
         state duration info
         """
-        with tango.EnsureOmniThread():
-            for poiniting_state, duration in self._state_duration_info:
-                pointing_state_enum = PointingState[poiniting_state]
-                self.logger.info(
-                    "Sleep %s sec for pointing state %s",
-                    duration,
-                    poiniting_state,
-                )
-                time.sleep(duration)
+        for poiniting_state, duration in self._state_duration_info:
+            pointing_state_enum = PointingState[poiniting_state]
+            self.logger.info(
+                "Sleep %s sec for pointing state %s",
+                duration,
+                poiniting_state,
+            )
+            time.sleep(duration)
+            with tango.EnsureOmniThread():
                 self.set_pointing_state(pointing_state_enum)
 
     def _follow_state_duration(self):
