@@ -1,6 +1,6 @@
 """A module implementing a decorator for Error Propagation."""
 from threading import Event
-from typing import Callable
+from typing import Callable, Optional
 
 from ska_tango_base.commands import ResultCode
 
@@ -11,7 +11,7 @@ def process_result_and_start_tracker(
     message: str,
     expected_states: list,
     task_abort_event: Event,
-    cleanup_function: Callable,
+    cleanup_function: Optional[Callable] = None,
 ) -> None:
     """Process the command invocation result and start the tracker thread if
     the command has not failed.
@@ -28,6 +28,9 @@ def process_result_and_start_tracker(
     :param task_abort_event: An event signaling wheather the task has been
         aborted
     :type task_abort_event: Event
+    :param cleanup_function: Optional function that cleans up the device after
+        command failure
+    :type cleanup_function: Optional[Callable]
 
     :rtype: None
     """
@@ -51,7 +54,7 @@ def process_result_and_start_tracker(
 
 
 def error_propagation_decorator(
-    expected_states: list, cleanup_function: Callable
+    expected_states: list, cleanup_function: Optional[Callable] = None
 ) -> Callable:
     """A decorator for implementing error propagation functionality using
     expected states as an input data.
@@ -59,6 +62,9 @@ def error_propagation_decorator(
     :param expected_states: The list of states that the device is expected to
         achieve during the course of the command.
     :type expected_states: List
+    :param cleanup_function: Optional function that cleans up the device after
+        command failure
+    :type cleanup_function: Optional[Callable]
 
     :rtype: Callable function
     """
