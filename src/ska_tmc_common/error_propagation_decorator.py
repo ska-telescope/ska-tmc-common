@@ -1,9 +1,15 @@
 """A module implementing a decorator for Error Propagation."""
+import logging
+from operator import methodcaller
 from threading import Event
-from typing import Callable, Optional
+from typing import Callable
 
+from ska_ser_logging.configuration import configure_logging
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 
 def process_result_and_start_tracker(
@@ -13,7 +19,7 @@ def process_result_and_start_tracker(
     expected_states: list,
     task_abort_event: Event,
     is_timeout_considered: bool,
-    cleanup_function: Optional[Callable] = None,
+    cleanup_function: str = "",
 ) -> None:
     """Process the command invocation result and start the tracker thread if
     the command has not failed.
@@ -35,7 +41,7 @@ def process_result_and_start_tracker(
     :type is_timeout_considered: bool
     :param cleanup_function: Optional function that cleans up the device after
         command failure
-    :type cleanup_function: Optional[Callable]
+    :type cleanup_function: str
 
     :rtype: None
     """
@@ -44,7 +50,8 @@ def process_result_and_start_tracker(
         if is_timeout_considered:
             class_instance.timekeeper.stop_timer()
         if cleanup_function:
-            cleanup_function()
+            function = methodcaller(cleanup_function)
+            function(class_instance)
     else:
         class_instance.start_tracker_thread(
             class_instance.component_manager.get_subarray_obsstate,
@@ -62,7 +69,7 @@ def process_result_and_start_tracker(
 def error_propagation_decorator(
     expected_states: list,
     is_timeout_considered: bool = True,
-    cleanup_function: Optional[Callable] = None,
+    cleanup_function: str = "",
 ) -> Callable:
     """A decorator for implementing error propagation functionality using
     expected states as an input data.
@@ -75,30 +82,32 @@ def error_propagation_decorator(
     :type is_timeout_considered: bool
     :param cleanup_function: Optional function that cleans up the device after
         command failure
-    :type cleanup_function: Optional[Callable]
+    :type cleanup_function: str
 
     :rtype: Callable
     """
 
-    def error_propagation(fn: Callable) -> Callable:
-        def wrapper(*args, **kwargs) -> tuple[ResultCode, str]:
+    def error_propagation(function: Callable) -> Callable:
+        def wrapper(*args, **kwargs) -> None:
             """Wrapper method"""
-            class_instance = args[0]
-            class_instance.logger.debug(
-                f"Executing the decorator with: {args}, {kwargs}"
+            logger.debug(
+                "Executing the error propagation decorator with: %s, %s",
+                args,
+                kwargs,
             )
+            class_instance = args[0]
 
             argin = extract_argin(args)
-            task_callback = kwargs["task_callback"]
+            class_instance.task_callback = kwargs["task_callback"]
             task_abort_event = kwargs["task_abort_event"]
 
-            task_callback(status=TaskStatus.IN_PROGRESS)
+            class_instance.task_callback(status=TaskStatus.IN_PROGRESS)
             setup_data(class_instance)
 
             if argin:
-                result, message = fn(class_instance, argin)
+                result, message = function(class_instance, argin)
             else:
-                result, message = fn(class_instance)
+                result, message = function(class_instance)
 
             process_result_and_start_tracker(
                 class_instance,
@@ -109,7 +118,6 @@ def error_propagation_decorator(
                 is_timeout_considered,
                 cleanup_function,
             )
-            return result, message
 
         return wrapper
 
@@ -117,14 +125,25 @@ def error_propagation_decorator(
 
 
 def setup_data(class_instance) -> None:
-    """Sets up the data required for error propagation."""
+    """Sets up the data required for error propagation.
+
+    :param class_instance: Instance of command class
+
+    :rtype: None
+    """
     class_name = class_instance.__class__.__name__
     class_instance.component_manager.command_in_progress = class_name
     class_instance.set_command_id(class_name)
 
 
 def extract_argin(arguments: tuple) -> str:
-    """Extracts and returns the argin from the given list of args."""
+    """Extracts and returns the argin from the given list of args.
+
+    :param arguments: The input arguments to the function
+    :type arguments: Tuple
+
+    :rtype: str
+    """
     for element in arguments:
         if isinstance(element, str):
             return element

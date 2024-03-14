@@ -345,7 +345,13 @@ class BaseTMCCommand:
             self.logger.info("Stopping tracker thread")
             self._stop = True
         if timeout_id:
-            self.component_manager.stop_timer()
+            # The if else block is to keep backwards compatibility. Once all
+            # repositories start using the TimeKeeper class, the block can be
+            # replaced with the if part.
+            if hasattr(self.component_manager, "timekeeper"):
+                self.component_manager.timekeeper.stop_timer()
+            else:
+                self.component_manager.stop_timer()
 
 
 class TMCCommand(BaseTMCCommand):
