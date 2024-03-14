@@ -100,7 +100,7 @@ def test_command_timeout_success(task_callback):
     cm = DummyComponentManager(logger)
     cm.invoke_command(True, task_callback)
     task_callback.assert_against_call(status=TaskStatus.QUEUED)
-    cm.command_obj.state = State.CHANGED
+    cm.state = State.CHANGED
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED, result=ResultCode.OK
     )

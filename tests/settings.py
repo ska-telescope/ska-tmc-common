@@ -156,6 +156,20 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         self.transitional_obsstate = transitional_obsstate
         self.command_obj = DummyCommandClass(self, self.logger)
 
+    @property
+    def state(self) -> IntEnum:
+        """Return the State value"""
+        return self._state_val
+
+    @state.setter
+    def state(self, value: IntEnum) -> None:
+        """Sets the State Value"""
+        self._state_val = value
+
+    def get_state(self) -> IntEnum:
+        """Method to get the state value."""
+        return self.state
+
     def add_device(self, dev_name: str) -> None:
         """
         Add device to the monitoring loop
@@ -209,20 +223,6 @@ class DummyCommandClass(TmcLeafNodeCommand):
         self.task_callback: Callable
         self.transitional_obsstate = component_manager.transitional_obsstate
 
-    @property
-    def state(self) -> IntEnum:
-        """Return the State value"""
-        return self._state_val
-
-    @state.setter
-    def state(self, value: IntEnum) -> None:
-        """Sets the State Value"""
-        self._state_val = value
-
-    def get_state(self) -> IntEnum:
-        """Method to get the state value."""
-        return self.state
-
     def invoke_do(
         self,
         argin: bool,
@@ -243,7 +243,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.logger.info("Starting tracker for timeout and exceptions.")
             if self.transitional_obsstate:
                 self.start_tracker_thread(
-                    self.get_state,
+                    "get_state",
                     [State.TRANSITIONAL, State.CHANGED],
                     task_abort_event,
                     self._timeout_id,
@@ -253,7 +253,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
                 )
             else:
                 self.start_tracker_thread(
-                    self.get_state,
+                    "get_state",
                     [State.CHANGED],
                     task_abort_event,
                     self._timeout_id,

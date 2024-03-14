@@ -16,6 +16,7 @@ def process_result_and_start_tracker(
     class_instance,
     result: ResultCode,
     message: str,
+    state_function: str,
     expected_states: list,
     task_abort_event: Event,
     is_timeout_considered: bool,
@@ -30,6 +31,9 @@ def process_result_and_start_tracker(
     :type result: ResultCode
     :param message: An informational message
     :type message: str
+    :param state_function: The function to determine the state of the device.
+        Should be accessible in the component_manager.
+    :type state_function: str
     :param expected_states: The list of states that the device is expected to
         achieve during the course of the command.
     :type expected_states: List
@@ -60,7 +64,7 @@ def process_result_and_start_tracker(
             function(class_instance)
     else:
         class_instance.start_tracker_thread(
-            class_instance.component_manager.get_subarray_obsstate,
+            state_function,
             expected_states,
             task_abort_event,
             timeout_id=class_instance.timeout_id,
@@ -73,6 +77,7 @@ def process_result_and_start_tracker(
 
 
 def error_propagation_decorator(
+    state_function: str,
     expected_states: list,
     is_timeout_considered: bool = True,
     cleanup_function: str = "",
@@ -82,6 +87,9 @@ def error_propagation_decorator(
     """A decorator for implementing error propagation functionality using
     expected states as an input data.
 
+    :param state_function: The function to determine the state of the device.
+        Should be accessible in the component_manager.
+    :type state_function: str
     :param expected_states: The list of states that the device is expected to
         achieve during the course of the command.
     :type expected_states: List
@@ -129,6 +137,7 @@ def error_propagation_decorator(
                 class_instance,
                 result,
                 message,
+                state_function,
                 expected_states,
                 task_abort_event,
                 is_timeout_considered,

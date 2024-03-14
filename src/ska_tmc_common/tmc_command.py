@@ -9,7 +9,7 @@ import time
 from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
@@ -129,7 +129,7 @@ class BaseTMCCommand:
 
     def start_tracker_thread(
         self,
-        state_function: Callable,
+        state_function: str,
         expected_state: List[IntEnum],
         abort_event: threading.Event,
         timeout_id: Optional[str] = None,
@@ -143,6 +143,9 @@ class BaseTMCCommand:
         monitor the timeout and the longRunningCommandResult callback to keep
         track of LRCR events.
 
+        :param state_function: The function to determine the state of the
+            device. Should be accessible in the component_manager.
+        :type state_function: str
         :param expected_state: Expected state of the device in case of
                     successful command execution.
 
@@ -178,7 +181,7 @@ class BaseTMCCommand:
 
     def track_and_update_command_status(
         self,
-        state_function: Callable,
+        state_function: str,
         expected_state: List[IntEnum],
         abort_event: threading.Event,
         timeout_id: Optional[str] = None,
@@ -190,6 +193,9 @@ class BaseTMCCommand:
         determine whether timeout has occurred or the command completed
         successfully. Logs the result for now.
 
+        :param state_function: The function to determine the state of the
+            device. Should be accessible in the component_manager.
+        :type state_function: str
         :param expected_state: Expected state of the device in case of
                     successful command execution.
 
@@ -287,16 +293,17 @@ class BaseTMCCommand:
 
     def check_final_obsstate(
         self,
-        state_function,
-        state_to_achieve,
-        expected_state,
+        state_function: str,
+        state_to_achieve: Any,
+        expected_state: list,
     ) -> bool:
         """Waits for expected final obsState with or without
         transitional obsState. On expected obsState occurrence,
         it sets ResultCode to OK and stops the tracker thread
 
-        :param state_function: a callable provides current state of
-                                the device.
+        :param state_function: The function to determine the state of the
+            device. Should be accessible in the component_manager.
+        :type state_function: str
 
         :param state_to_achieve: A particular state to needs to be
                                 achieved for command completion.
@@ -305,7 +312,10 @@ class BaseTMCCommand:
                     successful command execution. It's a list contains
                     transitional obsState if exists for a command.
         """
-        if state_function() == state_to_achieve:
+        if (
+            methodcaller(state_function)(self.component_manager)
+            == state_to_achieve
+        ):
             self.logger.info(
                 "State change has occurred, current state is %s",
                 state_to_achieve,
