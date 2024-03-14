@@ -43,6 +43,8 @@ class HelperSdpQueueConnector(Device):
         "Fitted_Width_V,Fitted_Width_V_Std,"
         "Fitted_Height,Fitted_Height_Std"
         ]
+        :return: the attribute value for
+        pointing_offsets from QueueConnector SDP device
         """
         return self._pointing_offsets
 

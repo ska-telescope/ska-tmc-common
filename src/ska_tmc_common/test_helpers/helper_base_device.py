@@ -53,6 +53,7 @@ class HelperBaseDevice(SKABaseDevice):
     def create_component_manager(self) -> EmptyComponentManager:
         """
         Creates an instance of EmptyComponentManager
+        :return: component manager instance
         :rtype: EmptyComponentManager
         """
         cm = EmptyComponentManager(
@@ -70,8 +71,9 @@ class HelperBaseDevice(SKABaseDevice):
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_raiseException(self) -> bool:
-        """This method is used to read the attribute value for raise exception
-
+        """
+        This method is used to read the attribute value for raise exception
+        :return: attribute value for raise exception
         :rtype: bool
         """
         return self._raise_exception
@@ -79,15 +81,15 @@ class HelperBaseDevice(SKABaseDevice):
     def read_defective(self) -> str:
         """
         Returns defective status of devices
-
+        :return: attribute value for defective params
         :rtype: str
         """
         return json.dumps(self.defective_params)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
-        Returns avalability status for the leaf nodes devices
-
+        Returns availability status for the leaf nodes devices
+        :return: availabitlity status
         :rtype: bool
         """
         return self._isSubsystemAvailable
@@ -122,7 +124,7 @@ class HelperBaseDevice(SKABaseDevice):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
-
+        :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
@@ -283,6 +285,8 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method checks if the On command is allowed in current state.
         :rtype: bool
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -303,6 +307,7 @@ class HelperBaseDevice(SKABaseDevice):
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke On command")
@@ -320,7 +325,9 @@ class HelperBaseDevice(SKABaseDevice):
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -341,6 +348,7 @@ class HelperBaseDevice(SKABaseDevice):
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke Off command")
@@ -358,7 +366,9 @@ class HelperBaseDevice(SKABaseDevice):
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -376,6 +386,7 @@ class HelperBaseDevice(SKABaseDevice):
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke Standby command")
@@ -393,7 +404,9 @@ class HelperBaseDevice(SKABaseDevice):
     def is_disable_allowed(self) -> bool:
         """
         This method checks if the Disable command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -414,6 +427,7 @@ class HelperBaseDevice(SKABaseDevice):
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Disable command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         if self.defective_params["enabled"]:

@@ -39,8 +39,7 @@ class TangoGroupClient:
         :param
             group_name: Tango group
 
-        :return
-            None
+        :return: Tango group
 
         """
         return tango.Group(group_name)
@@ -50,9 +49,6 @@ class TangoGroupClient:
         Add device element in the Group.
 
         :param device_to_add: string. Device FQDN to add in the group
-
-        :return
-            None
         """
         try:
             log_msg = f"Adding in group: {device_to_add}."
@@ -74,9 +70,6 @@ class TangoGroupClient:
         :param device_to_remove: string.
 
         FQDN of the device to be removed from group.
-
-        :return
-            None
 
         :throws
             DevFailed on failure in removing the device from the group.
@@ -119,8 +112,7 @@ class TangoGroupClient:
 
         :param forward: Value
 
-        :return
-            list. The list of devices
+        :return: list. The list of devices
 
         :throws
             DevFailed on failure in getting group device list.
@@ -148,14 +140,11 @@ class TangoGroupClient:
         """
         Invokes command on the Tango group synchronously.
 
-        :param
-            command_name: string. Name of the command to be invoked
+        :param command_name: string. Name of the command to be invoked
 
-        :param
-            command_data: (optional) Void. The arguments with the command.
+        :param command_data: (optional) Void. The arguments with the command.
 
-        :return
-            Sequence of tango.GroupCmdReply objects.
+        :return: Sequence of tango.GroupCmdReply objects.
 
         :throws
             DevFailed on failure in executing the command.
@@ -193,8 +182,7 @@ class TangoGroupClient:
 
         should be executed upon execution
 
-        :return
-            int. Request id returned by tango group. Pass this id
+        :return: int. Request id returned by tango group. Pass this id
             to `get_command_reply` to retrieve the reply of the command.
 
         :throws
@@ -231,8 +219,7 @@ class TangoGroupClient:
             timeout: (optional) int. Timeout in milliseconds.
             If no timeout is mentioned, the API waits indefinitely.
 
-        :return
-            The results of an asynchronous command as tango.
+        :return: The results of an asynchronous command as tango.
 
             GroupCmdReply object.
 

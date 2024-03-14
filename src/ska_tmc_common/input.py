@@ -15,5 +15,6 @@ class InputParameter:
     def update(self, component_manager) -> NotImplementedError:
         """
         Base method for update method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This class must be inherited!")

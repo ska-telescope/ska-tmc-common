@@ -34,7 +34,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
-            :returns: ResultCode, message
+            :return: ResultCode, message
             :rtype:tuple
             """
             super().do()
@@ -76,6 +76,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -118,6 +119,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         device state.
 
         :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
         :rtype: bool
         """
         if self.defective_params["enabled"]:

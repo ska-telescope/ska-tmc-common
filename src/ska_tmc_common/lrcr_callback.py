@@ -51,8 +51,11 @@ class LRCRCallback:
     def assert_against_call(
         self, command_id: str, result_code: ResultCode, **kwargs: Any
     ) -> bool:
-        """Assertion method to check if the desired result code change has
-        occured."""
+        """
+        Assertion method to check if the desired result code change has
+        occured.
+        :return: boolean value if result code change occurred
+        """
         if command_id not in self.command_data:
             return False
 
@@ -77,7 +80,10 @@ class LRCRCallback:
         return True
 
     def get_data(self, command_id: str) -> dict:
-        """Returns the data for given command id"""
+        """
+        Returns the data for given command id
+        :return: data for given command_if
+        """
         return self.command_data[command_id]
 
     def remove_data(self, command_id: str) -> None:

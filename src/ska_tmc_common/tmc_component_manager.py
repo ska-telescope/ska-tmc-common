@@ -48,30 +48,35 @@ class TmcComponent:
         """
         Retrieve information about a specific device.
         This is a base method that should be implemented by derived classes.
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device(self, dev_info):
         """
         Base method for update_device method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device_exception(self, device_info, exception):
         """
         Base method for update_device_exception method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def to_json(self) -> str:
         """
         Base method for to_json method for different nodes
+        :return: json
         """
         return json.dumps(self.to_dict())
 
     def to_dict(self):
         """
         Base method for to_dict method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -120,7 +125,10 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     @property
     def command_id(self) -> str:
-        """Read method for reading command id used for error propagation."""
+        """
+        Read method for reading command id used for error propagation.
+        :return: command_id
+        """
         with self.lock:
             return self._command_id
 
@@ -138,6 +146,9 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
         :param command_name: command_name
         :type command_name: str
+
+        :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
         """
         raise NotImplementedError(
             "is_command_allowed is abstract; method must be implemented in \
@@ -474,7 +485,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def get_device(self) -> DeviceInfo:
         """
         Return the device info our of the monitoring loop with name device_name
-
         :return: a device info
         :rtype: DeviceInfo
         """

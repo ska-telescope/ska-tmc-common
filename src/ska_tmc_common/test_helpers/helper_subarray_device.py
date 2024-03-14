@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
@@ -62,7 +63,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Assign resources to the component.
         :param resources: resources to be assigned
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
         self.logger.info("Resources: %s", resources)
@@ -73,15 +74,16 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Release resources from the component.
         :param resources: resources to be released
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
+        self.logger.info("Released Resources: %s", resources)
         return ResultCode.OK, ""
 
     def release_all(self) -> Tuple[ResultCode, str]:
         """
         Release all resources.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
         self._assigned_resources = []
@@ -93,7 +95,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         Configure the component.
         :param configuration: the configuration to be configured
         :type configuration: str
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
         self.logger.info("%s", configuration)
@@ -103,7 +105,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def scan(self, args: Any) -> Tuple[ResultCode, str]:
         """
         Start scanning.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
         self.logger.info("%s", args)
@@ -112,7 +114,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def end_scan(self) -> Tuple[ResultCode, str]:
         """
         End scanning.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
 
@@ -121,7 +123,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def end(self) -> Tuple[ResultCode, str]:
         """
         End Scheduling blocks.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
 
@@ -130,7 +132,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def abort(self) -> Tuple[ResultCode, str]:
         """
         Tell the component to abort whatever it was doing.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
 
@@ -139,7 +141,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def obsreset(self) -> Tuple[ResultCode, str]:
         """
         Reset the component to unconfirmed but do not release resources.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
 
@@ -148,7 +150,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def restart(self) -> Tuple[ResultCode, str]:
         """
         Deconfigure and release all resources.
-        :returns: ResultCode, message
+        :return: ResultCode, message
         :rtype:tuple
         """
 
@@ -207,6 +209,7 @@ class HelperSubArrayDevice(SKASubarray):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialization.
+            :return: ResultCode
             """
             super().do()
             self._device.set_change_event("State", True, False)
@@ -251,17 +254,23 @@ class HelperSubArrayDevice(SKASubarray):
         return self._assigned_resources
 
     def read_scanId(self) -> int:
-        """This method is used to read the attribute value for scanId."""
+        """
+        This method is used to read the attribute value for scanId.
+        :return: scan_id
+        """
         return self._scan_id
 
     def read_obsStateTransitionDuration(self):
-        """Read transition"""
+        """
+        Read transition
+        :return: state dureation info
+        """
         return json.dumps(self._state_duration_info)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
         Returns avalability status for the leaf nodes devices
-
+        :return: avalability status for the leaf nodes devices
         :rtype: bool
         """
         return self._isSubsystemAvailable
@@ -311,18 +320,25 @@ class HelperSubArrayDevice(SKASubarray):
         self._state_duration_info = []
 
     def read_commandCallInfo(self):
-        """This method is used to read the attribute value for
+        """
+        This method is used to read the attribute value for
         commandCallInfo.
+        :return: attribute value for commandCallInfo
         """
         return self._command_call_info
 
     def read_commandDelayInfo(self):
-        """This method is used to read the attribute value for delay."""
+        """
+        This method is used to read the attribute value for delay.
+        :return: attribute value for delay
+        """
 
         return json.dumps(self._command_delay_info)
 
     def read_raiseException(self) -> bool:
-        """This method is used to read the attribute value for raise exception
+        """
+        This method is used to read the attribute value for raise exception
+        :return: attribute value for raise exception
 
         :rtype: bool
         """
@@ -331,6 +347,7 @@ class HelperSubArrayDevice(SKASubarray):
     def read_commandInProgress(self) -> str:
         """
         This method is used to read, which command is in progress
+        :return: command in progress
         :rtype:str
         """
         return self._command_in_progress
@@ -338,6 +355,7 @@ class HelperSubArrayDevice(SKASubarray):
     def read_defective(self) -> str:
         """
         This method is used to read the value of the attribute defective
+        :return: attribute value defective
         :rtype: str
         """
         return json.dumps(self.defective_params)
@@ -345,6 +363,7 @@ class HelperSubArrayDevice(SKASubarray):
     def read_receiveAddresses(self) -> str:
         """
         This method is used to read receiveAddresses attribute
+        :return: attribute receiveAddresses
         :rtype:str
         """
         return self._receive_addresses
@@ -452,7 +471,8 @@ class HelperSubArrayDevice(SKASubarray):
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
         This method is used to create an instance of
-        EmptySubarrayComponentManager         :return:
+        EmptySubarrayComponentManager
+        :return: component manager
         :rtype: EmptySubArrayComponentManager
         """
         cm = EmptySubArrayComponentManager(
@@ -610,6 +630,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -630,6 +651,7 @@ class HelperSubArrayDevice(SKASubarray):
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command on Subarray Device
+        :return: ResultCode
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke On command")
@@ -651,6 +673,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -674,7 +697,7 @@ class HelperSubArrayDevice(SKASubarray):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
-
+        :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
@@ -828,6 +851,7 @@ class HelperSubArrayDevice(SKASubarray):
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command on Subarray Device
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke Off command")
@@ -849,6 +873,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -892,6 +917,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -916,6 +942,7 @@ class HelperSubArrayDevice(SKASubarray):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AssignResources command on subarray devices
+        :return: ResultCode and message
         """
         self.logger.info(
             "Instructed simulator to invoke AssignResources command"
@@ -965,6 +992,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -987,6 +1015,7 @@ class HelperSubArrayDevice(SKASubarray):
     def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseResources command on subarray device
+        :return: ResultCode and message
         """
         self.logger.info(
             "Instructed simulator to invoke ReleaseResources command"
@@ -1011,6 +1040,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1073,6 +1103,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1124,6 +1155,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1167,6 +1199,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1208,6 +1241,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1252,6 +1286,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1293,6 +1328,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1308,7 +1344,10 @@ class HelperSubArrayDevice(SKASubarray):
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-        """ObsReset Command"""
+        """
+        ObsReset Command
+        :return: ResultCode and message
+        """
         self.logger.info("Instructed simulator to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
@@ -1327,6 +1366,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -1370,6 +1410,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (

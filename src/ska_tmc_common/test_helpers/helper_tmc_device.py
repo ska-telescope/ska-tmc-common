@@ -135,7 +135,7 @@ class DummyTmcDevice(HelperBaseDevice):
     def is_SetData_allowed(self) -> bool:
         """
         It checks if the SetData is allowed or not.
-
+        :return: boolean value if the SetData is allowed or not
         :rtype : bool
         """
         return True

@@ -44,6 +44,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AssignResources command on subarray devices
+        :return: ResultCode and message
         """
         self.logger.info(
             "Instructed Csp Subarray to invoke AssignResources command"
@@ -116,6 +117,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
     def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseResources command on subarray device
+        :return: ResultCode and message
         """
         self.logger.info(
             "Instructed Csp Subarray to invoke ReleaseResources command"

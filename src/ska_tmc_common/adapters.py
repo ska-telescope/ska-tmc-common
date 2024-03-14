@@ -41,6 +41,7 @@ class BaseAdapter:
     def proxy(self) -> tango.DeviceProxy:
         """
         Sets proxy of device
+        :return: proxy of device
         """
         return self._proxy
 
@@ -48,36 +49,42 @@ class BaseAdapter:
     def dev_name(self) -> str:
         """
         Returns device name.
+        :return: device name
         """
         return self._dev_name
 
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state.
+        :return: proxy of device
         """
         return self.proxy.On()
 
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to OFF state.
+        :return: proxy of device
         """
         return self.proxy.Off()
 
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Standby state.
+        :return: proxy of device
         """
         return self.proxy.Standby()
 
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Reset state.
+        :return: proxy of device
         """
         return self.proxy.Reset()
 
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Disable state.
+        :return: proxy of device
         """
         return self.proxy.Disable()
 
@@ -90,8 +97,10 @@ class CspMasterLeafNodeAdapter(BaseAdapter):
 
     @property
     def memorizedDishVccMap(self):
-        """Return memorizedDishVccMap value of master
+        """
+        Return memorizedDishVccMap value of master
         leaf node proxy
+        :return: memorizedDishVccMap value
         """
         return self._proxy.memorizedDishVccMap
 
@@ -103,6 +112,7 @@ class CspMasterLeafNodeAdapter(BaseAdapter):
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes LoadDishCfg Command on the csp master Leaf device proxy.
+        :return: command invocation on csp master leaf node device proxy
         """
         return self._proxy.LoadDishCfg(argin)
 
@@ -115,45 +125,61 @@ class CspMasterAdapter(BaseAdapter):
 
     @property
     def adminMode(self):
-        """Return AdminMode of CSP Master"""
+        """
+        Return AdminMode of CSP Master
+        :return: AdminMode of CSP Master
+        """
         return self._proxy.adminMode
 
     @property
     def state(self):
-        """Return current state of CSP Master"""
+        """
+        Return current state of CSP Master
+        :return: state of CSP Master
+        """
         return self._proxy.state()
 
     @property
     def sourceDishVccConfig(self):
-        """Return sourceDishVccConfig value of Csp Master proxy"""
+        """
+        Return sourceDishVccConfig value of Csp Master proxy
+        :return: sourceDishVccConfig value of Csp Master proxy
+        """
         return self._proxy.sourceDishVccConfig
 
     @property
     def dishVccConfig(self):
-        """Return dishVccConfig value of Csp Master proxy"""
+        """
+        Return dishVccConfig value of Csp Master proxy
+        :return: dishVccConfig value of Csp Master proxy
+        """
         return self._proxy.dishVccConfig
 
     def On(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state
+        :return: proxy of device
         """
         return self._proxy.On(argin)
 
     def Standby(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
-        Sets device proxiesto Standby state
+        Sets device proxies to Standby state
+        :return: proxy of device
         """
         return self._proxy.Standby(argin)
 
     def Off(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to Off state
+        :return: proxy of device
         """
         return self._proxy.Off(argin)
 
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes LoadDishCfg Command on the csp master device proxy.
+        :return: command invocation on csp master device proxy
         """
         return self._proxy.LoadDishCfg(argin)
 
@@ -169,12 +195,14 @@ class SubarrayAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes AssignResources on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.AssignResources(argin)
 
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ReleaseAllResources on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.ReleaseAllResources()
 
@@ -183,48 +211,56 @@ class SubarrayAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ReleaseResources on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.ReleaseResources(argin)
 
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Configure on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.Configure(argin)
 
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Scan on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.Scan(argin)
 
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes EndScan on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.EndScan()
 
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes End on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.End()
 
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Abort on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.Abort()
 
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Restart on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.Restart()
 
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Reset on subarray device proxy.
+        :return: command invocation on subarray device proxy
         """
         return self._proxy.ObsReset()
 
@@ -240,6 +276,7 @@ class SdpSubArrayAdapter(SubarrayAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes AssignResources on SdpSubarray device proxy.
+        :return: command invocation on sdp subarray device proxy
         """
         return self._proxy.command_inout_asynch(
             "AssignResources", argin, callback
@@ -250,6 +287,7 @@ class SdpSubArrayAdapter(SubarrayAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ReleaseAllResources on SdpSubarray device proxy.
+        :return: command invocation on sdp subarray device proxy
         """
         return self._proxy.command_inout_asynch(
             "ReleaseAllResources", callback
@@ -260,6 +298,7 @@ class SdpSubArrayAdapter(SubarrayAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Configure on SdpSubarray device proxy.
+        :return: command invocation on sdp subarray device proxy
         """
         return self._proxy.command_inout_asynch("Configure", argin, callback)
 
@@ -275,6 +314,7 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes AssignResources on device proxy.
+        :return: command invocation on MCCS master leaf node device proxy
         """
         return self._proxy.AssignResources(argin)
 
@@ -283,6 +323,7 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ReleaseAllResources on device proxy.
+        :return: command invocation on MCCS master leaf node device proxy
         """
         return self._proxy.ReleaseAllResources(argin)
 
@@ -296,12 +337,14 @@ class MCCSControllerAdapter(BaseAdapter):
     def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Allocate on MCCS controller device proxy.
+        :return: command invocation on MCCS Controller device proxy
         """
         return self._proxy.Allocate(argin)
 
     def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Release on MCCS controller device proxy.
+        :return: command invocation on MCCS Controller device proxy
         """
         return self._proxy.Release(argin)
 
@@ -310,6 +353,7 @@ class MCCSControllerAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes RestartSubarray on MCCS controller device proxy.
+        :return: command invocation on MCCS Controller device proxy
         """
         return self._proxy.RestartSubarray(argin)
 
@@ -324,60 +368,70 @@ class DishLeafAdapter(BaseAdapter):
     def kValue(self) -> int:
         """
         Get the kValue from the dish manager.
+        :return: Kvalue
         """
         return self._proxy.kValue
 
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStandbyFPMode on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.SetStandbyFPMode()
 
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetOperateMode on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.SetOperateMode()
 
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStandbyLPMode on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.SetStandbyLPMode()
 
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStowMode on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.SetStowMode()
 
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Configure on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.Configure(argin)
 
     def ConfigureBand1(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand1 on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ConfigureBand1(argin)
 
     def ConfigureBand2(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand2 on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ConfigureBand2(argin)
 
     def ConfigureBand3(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand3 on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ConfigureBand3(argin)
 
     def ConfigureBand4(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand4 on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ConfigureBand4(argin)
 
@@ -386,6 +440,7 @@ class DishLeafAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand5a on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ConfigureBand5a(argin)
 
@@ -394,18 +449,21 @@ class DishLeafAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes ConfigureBand5b on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ConfigureBand5b(argin)
 
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Track on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.Track()
 
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes TrackStop on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.TrackStop()
 
@@ -414,42 +472,49 @@ class DishLeafAdapter(BaseAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes TrackLoadStaticOff on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.TrackLoadStaticOff(argin)
 
     def Scan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Scan on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.Scan()
 
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Restart on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.Restart()
 
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Abort on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.AbortCommands()
 
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Reset on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.ObsReset()
 
     def Reset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Reset on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.Reset()
 
     def SetKValue(self, kvalue: int) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetKValue Command on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.SetKValue(kvalue)
 
@@ -462,6 +527,7 @@ class DishAdapter(DishLeafAdapter):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes TrackLoadStaticOff on device proxy.
+        :return: command invocation on Dish device proxy
         """
         return self._proxy.TrackLoadStaticOff(argin)
 
@@ -475,6 +541,7 @@ class CspSubarrayAdapter(SubarrayAdapter):
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes End on device proxy.
+        :return: command invocation on CSP Subarray device proxy
         """
         return self._proxy.GoToIdle()
 
@@ -507,8 +574,7 @@ class AdapterFactory:
         or create new adapter as per the device type and add to adpter list
 
         :param dev_name: device name
-
-        :type str
+        :return: adapter
         """
 
         for adapter in self.adapters:

@@ -12,7 +12,7 @@ python-pre-publish:
 #DAR201 Missing "Returns" in Docstring: - return
 #DAR301 Missing "Yields" in Docstring: - yield
 #DAR401 Missing exception(s) in Raises section: -r Exception
-PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR401,W503,E501,DAR003
+PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR301,W503,DAR003
 MARK ?=
 PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE)
 

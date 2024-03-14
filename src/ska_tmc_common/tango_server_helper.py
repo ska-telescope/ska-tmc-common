@@ -29,7 +29,7 @@ class TangoServerHelper:
 
     def __init__(self):
         """Private constructor of the class
-        :raises Exception
+        :raises Exception: Exception is raised when it is not singleton class
         """
         if TangoServerHelper.__instance is not None:
             raise Exception("This is singleton class")
@@ -46,8 +46,7 @@ class TangoServerHelper:
 
         :param: None.
 
-        return:
-            object of TangoServerHelper class
+        :return: object of TangoServerHelper class
         """
         if TangoServerHelper.__instance is None:
             TangoServerHelper()
@@ -67,8 +66,7 @@ class TangoServerHelper:
         Returns the value of given Tango device property
         :param property_name: String. Name of the Tango device property
 
-        :return
-            List of strings containing value(s) of the device property
+        :return: List of strings containing value(s) of the device property
 
         :throws
             Devfailed exception in case of error
@@ -156,7 +154,7 @@ class TangoServerHelper:
         """
         Sets the Status attribute of the Tango device with given value.
 
-        :param new_status: String. New value for Status attribute.s
+        :param new_status: String. New value for Status attribute.
 
         :throws: DevFailed on failure in setting device status.
         """

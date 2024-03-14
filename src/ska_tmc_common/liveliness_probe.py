@@ -55,6 +55,7 @@ class BaseLivelinessProbe:
     def run(self) -> NotImplementedError:
         """
         Runs the sub devices
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited")
 

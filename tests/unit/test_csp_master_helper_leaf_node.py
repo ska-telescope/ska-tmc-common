@@ -29,7 +29,8 @@ def test_csp_master_leaf_node_loadDishConfig_command(
     expected_json = json.loads(expected_json_str)
     dishVccConfig = json.loads(csp_master_leaf_device.dishVccConfig)
 
-    # comparing dictionary instead of strings to avoid the issues with whitespaces
+    # comparing dictionary instead of strings
+    # to avoid the issues with whitespaces
     assert expected_json == dishVccConfig
 
 

@@ -61,6 +61,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device._dishln_name = self._device.get_name()
@@ -84,7 +85,9 @@ class HelperDishLNDevice(HelperBaseDevice):
     kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
 
     def read_kValueValidationResult(self) -> str:
-        """Get the k-value validation result.
+        """
+        Get the k-value validation result.
+        :return: kValue validation result
         :rtype:str
         """
         return self._dish_kvalue_validation_result
@@ -100,6 +103,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         This attribute is used for storing dish kvalue
         into tango DB.Made this attribute memorized so that when device
         restart then previous set kvalue will be used validation.
+        :return: kvalue
         """
         return self._kvalue
 
@@ -112,25 +116,31 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._kvalue = kvalue
 
     def read_delay(self) -> int:
-        """This method is used to read the attribute value for delay."""
+        """
+        This method is used to read the attribute value for delay.
+        :return: delay
+        """
         return self._delay
 
     def read_defective(self) -> str:
         """
         Returns defective status of devices
-
+        :return: defective status of devices
         :rtype: str
         """
         return json.dumps(self.defective_params)
 
     def read_actualPointing(self) -> str:
-        """Read method for actual pointing."""
+        """
+        Read method for actual pointing.
+        :return: actual pointing value
+        """
         return json.dumps(self._actual_pointing)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
         Returns avalability status for the leaf nodes devices
-
+        :return: boolean value for attribute isSubsystemAvailable
         :rtype: bool
         """
         return self._isSubsystemAvailable
@@ -168,13 +178,18 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._offset["off_el"] = elevation
 
     def read_commandCallInfo(self):
-        """This method is used to read the attribute value for
+        """
+        This method is used to read the attribute value for
         commandCallInfo.
+        :return: command_call_info value
         """
         return self._command_call_info
 
     def read_commandDelayInfo(self) -> str:
-        """This method is used to read the attribute value for delay."""
+        """
+        This method is used to read the attribute value for delay.
+        :return: command_delay_infp value
+        """
         return json.dumps(self._command_delay_info)
 
     def push_dish_kvalue_validation_result(self):
@@ -210,6 +225,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the SetKValue Command is allowed in current
         State.
+        :return: boolean value if command is allowed or not
         :rtype: bool
         """
         return True
@@ -225,6 +241,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         :param kvalue: k value between range 1-2222.
         :kvalue dtype: int
+        :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         if self.defective_params["enabled"]:
@@ -282,6 +299,14 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_change_event("commandCallInfo", self._command_call_info)
 
     def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off Command is
+        allowed in current
+        State.
+        :return: ``True`` if the command is allowed
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -317,7 +342,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the is_SetStandbyFPMode_allowed Command is
         allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -338,6 +365,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStandbyFPMode command on  Dish Master
+        :return: ResultCode and message
         :rtype: tuple
         """
         self.logger.info("Processing SetStandbyFPMode Command")
@@ -358,7 +386,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method checks if the is_SetStandbyLPMode_allowed Command is
         allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -379,6 +409,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStandbyLPMode command on  Dish Master
+        :return: ResultCode and message
         :rtype: tuple
         """
         self.logger.info(
@@ -401,7 +432,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the SetOperateMode Command is allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -422,6 +455,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetOperateMode command on  Dish Master
+        :return: ResultCode and message
         :rtype: tuple
         """
         self.logger.info(
@@ -445,7 +479,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the SetStowMode Command is allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -466,6 +502,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStowMode command on  Dish Master
+        :return: ResultCode and message
         :rtype : tuple
         """
         self.logger.info(
@@ -489,7 +526,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the Track Command is allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -510,6 +549,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Track command on  Dish Master
+        :return: ResultCode and message
         :rtype: tuple
         """
         self.logger.info("Instructed Dish simulator to invoke Track command")
@@ -525,7 +565,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the TrackStop Command is allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -547,6 +589,8 @@ class HelperDishLNDevice(HelperBaseDevice):
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
+        :return: ResultCode and message
+        :rtype: tuple
         """
         self.logger.info(
             "Instructed Dish simulator to invoke TrackStop command"
@@ -563,7 +607,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the AbortCommands command is allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -584,6 +630,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AbortCommands command on  Dish Master
+        :return: ResultCode and message
         :rtype: tuple
         """
         self.logger.info(
@@ -601,7 +648,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the Configure Command is allowed in current
         State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -623,6 +672,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Configure command on  Dish Master
+        :return: ResultCode and message
         :rtype: tuple
         """
         command_id = f"{time.time()}_Configure"
@@ -649,7 +699,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the TrackLoadStaticOff command is allowed in
         current State.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -677,6 +729,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :param argin: A list containing scan_id/ time, cross elevation and
             elevation offsets.
         :argin dtype: str(List)
+        :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info(
@@ -787,7 +840,9 @@ class HelperDishLNDevice(HelperBaseDevice):
     def is_Scan_allowed(self) -> bool:
         """
         This method checks if the Scan Command is allowed in current State.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -809,6 +864,8 @@ class HelperDishLNDevice(HelperBaseDevice):
     def Scan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on Dish Master
+        :return: ResultCode and message
+        :rtype: tuple
         """
         self.logger.info("Processing Scan Command")
         # to record the command data
