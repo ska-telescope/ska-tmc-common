@@ -89,6 +89,14 @@ class BaseTMCCommand:
     ]:
         """
         Method to create adapters for device.
+        :param device_name: name of the device.
+        :type device_name: str
+        :param adapter_type: Type of Adapter.
+        :type adapter_type: AdapterType
+        :param start_time: start time.
+        :type start_time: float
+        :param timeout: Timeout for adapter creation.
+        :type timeout: int
         """
         elapsed_time = 0
 
@@ -116,9 +124,11 @@ class BaseTMCCommand:
                 raise
 
     # pylint: enable=inconsistent-return-statements
-    def do(self, argin=None) -> NotImplementedError:
+    def do(self, argin: str = None) -> NotImplementedError:
         """
         Base method for do method for different nodes
+        :param argin: command params.
+        :type argin: str
         """
         raise NotImplementedError(
             "This method must be implemented by command class"
@@ -128,7 +138,10 @@ class BaseTMCCommand:
         self,
         **kwargs,
     ) -> NotImplementedError:
-        """Method to update the task status for command."""
+        """Method to update the task status for command.
+        :param kwargs: extra parameter to provide.
+        :type kwargs: dict
+        """
         raise NotImplementedError(
             "This method must be implemented by command class"
         )
@@ -148,6 +161,8 @@ class BaseTMCCommand:
         Currently only supports obsState change.), the timeout callback to
         monitor the timeout and the longRunningCommandResult callback to keep
         track of LRCR events.
+
+        :param state_function: Callable function which return current state
 
         :param expected_state: Expected state of the device in case of
                     successful command execution.
@@ -195,6 +210,8 @@ class BaseTMCCommand:
         """Keeps track of the obsState change and the timeout callback to
         determine whether timeout has occurred or the command completed
         successfully. Logs the result for now.
+
+        :param state_function: Callable function which return current state
 
         :param expected_state: Expected state of the device in case of
                     successful command execution.
@@ -344,9 +361,12 @@ class BaseTMCCommand:
             return True
         return False
 
-    def stop_tracker_thread(self, timeout_id) -> None:
+    def stop_tracker_thread(self, timeout_id: str) -> None:
         """External stop method for stopping the timer thread as well as the
-        tracker thread."""
+        tracker thread.
+        :param timeout_id: Timeout id
+        :type timeout_id: str
+        """
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
             self._stop = True
@@ -377,15 +397,18 @@ class TMCCommand(BaseTMCCommand):
         """
         raise NotImplementedError("This method must be inherited!")
 
-    def do_mid(self, argin=None):
+    def do_mid(self, argin: str = None):
         """
         Base method for do_mid method for different nodes
+        :param argin: Command params
+        :type argin: str
         """
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
         """
-        Base method for do_low method for different nodes
+        :param argin: Command params
+        :type argin: str
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -401,15 +424,19 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         """
         raise NotImplementedError("This method must be inherited!")
 
-    def do_mid(self, argin=None):
+    def do_mid(self, argin: str = None):
         """
         Base method for do_mid method for different nodes
+        :param argin: Command params
+        :type argin: str
         """
         raise NotImplementedError("This method must be inherited!")
 
-    def do_low(self, argin=None):
+    def do_low(self, argin: str = None):
         """
         Base method for do_low method for different nodes
+        :param argin: Command params
+        :type argin: str
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -430,6 +457,14 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Method to invoke commands on device adapters.
+        :param device: Device name
+        :type device: str
+        :param adapter: Adapter to use
+        :type adapter: Adapter
+        :param command_name: Command name
+        :type command_name: str
+        :param argin: Command params
+        :type argin: str
         """
         if adapter is None:
             return (
