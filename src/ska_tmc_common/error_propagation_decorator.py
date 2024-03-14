@@ -48,7 +48,13 @@ def process_result_and_start_tracker(
     if result == ResultCode.FAILED:
         class_instance.update_task_status(result=result, message=message)
         if is_timeout_considered:
-            class_instance.timekeeper.stop_timer()
+            # The if else block is to keep backwards compatibility. Once all
+            # repositories start using the TimeKeeper class, the block can be
+            # replaced with the if part.
+            if hasattr(class_instance.component_manager, "timekeeper"):
+                class_instance.component_manager.timekeeper.stop_timer()
+            else:
+                class_instance.component_manager.stop_timer()
         if cleanup_function:
             function = methodcaller(cleanup_function)
             function(class_instance)
@@ -70,6 +76,8 @@ def error_propagation_decorator(
     expected_states: list,
     is_timeout_considered: bool = True,
     cleanup_function: str = "",
+    pre_hook: str = "",
+    post_hook: str = "",
 ) -> Callable:
     """A decorator for implementing error propagation functionality using
     expected states as an input data.
@@ -83,6 +91,12 @@ def error_propagation_decorator(
     :param cleanup_function: Optional function that cleans up the device after
         command failure
     :type cleanup_function: str
+    :param pre_hook: A function to call at the start of the decorator. Should
+        be accessible from the class_instance
+    :type pre_hook: str
+    :param post_hook: A function to call at the end of the decorator. Should
+        be accessible from the class_instance
+    :type post_hook: str
 
     :rtype: Callable
     """
@@ -90,21 +104,23 @@ def error_propagation_decorator(
     def error_propagation(function: Callable) -> Callable:
         def wrapper(*args, **kwargs) -> None:
             """Wrapper method"""
-            logger.debug(
+            class_instance = args[0]
+            class_instance.logger.debug(
                 "Executing the error propagation decorator with: %s, %s",
                 args,
                 kwargs,
             )
-            class_instance = args[0]
+            if pre_hook:
+                methodcaller(pre_hook)(class_instance)
 
-            argin = extract_argin(args)
+            argin, is_argin_present = extract_argin(args)
             class_instance.task_callback = kwargs["task_callback"]
             task_abort_event = kwargs["task_abort_event"]
 
             class_instance.task_callback(status=TaskStatus.IN_PROGRESS)
             setup_data(class_instance)
 
-            if argin:
+            if is_argin_present:
                 result, message = function(class_instance, argin)
             else:
                 result, message = function(class_instance)
@@ -118,6 +134,9 @@ def error_propagation_decorator(
                 is_timeout_considered,
                 cleanup_function,
             )
+
+            if post_hook:
+                methodcaller(post_hook)(class_instance)
 
         return wrapper
 
@@ -136,16 +155,16 @@ def setup_data(class_instance) -> None:
     class_instance.set_command_id(class_name)
 
 
-def extract_argin(arguments: tuple) -> str:
+def extract_argin(arguments: tuple) -> tuple[str, bool]:
     """Extracts and returns the argin from the given list of args.
 
     :param arguments: The input arguments to the function
     :type arguments: Tuple
 
-    :rtype: str
+    :rtype: Tuple[str, bool]
     """
     for element in arguments:
         if isinstance(element, str):
-            return element
+            return element, True
 
-    return ""
+    return "", False
