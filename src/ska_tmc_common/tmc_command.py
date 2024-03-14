@@ -422,10 +422,9 @@ class TMCCommand(BaseTMCCommand):
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
-        """
+        """Base method for do_low method for different nodes
         :param argin: Command params
         :type argin: str
-        Base method for do_low method for different nodes
         :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
