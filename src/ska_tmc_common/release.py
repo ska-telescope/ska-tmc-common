@@ -4,8 +4,9 @@
 #
 #
 #
+#
 """Release information for ska-tmc-common Python Package"""
-
+# pylint: disable=redefined-builtin
 name = """ska-tmc-common"""
 version = "0.13.1"
 version_info = version.split(".")

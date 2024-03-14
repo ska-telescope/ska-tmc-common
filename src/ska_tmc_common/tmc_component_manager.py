@@ -81,6 +81,9 @@ class TmcComponent:
         raise NotImplementedError("This method must be inherited!")
 
 
+# pylint: disable=abstract-method
+# Disabled as this is also a abstract class and has parent class from
+# base class
 class BaseTmcComponentManager(TaskExecutorComponentManager):
     """
     This class manages obsstates , commands and various checks
@@ -138,22 +141,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         with self.lock:
             self.logger.info("Setting the command id as: %s", value)
             self._command_id = value
-
-    def is_command_allowed(self, command_name: str):
-        """
-        Checks whether this command is allowed
-        It checks that the device is in a state to perform this command
-
-        :param command_name: command_name
-        :type command_name: str
-
-        :rtype: boolean
-        :raises NotImplementedError: raise not implemented error
-        """
-        raise NotImplementedError(
-            "is_command_allowed is abstract; method must be implemented in \
-            a subclass!"
-        )
 
     def start_liveliness_probe(self, lp: LivelinessProbeType) -> None:
         """Starts Liveliness Probe for the given device.
@@ -225,7 +212,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 "Threading error occurred while starting the thread : %s",
                 te,
             )
-
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
@@ -446,10 +432,14 @@ class TmcComponentManager(BaseTmcComponentManager):
 
         :param command_name: command_name
         :type command_name: str
-        :return: boolean value
+
         :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
         """
-        return True
+        raise NotImplementedError(
+            "is_command_allowed is abstract; method must be implemented in \
+            a subclass!"
+        )
 
 
 class TmcLeafNodeComponentManager(BaseTmcComponentManager):

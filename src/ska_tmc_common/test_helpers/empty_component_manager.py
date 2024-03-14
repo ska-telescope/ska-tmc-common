@@ -5,6 +5,10 @@ from logging import Logger
 
 from ska_tango_base.base.component_manager import BaseComponentManager
 
+# pylint: disable=abstract-method
+# Disabled as this is also a abstract class and has parent class from
+# base class
+
 
 class EmptyComponentManager(BaseComponentManager):
     """

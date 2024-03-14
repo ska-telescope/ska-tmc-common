@@ -195,17 +195,17 @@ class HelperBaseDevice(SKABaseDevice):
         return [ResultCode.OK], [""]
 
     def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
+        self, result: ResultCode, command_name: str, exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
         :param result: The result code to be pushed as an event
         :type: ResultCode
-        :param command: The command name for which the event is being pushed
+        :param command_name: The command name for which event is being pushed
         :type: str
         :param exception: Exception message to be pushed as an event
         :type: str
         """
-        command_id = f"{time.time()}-{command}"
+        command_id = f"{time.time()}-{command_name}"
         self.logger.info(
             "The command_id is %s and the ResultCode is %s", command_id, result
         )

@@ -22,6 +22,7 @@ import tango
 from tango import DevFailed
 
 
+# pylint: disable=no-member
 class TangoGroupClient:
     """
     Class for TangoGroupClient API

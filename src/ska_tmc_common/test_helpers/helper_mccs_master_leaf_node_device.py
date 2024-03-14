@@ -42,6 +42,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
+    # pylint: disable=arguments-renamed
+    # Disabled because here command_id is passed as parameter instead of
+    # command_name
     def push_command_result(
         self, result: ResultCode, command_id: str, exception: str = ""
     ) -> None:
@@ -52,7 +55,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         result: The result code to be pushed as an event
         dtype: ResultCode
 
-        command: The command name for which the event is being pushed
+        command_id: The command_id for which the event is being pushed
         dtype: str
 
         exception: Exception message to be pushed as an event
