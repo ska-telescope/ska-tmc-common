@@ -417,11 +417,17 @@ class DishLeafAdapter(BaseAdapter):
         """
         return self._proxy.TrackLoadStaticOff(argin)
 
-    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Scan on device proxy.
         """
-        return self._proxy.Scan()
+        return self._proxy.Scan(argin)
+
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes EndScan on device proxy.
+        """
+        return self._proxy.EndScan()
 
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
