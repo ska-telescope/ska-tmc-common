@@ -155,6 +155,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         self.lrcr_callback = LRCRCallback(self.logger)
         self.transitional_obsstate = transitional_obsstate
         self.command_obj = DummyCommandClass(self, self.logger)
+        self._state_val = State.NORMAL
 
     @property
     def state(self) -> IntEnum:
@@ -219,7 +220,6 @@ class DummyCommandClass(TmcLeafNodeCommand):
         super().__init__(component_manager, logger, *args, **kwargs)
         self._timeout_id = f"{time.time()}-{self.__class__.__name__}"
         self.timeout_callback = TimeoutCallback(self._timeout_id, self.logger)
-        self._state_val = State.NORMAL
         self.task_callback: Callable
         self.transitional_obsstate = component_manager.transitional_obsstate
 

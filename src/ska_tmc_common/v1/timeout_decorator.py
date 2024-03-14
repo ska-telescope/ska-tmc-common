@@ -25,12 +25,23 @@ def timeout_decorator(function: Callable) -> Callable:
             "Executing the timeout decorator with: %s, %s", args, kwargs
         )
 
-        # Start timer for the command
+        # If a pre hook is defined in the function map, execute it.
+        if class_instance.function_map.get("pre_hook"):
+            class_instance.function_map["pre_hook"]()
+
+        # Start timer for the command execution
         class_instance.timekeeper.start_timer(
             class_instance.timeout_id,
             class_instance.timeout_callback,
         )
-        # Execute the function with given args and kwargs
-        return function(*args, **kwargs)
+
+        # Execute function with given args and kwargs
+        result = function(*args, **kwargs)
+
+        # If a post hook is defined in the function map, execute it.
+        if class_instance.function_map.get("post_hook"):
+            class_instance.function_map["post_hook"]()
+
+        return result
 
     return wrapper

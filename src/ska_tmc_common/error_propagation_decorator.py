@@ -1,15 +1,10 @@
 """A module implementing a decorator for Error Propagation."""
-import logging
 from operator import methodcaller
 from threading import Event
 from typing import Callable
 
-from ska_ser_logging.configuration import configure_logging
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
-
-configure_logging()
-logger = logging.getLogger(__name__)
 
 
 def process_result_and_start_tracker(
@@ -51,6 +46,8 @@ def process_result_and_start_tracker(
     """
     if result == ResultCode.FAILED:
         class_instance.update_task_status(result=result, message=message)
+
+        # Close the timer if timeout is considered
         if is_timeout_considered:
             # The if else block is to keep backwards compatibility. Once all
             # repositories start using the TimeKeeper class, the block can be
@@ -59,6 +56,8 @@ def process_result_and_start_tracker(
                 class_instance.component_manager.timekeeper.stop_timer()
             else:
                 class_instance.component_manager.stop_timer()
+
+        # Execute cleanup if provided
         if cleanup_function:
             function = methodcaller(cleanup_function)
             function(class_instance)
@@ -81,8 +80,6 @@ def error_propagation_decorator(
     expected_states: list,
     is_timeout_considered: bool = True,
     cleanup_function: str = "",
-    pre_hook: str = "",
-    post_hook: str = "",
 ) -> Callable:
     """A decorator for implementing error propagation functionality using
     expected states as an input data.
@@ -99,12 +96,6 @@ def error_propagation_decorator(
     :param cleanup_function: Optional function that cleans up the device after
         command failure
     :type cleanup_function: str
-    :param pre_hook: A function to call at the start of the decorator. Should
-        be accessible from the class_instance
-    :type pre_hook: str
-    :param post_hook: A function to call at the end of the decorator. Should
-        be accessible from the class_instance
-    :type post_hook: str
 
     :rtype: Callable
     """
@@ -112,27 +103,34 @@ def error_propagation_decorator(
     def error_propagation(function: Callable) -> Callable:
         def wrapper(*args, **kwargs) -> None:
             """Wrapper method"""
+            # Extract the class instance from the input arguments
             class_instance = args[0]
             class_instance.logger.debug(
                 "Executing the error propagation decorator with: %s, %s",
                 args,
                 kwargs,
             )
-            if pre_hook:
-                methodcaller(pre_hook)(class_instance)
 
+            # Extract input argin if present
             argin, is_argin_present = extract_argin(args)
+
+            # Set task callback and task abort event
             class_instance.task_callback = kwargs["task_callback"]
             task_abort_event = kwargs["task_abort_event"]
 
+            # Set the command in progress and setup the data required for the
+            # error propagation functionality
             class_instance.task_callback(status=TaskStatus.IN_PROGRESS)
             setup_data(class_instance)
 
+            # Execute the function according to the presence of input argument
             if is_argin_present:
                 result, message = function(class_instance, argin)
             else:
                 result, message = function(class_instance)
 
+            # Process the command execution result and start the tracker thread
+            # if necessary.
             process_result_and_start_tracker(
                 class_instance,
                 result,
@@ -143,9 +141,6 @@ def error_propagation_decorator(
                 is_timeout_considered,
                 cleanup_function,
             )
-
-            if post_hook:
-                methodcaller(post_hook)(class_instance)
 
         return wrapper
 
