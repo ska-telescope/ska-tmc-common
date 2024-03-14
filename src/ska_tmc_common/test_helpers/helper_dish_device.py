@@ -33,7 +33,7 @@ from ska_tmc_common.test_helpers.helper_dish_ln_device import (
 )
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 # pylint: disable=unused-argument,too-many-public-methods
 class HelperDishDevice(HelperDishLNDevice):
     """A device exposing commands and attributes of the Dish device."""
@@ -365,9 +365,9 @@ class HelperDishDevice(HelperDishLNDevice):
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
-            for i in range(0, len(self._program_track_table), 3):
+            for index in range(0, len(self._program_track_table), 3):
                 self._achieved_pointing = self._program_track_table[
-                    i : i + 3  # noqa
+                    index : index + 3  # noqa
                 ]
                 self.logger.info(
                     "The achieved pointing value is: %s",
@@ -376,10 +376,10 @@ class HelperDishDevice(HelperDishLNDevice):
                 self.push_change_event(
                     "achievedPointing", self._achieved_pointing
                 )
-        except (ValueError, TypeError, KeyError) as e:
+        except (ValueError, TypeError, KeyError) as exp:
             self.logger.exception(
                 "Exception occurred while pushing achieved pointing event: %s",
-                e,
+                exp,
             )
 
     def _update_poiniting_state_in_sequence(self) -> None:

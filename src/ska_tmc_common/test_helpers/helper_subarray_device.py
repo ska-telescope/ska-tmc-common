@@ -38,6 +38,7 @@ from .constants import (
 )
 
 
+# pylint: disable=invalid-name
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
     This is a Component Manager created for the use of Helper Subarray devices.

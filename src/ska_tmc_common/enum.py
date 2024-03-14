@@ -50,8 +50,8 @@ class Band(IntEnum):
     B2 = 2
     B3 = 3
     B4 = 4
-    B5a = 5
-    B5b = 6
+    B5a = 5  # pylint: disable=invalid-name
+    B5b = 6  # pylint: disable=invalid-name
     UNKNOWN = 7
 
 

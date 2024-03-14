@@ -69,11 +69,11 @@ class LRCRCallback:
             ]
             if not all(is_valid):
                 return False
-        except KeyError as e:
+        except KeyError as exp:
             self.logger.debug(
                 "The assertion is invalid as one or more keyword arguments "
                 + "are invalid. Error : %s",
-                e,
+                exp,
             )
             return False
 

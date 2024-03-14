@@ -74,11 +74,11 @@ class TangoServerHelper:
             Devfailed exception in case of error
         """
         try:
-            db = Database()
+            database_obj = Database()
             device_name = self.device.get_name()
-            return db.get_device_property(device_name, property_name)[
-                property_name
-            ]
+            return database_obj.get_device_property(
+                device_name, property_name
+            )[property_name]
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(
                 dev_failed,
@@ -101,11 +101,11 @@ class TangoServerHelper:
                  KeyError exception in case key error
         """
         try:
-            db = Database()
+            database_obj = Database()
             device_name = self.device.get_name()
             property_map = {}
             property_map[property_name] = value
-            db.put_device_property(device_name, property_map)
+            database_obj.put_device_property(device_name, property_map)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(
                 dev_failed,

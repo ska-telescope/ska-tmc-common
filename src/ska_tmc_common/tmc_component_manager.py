@@ -155,12 +155,14 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             a subclass!"
         )
 
-    def start_liveliness_probe(self, lp: LivelinessProbeType) -> None:
+    def start_liveliness_probe(
+        self, liveliness_probe_type: LivelinessProbeType
+    ) -> None:
         """Starts Liveliness Probe for the given device.
 
-        :param lp: enum of class LivelinessProbeType
+        :param liveliness_probe_type: enum of class LivelinessProbeType
         """
-        if lp == LivelinessProbeType.SINGLE_DEVICE:
+        if liveliness_probe_type == LivelinessProbeType.SINGLE_DEVICE:
             self.liveliness_probe_object = SingleDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -169,7 +171,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.liveliness_probe_object.start()
 
-        elif lp == LivelinessProbeType.MULTI_DEVICE:
+        elif liveliness_probe_type == LivelinessProbeType.MULTI_DEVICE:
             self.liveliness_probe_object = MultiDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -219,11 +221,11 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
-        except threading.ThreadError as te:
+        except threading.ThreadError as thread_error:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
                 "Threading error occurred while starting the thread : %s",
-                te,
+                thread_error,
             )
 
         except Exception as exp_msg:

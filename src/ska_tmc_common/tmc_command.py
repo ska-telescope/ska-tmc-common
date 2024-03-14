@@ -127,6 +127,7 @@ class BaseTMCCommand:
                 raise
 
     # pylint: enable=inconsistent-return-statements
+    # pylint: disable=invalid-name
     def do(self, argin: str = None) -> NotImplementedError:
         """
         Base method for do method for different nodes
@@ -268,11 +269,13 @@ class BaseTMCCommand:
                         )
                         self.stop_tracker_thread(timeout_id)
 
-                except threading.ThreadError as te:
-                    self.logger.error("Thread error occurred: %s", te)
+                except threading.ThreadError as thread_error:
+                    self.logger.error(
+                        "Thread error occurred: %s", thread_error
+                    )
                     self.update_task_status(
                         result=ResultCode.FAILED,
-                        message=f"Thread error occurred: {te}",
+                        message=f"Thread error occurred: {thread_error}",
                     )
                     self.stop_tracker_thread(timeout_id)
 
@@ -283,14 +286,14 @@ class BaseTMCCommand:
                         message=f"Timeout error occurred: {toe}",
                     )
                     self.stop_tracker_thread(timeout_id)
-                except Exception as e:
+                except Exception as exp:
                     self.logger.error(
-                        "Exception occurred in Tracker thread: %s", e
+                        "Exception occurred in Tracker thread: %s", exp
                     )
                     self.update_task_status(
                         result=ResultCode.FAILED,
                         message="Exception occurred in track transitions "
-                        + f"thread: {e}",
+                        + f"thread: {exp}",
                     )
                     self.stop_tracker_thread(timeout_id)
                 # pylint: enable=broad-exception-caught

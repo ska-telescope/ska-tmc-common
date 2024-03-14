@@ -4,6 +4,7 @@
 #
 #
 #
+# pylint: disable=invalid-name
 """Release information for ska-tmc-common Python Package"""
 
 name = """ska-tmc-common"""

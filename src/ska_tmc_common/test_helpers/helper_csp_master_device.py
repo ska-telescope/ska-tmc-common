@@ -19,6 +19,7 @@ from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
+# pylint: disable=invalid-name
 class HelperCspMasterDevice(HelperBaseDevice):
     """A helper device class for Csp Controller device"""
 

@@ -26,6 +26,7 @@ from ska_tmc_common.tmc_component_manager import (
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=invalid-name
 class DummyComponent(TmcComponent):
     """
     This is a Dummy Component class which monitors and update the device-info.
