@@ -66,6 +66,7 @@ class EventReceiver:
         self._stop = True
         # self._thread.join()
 
+    #  pylint: disable=broad-exception-caught
     def run(self) -> None:
         """
         The run method for the Event Receiver thread. Runs in a loop to

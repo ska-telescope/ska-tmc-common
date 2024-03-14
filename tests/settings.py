@@ -338,6 +338,9 @@ def set_device_state(
     assert proxy.State() == state
 
 
+# pylint: disable=broad-exception-raised
+
+
 def wait_for_obstate(device: tango.DeviceProxy, expected_obsstate: ObsState):
     """
     Waits for Device ObsState to transition to Expected ObsState.

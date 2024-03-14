@@ -31,11 +31,13 @@ class TangoServerHelper:
         """Private constructor of the class
         :raises Exception: Exception is raised when it is not singleton class
         """
+        # pylint: disable=broad-exception-raised
         if TangoServerHelper.__instance is not None:
             raise Exception("This is singleton class")
 
         TangoServerHelper.__instance = self
         self.device = None
+        # pylint: enable=broad-exception-raised
 
     @staticmethod
     def get_instance():

@@ -102,3 +102,15 @@ class TMCBaseDevice(SKABaseDevice):
         "exception":"None","id":-1,"pointingState":"PointingState.NONE"}]}
         """
         return self.component_manager.component.to_json()
+
+    def create_component_manager(self):
+        """
+        Create and return a component manager for this device.
+
+        :raises NotImplementedError: for no implementation
+        """
+        raise NotImplementedError(
+            "TMCBaseDevice is abstract; implement"
+            "'create_component_manager` method in "
+            "a subclass."
+        )

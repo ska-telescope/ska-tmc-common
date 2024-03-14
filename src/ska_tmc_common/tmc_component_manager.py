@@ -196,6 +196,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         if self.event_receiver:
             self.event_receiver_object.stop()
 
+    #  pylint: disable=broad-exception-caught
     def start_timer(
         self, timeout_id: str, timeout: int, timeout_callback: TimeoutCallback
     ) -> None:
@@ -218,6 +219,13 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
+        except threading.ThreadError as te:
+            self.logger.info(f"Issue for  id : {timeout_id}")
+            self.logger.exception(
+                "Threading error occurred while starting the thread : %s",
+                te,
+            )
+
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
@@ -225,6 +233,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 exp_msg,
             )
 
+    #  pylint: enable=broad-exception-caught
     def timeout_handler(
         self, timeout_id: str, timeout_callback: TimeoutCallback
     ) -> None:
@@ -429,6 +438,18 @@ class TmcComponentManager(BaseTmcComponentManager):
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
+
+    def is_command_allowed(self, command_name: str):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state to perform this command
+
+        :param command_name: command_name
+        :type command_name: str
+        :return: boolean value
+        :rtype: boolean
+        """
+        return True
 
 
 class TmcLeafNodeComponentManager(BaseTmcComponentManager):

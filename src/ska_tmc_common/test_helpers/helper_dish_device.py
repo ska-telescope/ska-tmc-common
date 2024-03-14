@@ -376,7 +376,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 self.push_change_event(
                     "achievedPointing", self._achieved_pointing
                 )
-        except Exception as e:
+        except (ValueError, TypeError, KeyError) as e:
             self.logger.exception(
                 "Exception occurred while pushing achieved pointing event: %s",
                 e,

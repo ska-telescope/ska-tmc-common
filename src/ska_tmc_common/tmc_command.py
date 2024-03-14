@@ -189,6 +189,7 @@ class BaseTMCCommand:
         self.logger.info("Starting tracker thread")
         self.tracker_thread.start()
 
+    #  pylint: disable=broad-exception-caught
     def track_and_update_command_status(
         self,
         state_function: Callable,
@@ -253,17 +254,32 @@ class BaseTMCCommand:
                         )
                         self.stop_tracker_thread(timeout_id)
 
+                except threading.ThreadError as te:
+                    self.logger.error("Thread error occurred: %s", te)
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=f"Thread error occurred: {te}",
+                    )
+                    self.stop_tracker_thread(timeout_id)
+
+                except TimeoutError as toe:
+                    self.logger.error("Timeout error occurred: %s", toe)
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=f"Timeout error occurred: {toe}",
+                    )
+                    self.stop_tracker_thread(timeout_id)
                 except Exception as e:
                     self.logger.error(
                         "Exception occurred in Tracker thread: %s", e
                     )
                     self.update_task_status(
                         result=ResultCode.FAILED,
-                        message="Exception occured in track transitions "
+                        message="Exception occurred in track transitions "
                         + f"thread: {e}",
                     )
                     self.stop_tracker_thread(timeout_id)
-                time.sleep(0.1)
+                # pylint: enable=broad-exception-caught
 
             if command_id:
                 lrcr_callback.remove_data(command_id)
@@ -474,7 +490,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 func = methodcaller(command_name)
                 result_code, message = func(adapter)
             return result_code, message
-
+        # pylint: disable=broad-exception-caught
         except Exception as exp_msg:
             self.logger.exception("Command invocation failed: %s", exp_msg)
             return (
@@ -485,3 +501,4 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                     + f"The following exception occurred - {exp_msg}."
                 ],
             )
+        # pylint: enable=broad-exception-caught
