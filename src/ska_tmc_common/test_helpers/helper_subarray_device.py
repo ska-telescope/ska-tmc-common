@@ -38,12 +38,18 @@ from .constants import (
 )
 
 
-# pylint: disable=invalid-name
+# pylint: disable=abstract-method,invalid-name
+# Disabled as this is also a abstract class and has parent class from
+# base class.
+# Disabled invalid-name as this is tango device class
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
     This is a Component Manager created for the use of Helper Subarray devices.
     """
 
+    # pylint: disable=arguments-renamed
+    # The pylint error arguments-renamed is disabled becasue base class has
+    # second parameter as task_callback which is not used here
     def __init__(
         self,
         logger: Logger,
@@ -370,17 +376,17 @@ class HelperSubArrayDevice(SKASubarray):
         return self._receive_addresses
 
     def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
+        self, result: ResultCode, command_name: str, exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
         :param result: The result code to be pushed as an event
         :type: ResultCode
-        :param command: The command name for which the event is being pushed
+        :param command_name: The command name for which event is being pushed
         :type: str
         :param exception: Exception message to be pushed as an event
         :type: str
         """
-        command_id = f"{time.time()}-{command}"
+        command_id = f"{time.time()}-{command_name}"
         self.logger.info(
             "The command_id is %s and the ResultCode is %s", command_id, result
         )

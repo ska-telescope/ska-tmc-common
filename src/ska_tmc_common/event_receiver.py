@@ -125,14 +125,14 @@ class EventReceiver:
             )
         else:
             try:
-                for attribute, callable in attribute_dictionary.items():
+                for attribute, callable_value in attribute_dictionary.items():
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,
-                        callable,
+                        callable_value,
                         stateless=True,
                     )
             except Exception as exception:

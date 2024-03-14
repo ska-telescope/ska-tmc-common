@@ -244,8 +244,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             initial_obstate,
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
-        input = json.loads(argin)
-        if "eb_id" not in input["execution_block"]:
+        input_json = json.loads(argin)
+        if "eb_id" not in input_json["execution_block"]:
             self.logger.info("Missing eb_id in the AssignResources input json")
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
@@ -259,7 +259,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
-        eb_id = input["execution_block"]["eb_id"]
+        eb_id = input_json["execution_block"]["eb_id"]
         invalid_eb_id = "eb-xxx"
         if eb_id.startswith(invalid_eb_id):
             self.logger.info("eb_id is invalid")
@@ -273,7 +273,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         # if receive nodes not present in JSON, SDP Subarray moves to
         # obsState=EMPTY and raises exception
-        if input["resources"]["receive_nodes"] == 0:
+        if input_json["resources"]["receive_nodes"] == 0:
             self.logger.info(
                 "Missing receive nodes in the AssignResources input json"
             )
@@ -421,8 +421,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :raises throw_exception: when input json is wrong
         """
         self.update_command_info(CONFIGURE, argin)
-        input = json.loads(argin)
-        if "scan_type" not in input:
+        input_json = json.loads(argin)
+        if "scan_type" not in input_json:
             self.logger.info("Missing scan_type in the Configure input json")
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
@@ -436,7 +436,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         # if scan_type in JSON is invalid , SDP Subarray moves to
         # obsState=IDLE and raises exception
-        scan_type = input["scan_type"]
+        scan_type = input_json["scan_type"]
         invalid_scan_type = "xxxxxxx_X"
         if scan_type == invalid_scan_type:
             self._obs_state = ObsState.CONFIGURING
@@ -456,7 +456,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         # if scan_type in JSON does not have valid value, SDP Subarray
         # remains in obsState=CONFIGURING and raises exception
-        scan_type = input["scan_type"]
+        scan_type = input_json["scan_type"]
         invalid_scan_type = "zzzzzzz_Z"
         if scan_type == invalid_scan_type:
             self.logger.info("Wrong scan_type in the Configure input json")
@@ -517,8 +517,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :raises throw_exception: when input json is wrong
         """
         self.update_command_info(SCAN, argin)
-        input = json.loads(argin)
-        if "scan_id" not in input:
+        input_json = json.loads(argin)
+        if "scan_id" not in input_json:
             self.logger.info("Missing scan_id in the Scan input json")
             raise tango.Except.throw_exception(
                 "Incorrect input json string",

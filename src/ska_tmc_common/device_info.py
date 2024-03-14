@@ -191,12 +191,12 @@ class SubArrayDeviceInfo(DeviceInfo):
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
-    def from_dev_info(self, subarray_device_info) -> None:
-        super().from_dev_info(subarray_device_info)
-        if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.device_id = subarray_device_info.device_id
-            self.resources = subarray_device_info.resources
-            self.obs_state = subarray_device_info.obs_state
+    def from_dev_info(self, dev_info) -> None:
+        super().from_dev_info(dev_info)
+        if isinstance(dev_info, SubArrayDeviceInfo):
+            self.device_id = dev_info.device_id
+            self.resources = dev_info.resources
+            self.obs_state = dev_info.obs_state
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DeviceInfo, SubArrayDeviceInfo)):
@@ -228,10 +228,10 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
 
-    def from_dev_info(self, sdp_subarray_device_info) -> None:
-        super().from_dev_info(sdp_subarray_device_info)
-        if isinstance(sdp_subarray_device_info, SdpSubarrayDeviceInfo):
-            self.receive_addresses = sdp_subarray_device_info.receive_addresses
+    def from_dev_info(self, dev_info) -> None:
+        super().from_dev_info(dev_info)
+        if isinstance(dev_info, SdpSubarrayDeviceInfo):
+            self.receive_addresses = dev_info.receive_addresses
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DeviceInfo, SdpSubarrayDeviceInfo)):
@@ -291,16 +291,16 @@ class DishDeviceInfo(DeviceInfo):
         if self._dish_mode != value:
             self._dish_mode = value
 
-    def from_dev_info(self, dish_device_info) -> None:
-        super().from_dev_info(dish_device_info)
-        if isinstance(dish_device_info, DishDeviceInfo):
-            self.device_id = dish_device_info.device_id
-            self.pointing_state = dish_device_info.pointing_state
-            self.dish_mode = dish_device_info._dish_mode
-            self.configured_band = dish_device_info.configured_band
-            self.rx_capturing_data = dish_device_info.rx_capturing_data
-            self.achieved_pointing = dish_device_info.achieved_pointing
-            self.program_track_table = dish_device_info.program_track_table
+    def from_dev_info(self, dev_info) -> None:
+        super().from_dev_info(dev_info)
+        if isinstance(dev_info, DishDeviceInfo):
+            self.device_id = dev_info.device_id
+            self.pointing_state = dev_info.pointing_state
+            self.dish_mode = dev_info._dish_mode
+            self.configured_band = dev_info.configured_band
+            self.rx_capturing_data = dev_info.rx_capturing_data
+            self.achieved_pointing = dev_info.achieved_pointing
+            self.program_track_table = dev_info.program_track_table
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DishDeviceInfo, DeviceInfo)):

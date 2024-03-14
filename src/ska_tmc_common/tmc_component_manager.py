@@ -81,6 +81,9 @@ class TmcComponent:
         raise NotImplementedError("This method must be inherited!")
 
 
+# pylint: disable=abstract-method
+# Disabled as this is also a abstract class and has parent class from
+# base class
 class BaseTmcComponentManager(TaskExecutorComponentManager):
     """
     This class manages obsstates , commands and various checks
@@ -227,7 +230,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 "Threading error occurred while starting the thread : %s",
                 thread_error,
             )
-
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
@@ -448,10 +450,14 @@ class TmcComponentManager(BaseTmcComponentManager):
 
         :param command_name: command_name
         :type command_name: str
-        :return: boolean value
+
         :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
         """
-        return True
+        raise NotImplementedError(
+            "is_command_allowed is abstract; method must be implemented in \
+            a subclass!"
+        )
 
 
 class TmcLeafNodeComponentManager(BaseTmcComponentManager):

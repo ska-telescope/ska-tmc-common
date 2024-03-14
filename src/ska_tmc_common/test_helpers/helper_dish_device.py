@@ -336,7 +336,7 @@ class HelperDishDevice(HelperDishLNDevice):
     def push_command_status(
         self,
         status,
-        command: str,
+        command_name: str,
         command_id=None,
     ) -> None:
         """Push long running command result event for given command.
@@ -346,19 +346,19 @@ class HelperDishDevice(HelperDishLNDevice):
         result: The result code to be pushed as an event
         dtype: ResultCode
 
-        command: The command name for which the event is being pushed
+        command_name: The command name for which the event is being pushed
         dtype: str
 
         exception: Exception message to be pushed as an event
         dtype: str
         """
         if status == "COMPLETED":
-            self.logger.info("Successfully processed %s command", command)
+            self.logger.info("Successfully processed %s command", command_name)
         elif status == "FAILED":
             self.logger.info(
-                "Command %s failed, TaskStatus: %d", command, status
+                "Command %s failed, TaskStatus: %d", command_name, status
             )
-        command_id = command_id or f"{time.time()}-{command}"
+        command_id = command_id or f"{time.time()}-{command_name}"
         command_status = (command_id, status)
         self.push_change_event("longRunningCommandStatus", command_status)
 
