@@ -14,6 +14,7 @@ from ska_tmc_common.enum import Band, DishMode, PointingState
 def dev_state_2_str(value: DevState) -> str:
     """
     Converts device state to string datatype.
+    :return: DevState
     """
     if value == DevState.ON:
         return "DevState.ON"
@@ -110,7 +111,10 @@ class DeviceInfo:
 
     @property
     def source_dish_vcc_config(self) -> str:
-        """Returns the source_dish_vcc_config value for Dish master device"""
+        """
+        Returns the source_dish_vcc_config value for Dish master device
+        :return: source_dish_vcc_config value
+        """
         return self._source_dish_vcc_config
 
     @source_dish_vcc_config.setter
@@ -121,7 +125,10 @@ class DeviceInfo:
 
     @property
     def dish_vcc_config(self) -> str:
-        """Returns the dish_vcc_config  value for Dish master device"""
+        """
+        Returns the dish_vcc_config  value for Dish master device
+        :return: dish_vcc_config value
+        """
         return self._dish_vcc_config
 
     @dish_vcc_config.setter
@@ -149,6 +156,7 @@ class DeviceInfo:
     def to_json(self) -> str:
         """
         This method returns the json encoded string.
+        :return: json encoded string
         :rtype:str
         """
         return json.dumps(self.to_dict())
@@ -156,7 +164,7 @@ class DeviceInfo:
     def to_dict(self) -> dict:
         """
         Converts input to dictionary.
-        :return: result : device information
+        :return: result- device information
         :rtype:dict
         """
         result = {
@@ -257,7 +265,10 @@ class DishDeviceInfo(DeviceInfo):
 
     @property
     def kvalue(self) -> int:
-        """Returns the k value for Dish master device"""
+        """
+        Returns the k value for Dish master device
+        :return: kvalue for Dish Master
+        """
         return self._kvalue
 
     @kvalue.setter
@@ -268,7 +279,10 @@ class DishDeviceInfo(DeviceInfo):
 
     @property
     def dish_mode(self) -> DishMode:
-        """Returns the dish mode value for Dish master device"""
+        """
+        Returns the dish mode value for Dish master device
+        :return: dish mode for Dish Master
+        """
         return self._dish_mode
 
     @dish_mode.setter

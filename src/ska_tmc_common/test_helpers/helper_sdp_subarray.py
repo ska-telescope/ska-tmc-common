@@ -88,6 +88,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("receiveAddresses", True, False)
@@ -109,7 +110,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
     def read_delay(self) -> int:
-        """This method is used to read the attribute value for delay."""
+        """
+        This method is used to read the attribute value for delay.
+        :return: delay
+        """
         return self._delay
 
     @command(dtype_in=str, doc_in="Set the receive_addresses")
@@ -119,13 +123,16 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.push_change_event("receiveAddresses", argin)
 
     def read_receiveAddresses(self):
-        """Returns receive addresses."""
+        """
+        Returns receive addresses.
+        :return: receiveAddresses
+        """
         return self._receive_addresses
 
     def read_defective(self) -> str:
         """
         Returns defective status of devices
-
+        :return: defective parameters
         :rtype: str
         """
         return json.dumps(self.defective_params)
@@ -226,6 +233,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         This method invokes AssignResources command on SdpSubarray
         device.
+        :return: None
         :raises throw_exception: when input json is wrong
         """
         initial_obstate = self._obs_state

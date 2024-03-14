@@ -69,6 +69,7 @@ class TmcComponent:
     def to_json(self) -> str:
         """
         Base method for to_json method for different nodes
+        :return: json
         """
         return json.dumps(self.to_dict())
 
@@ -124,7 +125,10 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     @property
     def command_id(self) -> str:
-        """Read method for reading command id used for error propagation."""
+        """
+        Read method for reading command id used for error propagation.
+        :return: command_id
+        """
         with self.lock:
             return self._command_id
 

@@ -55,6 +55,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("obsState", True, False)
@@ -82,29 +83,40 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
 
     def read_obsStateTransitionDuration(self):
-        """Read transition"""
+        """
+        Read transition
+        :return: state duration info
+        """
         return json.dumps(self._state_duration_info)
 
     def read_commandCallInfo(self):
-        """This method is used to read the attribute value for
+        """
+        This method is used to read the attribute value for
         commandCallInfo.
+        :return: attribute value for commandCallInfo
         """
         return self._command_call_info
 
     def read_defective(self) -> str:
         """
         Returns defective status of devices
-
+        :return: attribute value defective
         :rtype: str
         """
         return json.dumps(self.defective_params)
 
     def read_delay(self) -> int:
-        """This method is used to read the attribute value for delay."""
+        """
+        This method is used to read the attribute value for delay.
+        :return: attribute value for delay
+        """
         return self._delay
 
     def read_obsState(self) -> ObsState:
-        """This method is used to read the attribute value for obsState."""
+        """
+        This method is used to read the attribute value for obsState.
+        :return: attribute value for obsstate
+        """
         return self._obs_state
 
     def update_command_info(
@@ -253,6 +265,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def is_On_allowed(self) -> bool:
         """
         This method checks if the On command is allowed or not
+        :return: ``True`` if the command is allowed
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -286,6 +299,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off command is allowed or not
+        :return: ``True`` if the command is allowed
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -319,6 +333,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby command is allowed or not
+        :return: ``True`` if the command is allowed
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -352,6 +367,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def is_AssignResources_allowed(self) -> bool:
         """
         This method checks if the AssignResources command is allowed or not
+        :return: ``True`` if the command is allowed
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -407,6 +423,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks the Configure is allowed in the current device
         state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -460,6 +477,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Scan command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -503,6 +521,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the EndScan command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -544,6 +563,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the End command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -593,6 +613,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the GoToIdle command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -633,6 +654,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Abort command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -682,6 +704,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Restart command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -727,7 +750,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ReleaseAllResources command is allowed in
         the current device state.
-        :return: ResultCode, message
+        :return: ``True`` if the command is allowed
         :raises CommandNotAllowed: command is not allowed
         :rtype: bool
         """
@@ -777,7 +800,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ReleaseResources command is allowed in the
         current device state.
-        :return: ResultCode, message
+        :return: ``True`` if the command is allowed
         :raises CommandNotAllowed: command is not allowed
         :rtype: bool
         """

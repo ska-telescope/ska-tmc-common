@@ -89,6 +89,7 @@ class BaseTMCCommand:
     ]:
         """
         Method to create adapters for device.
+        :return: adapter created
         :raises ConnectionFailed: Exception is raised when connection fails
         :raises DevFailed: Exception is raised when device fails
         """
@@ -293,6 +294,7 @@ class BaseTMCCommand:
 
         :param timeout_callback: An instance of TimeoutCallback class that acts
                     as a callable function to call in the event of timeout.
+        :return: boolean value if timeout occurred or not
         """
         if timeout_id:
             if timeout_callback.assert_against_call(
@@ -321,6 +323,7 @@ class BaseTMCCommand:
         :param expected_state: Expected state of the device in case of
                     successful command execution. It's a list contains
                     transitional obsState if exists for a command.
+        :return: boolean value if state change occurred or not
         """
         if state_function() == state_to_achieve:
             self.logger.info(
@@ -347,6 +350,7 @@ class BaseTMCCommand:
         :param lrcr_callback: An instance of LRCRCallback class that acts
                     as a callable function to call when an event from the
                     attribute longRunningCommandResult arrives.
+        :return: boolean value if exception has occurred or not
         """
         if command_id and lrcr_callback.assert_against_call(
             command_id, ResultCode.FAILED
@@ -451,6 +455,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Method to invoke commands on device adapters.
+        :return: ResultCode and message
         """
         if adapter is None:
             return (

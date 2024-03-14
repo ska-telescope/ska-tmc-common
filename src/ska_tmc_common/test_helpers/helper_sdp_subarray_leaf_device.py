@@ -33,6 +33,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("sdpSubarrayObsState", True, False)
@@ -44,7 +45,10 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
     )
 
     def read_sdpSubarrayObsState(self):
-        """Reads the current observation state of the SDP subarray"""
+        """
+        Reads the current observation state of the SDP subarray
+        :return: obsstate value
+        """
         return self._obs_state
 
     @command(

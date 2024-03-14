@@ -45,6 +45,7 @@ class TangoClient:
     def _get_deviceproxy(self) -> DeviceProxy:
         """
         Returns device proxy for given FQDN.
+        :return: device proxy for given FQDN.
         """
         retry = 0
         while retry < 3:
@@ -68,6 +69,7 @@ class TangoClient:
         Returns the Fully Qualified Device Name
 
         (FQDN) of the Tango device server.
+        :return: FQDN of the Tango device server
         """
         return self.device_fqdn
 
@@ -75,17 +77,13 @@ class TangoClient:
         """
         This method invokes command on the device server in synchronous mode.
 
-        :param
-            command_name: string. Name of the command
+        :param command_name: string. Name of the command
 
-        :param
-            command_data: (optional) void. Parameter with the command.
+        :param command_data: (optional) void. Parameter with the command.
 
-        :return
-            Returns the command Result.
+        :return: Returns the command Result.
 
-        :throws
-            DevFailed in case of error.
+        :throws: DevFailed in case of error.
         """
         try:
             log_msg = (
@@ -111,11 +109,9 @@ class TangoClient:
         """
         This method invokes command on the device server in asynchronous mode.
 
-        :param
-            command_name: string. Name of the command
+        :param command_name: string. Name of the command
 
-        :param
-            command_data: (optional) void. Parameter with the command.
+        :param command_data: (optional) void. Parameter with the command.
 
         :param
             callback_method: (optional) Callback function
@@ -124,12 +120,7 @@ class TangoClient:
 
             of the command execution.
 
-        :returns
-            int.
-
-            Command identifier returned by
-
-            the Tango device server.
+        :return: Command identifier returned by the Tango device server.
 
         :throws
             DevFailed in case of error.
@@ -162,7 +153,7 @@ class TangoClient:
         :param
             attribute_name: string. Name of the attribute
 
-        :return
+        :return:
             Returns the DeviceAttribute object with several fields.
             The attribute value is present in the value field of the object.
             value: Normal scalar value or NumPy array of values.
@@ -197,9 +188,6 @@ class TangoClient:
             value: The value to be set. For non SCALAR attributes,
             it may be any sequence of sequences.
 
-        :return
-            None
-
         :throw
             AttributeError in case of error.
         """
@@ -228,8 +216,7 @@ class TangoClient:
         :param
             callback_method: Name of callback method.
 
-        :return
-            int. event_id returned by the Tango device server.
+        :return: event_id returned by the Tango device server.
         """
         try:
             log_msg = f"Subscribing attribute {attr_name}."
@@ -256,9 +243,6 @@ class TangoClient:
 
         :param
             event_id: int. Event id of the subscription
-
-        :return
-            None.
         """
         try:
             log_msg = f"Unsubscribing attribute event {event_id}."

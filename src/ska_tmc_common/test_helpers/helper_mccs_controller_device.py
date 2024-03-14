@@ -44,7 +44,7 @@ class HelperMCCSController(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
-            :returns: ResultCode, message
+            :return: ResultCode, message
             :rtype:tuple
             """
             super().do()
@@ -63,6 +63,7 @@ class HelperMCCSController(HelperBaseDevice):
         :type command_name: str
         :param command_id: command id
         :type command_id: str
+        :return: ResultCode and command id
         :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
@@ -311,6 +312,7 @@ class HelperMCCSController(HelperBaseDevice):
         """
         This method checks if the RestartSubarray command is allowed in the
         current device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -337,7 +339,7 @@ class HelperMCCSController(HelperBaseDevice):
         """
         This is the method to invoke RestartSubarray command.
         :param argin: an integer subarray_id.
-        :return: ResultCode, message
+        :return: ResultCode, command id
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"

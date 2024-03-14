@@ -34,7 +34,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
-            :returns: ResultCode, message
+            :return: ResultCode, message
             :rtype:tuple
             """
             super().do()

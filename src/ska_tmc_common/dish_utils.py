@@ -50,7 +50,10 @@ class DishHelper:
     """Class to provide support for dish related calculations."""
 
     def get_antenna_params(self, antenna_params):
-        """Method to return object of class AntennaParams"""
+        """
+        Method to return object of class AntennaParams
+        :return: object of class AntennaParams
+        """
         antenna_location = AntennaLocation()
         antenna_param = AntennaParams()
 
@@ -172,6 +175,7 @@ class DishHelper:
         information from TelModel library.Each antenna in the list
         represents an antenna and have information station name, latitude,
         longitude, dish diameter, height.
+        :return: the antennas list
         :raises OSError: Os error is raised
         :raises ValueError: value error is raised
         """

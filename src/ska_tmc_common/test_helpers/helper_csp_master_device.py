@@ -39,6 +39,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("sourceDishVccConfig", True, False)
@@ -48,6 +49,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def read_sourceDishVccConfig(self) -> str:
         """
         This method reads the sourceDishVccConfig value of the dish.
+        :return: source_dish_vcc_config value
         :rtype:str
         """
         return self._source_dish_vcc_config
@@ -55,6 +57,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def read_dishVccConfig(self) -> str:
         """
         This method reads the dishVccConfig value of the dish.
+        :return: dish_vcc_config value
         :rtype:str
         """
         return self._dish_vcc_config
@@ -62,6 +65,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def is_On_allowed(self) -> bool:
         """
         This method checks if the On command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -86,6 +90,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command on CSP Master
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke On command")
@@ -104,6 +109,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
         :raises CommandNotAllowed: command is not allowed
         """
@@ -128,6 +134,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command on CSP Master
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke On command")
@@ -146,6 +153,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
         :raises CommandNotAllowed: Standby command not allowed
         """
@@ -170,6 +178,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command on CSP Master
+        :return: ResultCode and message
         :rtype: Tuple
         """
         if self.defective_params["enabled"]:
@@ -189,7 +198,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
-        """This Command Reset Sys Param and source sys param"""
+        """
+        This Command Reset Sys Param and source sys param
+        :return: ResultCode and message
+        """
         self._source_dish_vcc_config = ""
         self._dish_vcc_config = ""
         return [ResultCode.OK], [""]
@@ -198,7 +210,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         This method checks if the LoadDishCfg command is allowed
         in current state.
-
+        :return: ``True`` if the command is allowed
         :rtype: bool
         """
         return True
@@ -221,6 +233,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig
+        :return: ResultCode and message
         :rtype: Tuple
 
         :param argin: json with File URI.

@@ -46,8 +46,7 @@ class TangoServerHelper:
 
         :param: None.
 
-        return:
-            object of TangoServerHelper class
+        :return: object of TangoServerHelper class
         """
         if TangoServerHelper.__instance is None:
             TangoServerHelper()
@@ -67,8 +66,7 @@ class TangoServerHelper:
         Returns the value of given Tango device property
         :param property_name: String. Name of the Tango device property
 
-        :return
-            List of strings containing value(s) of the device property
+        :return: List of strings containing value(s) of the device property
 
         :throws
             Devfailed exception in case of error
