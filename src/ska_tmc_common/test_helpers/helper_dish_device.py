@@ -153,6 +153,10 @@ class HelperDishDevice(HelperDishLNDevice):
         This method writes the programTrackTable attribute of dish.
         :param value: 50 entries of timestamp, azimuth and elevation
         values of the desired pointing of dishes.
+        Example: programTrackTable = [
+        (timestamp1, azimuth1, elevation1),
+        (timestamp2, azimuth2, elevation2),
+        (timestamp3, azimuth3, elevation3),]
         :value dtype: list
         :rtype: None
         """
