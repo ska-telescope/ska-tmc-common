@@ -454,27 +454,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("SetStandbyFPMode command completed.")
         return ([ResultCode.OK], [""])
 
-    def is_SetStandbyLPMode_allowed(self) -> bool:
-        """np.array
-        This method checks if the is_SetStandbyLPMode_allowed Command is
-        allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetStandbyLPMode Command is allowed")
-        return True
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -506,26 +485,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
         self.logger.info("SetStandbyLPMode command completed.")
         return ([ResultCode.OK], [""])
-
-    def is_SetOperateMode_allowed(self) -> bool:
-        """
-        This method checks if the SetOperateMode Command is allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype:bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetOperateMode Command is allowed")
-        return True
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -559,26 +518,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(ResultCode.OK, "SetOperateMode")
         self.logger.info("SetOperateMode command completed.")
         return ([ResultCode.OK], [""])
-
-    def is_SetStowMode_allowed(self) -> bool:
-        """
-        This method checks if the SetStowMode Command is allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetStowMode Command is allowed")
-        return True
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -711,26 +650,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(ResultCode.OK, "TrackStop")
         self.logger.info("TrackStop command completed.")
         return ([ResultCode.OK], [""])
-
-    def is_AbortCommands_allowed(self) -> bool:
-        """
-        This method checks if the AbortCommands command is allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("AbortCommands Command is allowed")
-        return True
 
     @command(
         dtype_out="DevVarLongStringArray",
