@@ -231,7 +231,7 @@ class BaseTMCCommand:
                         )
                         self.stop_tracker_thread(timeout_id)
 
-                    if self.check_final_obsstate(
+                    if self.check_device_state(
                         state_function, state_to_achieve, expected_state
                     ):
                         self.update_task_status(result=ResultCode.OK)
@@ -291,14 +291,14 @@ class BaseTMCCommand:
                 return True
         return False
 
-    def check_final_obsstate(
+    def check_device_state(
         self,
         state_function: str,
         state_to_achieve: Any,
         expected_state: list,
     ) -> bool:
-        """Waits for expected final obsState with or without
-        transitional obsState. On expected obsState occurrence,
+        """Waits for expected state with or without
+        transitional state. On expected state occurrence,
         it sets ResultCode to OK and stops the tracker thread
 
         :param state_function: The function to determine the state of the
@@ -310,7 +310,7 @@ class BaseTMCCommand:
 
         :param expected_state: Expected state of the device in case of
                     successful command execution. It's a list contains
-                    transitional obsState if exists for a command.
+                    transitional state if exists for a command.
         """
         if (
             methodcaller(state_function)(self.component_manager)
