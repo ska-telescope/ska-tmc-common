@@ -41,6 +41,7 @@ from .enum import (
     PointingState,
     TimeoutState,
 )
+from .error_propagation_decorator import error_propagation_decorator
 from .event_receiver import EventReceiver
 from .exceptions import (
     CommandNotAllowed,
@@ -97,7 +98,9 @@ from .test_helpers.helper_tmc_device import (
     DummyComponentManager,
     DummyTmcDevice,
 )
+from .timekeeper import TimeKeeper
 from .timeout_callback import TimeoutCallback
+from .timeout_decorator import timeout_decorator
 from .tmc_base_device import TMCBaseDevice
 from .tmc_command import BaseTMCCommand, TMCCommand, TmcLeafNodeCommand
 from .tmc_component_manager import (
@@ -183,4 +186,7 @@ __all__ = [
     "DummyComponentManager",
     "DummyTmcDevice",
     "HelperSdpQueueConnector",
+    "TimeKeeper",
+    "timeout_decorator",
+    "error_propagation_decorator",
 ]
