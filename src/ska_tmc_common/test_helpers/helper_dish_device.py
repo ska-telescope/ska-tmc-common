@@ -151,7 +151,7 @@ class HelperDishDevice(HelperDishLNDevice):
     def write_programTrackTable(self, value: list) -> None:
         """
         This method writes the programTrackTable attribute of dish.
-        :param value: 50 entries of (timestamp, azimuth and elevation)
+        :param value: 50 entries of timestamp, azimuth and elevation
         values of the desired pointing of dishes.
         :value dtype: list
         :rtype: None
