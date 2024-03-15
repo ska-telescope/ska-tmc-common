@@ -33,6 +33,7 @@ from .constants import (
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=invalid-name
 class HelperSdpSubarray(HelperSubArrayDevice):
     """A  helper SdpSubarray device for triggering state changes with a
     command.

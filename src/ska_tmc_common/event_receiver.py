@@ -81,8 +81,8 @@ class EventReceiver:
                     else:
                         dev_info = self._component_manager.get_device()
                         self.submit_task(dev_info)
-                except Exception as e:
-                    self._logger.warning("Exception occurred: %s", e)
+                except Exception as exp:
+                    self._logger.warning("Exception occurred: %s", exp)
                 sleep(self._sleep_time)
 
     def submit_task(self, device_info: DeviceInfo) -> None:

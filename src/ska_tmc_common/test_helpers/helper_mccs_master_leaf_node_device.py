@@ -16,7 +16,7 @@ from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperMCCSMasterLeafNode(HelperBaseDevice):
     """A helper MCCS master leafnode device for triggering state
     changes with a command"""

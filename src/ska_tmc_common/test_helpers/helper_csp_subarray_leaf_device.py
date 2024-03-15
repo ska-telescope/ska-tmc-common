@@ -17,6 +17,7 @@ from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
 )
 
 
+# pylint: disable=invalid-name
 class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
     """A device exposing commands and attributes of the CSP Subarray Leaf
     Node devices."""

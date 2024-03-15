@@ -32,7 +32,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=attribute-defined-outside-init
-# pylint: disable=unused-argument,too-many-public-methods
+# pylint: disable=unused-argument,too-many-public-methods,invalid-name
 class HelperDishLNDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Dish Leaf Node
     device.

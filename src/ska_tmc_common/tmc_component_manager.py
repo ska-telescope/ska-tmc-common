@@ -142,12 +142,30 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             self.logger.info("Setting the command id as: %s", value)
             self._command_id = value
 
-    def start_liveliness_probe(self, lp: LivelinessProbeType) -> None:
+    def is_command_allowed(self, command_name: str):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state to perform this command
+
+        :param command_name: command_name
+        :type command_name: str
+
+        :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
+        """
+        raise NotImplementedError(
+            "is_command_allowed is abstract; method must be implemented in \
+            a subclass!"
+        )
+
+    def start_liveliness_probe(
+        self, liveliness_probe_type: LivelinessProbeType
+    ) -> None:
         """Starts Liveliness Probe for the given device.
 
-        :param lp: enum of class LivelinessProbeType
+        :param liveliness_probe_type: enum of class LivelinessProbeType
         """
-        if lp == LivelinessProbeType.SINGLE_DEVICE:
+        if liveliness_probe_type == LivelinessProbeType.SINGLE_DEVICE:
             self.liveliness_probe_object = SingleDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -156,7 +174,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.liveliness_probe_object.start()
 
-        elif lp == LivelinessProbeType.MULTI_DEVICE:
+        elif liveliness_probe_type == LivelinessProbeType.MULTI_DEVICE:
             self.liveliness_probe_object = MultiDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -206,11 +224,11 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
-        except threading.ThreadError as te:
+        except threading.ThreadError as thread_error:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
                 "Threading error occurred while starting the thread : %s",
-                te,
+                thread_error,
             )
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")

@@ -38,9 +38,10 @@ from .constants import (
 )
 
 
-# pylint: disable=abstract-method
+# pylint: disable=abstract-method,invalid-name
 # Disabled as this is also a abstract class and has parent class from
-# base class
+# base class.
+# Disabled invalid-name as this is tango device class
 class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
     This is a Component Manager created for the use of Helper Subarray devices.

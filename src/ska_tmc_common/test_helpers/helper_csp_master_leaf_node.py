@@ -16,6 +16,7 @@ from tango.server import AttrWriteType, attribute, command, run
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
+# pylint: disable=invalid-name
 class HelperCspMasterLeafDevice(HelperBaseDevice):
     """A helper device class for Csp Master Leaf device"""
 

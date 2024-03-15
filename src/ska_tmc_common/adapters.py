@@ -11,6 +11,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tmc_common.dev_factory import DevFactory
 
 
+# pylint: disable=invalid-name
 class AdapterType(enum.IntEnum):
     """
     This class assigns enum value to different adapters.

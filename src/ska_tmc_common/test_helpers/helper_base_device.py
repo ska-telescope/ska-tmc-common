@@ -19,7 +19,7 @@ from ska_tmc_common.test_helpers.empty_component_manager import (
 )
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperBaseDevice(SKABaseDevice):
     """A common base device for helper devices."""
 
@@ -56,13 +56,13 @@ class HelperBaseDevice(SKABaseDevice):
         :return: component manager instance
         :rtype: EmptyComponentManager
         """
-        cm = EmptyComponentManager(
+        empty_component_manager = EmptyComponentManager(
             logger=self.logger,
             max_workers=1,
             communication_state_callback=None,
             component_state_callback=None,
         )
-        return cm
+        return empty_component_manager
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 

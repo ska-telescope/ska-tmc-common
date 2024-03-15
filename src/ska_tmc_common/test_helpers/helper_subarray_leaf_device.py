@@ -36,6 +36,7 @@ from .constants import (
 )
 
 
+# pylint: disable=invalid-name
 class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes
     devices."""

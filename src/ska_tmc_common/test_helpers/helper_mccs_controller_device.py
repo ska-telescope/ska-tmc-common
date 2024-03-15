@@ -20,7 +20,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperMCCSController(HelperBaseDevice):
     """A helper MCCS controller device for triggering state changes
     with a command"""
