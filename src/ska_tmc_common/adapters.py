@@ -485,6 +485,20 @@ class DishAdapter(DishLeafAdapter):
         """
         self._proxy.programTrackTable = program_track_table
 
+    @property
+    def scanID(self) -> str:
+        """
+        Returns Dish Manager's scanID attribute value.
+        """
+        return self._scan_id
+
+    @scanID.setter
+    def write_scanID(self, value: str) -> None:
+        """
+        Sets Dish Manager's scanID attribute.
+        """
+        self._proxy.scanID = value
+
 
 class CspSubarrayAdapter(SubarrayAdapter):
     """

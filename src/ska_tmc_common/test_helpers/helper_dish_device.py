@@ -47,6 +47,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._achieved_pointing = []
         self._state_duration_info = []
         self._program_track_table = []
+        self._scan_id = ""
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -74,6 +75,23 @@ class HelperDishDevice(HelperDishLNDevice):
         access=AttrWriteType.READ_WRITE,
         max_dim_x=150,
     )
+    scanID = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
+
+    def read_scanID(self) -> str:
+        """
+        This method reads the scanID attribute of a dish.
+        :rtype: str
+        """
+        return self._scan_id
+
+    def write_scanID(self, value: str) -> None:
+        """
+        This method writes scanID attribute of dish.
+        :param value: scan_id as given is the json
+        :value dtype: str
+        :rtype: None
+        """
+        self._scan_id = value
 
     @attribute(dtype=int, access=AttrWriteType.READ)
     def kValue(self) -> int:
@@ -1148,6 +1166,8 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
+        self._scan_id = argin
+        self.push_change_event("scanID", argin)
         self.push_command_status("COMPLETED", "Scan")
         self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])
