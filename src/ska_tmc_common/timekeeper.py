@@ -40,6 +40,12 @@ class TimeKeeper:
             )
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
+        except threading.ThreadError as thread_error:
+            self.logger.info(f"Issue for  id : {timeout_id}")
+            self.logger.exception(
+                "Threading error occurred while starting the thread : %s",
+                thread_error,
+            )
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
