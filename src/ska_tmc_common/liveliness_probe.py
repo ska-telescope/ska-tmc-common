@@ -11,9 +11,7 @@ import tango
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
-
-#  pylint: disable=broad-exception-caught
-
+from typing import List
 
 class BaseLivelinessProbe:
     """
@@ -57,7 +55,6 @@ class BaseLivelinessProbe:
     def run(self) -> NotImplementedError:
         """
         Runs the sub devices
-        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited")
 
@@ -91,25 +88,20 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
     ):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
         self._max_workers = max_workers
-        self._monitoring_devices = Queue(0)
+        self._monitoring_devices:List[str] = []
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
-        self._monitoring_devices.put(dev_name)
+        self._monitoring_devices.append(dev_name)
 
     def run(self) -> None:
         """A method to run device in the queue for monitoring"""
         with tango.EnsureOmniThread():
             while not self._stop:
-                not_read_devices_twice = []
                 try:
-                    while not self._monitoring_devices.empty():
-                        dev_name = self._monitoring_devices.get(block=False)
+                    for dev_name in self._monitoring_devices:
                         dev_info = self._component_manager.get_device(dev_name)
                         self.device_task(dev_info)
-                        not_read_devices_twice.append(dev_info)
-                except Empty:
-                    pass
                 except Exception as exp_msg:
                     self._logger.warning("Exception occured: %s", exp_msg)
                 sleep(self._sleep_time)
