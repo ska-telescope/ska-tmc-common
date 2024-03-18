@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+import logging
 
 import numpy as np
 import pytest
@@ -12,6 +12,8 @@ from tests.settings import (
     DISH_DEVICE,
     FAILED_RESULT_DEFECT,
 )
+
+logger = logging.getLogger(__name__)
 
 COMMANDS = [
     "SetStandbyFPMode",
@@ -53,15 +55,32 @@ def test_set_delay(tango_context):
     assert command_delay_info["Configure"] == 3
 
 
-def test_desired_pointing(tango_context):
+def test_program_track_table(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    assert np.array_equal(dish_device.desiredPointing, np.array([]))
-    timestamp = datetime.utcnow().timestamp()
-    dish_device.desiredPointing = [timestamp, 287.2504396, 77.8694392]
+    programTrackTable_example = np.array(
+        [
+            1706629796036.8691,
+            181.223951890779,
+            31.189377349638,
+            1706629796036.9192,
+            181.223951890779,
+            31.189377349638,
+            1706629796036.969,
+            181.223951890779,
+            31.189377349638,
+            1706629796037.019,
+            181.223951890779,
+            31.189377349638,
+            1706629796037.069,
+            181.223951890779,
+            31.189377349638,
+        ]
+    )
+
+    dish_device.programTrackTable = programTrackTable_example
     assert np.array_equal(
-        dish_device.desiredPointing,
-        np.array([timestamp, 287.2504396, 77.8694392]),
+        dish_device.programTrackTable, np.array(programTrackTable_example)
     )
 
 
@@ -128,7 +147,8 @@ def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     # Attempt to execute the command and expect the DevFailed exception
     with pytest.raises(DevFailed):
         dish_device.command_inout(command_to_check)
-    # Clear the defect and ensure the command can be executed when not defective
+    # Clear the defect and ensure the command
+    # can be executed when not defective
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 

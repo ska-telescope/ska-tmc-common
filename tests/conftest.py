@@ -12,6 +12,9 @@ from os.path import dirname, join
 import pytest
 import tango
 from ska_tango_testing.mock import MockCallable
+from ska_tango_testing.mock.tango.event_callback import (
+    MockTangoEventCallbackGroup,
+)
 from tango.test_context import MultiDeviceTestContext
 
 from ska_tmc_common import (
@@ -26,7 +29,7 @@ from ska_tmc_common import (
     HelperDishLNDevice,
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
-    HelperMccsSubarrayLeafNode,
+    HelperMccsSubarrayDevice,
     HelperSdpQueueConnector,
     HelperSdpSubarrayLeafDevice,
     HelperSubArrayDevice,
@@ -41,7 +44,6 @@ from tests.settings import (
     HELPER_CSP_MASTER_LEAF_DEVICE,
     HELPER_MCCS_CONTROLLER,
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
-    HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE,
     HELPER_SDP_QUEUE_CONNECTOR_DEVICE,
     MCCS_SUBARRAY_DEVICE,
     SDP_LEAF_NODE_DEVICE,
@@ -83,6 +85,7 @@ def pytest_addoption(parser):
 def devices_to_load():
     """
     This method contains the list of devices to load.
+    :return: devices to load list
     """
     return (
         {
@@ -100,6 +103,11 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": SUBARRAY_DEVICE},
+            ],
+        },
+        {
+            "class": HelperMccsSubarrayDevice,
+            "devices": [
                 {"name": MCCS_SUBARRAY_DEVICE},
             ],
         },
@@ -152,12 +160,6 @@ def devices_to_load():
             ],
         },
         {
-            "class": HelperMccsSubarrayLeafNode,
-            "devices": [
-                {"name": HELPER_MCCS_SUBARRAY_LEAF_NODE_DEVICE},
-            ],
-        },
-        {
             "class": HelperSdpQueueConnector,
             "devices": [
                 {"name": HELPER_SDP_QUEUE_CONNECTOR_DEVICE},
@@ -170,6 +172,7 @@ def devices_to_load():
 def tango_context(devices_to_load, request):
     """
     It provides the tango context to invoke any command.
+    :yields: device_context
     """
     true_context = request.config.getoption("--true-context")
     if not true_context:
@@ -182,10 +185,25 @@ def tango_context(devices_to_load, request):
 
 
 @pytest.fixture
-def component_manager() -> TmcLeafNodeComponentManager:
-    """create a component manager instance for dummy device for testing
+def group_callback() -> MockTangoEventCallbackGroup:
+    """
+    Creates a mock callback group for asynchronous testing
+    :return: group callback
+    :rtype: MockTangoEventCallbackGroup
+    """
+    group_callback = MockTangoEventCallbackGroup(
+        "longRunningCommandResult",
+        timeout=50,
+    )
+    return group_callback
 
-    git :rtype : TmcLeafNodeComponentManager
+
+@pytest.fixture
+def component_manager() -> TmcLeafNodeComponentManager:
+    """
+    create a component manager instance for dummy device for testing
+    :return: component manager
+    :rtype : TmcLeafNodeComponentManager
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(logger)
@@ -195,8 +213,9 @@ def component_manager() -> TmcLeafNodeComponentManager:
 
 @pytest.fixture
 def task_callback() -> MockCallable:
-    """Creates a mock callable for asynchronous testing
-
+    """
+    Creates a mock callable for asynchronous testing
+    :return: task callback
     :rtype: MockCallable
     """
     task_callback = MockCallable(15)
@@ -207,6 +226,7 @@ def task_callback() -> MockCallable:
 def csp_sln_dev_name() -> str:
     """
     Fixture for returning csp subarray FQDN
+    :return: FQDN
     rtype: str
     """
     # testing device
@@ -216,7 +236,8 @@ def csp_sln_dev_name() -> str:
 def get_input_str(path) -> str:
     """
     Returns input json string
-    :rtype: String
+    :return: json string
+    :rtype: str
     """
     with open(path, "r", encoding="utf-8") as f:
         input_str = f.read()
@@ -227,6 +248,7 @@ def get_input_str(path) -> str:
 def json_factory():
     """
     Json factory for getting json files
+    :return: json factory
     """
 
     def _get_json(slug):

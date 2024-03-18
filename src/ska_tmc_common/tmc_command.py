@@ -22,9 +22,10 @@ from ska_tmc_common.adapters import (
     CspMasterAdapter,
     CspSubarrayAdapter,
     DishAdapter,
+    DishLeafAdapter,
     MCCSMasterLeafNodeAdapter,
     SdpSubArrayAdapter,
-    SubArrayAdapter,
+    SubarrayAdapter,
 )
 from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
@@ -54,7 +55,11 @@ class BaseTMCCommand:
         self.index: int = 0
 
     def set_command_id(self, command_name: str):
-        """Sets the command id for error propagation."""
+        """Sets the command id for error propagation.
+
+        :param command_name: name of the command.
+        :type command_name: str
+        """
         command_id = f"{time.time()}-{command_name}"
         self.logger.info(
             "Setting command id as %s for command: %s",
@@ -73,7 +78,8 @@ class BaseTMCCommand:
     ) -> Optional[
         Union[
             DishAdapter,
-            SubArrayAdapter,
+            DishLeafAdapter,
+            SubarrayAdapter,
             CspMasterAdapter,
             CspSubarrayAdapter,
             MCCSMasterLeafNodeAdapter,
@@ -83,6 +89,17 @@ class BaseTMCCommand:
     ]:
         """
         Method to create adapters for device.
+        :param device_name: name of the device.
+        :type device_name: str
+        :param adapter_type: Type of Adapter.
+        :type adapter_type: AdapterType
+        :param start_time: start time.
+        :type start_time: float
+        :param timeout: Timeout for adapter creation.
+        :type timeout: int
+        :return: adapter created
+        :raises ConnectionFailed: Exception is raised when connection fails
+        :raises DevFailed: Exception is raised when device fails
         """
         elapsed_time = 0
 
@@ -110,9 +127,13 @@ class BaseTMCCommand:
                 raise
 
     # pylint: enable=inconsistent-return-statements
-    def do(self, argin=None) -> NotImplementedError:
+    # pylint: disable=invalid-name
+    def do(self, argin: str = None) -> NotImplementedError:
         """
         Base method for do method for different nodes
+        :param argin: command params.
+        :type argin: str
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError(
             "This method must be implemented by command class"
@@ -122,7 +143,10 @@ class BaseTMCCommand:
         self,
         **kwargs,
     ) -> NotImplementedError:
-        """Method to update the task status for command."""
+        """
+        Method to update the task status for command.
+        :raises NotImplementedError: Not implemented error
+        """
         raise NotImplementedError(
             "This method must be implemented by command class"
         )
@@ -179,6 +203,7 @@ class BaseTMCCommand:
         self.logger.info("Starting tracker thread")
         self.tracker_thread.start()
 
+    #  pylint: disable=broad-exception-caught
     def track_and_update_command_status(
         self,
         state_function: str,
@@ -246,26 +271,48 @@ class BaseTMCCommand:
                         )
                         self.stop_tracker_thread(timeout_id)
 
-                except Exception as e:
+                except threading.ThreadError as thread_error:
                     self.logger.error(
-                        "Exception occurred in Tracker thread: %s", e
+                        "Thread error occurred: %s", thread_error
                     )
                     self.update_task_status(
                         result=ResultCode.FAILED,
-                        message="Exception occured in track transitions "
-                        + f"thread: {e}",
+                        message=f"Thread error occurred: {thread_error}",
                     )
                     self.stop_tracker_thread(timeout_id)
-                time.sleep(0.1)
+
+                except TimeoutError as toe:
+                    self.logger.error("Timeout error occurred: %s", toe)
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=f"Timeout error occurred: {toe}",
+                    )
+                    self.stop_tracker_thread(timeout_id)
+                except Exception as exp:
+                    self.logger.error(
+                        "Exception occurred in Tracker thread: %s", exp
+                    )
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message="Exception occurred in track transitions "
+                        + f"thread: {exp}",
+                    )
+                    self.stop_tracker_thread(timeout_id)
+                # pylint: enable=broad-exception-caught
 
             if command_id:
                 lrcr_callback.remove_data(command_id)
 
     def check_abort_event(self, abort_event) -> bool:
-        """Checks for abort event. If abort event detected, sets TaskStatus
-        to ABORTED and stops the tracker thread.
-        :param abort_event: threading.Event class object that is used to check
-        if the command has been aborted.
+        """
+        Checks for abort event and if abort event detected, sets TaskStatus
+        to ABORTED and stops the tracker thread
+
+        :param abort_event: threadingEvent class object that is used to check
+            if the command has been aborted.
+        :dtype abort_event: bool
+        :return: if command is aborted or not
+        :rtype: bool
         """
         if abort_event.is_set():
             self.logger.error(
@@ -282,6 +329,7 @@ class BaseTMCCommand:
 
         :param timeout_callback: An instance of TimeoutCallback class that acts
                     as a callable function to call in the event of timeout.
+        :return: boolean value if timeout occurred or not
         """
         if timeout_id:
             if timeout_callback.assert_against_call(
@@ -310,7 +358,8 @@ class BaseTMCCommand:
 
         :param expected_state: Expected state of the device in case of
                     successful command execution. It's a list contains
-                    transitional state if exists for a command.
+                    transitional obsState if exists for a command.
+        :return: boolean value if state change occurred or not
         """
         if (
             methodcaller(state_function)(self.component_manager)
@@ -340,6 +389,7 @@ class BaseTMCCommand:
         :param lrcr_callback: An instance of LRCRCallback class that acts
                     as a callable function to call when an event from the
                     attribute longRunningCommandResult arrives.
+        :return: boolean value if exception has occurred or not
         """
         if command_id and lrcr_callback.assert_against_call(
             command_id, ResultCode.FAILED
@@ -348,9 +398,12 @@ class BaseTMCCommand:
             return True
         return False
 
-    def stop_tracker_thread(self, timeout_id) -> None:
+    def stop_tracker_thread(self, timeout_id: str) -> None:
         """External stop method for stopping the timer thread as well as the
-        tracker thread."""
+        tracker thread.
+        :param timeout_id: Timeout id
+        :type timeout_id: str
+        """
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
             self._stop = True
@@ -372,30 +425,38 @@ class TMCCommand(BaseTMCCommand):
     def init_adapters(self):
         """
         Base method for init_adapters method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_mid(self):
         """
         Base method for init_adapters_mid method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapters_low(self):
         """
         Base method for init_adapters_low method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
-    def do_mid(self, argin=None):
+    def do_mid(self, argin: str = None):
         """
         Base method for do_mid method for different nodes
+        :param argin: Command params
+        :type argin: str
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def do_low(self, argin=None):
-        """
-        Base method for do_low method for different nodes
+        """Base method for do_low method for different nodes
+        :param argin: Command params
+        :type argin: str
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -408,30 +469,39 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     def init_adapter(self):
         """
         Base method for init_adapter method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
-    def do_mid(self, argin=None):
+    def do_mid(self, argin: str = None):
         """
         Base method for do_mid method for different nodes
+        :param argin: Command params
+        :type argin: str
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
-    def do_low(self, argin=None):
+    def do_low(self, argin: str = None):
         """
         Base method for do_low method for different nodes
+        :param argin: Command params
+        :type argin: str
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_mid(self):
         """
         Base method for init_adapter_mid method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def init_adapter_low(self):
         """
         Base method for init_adapter_low method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
@@ -440,6 +510,15 @@ class TmcLeafNodeCommand(BaseTMCCommand):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Method to invoke commands on device adapters.
+        :param device: Device name
+        :type device: str
+        :param adapter: Adapter to use
+        :type adapter: Adapter
+        :param command_name: Command name
+        :type command_name: str
+        :param argin: Command params
+        :type argin: str
+        :return: ResultCode and message
         """
         if adapter is None:
             return (
@@ -458,7 +537,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                 func = methodcaller(command_name)
                 result_code, message = func(adapter)
             return result_code, message
-
+        # pylint: disable=broad-exception-caught
         except Exception as exp_msg:
             self.logger.exception("Command invocation failed: %s", exp_msg)
             return (
@@ -469,3 +548,4 @@ class TmcLeafNodeCommand(BaseTMCCommand):
                     + f"The following exception occurred - {exp_msg}."
                 ],
             )
+        # pylint: enable=broad-exception-caught

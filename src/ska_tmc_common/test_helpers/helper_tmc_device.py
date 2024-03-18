@@ -26,21 +26,22 @@ from ska_tmc_common.tmc_component_manager import (
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=invalid-name
 class DummyComponent(TmcComponent):
     """
     This is a Dummy Component class which monitors and update the device-info.
     """
 
-    def get_device(self, dev_name: str) -> Optional[DeviceInfo]:
+    def get_device(self, device_name: str) -> Optional[DeviceInfo]:
         """
         Return the monitored device info by name.
 
-        :param dev_name: name of the device
+        :param device_name: name of the device
         :return: the monitored device info
         :rtype: DeviceInfo
         """
         for dev_info in self._devices:
-            if dev_info.dev_name == dev_name:
+            if dev_info.dev_name == device_name:
                 return dev_info
         return None
 
@@ -57,7 +58,25 @@ class DummyComponent(TmcComponent):
             index = self._devices.index(dev_info)
             self._devices[index] = dev_info
 
+    def to_dict(self):
+        """
+        Base method for to_dict method for different nodes
+        :raises NotImplementedError: Not implemented error
+        """
+        raise NotImplementedError("This method must be inherited!")
 
+    def update_device_exception(self, device_info, exception):
+        """
+        Base method for update_device_exception method for different nodes
+        :raises NotImplementedError: Not implemented error
+        """
+        raise NotImplementedError("This method must be inherited!")
+
+
+# pylint: disable=redefined-outer-name
+# pylint: disable=abstract-method
+# Disabled as this is also a abstract class and has parent class from
+# base class
 class DummyComponentManager(TmcComponentManager):
     """
     A Dummy component manager for The TMC components.
@@ -85,22 +104,22 @@ class DummyComponentManager(TmcComponentManager):
         self._sample_data = value
         return ResultCode.OK, ""
 
-    def add_device(self, dev_name: str) -> None:
+    def add_device(self, device_name: str) -> None:
         """
         Add device to the monitoring loop
 
-        :param dev_name: device name
-        :type dev_name: str
+        :param device_name: device name
+        :type device_name: str
         """
-        if dev_name is None:
+        if device_name is None:
             return
 
-        if "subarray" in dev_name.lower():
-            dev_info = SubArrayDeviceInfo(dev_name, False)
-        elif "dish/master" in dev_name.lower():
-            dev_info = DishDeviceInfo(dev_name, False)
+        if "subarray" in device_name.lower():
+            dev_info = SubArrayDeviceInfo(device_name, False)
+        elif "dish/master" in device_name.lower():
+            dev_info = DishDeviceInfo(device_name, False)
         else:
-            dev_info = DeviceInfo(dev_name, False)
+            dev_info = DeviceInfo(device_name, False)
 
         self._component.update_device(dev_info)
 
@@ -110,12 +129,13 @@ class DummyComponentManager(TmcComponentManager):
         Return the sample data.
 
         :return: The value of sample data
-        :rtype: string
+        :rtype: str
         """
         # import debugpy; debugpy.debug_this_thread()
         return self._sample_data
 
 
+# pylint: enable=redefined-outer-name
 class DummyTmcDevice(HelperBaseDevice):
     """A dummy TMC device for triggering state changes with a command"""
 
@@ -135,7 +155,7 @@ class DummyTmcDevice(HelperBaseDevice):
     def is_SetData_allowed(self) -> bool:
         """
         It checks if the SetData is allowed or not.
-
+        :return: boolean value if the SetData is allowed or not
         :rtype : bool
         """
         return True

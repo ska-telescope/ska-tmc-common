@@ -42,7 +42,9 @@ def test_assign_resources_failed_result(tango_context):
     defect = {
         "enabled": True,
         "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is defective, cannot process command.completely.",
+        "error_message": (
+            "Device is defective, cannot process command." "completely."
+        ),
         "result": ResultCode.FAILED,
     }
     mccs_master_leaf_node_device.SetDefective(json.dumps(defect))

@@ -20,7 +20,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperMCCSController(HelperBaseDevice):
     """A helper MCCS controller device for triggering state changes
     with a command"""
@@ -29,15 +29,6 @@ class HelperMCCSController(HelperBaseDevice):
         super().init_device()
         self.dev_name = self.get_name()
         self._raise_exception = False
-        self._defective = json.dumps(
-            {
-                "enabled": False,
-                "fault_type": FaultType.FAILED_RESULT,
-                "error_message": "Default exception.",
-                "result": ResultCode.FAILED,
-            }
-        )
-        self.defective_params = json.loads(self._defective)
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -53,7 +44,7 @@ class HelperMCCSController(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
-            :returns: ResultCode, message
+            :return: ResultCode, message
             :rtype:tuple
             """
             super().do()
@@ -62,6 +53,7 @@ class HelperMCCSController(HelperBaseDevice):
     def induce_fault(
         self,
         command_name: str,
+        command_id: str,
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -69,13 +61,10 @@ class HelperMCCSController(HelperBaseDevice):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
-
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
+        :param command_id: command id
+        :type command_id: str
+        :return: ResultCode and command id
+        :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(
@@ -132,15 +121,15 @@ class HelperMCCSController(HelperBaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name, fault_message],
+                args=[command_id, result, fault_message],
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
-        return [ResultCode.OK], [""]
+        return [ResultCode.OK], [command_id]
 
     @command(
         dtype_in=str,
@@ -154,8 +143,7 @@ class HelperMCCSController(HelperBaseDevice):
         """
         input_dict = json.loads(values)
         self.logger.info("Setting defective params to %s", input_dict)
-        for key, value in input_dict.items():
-            self.defective_params[key] = value
+        self.defective_params = input_dict
 
     @command(
         dtype_in=bool,
@@ -173,37 +161,15 @@ class HelperMCCSController(HelperBaseDevice):
 
             command_result = (
                 command_id,
-                f"Exception occurred on device: {self.get_name()}",
+                json.dumps(
+                    [
+                        ResultCode.FAILED,
+                        f"Exception occured on device: {self.get_name()}",
+                    ]
+                ),
             )
             self.logger.info("exception will be raised as %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
-
-    def push_command_result(
-        self, command_id: str, result: ResultCode, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-
-        if exception:
-            command_result = (command_id, exception)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
-
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
-        )
 
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
@@ -218,8 +184,6 @@ class HelperMCCSController(HelperBaseDevice):
                 "Sleep %s for command %s ", delay_value, command_name
             )
 
-            time.sleep(0.1)
-
         self.push_command_result(command_id, ResultCode.OK)
 
     def is_Allocate_allowed(self) -> bool:
@@ -228,7 +192,8 @@ class HelperMCCSController(HelperBaseDevice):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -259,16 +224,14 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Allocate"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "Allocate",
-            )
+            return self.induce_fault("Allocate", command_id)
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Thread(
                 target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
@@ -290,7 +253,8 @@ class HelperMCCSController(HelperBaseDevice):
         device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -321,9 +285,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Release"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "Release",
-            )
+            return self.induce_fault("Release", command_id)
 
         if self._raise_exception:
             self.logger.info("exception thread")
@@ -331,7 +293,7 @@ class HelperMCCSController(HelperBaseDevice):
                 target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
@@ -350,7 +312,9 @@ class HelperMCCSController(HelperBaseDevice):
         """
         This method checks if the RestartSubarray command is allowed in the
         current device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -375,15 +339,13 @@ class HelperMCCSController(HelperBaseDevice):
         """
         This is the method to invoke RestartSubarray command.
         :param argin: an integer subarray_id.
-        :return: ResultCode, message
+        :return: ResultCode, command id
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "RestartSubarray",
-            )
+            return self.induce_fault("RestartSubarray", command_id)
 
         if self._raise_exception:
             self.logger.info("exception thread")
@@ -391,7 +353,7 @@ class HelperMCCSController(HelperBaseDevice):
                 target=self.wait_and_update_exception, args=[command_id]
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{argin:02}"
         dev_factory = DevFactory()
@@ -404,3 +366,34 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("RestartSubarray command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
+
+    # pylint: disable=arguments-renamed
+    def push_command_result(
+        self, result: ResultCode, command_id: str, exception: str = ""
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command_id: The command_id for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
+
+        if exception:
+            command_result = (
+                command_id,
+                json.dumps([ResultCode.FAILED, exception]),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (command_id, json.dumps([result, ""]))
+
+        self.push_change_event("longRunningCommandResult", command_result)
+        self.logger.info(
+            "command_result has been pushed as %s", command_result
+        )

@@ -73,6 +73,13 @@ FAILED_RESULT_DEFECT = {
     "result": ResultCode.FAILED,
 }
 
+DEFAULT_DEFECT_SETTINGS = {
+    "enabled": True,
+    "fault_type": FaultType.FAILED_RESULT,
+    "error_message": "Default exception.",
+    "result": ResultCode.FAILED,
+}
+
 COMMAND_NOT_ALLOWED_DEFECT = {
     "enabled": True,
     "fault_type": FaultType.COMMAND_NOT_ALLOWED,
@@ -93,6 +100,7 @@ class State(IntEnum):
 def count_faulty_devices(cm):
     """
     It counts the number of faulty devices present.
+    :return: number of faulty devices
     """
     result = 0
     for dev_info in cm.checked_devices:
@@ -108,6 +116,7 @@ def create_cm(
 ) -> Tuple[TmcComponentManager, float]:
     """
     It creates the instance of the component manager class.
+    :return: component manager and start time
     """
     cm = TmcComponentManager(
         _input_parameter=_input_parameter,
@@ -193,7 +202,10 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
     def invoke_command(
         self, argin, task_callback: Callable
     ) -> Tuple[TaskStatus, str]:
-        """Submits the command for execution."""
+        """
+        Submits the command for execution.
+        :return: command status and msg
+        """
         self.command_id = f"{time.time()}-{DummyCommandClass.__name__}"
         self.logger.info(
             "Submitting the command in Queue. Command ID is %s",
@@ -222,6 +234,26 @@ class DummyCommandClass(TmcLeafNodeCommand):
         self.timeout_callback = TimeoutCallback(self._timeout_id, self.logger)
         self.task_callback: Callable
         self.transitional_obsstate = component_manager.transitional_obsstate
+
+    @property
+    def state(self) -> IntEnum:
+        """
+        Return the State value
+        :return: state value
+        """
+        return self._state_val
+
+    @state.setter
+    def state(self, value: IntEnum) -> None:
+        """Sets the State Value"""
+        self._state_val = value
+
+    def get_state(self) -> IntEnum:
+        """
+        Method to get the state value.
+        :return: state value
+        """
+        return self.state
 
     def invoke_do(
         self,
@@ -269,7 +301,10 @@ class DummyCommandClass(TmcLeafNodeCommand):
 
     # pylint: disable=signature-differs
     def do(self, argin: bool) -> Tuple[ResultCode, str]:
-        """Do method for command class."""
+        """
+        Do method for command class.
+        :return: ResultCode and message
+        """
         time.sleep(2)
         if argin:
             return ResultCode.OK, ""
@@ -317,10 +352,15 @@ def set_device_state(
     assert proxy.State() == state
 
 
+# pylint: disable=broad-exception-raised
+
+
 def wait_for_obstate(device: tango.DeviceProxy, expected_obsstate: ObsState):
     """
     Waits for Device ObsState to transition to Expected ObsState.
-    Raises an Exception in case of failure."""
+    Raises an Exception in case of failure.
+    :raises Exception: Exception is raised for timeout
+    """
     device_obsstate = device.read_attribute("obsState").value
     start_time = time.time()
     elapsed_time = 0

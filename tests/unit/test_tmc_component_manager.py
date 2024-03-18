@@ -110,22 +110,25 @@ def test_start_liveliness_probe_single_device(component_manager):
     assert component_manager.liveliness_probe_object is not None
 
 
-def test_device_failed(component_manager):
-    # Test if device_failed sets the device's exception and does not raise an exception
+def test_update_device_ping_failure(component_manager):
+    # Test if update_device_ping_failure sets the
+    # device's exception and does not raise an exception
     exception = "test exception"
-    component_manager.device_failed(exception)
+    component_manager.update_device_ping_failure(exception)
     assert component_manager.get_device().exception == exception
 
 
 def test_update_device_info(component_manager):
-    # Test if update_device_info sets the device info and does not raise an exception
+    # Test if update_device_info sets the
+    # device info and does not raise an exception
     device_info = DeviceInfo(DUMMY_MONITORED_DEVICE)
     component_manager.update_device_info(device_info)
     assert component_manager.get_device() == device_info
 
 
 def test_update_ping_info(component_manager):
-    # Test if update_ping_info sets the device's ping and does not raise an exception
+    # Test if update_ping_info sets the
+    # device's ping and does not raise an exception
     ping = 123
     dev_name = DUMMY_MONITORED_DEVICE
     component_manager.update_ping_info(ping, dev_name)
@@ -133,7 +136,8 @@ def test_update_ping_info(component_manager):
 
 
 def test_update_device_health_state(component_manager):
-    # Test if update_device_health_state updates the device's health state and does not raise an exception
+    # Test if update_device_health_state updates the
+    # device's health state and does not raise an exception
     health_state = HealthState.OK
     component_manager.update_device_health_state(
         DUMMY_MONITORED_DEVICE, health_state
@@ -146,7 +150,8 @@ def test_update_device_health_state(component_manager):
 
 
 def test_update_device_state(component_manager):
-    # Test if update_device_state updates the device's state and does not raise an exception
+    # Test if update_device_state updates
+    # the device's state and does not raise an exception
     state = tango.DevState.ON
     component_manager.update_device_state(DUMMY_MONITORED_DEVICE, state)
     assert component_manager.get_device().state == state
@@ -157,7 +162,8 @@ def test_update_device_state(component_manager):
 
 
 def test_update_device_obs_state(component_manager):
-    # Test if update_device_obs_state updates the device's obs state and does not raise an exception
+    # Test if update_device_obs_state updates
+    # the device's obs state and does not raise an exception
     obs_state = ObsState.READY
     component_manager.update_device_obs_state(
         DUMMY_MONITORED_DEVICE, obs_state

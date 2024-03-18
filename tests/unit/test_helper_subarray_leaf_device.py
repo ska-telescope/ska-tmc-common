@@ -76,7 +76,7 @@ def test_clear_commandCallInfo(tango_context):
     _, _ = subarray_leaf_device.command_inout("Configure", "")
     subarray_leaf_device.command_inout("ClearCommandCallInfo")
     command_call_info = subarray_leaf_device.commandCallInfo
-    assert command_call_info is None
+    assert command_call_info == ()
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
@@ -94,7 +94,9 @@ def test_assign_resources_failed_result(tango_context):
     defect = {
         "enabled": True,
         "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device is defective, cannot process command.completely.",
+        "error_message": (
+            "Device is defective, cannot process command." "completely."
+        ),
         "result": ResultCode.FAILED,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
@@ -113,6 +115,7 @@ def test_assign_resources_stuck_in_intermediate_state(tango_context):
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
         "result": ResultCode.FAILED,
+        "error_message": "Device is stuck in Resourcing state",
         "intermediate_state": ObsState.RESOURCING,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))

@@ -12,18 +12,13 @@ python-pre-publish:
 #DAR201 Missing "Returns" in Docstring: - return
 #DAR301 Missing "Yields" in Docstring: - yield
 #DAR401 Missing exception(s) in Raises section: -r Exception
-PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR301,DAR401,W503,E501
+PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR103,DAR301,W503,DAR003
 MARK ?=
 PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE)
 
 # include makefile to pick up the standard Make targets, e.g., 'make build'
 # build, 'make push' docker push procedure, etc. The other Make targets
 # ('make interactive', 'make test', etc.) are defined in this file.
-
--include .make/python.mk
--include .make/docs.mk
--include .make/release.mk
--include .make/make.mk
--include .make/help.mk
 -include .make/base.mk
+-include .make/python.mk
 -include PrivateRules.mak

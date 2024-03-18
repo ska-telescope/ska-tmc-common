@@ -3,10 +3,9 @@ This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
 import threading
-from concurrent import futures
 from logging import Logger
-from queue import Empty, Queue
 from time import sleep
+from typing import List
 
 import tango
 
@@ -56,6 +55,8 @@ class BaseLivelinessProbe:
     def run(self) -> NotImplementedError:
         """
         Runs the sub devices
+        :raises NotImplementedError:raises not implemented error if the method
+        is not defined by child class.
         """
         raise NotImplementedError("This method must be inherited")
 
@@ -69,9 +70,18 @@ class BaseLivelinessProbe:
             self._component_manager.update_ping_info(
                 proxy.ping(), dev_info.dev_name
             )
-        except Exception as err:
-            self._logger.exception(f"Error on {dev_info.dev_name}: {err} ")
-            self._component_manager.device_failed(
+        except (AttributeError, tango.DevFailed) as exception:
+            self._logger.exception(
+                f"Error on {dev_info.dev_name}: {exception} "
+            )
+            self._component_manager.update_device_ping_failure(
+                dev_info, f"Unable to ping device {dev_info.dev_name}"
+            )
+        except BaseException as exception:
+            self._logger.exception(
+                f"Error on {dev_info.dev_name}: {exception} "
+            )
+            self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
 
@@ -89,31 +99,23 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
     ):
         super().__init__(component_manager, logger, proxy_timeout, sleep_time)
         self._max_workers = max_workers
-        self._monitoring_devices = Queue(0)
+        self._monitoring_devices: List[str] = []
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
-        self._monitoring_devices.put(dev_name)
+        self._monitoring_devices.append(dev_name)
 
     def run(self) -> None:
         """A method to run device in the queue for monitoring"""
-        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
-            max_workers=self._max_workers
-        ) as executor:
+        with tango.EnsureOmniThread():
             while not self._stop:
-                not_read_devices_twice = []
                 try:
-                    while not self._monitoring_devices.empty():
-                        dev_name = self._monitoring_devices.get(block=False)
+                    for dev_name in self._monitoring_devices:
                         dev_info = self._component_manager.get_device(dev_name)
-                        executor.submit(self.device_task, dev_info)
-                        not_read_devices_twice.append(dev_info)
-                    for dev_info in self._component_manager.devices:
-                        if dev_info not in not_read_devices_twice:
-                            executor.submit(self.device_task, dev_info)
-                except Empty:
-                    pass
-                except Exception as exp_msg:
+                        self.device_task(dev_info)
+                except (AttributeError, tango.DevFailed) as exception:
+                    self._logger.warning("Exception occured: %s", exception)
+                except BaseException as exp_msg:
                     self._logger.warning("Exception occured: %s", exp_msg)
                 sleep(self._sleep_time)
 
@@ -123,13 +125,16 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
 
     def run(self) -> None:
         """A method to run single device in the Queue for monitoring"""
-        with tango.EnsureOmniThread() and futures.ThreadPoolExecutor(
-            max_workers=1
-        ) as executor:
+        with tango.EnsureOmniThread():
             while not self._stop:
                 try:
                     dev_info = self._component_manager.get_device()
-                except Exception as exp_msg:
+                except (AttributeError, ValueError) as exception:
+                    self._logger.error(
+                        "Exception occured while getting device info: %s",
+                        exception,
+                    )
+                except BaseException as exp_msg:
                     self._logger.error(
                         "Exception occured while getting device info: %s",
                         exp_msg,
@@ -138,8 +143,14 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                     try:
                         if dev_info.dev_name is None:
                             continue
-                        executor.submit(self.device_task, dev_info)
-                    except Exception as exp_msg:
+                        self.device_task(dev_info)
+                    except (AttributeError, tango.DevFailed) as exception:
+                        self._logger.error(
+                            "Error in submitting the task for %s: %s",
+                            dev_info.dev_name,
+                            exception,
+                        )
+                    except BaseException as exp_msg:
                         self._logger.error(
                             "Error in submitting the task for %s: %s",
                             dev_info.dev_name,

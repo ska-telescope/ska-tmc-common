@@ -36,6 +36,7 @@ from .constants import (
 )
 
 
+# pylint: disable=invalid-name
 class HelperSubarrayLeafDevice(HelperBaseDevice):
     """A device exposing commands and attributes of the Subarray Leaf Nodes
     devices."""
@@ -55,6 +56,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("obsState", True, False)
@@ -68,6 +70,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     obsState = attribute(dtype=ObsState, access=AttrWriteType.READ)
 
+    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+
     obsStateTransitionDuration = attribute(
         dtype="DevString", access=AttrWriteType.READ
     )
@@ -80,29 +84,40 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
 
     def read_obsStateTransitionDuration(self):
-        """Read transition"""
+        """
+        Read transition
+        :return: state duration info
+        """
         return json.dumps(self._state_duration_info)
 
     def read_commandCallInfo(self):
-        """This method is used to read the attribute value for
+        """
+        This method is used to read the attribute value for
         commandCallInfo.
+        :return: attribute value for commandCallInfo
         """
         return self._command_call_info
 
     def read_defective(self) -> str:
         """
         Returns defective status of devices
-
-        :rtype: dict
+        :return: attribute value defective
+        :rtype: str
         """
-        return self._defective
+        return json.dumps(self.defective_params)
 
     def read_delay(self) -> int:
-        """This method is used to read the attribute value for delay."""
+        """
+        This method is used to read the attribute value for delay.
+        :return: attribute value for delay
+        """
         return self._delay
 
     def read_obsState(self) -> ObsState:
-        """This method is used to read the attribute value for obsState."""
+        """
+        This method is used to read the attribute value for obsState.
+        :return: attribute value for obsstate
+        """
         return self._obs_state
 
     def update_command_info(
@@ -232,29 +247,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         self._delay = value
 
-    def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-        command_id = f"{time.time()}-{command}"
-        if exception:
-            command_result = (command_id, exception)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
-        self.push_change_event("longRunningCommandResult", command_result)
-
     def push_obs_state_event(self, obs_state: ObsState) -> None:
         """Push Obs State Change Event"""
         self.logger.info(
@@ -272,6 +264,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self.push_obs_state_event(self._obs_state)
 
     def is_On_allowed(self) -> bool:
+        """
+        This method checks if the On command is allowed or not
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -301,6 +298,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off command is allowed or not
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -330,6 +332,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
+        """
+        This method checks if the Standby command is allowed or not
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
+        """
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
@@ -361,6 +368,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     def is_AssignResources_allowed(self) -> bool:
         """
         This method checks if the AssignResources command is allowed or not
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -415,7 +424,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks the Configure is allowed in the current device
         state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -467,7 +478,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Scan command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -509,7 +522,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the EndScan command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -549,7 +564,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the End command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -597,7 +614,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the GoToIdle command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -636,7 +655,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Abort command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -684,7 +705,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the Restart command is allowed in the current
         device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -728,8 +751,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ReleaseAllResources command is allowed in
         the current device state.
-        :return: ResultCode, message
-        :rtype: tuple
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (
@@ -777,8 +801,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """
         This method checks if the ReleaseResources command is allowed in the
         current device state.
-        :return: ResultCode, message
-        :rtype: tuple
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (
