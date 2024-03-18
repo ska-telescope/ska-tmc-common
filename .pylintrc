@@ -61,7 +61,8 @@ confidence=
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
 disable=arguments-differ,
-        protected-access
+        cyclic-import # the error is supressed because of false flagging of
+      # cyclic imports due to usage of latest version of pylint
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

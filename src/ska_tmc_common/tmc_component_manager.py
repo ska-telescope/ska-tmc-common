@@ -320,6 +320,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         Method to reset components
         """
 
+    # pylint: disable=protected-access
     @property
     def devices(self) -> list:
         """
@@ -328,6 +329,8 @@ class TmcComponentManager(BaseTmcComponentManager):
         :return: list of the monitored devices
         """
         return self._component._devices
+
+    # pylint: enable=protected-access
 
     def add_device(self, device_name: str) -> None:
         """
