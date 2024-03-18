@@ -777,7 +777,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "referencing"
-version = "0.33.0"
+version = "0.34.0"
 description = "JSON Referencing + Python"
 category = "main"
 optional = false
@@ -888,11 +888,11 @@ reference = 'ska-nexus'
 
 [[package]]
 name = "ska-ser-logging"
-version = "0.4.2"
+version = "0.4.3"
 description = "Square Kilometre Array logging configuration library"
 category = "main"
 optional = false
-python-versions = ">=3.10,<3.11"
+python-versions = ">=3.10,<4.0"
 
 [package.source]
 type = "legacy"
@@ -1992,8 +1992,8 @@ PyYAML = [
     {file = "PyYAML-6.0.1.tar.gz", hash = "sha256:bfdf460b1736c775f2ba9f6a92bca30bc2095067b8a9d77876d1fad6cc3b4a43"},
 ]
 referencing = [
-    {file = "referencing-0.33.0-py3-none-any.whl", hash = "sha256:39240f2ecc770258f28b642dd47fd74bc8b02484de54e1882b74b35ebd779bd5"},
-    {file = "referencing-0.33.0.tar.gz", hash = "sha256:c775fedf74bc0f9189c2a3be1c12fd03e8c23f4d371dce795df44e06c5b412f7"},
+    {file = "referencing-0.34.0-py3-none-any.whl", hash = "sha256:d53ae300ceddd3169f1ffa9caf2cb7b769e92657e4fafb23d34b93679116dfd4"},
+    {file = "referencing-0.34.0.tar.gz", hash = "sha256:5773bd84ef41799a5a8ca72dc34590c041eb01bf9aa02632b4a973fb0181a844"},
 ]
 requests = [
     {file = "requests-2.31.0-py3-none-any.whl", hash = "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f"},
@@ -2170,8 +2170,8 @@ ska-control-model = [
     {file = "ska_control_model-0.3.4.tar.gz", hash = "sha256:d5e2e5a4d54cc46ca1259a1259614d4f56bcb8507c0fb674b4d5e8da8d001603"},
 ]
 ska-ser-logging = [
-    {file = "ska_ser_logging-0.4.2-py3-none-any.whl", hash = "sha256:86c66cbbe0ccc5b35e13704ce3e3121ef4fa2c0f35423635b77ffce80da70578"},
-    {file = "ska_ser_logging-0.4.2.tar.gz", hash = "sha256:3626b5f04ff32e547100bc771549544a8efda3730ff7b96c9b3e05e1d16adc16"},
+    {file = "ska_ser_logging-0.4.3-py3-none-any.whl", hash = "sha256:06a337e4e726f36d24b86087ec106fbb9e65be4566fe328eb56f56f2310322f8"},
+    {file = "ska_ser_logging-0.4.3.tar.gz", hash = "sha256:a94aa51db54ad2a88af4c320c850c766c1733d9f8534381dd67f993e8e4f5d11"},
 ]
 ska-ser-sphinx-theme = [
     {file = "ska_ser_sphinx_theme-0.1.2-py3-none-any.whl", hash = "sha256:d8c457026d70caeea9c9529b472a2068ed236075fa422f47566afd33afeb8a67"},

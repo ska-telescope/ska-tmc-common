@@ -1167,7 +1167,6 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
         self._scan_id = argin
-        self.push_change_event("scanID", argin)
         self.push_command_status("COMPLETED", "Scan")
         self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])

@@ -490,10 +490,10 @@ class DishAdapter(DishLeafAdapter):
         """
         Returns Dish Manager's scanID attribute value.
         """
-        return self._scan_id
+        return self._proxy.scanID
 
     @scanID.setter
-    def write_scanID(self, value: str) -> None:
+    def scanID(self, value: str) -> None:
         """
         Sets Dish Manager's scanID attribute.
         """
