@@ -55,6 +55,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._isSubsystemAvailable = False
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
 
+    # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
 
@@ -84,6 +85,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
     kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
 
+    # pylint: enable=protected-access
     def read_kValueValidationResult(self) -> str:
         """
         Get the k-value validation result.

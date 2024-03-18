@@ -291,6 +291,7 @@ class DishDeviceInfo(DeviceInfo):
         if self._dish_mode != value:
             self._dish_mode = value
 
+    # pylint: disable=protected-access
     def from_dev_info(self, dev_info) -> None:
         super().from_dev_info(dev_info)
         if isinstance(dev_info, DishDeviceInfo):
@@ -301,6 +302,8 @@ class DishDeviceInfo(DeviceInfo):
             self.rx_capturing_data = dev_info.rx_capturing_data
             self.achieved_pointing = dev_info.achieved_pointing
             self.program_track_table = dev_info.program_track_table
+
+    # pylint: enable=protected-access
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DishDeviceInfo, DeviceInfo)):
