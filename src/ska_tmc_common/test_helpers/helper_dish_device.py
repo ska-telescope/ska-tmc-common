@@ -20,7 +20,6 @@ from ska_tmc_common.test_helpers.constants import (  # CONFIGURE,
     ABORT_COMMANDS,
     CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
-    END_SCAN,
     SCAN,
     SET_OPERATE_MODE,
     SET_STANDBY_FP_MODE,
@@ -1146,39 +1145,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self._scan_id = argin
         self.push_command_status("COMPLETED", "Scan")
         self.logger.info("Processing Scan")
-        return ([ResultCode.OK], [""])
-
-    def is_EndScan_allowed(self) -> bool:
-        """
-        This method checks if the EndScan Command is allowed in current State.
-        :rtype:bool
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("EndScan Command is allowed")
-        return True
-
-    @command(
-        dtype_in=("DevVoid"),
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes EndScan command on Dish Master
-        """
-        # to record the command data
-        self.update_command_info(END_SCAN)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("EndScan")
-        self.logger.info("EndScan Command is invoked.")
         return ([ResultCode.OK], [""])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.

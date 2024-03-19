@@ -884,6 +884,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         This method checks if the EndScan Command is allowed in current State.
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
