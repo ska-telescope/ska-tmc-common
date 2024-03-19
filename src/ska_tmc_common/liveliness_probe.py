@@ -107,17 +107,18 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
 
     def run(self) -> None:
         """A method to run device in the queue for monitoring"""
-        with tango.EnsureOmniThread():
-            while not self._stop:
-                try:
+
+        while not self._stop:
+            try:
+                with tango.EnsureOmniThread():
                     for dev_name in self._monitoring_devices:
                         dev_info = self._component_manager.get_device(dev_name)
                         self.device_task(dev_info)
-                except (AttributeError, tango.DevFailed) as exception:
-                    self._logger.warning("Exception occured: %s", exception)
-                except BaseException as exp_msg:
-                    self._logger.warning("Exception occured: %s", exp_msg)
-                sleep(self._sleep_time)
+            except (AttributeError, tango.DevFailed) as exception:
+                self._logger.warning("Exception occured: %s", exception)
+            except BaseException as exp_msg:
+                self._logger.warning("Exception occured: %s", exp_msg)
+            sleep(self._sleep_time)
 
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
