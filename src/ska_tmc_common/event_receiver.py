@@ -66,6 +66,7 @@ class EventReceiver:
         self._stop = True
         # self._thread.join()
 
+    #  pylint: disable=broad-exception-caught
     def run(self) -> None:
         """
         The run method for the Event Receiver thread. Runs in a loop to
@@ -80,16 +81,16 @@ class EventReceiver:
                     else:
                         dev_info = self._component_manager.get_device()
                         self.submit_task(dev_info)
-                except Exception as e:
-                    self._logger.warning("Exception occurred: %s", e)
+                except Exception as exp:
+                    self._logger.warning("Exception occurred: %s", exp)
                 sleep(self._sleep_time)
 
     def submit_task(self, device_info: DeviceInfo) -> None:
         """Submits the task to the executor for the given device info object.
 
-        :param device_info: DeviceInfo object for the device on which events
+        :param device_info: DeviceInfo for the device on which events
             are to be subscribed.
-        :type device_info: DeviceInfo class object.
+        :type device_info: DeviceInfo
 
         :rtype: None
         """
@@ -104,8 +105,8 @@ class EventReceiver:
     ) -> None:
         """A method to subscribe to attribute events from lower level devices.
 
-        :param device_info: The device info object of the given device.
-        :type device_info: DeviceInfo class object
+        :param dev_info: The device info object of the given device.
+        :type dev_info: DeviceInfo
 
         :param attribute_dictionary: A dictionary containing the attributes to
             subscribe to as keys and their handler functions as values.
@@ -124,14 +125,14 @@ class EventReceiver:
             )
         else:
             try:
-                for attribute, callable in attribute_dictionary.items():
+                for attribute, callable_value in attribute_dictionary.items():
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,
-                        callable,
+                        callable_value,
                         stateless=True,
                     )
             except Exception as exception:

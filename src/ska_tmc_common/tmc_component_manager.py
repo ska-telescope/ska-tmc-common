@@ -48,34 +48,42 @@ class TmcComponent:
         """
         Retrieve information about a specific device.
         This is a base method that should be implemented by derived classes.
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device(self, dev_info):
         """
         Base method for update_device method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def update_device_exception(self, device_info, exception):
         """
         Base method for update_device_exception method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
     def to_json(self) -> str:
         """
         Base method for to_json method for different nodes
+        :return: json
         """
         return json.dumps(self.to_dict())
 
     def to_dict(self):
         """
         Base method for to_dict method for different nodes
+        :raises NotImplementedError: Not implemented error
         """
         raise NotImplementedError("This method must be inherited!")
 
 
+# pylint: disable=abstract-method
+# Disabled as this is also a abstract class and has parent class from
+# base class
 class BaseTmcComponentManager(TaskExecutorComponentManager):
     """
     This class manages obsstates , commands and various checks
@@ -120,7 +128,10 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     @property
     def command_id(self) -> str:
-        """Read method for reading command id used for error propagation."""
+        """
+        Read method for reading command id used for error propagation.
+        :return: command_id
+        """
         with self.lock:
             return self._command_id
 
@@ -138,21 +149,23 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
         :param command_name: command_name
         :type command_name: str
-        :return: True if command is allowed
 
         :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
         """
         raise NotImplementedError(
             "is_command_allowed is abstract; method must be implemented in \
             a subclass!"
         )
 
-    def start_liveliness_probe(self, lp: LivelinessProbeType) -> None:
+    def start_liveliness_probe(
+        self, liveliness_probe_type: LivelinessProbeType
+    ) -> None:
         """Starts Liveliness Probe for the given device.
 
-        :param lp: enum of class LivelinessProbeType
+        :param liveliness_probe_type: enum of class LivelinessProbeType
         """
-        if lp == LivelinessProbeType.SINGLE_DEVICE:
+        if liveliness_probe_type == LivelinessProbeType.SINGLE_DEVICE:
             self.liveliness_probe_object = SingleDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -161,7 +174,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.liveliness_probe_object.start()
 
-        elif lp == LivelinessProbeType.MULTI_DEVICE:
+        elif liveliness_probe_type == LivelinessProbeType.MULTI_DEVICE:
             self.liveliness_probe_object = MultiDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
@@ -188,6 +201,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         if self.event_receiver:
             self.event_receiver_object.stop()
 
+    #  pylint: disable=broad-exception-caught
     def start_timer(
         self, timeout_id: str, timeout: int, timeout_callback: TimeoutCallback
     ) -> None:
@@ -210,6 +224,12 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             )
             self.logger.info(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
+        except threading.ThreadError as thread_error:
+            self.logger.info(f"Issue for  id : {timeout_id}")
+            self.logger.exception(
+                "Threading error occurred while starting the thread : %s",
+                thread_error,
+            )
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
@@ -217,6 +237,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 exp_msg,
             )
 
+    #  pylint: enable=broad-exception-caught
     def timeout_handler(
         self, timeout_id: str, timeout_callback: TimeoutCallback
     ) -> None:
@@ -299,6 +320,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         Method to reset components
         """
 
+    # pylint: disable=protected-access
     @property
     def devices(self) -> list:
         """
@@ -307,6 +329,8 @@ class TmcComponentManager(BaseTmcComponentManager):
         :return: list of the monitored devices
         """
         return self._component._devices
+
+    # pylint: enable=protected-access
 
     def add_device(self, device_name: str) -> None:
         """
@@ -422,6 +446,22 @@ class TmcComponentManager(BaseTmcComponentManager):
             dev_info.last_event_arrived = time.time()
             dev_info.update_unresponsive(False)
 
+    def is_command_allowed(self, command_name: str):
+        """
+        Checks whether this command is allowed
+        It checks that the device is in a state to perform this command
+
+        :param command_name: command_name
+        :type command_name: str
+
+        :rtype: boolean
+        :raises NotImplementedError: raise not implemented error
+        """
+        raise NotImplementedError(
+            "is_command_allowed is abstract; method must be implemented in \
+            a subclass!"
+        )
+
 
 class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     """
@@ -477,8 +517,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def get_device(self) -> DeviceInfo:
         """
         Return the device info our of the monitoring loop with name device_name
-
-        :param None:
         :return: a device info
         :rtype: DeviceInfo
         """

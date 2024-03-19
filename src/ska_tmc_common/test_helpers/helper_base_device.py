@@ -19,7 +19,7 @@ from ska_tmc_common.test_helpers.empty_component_manager import (
 )
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperBaseDevice(SKABaseDevice):
     """A common base device for helper devices."""
 
@@ -53,15 +53,16 @@ class HelperBaseDevice(SKABaseDevice):
     def create_component_manager(self) -> EmptyComponentManager:
         """
         Creates an instance of EmptyComponentManager
-        :rtype:class
+        :return: component manager instance
+        :rtype: EmptyComponentManager
         """
-        cm = EmptyComponentManager(
+        empty_component_manager = EmptyComponentManager(
             logger=self.logger,
             max_workers=1,
             communication_state_callback=None,
             component_state_callback=None,
         )
-        return cm
+        return empty_component_manager
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
@@ -70,8 +71,9 @@ class HelperBaseDevice(SKABaseDevice):
     raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
 
     def read_raiseException(self) -> bool:
-        """This method is used to read the attribute value for raise exception
-
+        """
+        This method is used to read the attribute value for raise exception
+        :return: attribute value for raise exception
         :rtype: bool
         """
         return self._raise_exception
@@ -79,15 +81,15 @@ class HelperBaseDevice(SKABaseDevice):
     def read_defective(self) -> str:
         """
         Returns defective status of devices
-
+        :return: attribute value for defective params
         :rtype: str
         """
         return json.dumps(self.defective_params)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
-        Returns avalability status for the leaf nodes devices
-
+        Returns availability status for the leaf nodes devices
+        :return: availabitlity status
         :rtype: bool
         """
         return self._isSubsystemAvailable
@@ -122,13 +124,8 @@ class HelperBaseDevice(SKABaseDevice):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
-
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(
@@ -195,21 +192,20 @@ class HelperBaseDevice(SKABaseDevice):
             self._obs_state = intermediate_state
             self.push_obs_state_event(intermediate_state)
             return [ResultCode.QUEUED], [""]
-        self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
 
     def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
+        self, result: ResultCode, command_name: str, exception: str = ""
     ) -> None:
         """Push long running command result event for given command.
         :param result: The result code to be pushed as an event
         :type: ResultCode
-        :param command: The command name for which the event is being pushed
+        :param command_name: The command name for which event is being pushed
         :type: str
         :param exception: Exception message to be pushed as an event
         :type: str
         """
-        command_id = f"{time.time()}-{command}"
+        command_id = f"{time.time()}-{command_name}"
         self.logger.info(
             "The command_id is %s and the ResultCode is %s", command_id, result
         )
@@ -242,7 +238,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_in=bool,
         doc_in="Set Availability of the device",
     )
-    def SetisSubsystemAvailable(self, value: bool) -> None:
+    def SetSubsystemAvailable(self, value: bool) -> None:
         """
         Sets Availability of the device
         :rtype: bool
@@ -289,6 +285,8 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method checks if the On command is allowed in current state.
         :rtype: bool
+        :return: ``True`` if the command is allowed
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -309,6 +307,7 @@ class HelperBaseDevice(SKABaseDevice):
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke On command")
@@ -326,7 +325,9 @@ class HelperBaseDevice(SKABaseDevice):
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -347,6 +348,7 @@ class HelperBaseDevice(SKABaseDevice):
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke Off command")
@@ -364,7 +366,9 @@ class HelperBaseDevice(SKABaseDevice):
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -382,6 +386,7 @@ class HelperBaseDevice(SKABaseDevice):
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         self.logger.info("Instructed simulator to invoke Standby command")
@@ -399,7 +404,9 @@ class HelperBaseDevice(SKABaseDevice):
     def is_disable_allowed(self) -> bool:
         """
         This method checks if the Disable command is allowed in current state.
+        :return: ``True`` if the command is allowed
         :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -420,6 +427,7 @@ class HelperBaseDevice(SKABaseDevice):
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Disable command
+        :return: ResultCode and message
         :rtype: Tuple
         """
         if self.defective_params["enabled"]:

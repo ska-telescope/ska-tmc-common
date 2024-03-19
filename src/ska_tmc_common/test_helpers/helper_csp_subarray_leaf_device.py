@@ -12,12 +12,12 @@ from ska_tango_base.control_model import ObsState
 from tango import AttrWriteType
 from tango.server import attribute, command, run
 
-from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
     HelperSubarrayLeafDevice,
 )
 
 
+# pylint: disable=invalid-name
 class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
     """A device exposing commands and attributes of the CSP Subarray Leaf
     Node devices."""
@@ -27,12 +27,6 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = False
         self._raise_exception = False
-        self.defective_params = {
-            "enabled": False,
-            "fault_type": FaultType.FAILED_RESULT,
-            "error_message": "Default exception.",
-            "result": ResultCode.FAILED,
-        }
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -40,6 +34,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("cspSubarrayObsState", True, False)
@@ -51,7 +46,10 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
     )
 
     def read_cspSubarrayObsState(self):
-        """Reads the current observation state of the CSP subarray"""
+        """
+        Reads the current observation state of the CSP subarray
+        :return: obs state
+        """
         return self._obs_state
 
     @command(

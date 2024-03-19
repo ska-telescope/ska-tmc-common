@@ -83,15 +83,15 @@ def test_command_with_transitional_obsstate(task_callback):
         _event_receiver=False,
         transitional_obsstate=True,
     )
-    cm.command_obj.state = State.NORMAL
+    cm.state = State.NORMAL
     cm.invoke_command(True, task_callback=task_callback)
     time.sleep(2)
     task_callback.assert_against_call(
         status=TaskStatus.QUEUED,
     )
-    cm.command_obj.state = State.TRANSITIONAL
+    cm.state = State.TRANSITIONAL
     time.sleep(0.5)
-    cm.command_obj.state = State.CHANGED
+    cm.state = State.CHANGED
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED, result=ResultCode.OK
     )

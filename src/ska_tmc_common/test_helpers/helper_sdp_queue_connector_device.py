@@ -11,6 +11,7 @@ from tango.server import Device, attribute, command, run
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=invalid-name
 class HelperSdpQueueConnector(Device):
     """A helper device that emulates the behavior of pointing_offsets attribute
     from SdpQueueConnector device for testing.
@@ -43,6 +44,8 @@ class HelperSdpQueueConnector(Device):
         "Fitted_Width_V,Fitted_Width_V_Std,"
         "Fitted_Height,Fitted_Height_Std"
         ]
+        :return: the attribute value for
+        pointing_offsets from QueueConnector SDP device
         """
         return self._pointing_offsets
 

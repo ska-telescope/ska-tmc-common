@@ -29,7 +29,7 @@ class TimeoutCallback:
 
         :param timeout_state: Enum of TimeoutState class.
 
-        :return: Raises ValueError
+        :raises ValueError: Raises ValueError
         """
         if self._timeout_id == timeout_id:
             self._timeout_state = timeout_state
@@ -41,8 +41,11 @@ class TimeoutCallback:
     def assert_against_call(
         self, timeout_id: str, timeout_state: TimeoutState, **kwargs: Any
     ) -> bool:
-        """Assertion method to check if the desired timeout state change
-        has occured."""
+        """
+        Assertion method to check if the desired timeout state change
+        has occured.
+        :return: boolean value
+        """
         if timeout_id != self._timeout_id:
             return False
 

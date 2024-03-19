@@ -20,7 +20,7 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperMCCSController(HelperBaseDevice):
     """A helper MCCS controller device for triggering state changes
     with a command"""
@@ -29,12 +29,6 @@ class HelperMCCSController(HelperBaseDevice):
         super().init_device()
         self.dev_name = self.get_name()
         self._raise_exception = False
-        self.defective_params = {
-            "enabled": False,
-            "fault_type": FaultType.FAILED_RESULT,
-            "error_message": "Default exception.",
-            "result": ResultCode.FAILED,
-        }
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -50,7 +44,7 @@ class HelperMCCSController(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
-            :returns: ResultCode, message
+            :return: ResultCode, message
             :rtype:tuple
             """
             super().do()
@@ -67,13 +61,10 @@ class HelperMCCSController(HelperBaseDevice):
         :param command_name: The name of the
          command for which a fault is being induced.
         :type command_name: str
-
-        :param dtype: The data type of the fault parameter.
-        :type dtype: str
-
-        :param rtype: A tuple containing two lists - the
-         list of possible result codes and the list of error messages.
-        :type rtype: Tuple[List[ResultCode], List[str]]
+        :param command_id: command id
+        :type command_id: str
+        :return: ResultCode and command id
+        :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
         defective = json.dumps(
@@ -180,36 +171,6 @@ class HelperMCCSController(HelperBaseDevice):
             self.logger.info("exception will be raised as %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
 
-    def push_command_result(
-        self, command_id: str, result: ResultCode, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-
-        if exception:
-            command_result = (
-                command_id,
-                json.dumps([ResultCode.FAILED, exception]),
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps([result, ""]))
-
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
-        )
-
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
     ) -> None:
@@ -231,7 +192,8 @@ class HelperMCCSController(HelperBaseDevice):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -291,7 +253,8 @@ class HelperMCCSController(HelperBaseDevice):
         device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -349,7 +312,9 @@ class HelperMCCSController(HelperBaseDevice):
         """
         This method checks if the RestartSubarray command is allowed in the
         current device state.
+        :return: ``True`` if the command is allowed
         :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -374,7 +339,7 @@ class HelperMCCSController(HelperBaseDevice):
         """
         This is the method to invoke RestartSubarray command.
         :param argin: an integer subarray_id.
-        :return: ResultCode, message
+        :return: ResultCode, command id
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"
@@ -401,3 +366,34 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("RestartSubarray command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
+
+    # pylint: disable=arguments-renamed
+    def push_command_result(
+        self, result: ResultCode, command_id: str, exception: str = ""
+    ) -> None:
+        """Push long running command result event for given command.
+
+        :params:
+
+        result: The result code to be pushed as an event
+        dtype: ResultCode
+
+        command_id: The command_id for which the event is being pushed
+        dtype: str
+
+        exception: Exception message to be pushed as an event
+        dtype: str
+        """
+
+        if exception:
+            command_result = (
+                command_id,
+                json.dumps([ResultCode.FAILED, exception]),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (command_id, json.dumps([result, ""]))
+
+        self.push_change_event("longRunningCommandResult", command_result)
+        self.logger.info(
+            "command_result has been pushed as %s", command_result
+        )

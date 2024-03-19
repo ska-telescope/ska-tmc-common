@@ -14,6 +14,7 @@ from ska_tmc_common.enum import Band, DishMode, PointingState
 def dev_state_2_str(value: DevState) -> str:
     """
     Converts device state to string datatype.
+    :return: DevState
     """
     if value == DevState.ON:
         return "DevState.ON"
@@ -110,7 +111,10 @@ class DeviceInfo:
 
     @property
     def source_dish_vcc_config(self) -> str:
-        """Returns the source_dish_vcc_config value for Dish master device"""
+        """
+        Returns the source_dish_vcc_config value for Dish master device
+        :return: source_dish_vcc_config value
+        """
         return self._source_dish_vcc_config
 
     @source_dish_vcc_config.setter
@@ -121,7 +125,10 @@ class DeviceInfo:
 
     @property
     def dish_vcc_config(self) -> str:
-        """Returns the dish_vcc_config  value for Dish master device"""
+        """
+        Returns the dish_vcc_config  value for Dish master device
+        :return: dish_vcc_config value
+        """
         return self._dish_vcc_config
 
     @dish_vcc_config.setter
@@ -149,6 +156,7 @@ class DeviceInfo:
     def to_json(self) -> str:
         """
         This method returns the json encoded string.
+        :return: json encoded string
         :rtype:str
         """
         return json.dumps(self.to_dict())
@@ -156,7 +164,7 @@ class DeviceInfo:
     def to_dict(self) -> dict:
         """
         Converts input to dictionary.
-        :return: result : device information
+        :return: result- device information
         :rtype:dict
         """
         result = {
@@ -183,12 +191,12 @@ class SubArrayDeviceInfo(DeviceInfo):
         self.resources = []
         self.obs_state = ObsState.EMPTY
 
-    def from_dev_info(self, subarray_device_info) -> None:
-        super().from_dev_info(subarray_device_info)
-        if isinstance(subarray_device_info, SubArrayDeviceInfo):
-            self.device_id = subarray_device_info.device_id
-            self.resources = subarray_device_info.resources
-            self.obs_state = subarray_device_info.obs_state
+    def from_dev_info(self, dev_info) -> None:
+        super().from_dev_info(dev_info)
+        if isinstance(dev_info, SubArrayDeviceInfo):
+            self.device_id = dev_info.device_id
+            self.resources = dev_info.resources
+            self.obs_state = dev_info.obs_state
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DeviceInfo, SubArrayDeviceInfo)):
@@ -220,10 +228,10 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
 
-    def from_dev_info(self, sdp_subarray_device_info) -> None:
-        super().from_dev_info(sdp_subarray_device_info)
-        if isinstance(sdp_subarray_device_info, SdpSubarrayDeviceInfo):
-            self.receive_addresses = sdp_subarray_device_info.receive_addresses
+    def from_dev_info(self, dev_info) -> None:
+        super().from_dev_info(dev_info)
+        if isinstance(dev_info, SdpSubarrayDeviceInfo):
+            self.receive_addresses = dev_info.receive_addresses
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DeviceInfo, SdpSubarrayDeviceInfo)):
@@ -258,7 +266,10 @@ class DishDeviceInfo(DeviceInfo):
 
     @property
     def kvalue(self) -> int:
-        """Returns the k value for Dish master device"""
+        """
+        Returns the k value for Dish master device
+        :return: kvalue for Dish Master
+        """
         return self._kvalue
 
     @kvalue.setter
@@ -269,7 +280,10 @@ class DishDeviceInfo(DeviceInfo):
 
     @property
     def dish_mode(self) -> DishMode:
-        """Returns the dish mode value for Dish master device"""
+        """
+        Returns the dish mode value for Dish master device
+        :return: dish mode for Dish Master
+        """
         return self._dish_mode
 
     @dish_mode.setter
@@ -278,16 +292,19 @@ class DishDeviceInfo(DeviceInfo):
         if self._dish_mode != value:
             self._dish_mode = value
 
-    def from_dev_info(self, dish_device_info) -> None:
-        super().from_dev_info(dish_device_info)
-        if isinstance(dish_device_info, DishDeviceInfo):
-            self.device_id = dish_device_info.device_id
-            self.pointing_state = dish_device_info.pointing_state
-            self.dish_mode = dish_device_info._dish_mode
-            self.configured_band = dish_device_info.configured_band
-            self.rx_capturing_data = dish_device_info.rx_capturing_data
-            self.achieved_pointing = dish_device_info.achieved_pointing
-            self.program_track_table = dish_device_info.program_track_table
+    # pylint: disable=protected-access
+    def from_dev_info(self, dev_info) -> None:
+        super().from_dev_info(dev_info)
+        if isinstance(dev_info, DishDeviceInfo):
+            self.device_id = dev_info.device_id
+            self.pointing_state = dev_info.pointing_state
+            self.dish_mode = dev_info._dish_mode
+            self.configured_band = dev_info.configured_band
+            self.rx_capturing_data = dev_info.rx_capturing_data
+            self.achieved_pointing = dev_info.achieved_pointing
+            self.program_track_table = dev_info.program_track_table
+
+    # pylint: enable=protected-access
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (DishDeviceInfo, DeviceInfo)):

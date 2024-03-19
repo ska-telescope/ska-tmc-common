@@ -29,13 +29,15 @@ class TangoServerHelper:
 
     def __init__(self):
         """Private constructor of the class
-        :raises Exception
+        :raises Exception: Exception is raised when it is not singleton class
         """
+        # pylint: disable=broad-exception-raised
         if TangoServerHelper.__instance is not None:
             raise Exception("This is singleton class")
 
         TangoServerHelper.__instance = self
         self.device = None
+        # pylint: enable=broad-exception-raised
 
     @staticmethod
     def get_instance():
@@ -46,8 +48,7 @@ class TangoServerHelper:
 
         :param: None.
 
-        return:
-            object of TangoServerHelper class
+        :return: object of TangoServerHelper class
         """
         if TangoServerHelper.__instance is None:
             TangoServerHelper()
@@ -58,8 +59,6 @@ class TangoServerHelper:
         Set the Tango class object as a device
 
         :param device: Tango class object
-
-        :return: None
         """
         if not self.device:
             self.device = device
@@ -69,18 +68,17 @@ class TangoServerHelper:
         Returns the value of given Tango device property
         :param property_name: String. Name of the Tango device property
 
-        :return
-            List of strings containing value(s) of the device property
+        :return: List of strings containing value(s) of the device property
 
         :throws
             Devfailed exception in case of error
         """
         try:
-            db = Database()
+            database_obj = Database()
             device_name = self.device.get_name()
-            return db.get_device_property(device_name, property_name)[
-                property_name
-            ]
+            return database_obj.get_device_property(
+                device_name, property_name
+            )[property_name]
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(
                 dev_failed,
@@ -98,18 +96,16 @@ class TangoServerHelper:
 
         :param value: Value of the property to be set
 
-        :returns: None
-
         :throws: Devfailed exception in case command failed error.
                  ValueError exception in case value error.
                  KeyError exception in case key error
         """
         try:
-            db = Database()
+            database_obj = Database()
             device_name = self.device.get_name()
             property_map = {}
             property_map[property_name] = value
-            db.put_device_property(device_name, property_map)
+            database_obj.put_device_property(device_name, property_map)
         except DevFailed as dev_failed:
             tango.Except.re_throw_exception(
                 dev_failed,
@@ -162,8 +158,6 @@ class TangoServerHelper:
 
         :param new_status: String. New value for Status attribute.
 
-        :return: None.
-
         :throws: DevFailed on failure in setting device status.
         """
         try:
@@ -204,8 +198,6 @@ class TangoServerHelper:
 
         :param new_state: (DevState). New value for State attribute.
 
-        :return: None.
-
         :throws: DevFailed on failure in setting device state.
         """
         try:
@@ -229,8 +221,6 @@ class TangoServerHelper:
         Name of the attribute on which change event is to be raised.
 
         :param value: Changed values of the attribute.
-
-        :return: None.
 
         :throws: Devfailed exception in case of error.
         """
@@ -256,8 +246,6 @@ class TangoServerHelper:
         :param value: New value of the attribute.
 
         :param push_change_event: Change event value.
-
-        :return: None.
 
         :throws: ValueError exception in case of error.
         """

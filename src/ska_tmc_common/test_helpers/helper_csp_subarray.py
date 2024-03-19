@@ -2,7 +2,6 @@
 This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
-import json
 
 # pylint: disable=attribute-defined-outside-init
 import threading
@@ -45,6 +44,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AssignResources command on subarray devices
+        :return: ResultCode and message
         """
         self.logger.info(
             "Instructed Csp Subarray to invoke AssignResources command"
@@ -117,6 +117,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
     def ReleaseResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseResources command on subarray device
+        :return: ResultCode and message
         """
         self.logger.info(
             "Instructed Csp Subarray to invoke ReleaseResources command"
@@ -410,29 +411,6 @@ class HelperCspSubarray(HelperSubArrayDevice):
             thread.start()
         self.logger.info("Restart command completed.")
         return [ResultCode.OK], [""]
-
-    def push_command_result(
-        self, result: ResultCode, command: str, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-        command_id = f"{time.time()}-{command}"
-        if exception:
-            command_result = (command_id, exception)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
-        self.push_change_event("longRunningCommandResult", command_result)
 
 
 # ----------

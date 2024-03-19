@@ -85,6 +85,7 @@ def pytest_addoption(parser):
 def devices_to_load():
     """
     This method contains the list of devices to load.
+    :return: devices to load list
     """
     return (
         {
@@ -171,6 +172,7 @@ def devices_to_load():
 def tango_context(devices_to_load, request):
     """
     It provides the tango context to invoke any command.
+    :yields: device_context
     """
     true_context = request.config.getoption("--true-context")
     if not true_context:
@@ -184,8 +186,9 @@ def tango_context(devices_to_load, request):
 
 @pytest.fixture
 def group_callback() -> MockTangoEventCallbackGroup:
-    """Creates a mock callback group for asynchronous testing
-
+    """
+    Creates a mock callback group for asynchronous testing
+    :return: group callback
     :rtype: MockTangoEventCallbackGroup
     """
     group_callback = MockTangoEventCallbackGroup(
@@ -197,9 +200,10 @@ def group_callback() -> MockTangoEventCallbackGroup:
 
 @pytest.fixture
 def component_manager() -> TmcLeafNodeComponentManager:
-    """create a component manager instance for dummy device for testing
-
-    git :rtype : TmcLeafNodeComponentManager
+    """
+    create a component manager instance for dummy device for testing
+    :return: component manager
+    :rtype : TmcLeafNodeComponentManager
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(logger)
@@ -209,8 +213,9 @@ def component_manager() -> TmcLeafNodeComponentManager:
 
 @pytest.fixture
 def task_callback() -> MockCallable:
-    """Creates a mock callable for asynchronous testing
-
+    """
+    Creates a mock callable for asynchronous testing
+    :return: task callback
     :rtype: MockCallable
     """
     task_callback = MockCallable(15)
@@ -221,6 +226,7 @@ def task_callback() -> MockCallable:
 def csp_sln_dev_name() -> str:
     """
     Fixture for returning csp subarray FQDN
+    :return: FQDN
     rtype: str
     """
     # testing device
@@ -230,7 +236,8 @@ def csp_sln_dev_name() -> str:
 def get_input_str(path) -> str:
     """
     Returns input json string
-    :rtype: String
+    :return: json string
+    :rtype: str
     """
     with open(path, "r", encoding="utf-8") as f:
         input_str = f.read()
@@ -241,6 +248,7 @@ def get_input_str(path) -> str:
 def json_factory():
     """
     Json factory for getting json files
+    :return: json factory
     """
 
     def _get_json(slug):

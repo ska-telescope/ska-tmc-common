@@ -49,7 +49,7 @@ def test_add_device(dev_name):
         logger=logger,
     )
     lp = cm.liveliness_probe_object
-    initial_size = lp._monitoring_devices._qsize()
+    initial_size = len(lp._monitoring_devices)
     lp.add_device(dev_name)
 
-    assert lp._monitoring_devices._qsize() == initial_size + 1
+    assert len(lp._monitoring_devices) == initial_size + 1

@@ -16,7 +16,7 @@ from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperMCCSMasterLeafNode(HelperBaseDevice):
     """A helper MCCS master leafnode device for triggering state
     changes with a command"""
@@ -27,12 +27,6 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         self._isSubsystemAvailable = False
         self._delay: int = 2
         self._raise_exception = False
-        self.defective_params = {
-            "enabled": False,
-            "fault_type": FaultType.FAILED_RESULT,
-            "error_message": "Default exception.",
-            "result": ResultCode.FAILED,
-        }
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
@@ -40,7 +34,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
-            :returns: ResultCode, message
+            :return: ResultCode, message
             :rtype:tuple
             """
             super().do()
@@ -48,6 +42,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
+    # pylint: disable=arguments-renamed
+    # Disabled because here command_id is passed as parameter instead of
+    # command_name
     def push_command_result(
         self, result: ResultCode, command_id: str, exception: str = ""
     ) -> None:
@@ -58,7 +55,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         result: The result code to be pushed as an event
         dtype: ResultCode
 
-        command: The command name for which the event is being pushed
+        command_id: The command_id for which the event is being pushed
         dtype: str
 
         exception: Exception message to be pushed as an event
@@ -81,7 +78,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
             if (
@@ -124,7 +122,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         device state.
 
         :return: ``True`` if the command is allowed
-        :rtype: boolean
+        :raises CommandNotAllowed: command is not allowed
+        :rtype: bool
         """
         if self.defective_params["enabled"]:
             if (

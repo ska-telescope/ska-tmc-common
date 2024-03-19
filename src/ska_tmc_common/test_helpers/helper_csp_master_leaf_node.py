@@ -16,6 +16,7 @@ from tango.server import AttrWriteType, attribute, command, run
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
+# pylint: disable=invalid-name
 class HelperCspMasterLeafDevice(HelperBaseDevice):
     """A helper device class for Csp Master Leaf device"""
 
@@ -48,6 +49,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         into tango DB.Made this attribute memorized so that when device
         restart then previous set dish vcc map version will be used for loading
         dish vcc config on csp master
+        :return: memorized_dish_vcc_map attribute value
         """
         return self._memorized_dish_vcc_map
 
@@ -65,6 +67,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             """
             Stateless hook for device initialisation.
+            :return: ResultCode and message
             """
             super().do()
             self._device.set_change_event("sourceDishVccConfig", True, False)
@@ -79,6 +82,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     def read_sourceDishVccConfig(self) -> str:
         """
         This method reads the sourceDishVccConfig value of the dish.
+        :return: sourceDishVccConfig value of the dish.
         :rtype:str
         """
         return self._source_dish_vcc_config
@@ -86,12 +90,14 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     def read_dishVccConfig(self) -> str:
         """
         This method reads the dishVccConfig value of the dish.
+        :return: dishVccConfig value of the dish
         :rtype:str
         """
         return self._dish_vcc_config
 
     def read_DishVccMapValidationResult(self) -> str:
         """
+        :return: DishVccMapValidationResult value of the dish
         :rtype: str
         """
         return str(int(self._dish_vcc_map_validation_result))
@@ -102,7 +108,9 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     )
     def ResetSysParams(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This Command Reset dishVccConfig and sourceDishVccConfig attribute"""
+        This Command Reset dishVccConfig and sourceDishVccConfig attribute
+        :return: ResultCode and message
+        """
         self._source_dish_vcc_config = ""
         self._dish_vcc_config = ""
         return [ResultCode.OK], [""]
@@ -111,7 +119,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         """
         This method checks if the LoadDishCfg command is allowed
         in current state.
-
+        :return: ``True`` if the command is allowed
         :rtype: bool
         """
         return True
@@ -126,6 +134,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig
+        :return: ResultCode and message
         :rtype: Tuple
 
         :param argin: json with File URI.
@@ -192,7 +201,10 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     def SetDishVccValidationResult(
         self, result: str
     ) -> Tuple[List[ResultCode], List[str]]:
-        """Set DishVccValidationResult and push event for same"""
+        """
+        Set DishVccValidationResult and push event for same
+        :return: ResultCode and message
+        """
         self._dish_vcc_map_validation_result = int(result)
         thread = threading.Timer(
             self._delay,

@@ -7,6 +7,7 @@ from ska_tango_base import SKABaseDevice
 from tango.server import attribute, device_property
 
 
+# pylint: disable=invalid-name
 class TMCBaseDevice(SKABaseDevice):
     """
     Class for common attributes.
@@ -29,6 +30,7 @@ class TMCBaseDevice(SKABaseDevice):
     def lastDeviceInfoChanged(self):
         """
         Returns last device info changed in the internal model.
+        :return: last device information changed
         """
         return self.last_device_info_changed
 
@@ -40,6 +42,7 @@ class TMCBaseDevice(SKABaseDevice):
     def transformedInternalModel(self) -> str:
         """
         Returns entire internal model transformed for better reading
+        :return: internal model transformed
         """
         return self.transformedInternalModel_read()
 
@@ -49,7 +52,7 @@ class TMCBaseDevice(SKABaseDevice):
         of transformedInternalModel and
         must be overloaded to add additional values to result dictionary.
         Returns json string with device data.
-
+        :return: result json string with device data
         Sample Output:
         {'mccs':{'state':'DevState.UNKNOWN','healthState':
         'HealthState.UNKNOWN', 'ping':'-1','last_event_arrived':'None',
@@ -80,6 +83,7 @@ class TMCBaseDevice(SKABaseDevice):
     def internalModel(self) -> str:
         """
         Returns entire internal model
+        :return: internal model transformed
         """
         return self.internalModel_read()
 
@@ -89,7 +93,8 @@ class TMCBaseDevice(SKABaseDevice):
         and must be overloaded to add additional attribute values to internal
         model. Returns json string representing internal model with basic
         attributes only.
-
+        :return: json string representing internal model
+        with basic attributes only
         Sample Output:
         {"subarray_health_state":"HealthState.UNKNOWN",
         "devices":[{"dev_name":"mccs","state":"DevState.UNKNOWN",
@@ -98,3 +103,15 @@ class TMCBaseDevice(SKABaseDevice):
         "exception":"None","id":-1,"pointingState":"PointingState.NONE"}]}
         """
         return self.component_manager.component.to_json()
+
+    def create_component_manager(self):
+        """
+        Create and return a component manager for this device.
+
+        :raises NotImplementedError: for no implementation
+        """
+        raise NotImplementedError(
+            "TMCBaseDevice is abstract; implement"
+            "'create_component_manager` method in "
+            "a subclass."
+        )

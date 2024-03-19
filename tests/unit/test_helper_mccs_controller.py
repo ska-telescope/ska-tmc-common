@@ -6,7 +6,7 @@ from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import (
-    DEFAULT_DEFECT,
+    DEFAULT_DEFECT_SETTINGS,
     HELPER_MCCS_CONTROLLER,
     MCCS_SUBARRAY_DEVICE,
     wait_for_obstate,
@@ -14,7 +14,7 @@ from tests.settings import (
 
 allocate_argin_string = json.dumps(
     {
-        "interface": "https://schema.skao.int/ska-low-mccs-controller-allocate/3.0",
+        "interface": "https://schema.skao.int/ska-low-mccs-controller-allocate/3.0",  # noqa
         "subarray_id": 1,
         "subarray_beams": [
             {
@@ -74,7 +74,7 @@ def test_mccs_controller_commands_without_argument(tango_context, command):
 def test_mccs_controller_allocate_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT))
+    mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, message = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
@@ -85,7 +85,7 @@ def test_mccs_controller_allocate_defective(tango_context):
 def test_mccs_controller_release_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT))
+    mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, message = mccs_controller_device.command_inout(
         "Release", release_argin_string
     )
@@ -135,7 +135,8 @@ def test_restart_subarray_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
-    subarray_id = 1  # Provide the subarray ID as an argument to the RestartSubarray command
+    # Provide the subarray ID as an argument to the RestartSubarray command
+    subarray_id = 1
     result = mccs_controller_device.command_inout(
         "RestartSubarray", subarray_id
     )
