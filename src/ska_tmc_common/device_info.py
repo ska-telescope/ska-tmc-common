@@ -90,6 +90,8 @@ class DeviceInfo:
             self.health_state = HealthState.UNKNOWN
             self.device_availability = False
             self.ping = -1
+        else:
+            self.device_availability = True
 
     @property
     def ping(self) -> int:
