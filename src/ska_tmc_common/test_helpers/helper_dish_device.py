@@ -43,7 +43,11 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = PointingState.NONE
         self._configured_band = Band.NONE
         self._dish_mode = DishMode.STANDBY_LP
-        self._achieved_pointing = []
+        self._achieved_pointing = [
+            1707388147149.508,
+            179.880204193508,
+            31.877024524259,
+        ]
         self._state_duration_info = []
         self._program_track_table = []
         self._program_track_table_lock = threading.Lock()
