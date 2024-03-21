@@ -47,7 +47,6 @@ class HelperBaseDevice(SKABaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubsystemAvailable", True, False)
-            self.logger.info("Off command completed.")
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
