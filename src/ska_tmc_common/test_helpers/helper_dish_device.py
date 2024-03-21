@@ -5,13 +5,13 @@ This module implements the Helper Dish Device for testing an integrated TMC
 import json
 import threading
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevEnum, DevState
+from tango import AttrWriteType, DevEnum, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -76,7 +76,7 @@ class HelperDishDevice(HelperDishLNDevice):
         access=AttrWriteType.READ_WRITE,
         max_dim_x=150,
     )
-    scanID = attribute(dtype=str, access=AttrWriteType.READ_WRITE)
+    scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
 
     def read_scanID(self) -> str:
         """
@@ -1108,11 +1108,11 @@ class HelperDishDevice(HelperDishLNDevice):
     #     # TBD: Dish mode change
     #     return ([ResultCode.OK], [""])
 
-    def is_Scan_allowed(self) -> bool:
+    def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
         :return: ``True`` if the command is allowed
-        :rtype:bool
+        :rtype: Union[bool,CommandNotAllowed]
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1134,8 +1134,8 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Scan command on Dish Master
-        :return: ResultCode and message
+        This method sets scanID attribute of Dish Master.
+        :return: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info("Processing Scan Command")
         # to record the command data
@@ -1144,7 +1144,6 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("Scan")
         self._scan_id = argin
         self.push_command_status("COMPLETED", "Scan")
-        self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.

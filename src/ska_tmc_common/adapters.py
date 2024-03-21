@@ -487,6 +487,7 @@ class DishLeafAdapter(BaseAdapter):
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes EndScan on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
         """
         return self._proxy.EndScan()
 

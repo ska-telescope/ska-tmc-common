@@ -21,8 +21,8 @@ Added
 
 [0.14.1]
 ************
-* The scan_id as an argument related changes have been made for scan command in HelperDishDevice and HelperDishLNDevice
-* EndScan command has been introduced in in HelperDishDevice and HelperDishLNDevice
+* Updated Scan command interface to include scan_id as argument
+* EndScan command has been added in HelperDishLNDevice
 * **scanID** attribute has been introduced in HelperDishDevice
 
 
