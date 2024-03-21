@@ -19,7 +19,7 @@ Added
 * Input type for **start_tracker_thread** method for param **state_function** is changed from **Callable** to **str**
 * **timeout_decorator** and **error_propagation_decorator** added for implementing timeout and error propagation functionalities respectively
 
-[0.14.1]
+[0.15.0]
 ************
 * Updated Scan command interface to include scan_id as argument
 * EndScan command has been added in HelperDishLNDevice
