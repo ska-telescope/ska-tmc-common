@@ -477,12 +477,19 @@ class DishLeafAdapter(BaseAdapter):
         """
         return self._proxy.TrackLoadStaticOff(argin)
 
-    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes Scan on device proxy.
         :return: command invocation on Dish Leaf Node device proxy
         """
-        return self._proxy.Scan()
+        return self._proxy.Scan(argin)
+
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes EndScan on device proxy.
+        :return: command invocation on Dish Leaf Node device proxy
+        """
+        return self._proxy.EndScan()
 
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -531,6 +538,34 @@ class DishAdapter(DishLeafAdapter):
         :return: command invocation on Dish device proxy
         """
         return self._proxy.TrackLoadStaticOff(argin)
+
+    @property
+    def programTrackTable(self) -> List[float]:
+        """
+        Returns Dish Manager's programTrackTable attribute value.
+        """
+        return self._proxy.programTrackTable
+
+    @programTrackTable.setter
+    def programTrackTable(self, program_track_table) -> None:
+        """
+        Sets Dish Manager's programTrackTable attribute.
+        """
+        self._proxy.programTrackTable = program_track_table
+
+    @property
+    def scanID(self) -> str:
+        """
+        Returns Dish Manager's scanID attribute value.
+        """
+        return self._proxy.scanID
+
+    @scanID.setter
+    def scanID(self, value: str) -> None:
+        """
+        Sets Dish Manager's scanID attribute.
+        """
+        self._proxy.scanID = value
 
 
 class CspSubarrayAdapter(SubarrayAdapter):

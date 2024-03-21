@@ -5,13 +5,13 @@ This module implements the Helper Dish Device for testing an integrated TMC
 import json
 import threading
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevEnum, DevState
+from tango import AttrWriteType, DevEnum, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -43,10 +43,15 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = PointingState.NONE
         self._configured_band = Band.NONE
         self._dish_mode = DishMode.STANDBY_LP
-        self._achieved_pointing = []
+        self._achieved_pointing = [
+            1707388147149.508,
+            179.880204193508,
+            31.877024524259,
+        ]
         self._state_duration_info = []
         self._program_track_table = []
         self._program_track_table_lock = threading.Lock()
+        self._scan_id = ""
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -75,6 +80,23 @@ class HelperDishDevice(HelperDishLNDevice):
         access=AttrWriteType.READ_WRITE,
         max_dim_x=150,
     )
+    scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
+
+    def read_scanID(self) -> str:
+        """
+        This method reads the scanID attribute of a dish.
+        :rtype: str
+        """
+        return self._scan_id
+
+    def write_scanID(self, value: str) -> None:
+        """
+        This method writes scanID attribute of dish.
+        :param value: scan_id as given is the json
+        :value dtype: str
+        :rtype: None
+        """
+        self._scan_id = value
 
     @attribute(dtype=int, access=AttrWriteType.READ)
     def kValue(self) -> int:
@@ -1090,11 +1112,11 @@ class HelperDishDevice(HelperDishLNDevice):
     #     # TBD: Dish mode change
     #     return ([ResultCode.OK], [""])
 
-    def is_Scan_allowed(self) -> bool:
+    def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
         :return: ``True`` if the command is allowed
-        :rtype:bool
+        :rtype: Union[bool,CommandNotAllowed]
         :raises CommandNotAllowed: command is not allowed
         """
         if self.defective_params["enabled"]:
@@ -1110,22 +1132,22 @@ class HelperDishDevice(HelperDishLNDevice):
         return True
 
     @command(
-        dtype_in=("DevVoid"),
+        dtype_in="DevString",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes Scan command on Dish Master
-        :return: ResultCode and message
+        This method sets scanID attribute of Dish Master.
+        :return: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info("Processing Scan Command")
         # to record the command data
-        self.update_command_info(SCAN)
+        self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
+        self._scan_id = argin
         self.push_command_status("COMPLETED", "Scan")
-        self.logger.info("Processing Scan")
         return ([ResultCode.OK], [""])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
