@@ -183,7 +183,8 @@ class HelperBaseDevice(SKABaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name, fault_message],
+                args=[result, command_name],
+                kwargs={"exception": fault_message},
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
