@@ -281,12 +281,14 @@ class BaseTMCCommand:
                         message=f"Thread error occurred: {thread_error}",
                     )
 
-                except TimeoutError as toe:
-                    self.logger.error("Timeout error occurred: %s", toe)
+                except TimeoutError as timeout_error:
+                    self.logger.error(
+                        "Timeout error occurred: %s", timeout_error
+                    )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
                         result=ResultCode.FAILED,
-                        message=f"Timeout error occurred: {toe}",
+                        message=f"Timeout error occurred: {timeout_error}",
                     )
                 except Exception as exp:
                     self.logger.error(
