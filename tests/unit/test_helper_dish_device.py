@@ -34,7 +34,6 @@ COMMANDS_WITHOUT_INPUT = [
     "SetStandbyLPMode",
     "SetOperateMode",
     "SetStowMode",
-    "Scan",
     "AbortCommands",
 ]
 COMMANDS_WITH_INPUT = [
@@ -102,6 +101,26 @@ def test_dish_commands_with_input(tango_context, command):
     result, message = dish_device.command_inout(command, True)
     assert result[0] == ResultCode.OK
     assert message[0] == ""
+
+
+def test_dish_commands_scan(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    result, message = dish_device.command_inout("Scan", "")
+    assert result[0] == ResultCode.OK
+    assert message[0] == ""
+
+
+def test_scan_command_without_argin_failed_result(tango_context):
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
+    result, message = dish_device.command_inout("Scan", "")
+    assert result[0] == ResultCode.FAILED
+    assert (
+        message[0] == "Device is defective, cannot process command completely."
+    )
+    dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS_WITHOUT_INPUT)

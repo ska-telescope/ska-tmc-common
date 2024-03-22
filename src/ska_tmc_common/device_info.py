@@ -262,6 +262,7 @@ class DishDeviceInfo(DeviceInfo):
         self.achieved_pointing = []
         self.program_track_table = []
         self._kvalue = 0
+        self.scan_id = ""
 
     @property
     def kvalue(self) -> int:

@@ -6,7 +6,7 @@ integrated TMC.
 import json
 import threading
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -18,6 +18,7 @@ from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
     CONFIGURE,
+    END_SCAN,
     OFF,
     RESTART,
     SCAN,
@@ -839,12 +840,12 @@ class HelperDishLNDevice(HelperBaseDevice):
     #     # TBD: Dish mode change
     #     return ([ResultCode.OK], [""])
 
-    def is_Scan_allowed(self) -> bool:
+    def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
         :return: ``True`` if the command is allowed
-        :rtype:bool
         :raises CommandNotAllowed: command is not allowed
+        :rtype: Union[bool,CommandNotAllowed]
         """
         if self.defective_params["enabled"]:
             if (
@@ -859,24 +860,63 @@ class HelperDishLNDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_in=("DevVoid"),
+        dtype_in="DevString",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    def Scan(self) -> Tuple[List[ResultCode], List[str]]:
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on Dish Master
+        :param argin: scan_id as and string.
         :return: ResultCode and message
-        :rtype: tuple
+        :rtype: Tuple[List[ResultCode], List[str]]
         """
         self.logger.info("Processing Scan Command")
         # to record the command data
-        self.update_command_info(SCAN)
+        self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan")
 
             # TBD: Add your dish mode change logic here if required
-        self.logger.info("Processing Scan")
+        return ([ResultCode.OK], [""])
+
+    def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
+        """
+        This method checks if the EndScan Command is allowed in current State.
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        :rtype: Union[bool,CommandNotAllowed]
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
+        return True
+
+    @command(
+        dtype_in="DevVoid",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method updates the scanID attribute of Dish Master
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        # to record the command data
+        self.update_command_info(END_SCAN)
+        if self.defective_params["enabled"]:
+            return self.induce_fault("EndScan")
+            # On Real Dish Leaf Node the scanID attribute of Dish Master
+            # is getting updated
+            # TBD: Add your dish mode change logic here if required
         return ([ResultCode.OK], [""])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
