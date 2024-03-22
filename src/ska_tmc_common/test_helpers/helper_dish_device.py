@@ -16,14 +16,12 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import Band, DishMode, PointingState
-from ska_tmc_common.test_helpers.constants import (  # CONFIGURE,
+from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
     SCAN,
     SET_OPERATE_MODE,
-    SET_STANDBY_FP_MODE,
-    SET_STANDBY_LP_MODE,
     SET_STOW_MODE,
     TRACK,
     TRACK_STOP,
@@ -430,83 +428,84 @@ class HelperDishDevice(HelperDishLNDevice):
         )
         thread.start()
 
-    def is_SetStandbyFPMode_allowed(self) -> bool:
-        """
-        This method checks if the is_SetStandbyFPMode_allowed Command is
-        allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype:bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetStandbyFPMode Command is allowed")
-        return True
+    # def is_SetStandbyFPMode_allowed(self) -> bool:
+    #     """
+    #     This method checks if the is_SetStandbyFPMode_allowed Command is
+    #     allowed in current
+    #     State.
+    #     :return: ``True`` if the command is allowed
+    #     :rtype:bool
+    #     :raises CommandNotAllowed: command is not allowed
+    #     """
+    #     if self.defective_params["enabled"]:
+    #         if (
+    #             self.defective_params["fault_type"]
+    #             == FaultType.COMMAND_NOT_ALLOWED
+    #         ):
+    #             self.logger.info(
+    #                 "Device is defective, cannot process command."
+    #             )
+    #             raise CommandNotAllowed(
+    # self.defective_params["error_message"])
+    #     self.logger.info("SetStandbyFPMode Command is allowed")
+    #     return True
 
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes SetStandbyFPMode command on  Dish Master
-        :return: ResultCode and message
-        :rtype: tuple
-        """
-        self.logger.info("Processing SetStandbyFPMode Command")
-        self.update_command_info(SET_STANDBY_FP_MODE, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("SetStandbyFPMode")
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
+    # @command(
+    #     dtype_out="DevVarLongStringArray",
+    #     doc_out="(ReturnType, 'informational message')",
+    # )
+    # def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
+    #     """
+    #     This method invokes SetStandbyFPMode command on  Dish Master
+    #     :return: ResultCode and message
+    #     :rtype: tuple
+    #     """
+    #     self.logger.info("Processing SetStandbyFPMode Command")
+    #     self.update_command_info(SET_STANDBY_FP_MODE, "")
+    #     if self.defective_params["enabled"]:
+    #         return self.induce_fault("SetStandbyFPMode")
+    #     if self.dev_state() != DevState.STANDBY:
+    #         self.set_state(DevState.STANDBY)
+    #         time.sleep(0.1)
+    #         self.push_change_event("State", self.dev_state())
 
-        # Set the Dish Mode
-        self.set_dish_mode(DishMode.STANDBY_FP)
-        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
-        self.logger.info("SetStandbyFPMode command completed.")
-        return ([ResultCode.OK], [""])
+    #     # Set the Dish Mode
+    #     self.set_dish_mode(DishMode.STANDBY_FP)
+    #     self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
+    #     self.logger.info("SetStandbyFPMode command completed.")
+    #     return ([ResultCode.OK], [""])
 
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes SetStandbyLPMode command on Dish Master
-        :return: ResultCode and message
-        :rtype: tuple
-        """
-        self.logger.info(
-            "Instructed Dish simulator to invoke SetStandbyLPMode command"
-        )
-        self.update_command_info(SET_STANDBY_LP_MODE, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("SetStandbyLPMode")
-        # Set the device state
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set the Pointing state
-        if self._pointing_state != PointingState.NONE:
-            self._pointing_state = PointingState.NONE
-            self.push_change_event("pointingState", self._pointing_state)
+    # @command(
+    #     dtype_out="DevVarLongStringArray",
+    #     doc_out="(ReturnType, 'informational message')",
+    # )
+    # def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
+    #     """
+    #     This method invokes SetStandbyLPMode command on Dish Master
+    #     :return: ResultCode and message
+    #     :rtype: tuple
+    #     """
+    #     self.logger.info(
+    #         "Instructed Dish simulator to invoke SetStandbyLPMode command"
+    #     )
+    #     self.update_command_info(SET_STANDBY_LP_MODE, "")
+    #     if self.defective_params["enabled"]:
+    #         return self.induce_fault("SetStandbyLPMode")
+    #     # Set the device state
+    #     if self.dev_state() != DevState.STANDBY:
+    #         self.set_state(DevState.STANDBY)
+    #         time.sleep(0.1)
+    #         self.push_change_event("State", self.dev_state())
+    #     # Set the Pointing state
+    #     if self._pointing_state != PointingState.NONE:
+    #         self._pointing_state = PointingState.NONE
+    #         self.push_change_event("pointingState", self._pointing_state)
 
-        # Set the Dish ModeLP
-        self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
-        self.logger.info("SetStandbyLPMode command completed.")
-        return ([ResultCode.OK], [""])
+    #     # Set the Dish ModeLP
+    #     self.set_dish_mode(DishMode.STANDBY_LP)
+    #     self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
+    #     self.logger.info("SetStandbyLPMode command completed.")
+    #     return ([ResultCode.OK], [""])
 
     @command(
         dtype_out="DevVarLongStringArray",

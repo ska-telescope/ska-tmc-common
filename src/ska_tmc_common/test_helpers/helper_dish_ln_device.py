@@ -8,12 +8,14 @@ import threading
 import time
 from typing import List, Tuple, Union
 
+import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType, Database, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
@@ -76,6 +78,8 @@ class HelperDishLNDevice(HelperBaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("actualPointing", True, False)
+            self._device.set_change_event("pointingState", True, False)
+            self._device.set_change_event("dishMode", True, False)
             self._device.op_state_model.perform_action("component_on")
             self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
@@ -156,6 +160,28 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_x=1000,
         max_dim_y=1000,
     )
+
+    def _update_pointing_state_in_sequence(self) -> None:
+        """This method update pointing state in sequence as per
+        state duration info
+        """
+        for pointing_state, duration in self._state_duration_info:
+            pointing_state_enum = PointingState[pointing_state]
+            self.logger.info(
+                "Sleep %s sec for pointing state %s",
+                duration,
+                pointing_state,
+            )
+            time.sleep(duration)
+            with tango.EnsureOmniThread():
+                self.set_pointing_state(pointing_state_enum)
+
+    def _follow_state_duration(self):
+        """This method will update pointing state as per state duration"""
+        thread = threading.Thread(
+            target=self._update_pointing_state_in_sequence,
+        )
+        thread.start()
 
     @command(
         dtype_in=str,
@@ -336,9 +362,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Off")
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.STANDBY_LP)
+        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
         self.logger.info("Off command completed.")
-        return [ResultCode.OK], [""]
+        return ([ResultCode.OK], [""])
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -379,7 +407,8 @@ class HelperDishLNDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
-
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.STANDBY_FP)
         self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
         self.logger.info("SetStandbyFPMode command completed.")
         return ([ResultCode.OK], [""])
@@ -427,6 +456,8 @@ class HelperDishLNDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
+        # Set the Dish ModeLP
+        self.set_dish_mode(DishMode.STANDBY_LP)
         self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
         self.logger.info("SetStandbyLPMode command completed.")
         return ([ResultCode.OK], [""])
@@ -473,7 +504,13 @@ class HelperDishLNDevice(HelperBaseDevice):
             self.set_state(DevState.ON)
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
+        # Set the pointing state
+        if self._pointing_state != PointingState.READY:
+            self._pointing_state = PointingState.READY
+            self.push_change_event("pointingState", self._pointing_state)
 
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "SetOperateMode")
         self.logger.info("SetOperateMode command completed.")
         return ([ResultCode.OK], [""])
@@ -521,6 +558,8 @@ class HelperDishLNDevice(HelperBaseDevice):
             time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
+        # Set Dish Mode
+        self.set_dish_mode(DishMode.STOW)
         self.push_command_result(ResultCode.OK, "SetStowMode")
         self.logger.info("SetStowMode command completed.")
         return ([ResultCode.OK], [""])
@@ -559,7 +598,15 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("Track")
+        if self._pointing_state != PointingState.TRACK:
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._pointing_state = PointingState.TRACK
+                self.push_change_event("pointingState", self._pointing_state)
 
+        # Set dish mode
+        self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "Track")
         self.logger.info("Track command completed.")
         return ([ResultCode.OK], [""])
@@ -601,6 +648,21 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(TRACK_STOP, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop")
+        if self._pointing_state != PointingState.READY:
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._pointing_state = PointingState.READY
+                self.push_change_event("pointingState", self._pointing_state)
+                self.logger.info("Pointing State: %s", self._pointing_state)
+
+        # Set dish mode
+        self.set_dish_mode(DishMode.OPERATE)
+        achieved_pointing_thread = threading.Timer(
+            interval=self._delay,
+            function=self.set_achieved_pointing,
+        )
+        achieved_pointing_thread.start()
 
         self.push_command_result(ResultCode.OK, "TrackStop")
         self.logger.info("TrackStop command completed.")
@@ -687,6 +749,16 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure")
+        if self._pointing_state != PointingState.TRACK:
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._pointing_state = PointingState.TRACK
+                self.push_change_event("pointingState", self._pointing_state)
+                self.logger.info("Pointing State: %s", self._pointing_state)
+
+        # Set dish mode
+        self.set_dish_mode(DishMode.OPERATE)
 
         thread = threading.Timer(
             self._delay,
@@ -695,6 +767,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             kwargs={"command_id": command_id},
         )
         thread.start()
+        self.push_command_result(ResultCode.OK, "Configure")
         self.logger.info("Configure command completed.")
         return [ResultCode.QUEUED], [command_id]
 
