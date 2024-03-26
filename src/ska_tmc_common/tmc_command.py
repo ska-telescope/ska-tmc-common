@@ -244,60 +244,62 @@ class BaseTMCCommand:
                 state_to_achieve = expected_state[self.index]
                 try:
                     if self.check_abort_event(abort_event):
-                        self.update_task_status(status=TaskStatus.ABORTED)
                         self.stop_tracker_thread(timeout_id)
+                        self.update_task_status(status=TaskStatus.ABORTED)
 
                     if self.check_command_timeout(
                         timeout_id, timeout_callback
                     ):
+                        self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
                             result=ResultCode.FAILED,
                             message="Timeout has occurred, command failed",
                         )
-                        self.stop_tracker_thread(timeout_id)
 
                     if self.check_device_state(
                         state_function, state_to_achieve, expected_state
                     ):
-                        self.update_task_status(result=ResultCode.OK)
                         self.stop_tracker_thread(timeout_id)
+                        self.update_task_status(result=ResultCode.OK)
 
                     if self.check_command_exception(command_id, lrcr_callback):
+                        self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
                             result=ResultCode.FAILED,
                             message=lrcr_callback.command_data[command_id][
                                 "exception_message"
                             ],
                         )
-                        self.stop_tracker_thread(timeout_id)
 
                 except threading.ThreadError as thread_error:
                     self.logger.error(
                         "Thread error occurred: %s", thread_error
                     )
+                    self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
                         result=ResultCode.FAILED,
                         message=f"Thread error occurred: {thread_error}",
                     )
-                    self.stop_tracker_thread(timeout_id)
 
-                except TimeoutError as toe:
-                    self.logger.error("Timeout error occurred: %s", toe)
-                    self.update_task_status(
-                        result=ResultCode.FAILED,
-                        message=f"Timeout error occurred: {toe}",
+                except TimeoutError as timeout_error:
+                    self.logger.error(
+                        "Timeout error occurred: %s", timeout_error
                     )
                     self.stop_tracker_thread(timeout_id)
+                    self.update_task_status(
+                        result=ResultCode.FAILED,
+                        message=f"Timeout error occurred: {timeout_error}",
+                    )
                 except Exception as exp:
                     self.logger.error(
                         "Exception occurred in Tracker thread: %s", exp
                     )
+                    self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
                         result=ResultCode.FAILED,
                         message="Exception occurred in track transitions "
                         + f"thread: {exp}",
                     )
-                    self.stop_tracker_thread(timeout_id)
                 # pylint: enable=broad-exception-caught
 
             if command_id:

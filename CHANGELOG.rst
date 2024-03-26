@@ -29,5 +29,14 @@ Added
 Fixed
 -----
 
+[0.15.1]
+************
+
+* Updated **push_command_result** method from the HelperBaseDevice to take correct number of arguments
+* The sequence of executing cleanup and **update_task_status** method is reversed in the Tracker Thread
+
+[0.14.0]
+************
+
 * Fixed Pylint warnigs
 * Fixed docstrings warnings

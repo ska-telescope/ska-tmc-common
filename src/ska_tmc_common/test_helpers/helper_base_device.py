@@ -47,7 +47,6 @@ class HelperBaseDevice(SKABaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubsystemAvailable", True, False)
-            self.logger.info("Off command completed.")
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -183,7 +182,8 @@ class HelperBaseDevice(SKABaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name, fault_message],
+                args=[result, command_name],
+                kwargs={"exception": fault_message},
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
@@ -195,25 +195,30 @@ class HelperBaseDevice(SKABaseDevice):
         return [ResultCode.OK], [""]
 
     def push_command_result(
-        self, result: ResultCode, command_name: str, exception: str = ""
+        self, result_code: ResultCode, command_name: str, **kwargs
     ) -> None:
         """Push long running command result event for given command.
-        :param result: The result code to be pushed as an event
+        :param result_code: The result code to be pushed as an event
         :type: ResultCode
         :param command_name: The command name for which event is being pushed
         :type: str
-        :param exception: Exception message to be pushed as an event
-        :type: str
+        :param kwargs: Additional key word arguments
+        :type kwargs: dict
         """
-        command_id = f"{time.time()}-{command_name}"
+        if kwargs.get("command_id"):
+            command_id = kwargs["command_id"]
+        else:
+            command_id = f"{time.time()}-{command_name}"
         self.logger.info(
-            "The command_id is %s and the ResultCode is %s", command_id, result
+            "The command_id is %s and the ResultCode is %s",
+            command_id,
+            result_code,
         )
-        if exception:
-            command_result = (command_id, exception)
+        if kwargs.get("exception"):
+            command_result = (command_id, kwargs["exception"])
             self.logger.info("Sending Event %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
+        command_result = (command_id, json.dumps(result_code))
         self.logger.info("Sending Event %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
 

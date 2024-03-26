@@ -121,7 +121,7 @@ class HelperMCCSController(HelperBaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[command_id, result, fault_message],
+                args=[result, command_id, fault_message],
             )
             thread.start()
             return [ResultCode.QUEUED], [command_id]
@@ -184,7 +184,7 @@ class HelperMCCSController(HelperBaseDevice):
                 "Sleep %s for command %s ", delay_value, command_name
             )
 
-        self.push_command_result(command_id, ResultCode.OK)
+        self.push_command_result(ResultCode.OK, command_id)
 
     def is_Allocate_allowed(self) -> bool:
         """
