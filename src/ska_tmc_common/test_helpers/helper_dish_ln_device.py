@@ -57,6 +57,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._kvalue: int = 0
         self._isSubsystemAvailable = False
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
+        self._dish_mode = DishMode.STANDBY_LP
+        self._pointing_state = PointingState.NONE
 
     # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
@@ -89,6 +91,8 @@ class HelperDishLNDevice(HelperBaseDevice):
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
     kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
+    pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
+    dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
 
     # pylint: enable=protected-access
     def read_kValueValidationResult(self) -> str:
@@ -151,6 +155,80 @@ class HelperDishLNDevice(HelperBaseDevice):
         :rtype: bool
         """
         return self._isSubsystemAvailable
+
+    def read_pointingState(self) -> PointingState:
+        """
+        This method reads the pointingState of dishes.
+        :return: pointingState of dishes
+        :rtype: PointingState
+        """
+        return self._pointing_state
+
+    def read_dishMode(self) -> DishMode:
+        """
+        This method reads the DishMode of dishes.
+        :return: DishMode of dishes
+        :rtype: DishMode
+        """
+        return self._dish_mode
+
+    def set_dish_mode(self, dishMode: DishMode) -> None:
+        """
+        This method set the Dish Mode
+        """
+        self._dish_mode = dishMode
+        time.sleep(0.1)
+        self.push_change_event("dishMode", self._dish_mode)
+
+    def set_pointing_state(self, pointingState: PointingState) -> None:
+        """
+        This method set the Pointing State
+        """
+        self._pointing_state = pointingState
+        self.push_change_event("pointingState", self._pointing_state)
+        self.logger.info("Pointing State: %s", self._pointing_state)
+
+    def update_dish_mode(
+        self, value: DishMode, command_name: str = ""
+    ) -> None:
+        """Sets the dish mode back to original state.
+
+        :param value: Dish Mode to update.
+        :value dtype: DishMode
+        :param command_name: Command name
+        :command_name dtype: str
+
+        :rtype: None
+        """
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+            time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+        self.set_dish_mode(value)
+
+    def update_pointing_state(
+        self, value: PointingState, command_name: str
+    ) -> None:
+        """Sets the dish mode back to original state.
+
+        :param value: Pointing state to update.
+        :value dtype: PointingState
+        :param command_name: Command name
+        :command_name dtype: str
+
+        :rtype: None
+        """
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+                time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+        self.set_pointing_state(value)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 

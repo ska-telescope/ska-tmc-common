@@ -22,9 +22,6 @@ from ska_tmc_common.test_helpers.constants import (
     CONFIGURE_BAND_2,
     SCAN,
     SET_OPERATE_MODE,
-    SET_STOW_MODE,
-    TRACK,
-    TRACK_STOP,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -267,21 +264,21 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Resetting Pointing State Duration")
         self._state_duration_info = []
 
-    def set_dish_mode(self, dishMode: DishMode) -> None:
-        """
-        This method set the Dish Mode
-        """
-        self._dish_mode = dishMode
-        time.sleep(0.1)
-        self.push_change_event("dishMode", self._dish_mode)
+    # def set_dish_mode(self, dishMode: DishMode) -> None:
+    #     """
+    #     This method set the Dish Mode
+    #     """
+    #     self._dish_mode = dishMode
+    #     time.sleep(0.1)
+    #     self.push_change_event("dishMode", self._dish_mode)
 
-    def set_pointing_state(self, pointingState: PointingState) -> None:
-        """
-        This method set the Pointing State
-        """
-        self._pointing_state = pointingState
-        self.push_change_event("pointingState", self._pointing_state)
-        self.logger.info("Pointing State: %s", self._pointing_state)
+    # def set_pointing_state(self, pointingState: PointingState) -> None:
+    #     """
+    #     This method set the Pointing State
+    #     """
+    #     self._pointing_state = pointingState
+    #     self.push_change_event("pointingState", self._pointing_state)
+    #     self.logger.info("Pointing State: %s", self._pointing_state)
 
     def set_configured_band(self, configured_band: Band) -> None:
         """
@@ -428,85 +425,6 @@ class HelperDishDevice(HelperDishLNDevice):
         )
         thread.start()
 
-    # def is_SetStandbyFPMode_allowed(self) -> bool:
-    #     """
-    #     This method checks if the is_SetStandbyFPMode_allowed Command is
-    #     allowed in current
-    #     State.
-    #     :return: ``True`` if the command is allowed
-    #     :rtype:bool
-    #     :raises CommandNotAllowed: command is not allowed
-    #     """
-    #     if self.defective_params["enabled"]:
-    #         if (
-    #             self.defective_params["fault_type"]
-    #             == FaultType.COMMAND_NOT_ALLOWED
-    #         ):
-    #             self.logger.info(
-    #                 "Device is defective, cannot process command."
-    #             )
-    #             raise CommandNotAllowed(
-    # self.defective_params["error_message"])
-    #     self.logger.info("SetStandbyFPMode Command is allowed")
-    #     return True
-
-    # @command(
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes SetStandbyFPMode command on  Dish Master
-    #     :return: ResultCode and message
-    #     :rtype: tuple
-    #     """
-    #     self.logger.info("Processing SetStandbyFPMode Command")
-    #     self.update_command_info(SET_STANDBY_FP_MODE, "")
-    #     if self.defective_params["enabled"]:
-    #         return self.induce_fault("SetStandbyFPMode")
-    #     if self.dev_state() != DevState.STANDBY:
-    #         self.set_state(DevState.STANDBY)
-    #         time.sleep(0.1)
-    #         self.push_change_event("State", self.dev_state())
-
-    #     # Set the Dish Mode
-    #     self.set_dish_mode(DishMode.STANDBY_FP)
-    #     self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
-    #     self.logger.info("SetStandbyFPMode command completed.")
-    #     return ([ResultCode.OK], [""])
-
-    # @command(
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes SetStandbyLPMode command on Dish Master
-    #     :return: ResultCode and message
-    #     :rtype: tuple
-    #     """
-    #     self.logger.info(
-    #         "Instructed Dish simulator to invoke SetStandbyLPMode command"
-    #     )
-    #     self.update_command_info(SET_STANDBY_LP_MODE, "")
-    #     if self.defective_params["enabled"]:
-    #         return self.induce_fault("SetStandbyLPMode")
-    #     # Set the device state
-    #     if self.dev_state() != DevState.STANDBY:
-    #         self.set_state(DevState.STANDBY)
-    #         time.sleep(0.1)
-    #         self.push_change_event("State", self.dev_state())
-    #     # Set the Pointing state
-    #     if self._pointing_state != PointingState.NONE:
-    #         self._pointing_state = PointingState.NONE
-    #         self.push_change_event("pointingState", self._pointing_state)
-
-    #     # Set the Dish ModeLP
-    #     self.set_dish_mode(DishMode.STANDBY_LP)
-    #     self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
-    #     self.logger.info("SetStandbyLPMode command completed.")
-    #     return ([ResultCode.OK], [""])
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -538,138 +456,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.OPERATE)
         self.push_command_result(ResultCode.OK, "SetOperateMode")
         self.logger.info("SetOperateMode command completed.")
-        return ([ResultCode.OK], [""])
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes SetStowMode command on  Dish Master
-        :return: ResultCode and message
-        :rtype : tuple
-        """
-        self.logger.info(
-            "Instructed Dish simulator to invoke SetStowMode command"
-        )
-        self.update_command_info(SET_STOW_MODE, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("SetStowMode")
-
-        # Set device state
-        if self.dev_state() != DevState.DISABLE:
-            self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
-            self.push_change_event("State", self.dev_state())
-        # Set Dish Mode
-        self.set_dish_mode(DishMode.STOW)
-        self.push_command_result(ResultCode.OK, "SetStowMode")
-        self.logger.info("SetStowMode command completed.")
-        return ([ResultCode.OK], [""])
-
-    def is_Track_allowed(self) -> bool:
-        """
-        This method checks if the Track Command is allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info(" Track Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Track(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Track command on  Dish Master
-        :return: ResultCode and message
-        :rtype: tuple
-        """
-        self.logger.info("Instructed Dish simulator to invoke Track command")
-        self.update_command_info(TRACK, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("Track")
-
-        if self._pointing_state != PointingState.TRACK:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._pointing_state = PointingState.TRACK
-                self.push_change_event("pointingState", self._pointing_state)
-
-        # Set dish mode
-        self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "Track")
-        self.logger.info("Track command completed.")
-        return ([ResultCode.OK], [""])
-
-    def is_TrackStop_allowed(self) -> bool:
-        """
-        This method checks if the TrackStop Command is allowed in current
-        State.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("TrackStop Command is allowed")
-        return True
-
-    @command(
-        dtype_in="DevVoid",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes TrackStop command on  Dish Master
-        :return: ResultCode and message
-        """
-        self.logger.info(
-            "Instructed Dish simulator to invoke TrackStop command"
-        )
-        self.update_command_info(TRACK_STOP, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("TrackStop")
-
-        if self._pointing_state != PointingState.READY:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._pointing_state = PointingState.READY
-                self.push_change_event("pointingState", self._pointing_state)
-                self.logger.info("Pointing State: %s", self._pointing_state)
-
-        # Set dish mode
-        self.set_dish_mode(DishMode.OPERATE)
-        achieved_pointing_thread = threading.Timer(
-            interval=self._delay,
-            function=self.set_achieved_pointing,
-        )
-        achieved_pointing_thread.start()
-        self.push_command_result(ResultCode.OK, "TrackStop")
-        self.logger.info("TrackStop command completed.")
         return ([ResultCode.OK], [""])
 
     @command(
