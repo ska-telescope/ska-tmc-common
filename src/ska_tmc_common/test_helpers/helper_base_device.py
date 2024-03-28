@@ -27,7 +27,7 @@ class HelperBaseDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._raise_exception = False
         self.defective_params = {
             "enabled": False,

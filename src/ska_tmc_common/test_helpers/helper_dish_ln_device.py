@@ -53,7 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
         self._actual_pointing: list = []
         self._kvalue: int = 0
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
 
     # pylint: disable=protected-access

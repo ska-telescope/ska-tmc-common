@@ -184,7 +184,7 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._command_in_progress = ""
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
