@@ -35,6 +35,7 @@ COMMANDS_WITHOUT_INPUT = [
     "SetOperateMode",
     "SetStowMode",
     "AbortCommands",
+    "EndScan",
 ]
 COMMANDS_WITH_INPUT = [
     "ConfigureBand1",
