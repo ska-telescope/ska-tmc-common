@@ -25,6 +25,10 @@ Added
 * EndScan command has been added in HelperDishLNDevice
 * **scanID** attribute has been introduced in HelperDishDevice
 
+[0.15.2]
+************
+* Updated device availability to be **True** by default
+
 
 Fixed
 -----
