@@ -157,8 +157,6 @@ class HelperMCCSController(HelperBaseDevice):
     def wait_and_update_exception(self, command_id):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
-            time.sleep(5)
-
             command_result = (
                 command_id,
                 json.dumps(
@@ -227,8 +225,10 @@ class HelperMCCSController(HelperBaseDevice):
             return self.induce_fault("Allocate", command_id)
         if self._raise_exception:
             self.logger.info("exception thread")
-            thread = threading.Thread(
-                target=self.wait_and_update_exception, args=[command_id]
+            thread = threading.Timer(
+                interval=5,
+                function=self.wait_and_update_exception,
+                args=[command_id],
             )
             thread.start()
             return [ResultCode.QUEUED], [command_id]
@@ -289,8 +289,10 @@ class HelperMCCSController(HelperBaseDevice):
 
         if self._raise_exception:
             self.logger.info("exception thread")
-            thread = threading.Thread(
-                target=self.wait_and_update_exception, args=[command_id]
+            thread = threading.Timer(
+                interval=5,
+                function=self.wait_and_update_exception,
+                args=[command_id],
             )
             thread.start()
             return [ResultCode.QUEUED], [command_id]
@@ -349,8 +351,10 @@ class HelperMCCSController(HelperBaseDevice):
 
         if self._raise_exception:
             self.logger.info("exception thread")
-            thread = threading.Thread(
-                target=self.wait_and_update_exception, args=[command_id]
+            thread = threading.Timer(
+                interval=5,
+                function=self.wait_and_update_exception,
+                args=[command_id],
             )
             thread.start()
             return [ResultCode.QUEUED], [command_id]

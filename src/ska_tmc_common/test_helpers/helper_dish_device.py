@@ -274,7 +274,6 @@ class HelperDishDevice(HelperDishLNDevice):
         This method set the Dish Mode
         """
         self._dish_mode = dishMode
-        time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
 
     def set_pointing_state(self, pointingState: PointingState) -> None:
@@ -467,7 +466,6 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("SetStandbyFPMode")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
         # Set the Dish Mode
@@ -495,7 +493,6 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set the Pointing state
         if self._pointing_state != PointingState.NONE:
@@ -528,7 +525,6 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set the device state
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set the pointing state
         if self._pointing_state != PointingState.READY:
@@ -561,7 +557,6 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set device state
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
