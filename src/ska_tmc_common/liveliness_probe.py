@@ -103,6 +103,12 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
+        if dev_name in self._monitoring_devices:
+            self._logger.debug(
+                "The device: %s is already present in the monitoring devices list.",
+                dev_name,
+            )
+            return
         self._monitoring_devices.append(dev_name)
         self._logger.debug(
             "Added device: %s to the list of monitoring devices. "
