@@ -105,7 +105,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         """A method to add device in the Queue for monitoring"""
         if dev_name in self._monitoring_devices:
             self._logger.debug(
-                "The device: %s is already present in the monitoring devices list.",
+                "The device: %s is already present in the monitoring devices "
+                + "list.",
                 dev_name,
             )
             return
