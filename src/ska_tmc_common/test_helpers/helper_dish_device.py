@@ -1177,7 +1177,7 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method updates the scanID attribute of Dish Master
+        This method clears the scanID attribute of Dish Master
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
