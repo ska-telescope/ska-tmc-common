@@ -215,17 +215,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_change_event("State", self.dev_state())
             self.push_command_result(ResultCode.OK, "Off")
 
-    def is_AssignResources_allowed(self):
-        """
-        Check if command `AssignResources` is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
-        self.logger.info("AssignResources Command is allowed")
-        return True
-
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
