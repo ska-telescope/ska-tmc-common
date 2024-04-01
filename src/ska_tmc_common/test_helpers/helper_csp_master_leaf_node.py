@@ -176,10 +176,10 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         )
         self._source_dish_vcc_config = argin
         self._dish_vcc_config = mid_cbf_initial_parameters_str
-        self.push_change_event(
-            "sourceDishVccConfig", self._source_dish_vcc_config
-        )
-        self.push_change_event("dishVccConfig", self._dish_vcc_config)
+        # self.push_change_event(
+        #     "sourceDishVccConfig", self._source_dish_vcc_config
+        # )
+        # self.push_change_event("dishVccConfig", self._dish_vcc_config)
 
         thread = threading.Timer(
             self._delay,
