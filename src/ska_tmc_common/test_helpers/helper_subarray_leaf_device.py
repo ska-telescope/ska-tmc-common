@@ -260,7 +260,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         """Updates the device obsState"""
         with tango.EnsureOmniThread():
             self._obs_state = obs_state
-            time.sleep(0.1)
             self.push_obs_state_event(self._obs_state)
 
     def is_On_allowed(self) -> bool:

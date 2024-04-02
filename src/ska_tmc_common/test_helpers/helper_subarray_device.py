@@ -184,7 +184,7 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._command_in_progress = ""
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
@@ -411,7 +411,6 @@ class HelperSubArrayDevice(SKASubarray):
                 "Sleep %s for command %s ", delay_value, command_name
             )
             self._obs_state = value
-            time.sleep(0.1)
             self.push_change_event("obsState", self._obs_state)
 
     def update_command_info(
@@ -780,7 +779,6 @@ class HelperSubArrayDevice(SKASubarray):
                 obsstate_list = self.defective_params.get("target_obsstates")
                 for obsstate in obsstate_list:
                     self._obs_state = obsstate
-                    time.sleep(1)
                     self.logger.info(
                         "pushing target obsstate %s event", self._obs_state
                     )

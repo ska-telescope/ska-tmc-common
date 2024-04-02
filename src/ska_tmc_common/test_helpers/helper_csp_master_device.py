@@ -7,7 +7,6 @@ This module defines a helper device that acts as csp master in our testing.
 # pylint: disable=unused-argument
 import json
 import threading
-import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
@@ -102,7 +101,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
             )
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
         return [ResultCode.OK], [""]
@@ -146,7 +144,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
@@ -189,7 +186,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
             )
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standby command completed.")
         return [ResultCode.OK], [""]

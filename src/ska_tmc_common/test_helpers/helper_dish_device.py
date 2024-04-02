@@ -20,6 +20,7 @@ from ska_tmc_common.test_helpers.constants import (  # CONFIGURE,
     ABORT_COMMANDS,
     CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
+    END_SCAN,
     SCAN,
     SET_OPERATE_MODE,
     SET_STANDBY_FP_MODE,
@@ -274,7 +275,6 @@ class HelperDishDevice(HelperDishLNDevice):
         This method set the Dish Mode
         """
         self._dish_mode = dishMode
-        time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
 
     def set_pointing_state(self, pointingState: PointingState) -> None:
@@ -467,7 +467,6 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("SetStandbyFPMode")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
         # Set the Dish Mode
@@ -495,7 +494,6 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set the Pointing state
         if self._pointing_state != PointingState.NONE:
@@ -528,7 +526,6 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set the device state
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set the pointing state
         if self._pointing_state != PointingState.READY:
@@ -561,7 +558,6 @@ class HelperDishDevice(HelperDishLNDevice):
         # Set device state
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
@@ -1148,6 +1144,43 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("Scan")
         self._scan_id = argin
         self.push_command_status("COMPLETED", "Scan")
+        return ([ResultCode.OK], [""])
+
+    def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
+        """
+        This method checks if the EndScan Command is allowed in current State.
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        :rtype: Union[bool,CommandNotAllowed]
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
+        return True
+
+    @command(
+        dtype_in="DevVoid",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method clears the scanID attribute of Dish Master
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        # to record the command data
+        self.update_command_info(END_SCAN)
+        if self.defective_params["enabled"]:
+            return self.induce_fault("EndScan")
+        self._scan_id = ""
         return ([ResultCode.OK], [""])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
