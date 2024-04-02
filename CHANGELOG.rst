@@ -25,9 +25,27 @@ Added
 * EndScan command has been added in HelperDishLNDevice
 * **scanID** attribute has been introduced in HelperDishDevice
 
+[0.15.2]
+************
+* Updated device availability to be **True** by default
+
 
 Fixed
 -----
+
+[0.15.1]
+************
+
+* Updated **push_command_result** method from the HelperBaseDevice to take correct number of arguments
+* The sequence of executing cleanup and **update_task_status** method is reversed in the Tracker Thread
+
+[0.15.2]
+************
+
+* Updated **HelperDishDevice** to add EndScan command to reset **scanID** attribute.
+
+[0.14.0]
+************
 
 * Fixed Pylint warnigs
 * Fixed docstrings warnings

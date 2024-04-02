@@ -27,7 +27,7 @@ class HelperBaseDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._raise_exception = False
         self.defective_params = {
             "enabled": False,
@@ -47,7 +47,6 @@ class HelperBaseDevice(SKABaseDevice):
                 "longRunningCommandResult", True, False
             )
             self._device.set_change_event("isSubsystemAvailable", True, False)
-            self.logger.info("Off command completed.")
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -183,7 +182,8 @@ class HelperBaseDevice(SKABaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name, fault_message],
+                args=[result, command_name],
+                kwargs={"exception": fault_message},
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
@@ -195,25 +195,30 @@ class HelperBaseDevice(SKABaseDevice):
         return [ResultCode.OK], [""]
 
     def push_command_result(
-        self, result: ResultCode, command_name: str, exception: str = ""
+        self, result_code: ResultCode, command_name: str, **kwargs
     ) -> None:
         """Push long running command result event for given command.
-        :param result: The result code to be pushed as an event
+        :param result_code: The result code to be pushed as an event
         :type: ResultCode
         :param command_name: The command name for which event is being pushed
         :type: str
-        :param exception: Exception message to be pushed as an event
-        :type: str
+        :param kwargs: Additional key word arguments
+        :type kwargs: dict
         """
-        command_id = f"{time.time()}-{command_name}"
+        if kwargs.get("command_id"):
+            command_id = kwargs["command_id"]
+        else:
+            command_id = f"{time.time()}-{command_name}"
         self.logger.info(
-            "The command_id is %s and the ResultCode is %s", command_id, result
+            "The command_id is %s and the ResultCode is %s",
+            command_id,
+            result_code,
         )
-        if exception:
-            command_result = (command_id, exception)
+        if kwargs.get("exception"):
+            command_result = (command_id, kwargs["exception"])
             self.logger.info("Sending Event %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
+        command_result = (command_id, json.dumps(result_code))
         self.logger.info("Sending Event %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
 
@@ -230,7 +235,6 @@ class HelperBaseDevice(SKABaseDevice):
         # import debugpy; debugpy.debug_this_thread()
         if self.dev_state() != argin:
             self.set_state(argin)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Device state is set to %s", self.dev_state())
 
@@ -317,7 +321,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
         return [ResultCode.OK], [""]
@@ -358,7 +361,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
@@ -396,7 +398,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standy command completed.")
         return [ResultCode.OK], [""]
@@ -436,7 +437,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Disable command completed.")
         return [ResultCode.OK], ["Disable command invoked on SDP Master"]

@@ -31,7 +31,7 @@ Few Functionality provided by the helper devices are as follows:
 - Fault Injection: To make devices faulty to check error handling in tango devices.
 
 - AddTransitions: This command will set duration for obs state such that whenrespective command for obs state is triggered then it change obs state
-after provided duration.
+   after provided duration.
 
 
 Device List
@@ -48,8 +48,8 @@ Device List
 
 2. Helper_CSP_Subarray
 ----------------------
-.. automodule:: ska_tmc_common.test_helpers.helper_csp_subarray_leaf_device
-.. autoclass:: ska_tmc_common.test_helpers.helper_csp_subarray_leaf_device.HelperCspSubarrayLeafDevice
+.. automodule:: ska_tmc_common.test_helpers.helper_csp_subarray
+.. autoclass:: ska_tmc_common.test_helpers.helper_csp_subarray.HelperCspSubarray
    :members:
    :undoc-members:
    :show-inheritance:
@@ -70,7 +70,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-5. Helper_SDP_Subarray_leaf_Device
+5. Helper_SDP_Subarray_Leaf_Device
 ----------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device.HelperSdpSubarrayLeafDevice
@@ -78,10 +78,10 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-6. Helper_StateMCCS_Device
+6. Helper_MCCS_Controller
 --------------------------
-.. automodule:: ska_tmc_common.test_helpers.helper_state_mccsdevice
-.. autoclass:: ska_tmc_common.test_helpers.helper_state_mccsdevice.HelperMCCSStateDevice
+.. automodule:: ska_tmc_common.test_helpers.helper_mccs_controller_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_mccs_controller_device.HelperMCCSController
    :members:
    :undoc-members:
    :show-inheritance:
@@ -104,9 +104,57 @@ Device List
    :show-inheritance:
 
 9. Helper_Dish_LN_Device
----------------------
+------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_dish_ln_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_dish_ln_device.HelperDishLNDevice
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+10. Helper_Mccs_Subarray_Device
+-------------------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_mccs_subarray_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_mccs_subarray_device.HelperMccsSubarrayDevice
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+11. Helper_MCCS_Master_Leaf_Node
+---------------------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_mccs_master_leaf_node_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_mccs_master_leaf_node_device.HelperMCCSMasterLeafNode
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+12. Helper_Base_Device
+-----------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_base_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_base_device.HelperBaseDevice
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+13. Helper_Csp_Master_Leaf_Device
+----------------------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_csp_master_leaf_node
+.. autoclass:: ska_tmc_common.test_helpers.helper_csp_master_leaf_node.HelperCspMasterLeafDevice
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+14. Helper_Csp_Subarray_Leaf_Device
+-----------------------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_csp_subarray_leaf_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_csp_subarray_leaf_device.HelperCspSubarrayLeafDevice
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+15. Helper_Sdp_Queue_Connector
+-------------------------------
+.. automodule:: ska_tmc_common.test_helpers.helper_sdp_queue_connector_device
+.. autoclass:: ska_tmc_common.test_helpers.helper_sdp_queue_connector_device.HelperSdpQueueConnector
    :members:
    :undoc-members:
    :show-inheritance:

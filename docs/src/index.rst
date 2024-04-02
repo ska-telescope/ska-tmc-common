@@ -66,9 +66,9 @@ Welcome to ska-tmc-common documentation!
 
    dish_utils
 
-Indices and tables
-==================
+.. toctree::
+   :maxdepth: 1
+   :caption: TimeKeeper
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   timekeeper
+

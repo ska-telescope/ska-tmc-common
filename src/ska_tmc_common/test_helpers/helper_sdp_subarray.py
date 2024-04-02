@@ -4,7 +4,6 @@
 import json
 import logging
 import threading
-import time
 from typing import Tuple
 
 import tango
@@ -148,7 +147,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """Updates the device obsState"""
         with tango.EnsureOmniThread():
             self._obs_state = obs_state
-            time.sleep(0.1)
             self.push_obs_state_event(self._obs_state)
 
     def is_On_allowed(self) -> bool:
@@ -279,8 +277,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             # Return to the initial obsState
             self._obs_state = initial_obstate
-            # Wait before pushing obsState EMPTY event
-            time.sleep(1)
             self.push_obs_state_event(self._obs_state)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
