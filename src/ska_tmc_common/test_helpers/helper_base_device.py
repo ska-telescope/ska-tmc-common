@@ -27,7 +27,7 @@ class HelperBaseDevice(SKABaseDevice):
         super().init_device()
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._raise_exception = False
         self.defective_params = {
             "enabled": False,
@@ -235,7 +235,6 @@ class HelperBaseDevice(SKABaseDevice):
         # import debugpy; debugpy.debug_this_thread()
         if self.dev_state() != argin:
             self.set_state(argin)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Device state is set to %s", self.dev_state())
 
@@ -322,7 +321,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
         return [ResultCode.OK], [""]
@@ -363,7 +361,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
         return [ResultCode.OK], [""]
@@ -401,7 +398,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standy command completed.")
         return [ResultCode.OK], [""]
@@ -441,7 +437,6 @@ class HelperBaseDevice(SKABaseDevice):
             )
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Disable command completed.")
         return [ResultCode.OK], ["Disable command invoked on SDP Master"]

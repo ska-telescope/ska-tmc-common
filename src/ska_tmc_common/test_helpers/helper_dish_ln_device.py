@@ -53,7 +53,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
         self._actual_pointing: list = []
         self._kvalue: int = 0
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
 
     # pylint: disable=protected-access
@@ -206,13 +206,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         else:
             self._dish_kvalue_validation_result = str(int(ResultCode.UNKNOWN))
 
-        self.logger.info(
-            "Push Dish kvalue Validation Result as %s",
-            self._dish_kvalue_validation_result,
-        )
         self.push_change_event(
             "kValueValidationResult",
-            str(int(self._dish_kvalue_validation_result)),
+            self._dish_kvalue_validation_result,
         )
 
     def push_dish_kvalue_val_result_after_initialization(self):
@@ -377,7 +373,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             return self.induce_fault("SetStandbyFPMode")
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
         self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
@@ -424,7 +419,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
         self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
@@ -471,7 +465,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set the device state
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
         self.push_command_result(ResultCode.OK, "SetOperateMode")
@@ -518,7 +511,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set device state
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
-            time.sleep(0.1)
             self.push_change_event("State", self.dev_state())
 
         self.push_command_result(ResultCode.OK, "SetStowMode")

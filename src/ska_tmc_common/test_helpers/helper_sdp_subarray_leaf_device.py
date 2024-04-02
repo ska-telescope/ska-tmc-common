@@ -25,7 +25,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
     def init_device(self) -> None:
         super().init_device()
         self.dev_name = self.get_name()
-        self._isSubsystemAvailable = False
+        self._isSubsystemAvailable = True
         self._raise_exception = False
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
