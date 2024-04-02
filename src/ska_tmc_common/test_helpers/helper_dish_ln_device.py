@@ -11,7 +11,7 @@ from typing import List, Tuple, Union
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, Database, DevState
+from tango import AttrWriteType, Database, DevEnum, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -158,7 +158,8 @@ class HelperDishLNDevice(HelperBaseDevice):
 
     def read_pointingState(self) -> PointingState:
         """
-        This method reads the pointingState of dishes.
+        This method reads the pointingState of
+        of dish leaf node's respective dish.
         :return: pointingState of dishes
         :rtype: PointingState
         """
@@ -166,11 +167,36 @@ class HelperDishLNDevice(HelperBaseDevice):
 
     def read_dishMode(self) -> DishMode:
         """
-        This method reads the DishMode of dishes.
+        This method reads the DishMode of dishes
+        of dish leaf node's respective dish.
         :return: DishMode of dishes
         :rtype: DishMode
         """
         return self._dish_mode
+
+    @command(
+        dtype_in=DevEnum,
+        doc_in="Assign Dish Mode.",
+    )
+    def SetDirectDishMode(self, argin: DishMode) -> None:
+        """
+        Trigger a DishMode change
+        """
+        self.set_dish_mode(argin)
+
+    @command(
+        dtype_in=int,
+        doc_in="Pointing state to assign",
+    )
+    def SetDirectPointingState(self, argin: PointingState) -> None:
+        """
+        Trigger a PointingState change
+        """
+        # import debugpy; debugpy.debug_this_thread()
+        value = PointingState(argin)
+        if self._pointing_state != value:
+            self._pointing_state = PointingState(argin)
+            self.push_change_event("pointingState", self._pointing_state)
 
     def set_dish_mode(self, dishMode: DishMode) -> None:
         """
@@ -183,39 +209,21 @@ class HelperDishLNDevice(HelperBaseDevice):
     def set_pointing_state(self, pointingState: PointingState) -> None:
         """
         This method set the Pointing State
+        of dish leaf node's respective dish.
         """
         self._pointing_state = pointingState
         self.push_change_event("pointingState", self._pointing_state)
         self.logger.info("Pointing State: %s", self._pointing_state)
 
     def update_dish_mode(
-        self, value: DishMode, command_name: str = ""
+        self, dish_mode: DishMode, command_name: str = ""
     ) -> None:
-        """Sets the dish mode back to original state.
-
-        :param value: Dish Mode to update.
-        :value dtype: DishMode
-        :param command_name: Command name
-        :command_name dtype: str
-
-        :rtype: None
         """
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-        self.set_dish_mode(value)
+        Updates the dish mode of dish
+        leaf node's respective dish.
 
-    def update_pointing_state(
-        self, value: PointingState, command_name: str
-    ) -> None:
-        """Sets the dish mode back to original state.
-
-        :param value: Pointing state to update.
-        :value dtype: PointingState
+        :param dish_mode: Dish Mode to update.
+        :dish_mode dtype: DishMode
         :param command_name: Command name
         :command_name dtype: str
 
@@ -225,10 +233,33 @@ class HelperDishLNDevice(HelperBaseDevice):
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
                 time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-        self.set_pointing_state(value)
+                self.logger.info(
+                    "Sleep %s for command %s ", delay_value, command_name
+                )
+        self.set_dish_mode(dish_mode)
+
+    def update_pointing_state(
+        self, pointing_state: PointingState, command_name: str
+    ) -> None:
+        """
+        Updates the pointing state of dish
+        leaf node's respective dish.
+
+        :param pointing_state: Pointing state to update.
+        :pointing_state dtype: PointingState
+        :param command_name: Command name
+        :command_name dtype: str
+
+        :rtype: None
+        """
+        with tango.EnsureOmniThread():
+            if command_name in self._command_delay_info:
+                delay_value = self._command_delay_info[command_name]
+                time.sleep(delay_value)
+                self.logger.info(
+                    "Sleep %s for command %s ", delay_value, command_name
+                )
+        self.set_pointing_state(pointing_state)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 

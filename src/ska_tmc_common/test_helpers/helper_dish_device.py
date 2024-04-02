@@ -133,14 +133,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self._kvalue = kvalue
         return ([ResultCode.OK], [""])
 
-    def read_pointingState(self) -> PointingState:
-        """
-        This method reads the pointingState of dishes.
-        :return: pointingState of dishes
-        :rtype: PointingState
-        """
-        return self._pointing_state
-
     def read_configuredBand(self) -> Band:
         """
         This method reads the configuredBand of dish.
@@ -193,38 +185,6 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return np.array(self._achieved_pointing)
 
-    def read_dishMode(self) -> DishMode:
-        """
-        This method reads the DishMode of dishes.
-        :return: DishMode of dishes
-        :rtype: DishMode
-        """
-        return self._dish_mode
-
-    @command(
-        dtype_in=DevEnum,
-        doc_in="Assign Dish Mode.",
-    )
-    def SetDirectDishMode(self, argin: DishMode) -> None:
-        """
-        Trigger a DishMode change
-        """
-        self.set_dish_mode(argin)
-
-    @command(
-        dtype_in=int,
-        doc_in="Pointing state to assign",
-    )
-    def SetDirectPointingState(self, argin: PointingState) -> None:
-        """
-        Trigger a PointingState change
-        """
-        # import debugpy; debugpy.debug_this_thread()
-        value = PointingState(argin)
-        if self._pointing_state != value:
-            self._pointing_state = PointingState(argin)
-            self.push_change_event("pointingState", self._pointing_state)
-
     @command(
         dtype_in=int,
         doc_in="Band to assign",
@@ -264,22 +224,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Resetting Pointing State Duration")
         self._state_duration_info = []
 
-    # def set_dish_mode(self, dishMode: DishMode) -> None:
-    #     """
-    #     This method set the Dish Mode
-    #     """
-    #     self._dish_mode = dishMode
-    #     time.sleep(0.1)
-    #     self.push_change_event("dishMode", self._dish_mode)
-
-    # def set_pointing_state(self, pointingState: PointingState) -> None:
-    #     """
-    #     This method set the Pointing State
-    #     """
-    #     self._pointing_state = pointingState
-    #     self.push_change_event("pointingState", self._pointing_state)
-    #     self.logger.info("Pointing State: %s", self._pointing_state)
-
     def set_configured_band(self, configured_band: Band) -> None:
         """
         This method set the Configured Band
@@ -287,48 +231,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self._configured_band = configured_band
         self.push_change_event("configuredBand", self._configured_band)
         self.logger.info("Configured Band: %s", self._configured_band)
-
-    def update_dish_mode(
-        self, value: DishMode, command_name: str = ""
-    ) -> None:
-        """Sets the dish mode back to original state.
-
-        :param value: Dish Mode to update.
-        :value dtype: DishMode
-        :param command_name: Command name
-        :command_name dtype: str
-
-        :rtype: None
-        """
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-        self.set_dish_mode(value)
-
-    def update_pointing_state(
-        self, value: PointingState, command_name: str
-    ) -> None:
-        """Sets the dish mode back to original state.
-
-        :param value: Pointing state to update.
-        :value dtype: PointingState
-        :param command_name: Command name
-        :command_name dtype: str
-
-        :rtype: None
-        """
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-                time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-        self.set_pointing_state(value)
 
     def update_command_info(
         self, command_name: str = "", command_input: str | bool | None = None
