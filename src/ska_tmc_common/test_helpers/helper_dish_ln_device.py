@@ -898,7 +898,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     )
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method updates the scanID attribute of Dish Master
+        This method invokes EndScan command on Dish Master
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
@@ -906,8 +906,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan")
-            # On Real Dish Leaf Node the scanID attribute of Dish Master
-            # is getting updated
             # TBD: Add your dish mode change logic here if required
         return ([ResultCode.OK], [""])
 
