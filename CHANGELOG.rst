@@ -35,6 +35,11 @@ Added
 Fixed
 -----
 
+[0.15.4]
+************
+
+* **is_AssignResources_allowed** removed from helper sdp subarray
+
 [0.15.1]
 ************
 
