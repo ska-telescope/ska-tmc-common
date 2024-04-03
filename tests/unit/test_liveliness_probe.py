@@ -43,7 +43,7 @@ def test_stop_ln(dev_name):
     assert cm.liveliness_probe_object._stop
 
 
-def test_add_device(dev_name):
+def test_add_and_remove_device(dev_name):
     cm = TmcComponentManager(
         _input_parameter=InputParameter(None),
         logger=logger,
@@ -51,5 +51,12 @@ def test_add_device(dev_name):
     lp = cm.liveliness_probe_object
     initial_size = len(lp._monitoring_devices)
     lp.add_device(dev_name)
+    lp.add_device(dev_name)
+    lp.add_device(dev_name)
 
     assert len(lp._monitoring_devices) == initial_size + 1
+
+    lp.remove_device([dev_name])
+    assert len(lp._monitoring_devices) == initial_size
+    lp.remove_device([dev_name])
+    assert len(lp._monitoring_devices) == initial_size

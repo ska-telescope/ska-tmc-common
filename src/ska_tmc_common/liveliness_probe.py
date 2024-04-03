@@ -118,6 +118,23 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
             self._monitoring_devices,
         )
 
+    def remove_device(self, dev_names: List[str]) -> None:
+        """Remove the given devices from the monitoring queue.
+
+        :param dev_names: Names of devices in a list that are to be removed
+            from the monitoring list
+        :type dev_names: `List[str]`
+        """
+        for dev_name in dev_names:
+            try:
+                self._monitoring_devices.remove(dev_name)
+            except ValueError:
+                self._logger.debug(
+                    "Device: %s is not present in the list of monitoring "
+                    + "devices.",
+                    dev_name,
+                )
+
     def run(self) -> None:
         """A method to run device in the queue for monitoring"""
         with tango.EnsureOmniThread():
