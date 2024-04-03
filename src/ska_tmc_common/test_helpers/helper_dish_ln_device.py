@@ -215,26 +215,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_change_event("pointingState", self._pointing_state)
         self.logger.info("Pointing State: %s", self._pointing_state)
 
-    def set_achieved_pointing(self) -> None:
-        """Sets the achieved pointing for dish."""
-        try:
-            for index in range(0, len(self._program_track_table), 3):
-                self._achieved_pointing = self._program_track_table[
-                    index : index + 3  # noqa
-                ]
-                self.logger.info(
-                    "The achieved pointing value is: %s",
-                    self._achieved_pointing,
-                )
-                self.push_change_event(
-                    "achievedPointing", self._achieved_pointing
-                )
-        except (ValueError, TypeError, KeyError) as exp:
-            self.logger.exception(
-                "Exception occurred while pushing achieved pointing event: %s",
-                exp,
-            )
-
     def update_dish_mode(
         self, dish_mode: DishMode, command_name: str = ""
     ) -> None:
@@ -779,11 +759,6 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
-        achieved_pointing_thread = threading.Timer(
-            interval=self._delay,
-            function=self.set_achieved_pointing,
-        )
-        achieved_pointing_thread.start()
 
         self.push_command_result(ResultCode.OK, "TrackStop")
         self.logger.info("TrackStop command completed.")
