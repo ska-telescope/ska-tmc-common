@@ -286,26 +286,6 @@ class HelperDishDevice(HelperDishLNDevice):
         command_status = (command_id, status)
         self.push_change_event("longRunningCommandStatus", command_status)
 
-    def set_achieved_pointing(self) -> None:
-        """Sets the achieved pointing for dish."""
-        try:
-            for index in range(0, len(self._program_track_table), 3):
-                self._achieved_pointing = self._program_track_table[
-                    index : index + 3  # noqa
-                ]
-                self.logger.info(
-                    "The achieved pointing value is: %s",
-                    self._achieved_pointing,
-                )
-                self.push_change_event(
-                    "achievedPointing", self._achieved_pointing
-                )
-        except (ValueError, TypeError, KeyError) as exp:
-            self.logger.exception(
-                "Exception occurred while pushing achieved pointing event: %s",
-                exp,
-            )
-
     def _update_poiniting_state_in_sequence(self) -> None:
         """This method update pointing state in sequence as per
         state duration info
