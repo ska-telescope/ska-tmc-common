@@ -118,7 +118,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
             self._monitoring_devices,
         )
 
-    def remove_device(self, dev_names: List[str]) -> None:
+    def remove_devices(self, dev_names: List[str]) -> None:
         """Remove the given devices from the monitoring queue.
 
         :param dev_names: Names of devices in a list that are to be removed

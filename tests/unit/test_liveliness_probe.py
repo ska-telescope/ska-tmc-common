@@ -56,7 +56,7 @@ def test_add_and_remove_device(dev_name):
 
     assert len(lp._monitoring_devices) == initial_size + 1
 
-    lp.remove_device([dev_name])
+    lp.remove_devices([dev_name])
     assert len(lp._monitoring_devices) == initial_size
-    lp.remove_device([dev_name])
+    lp.remove_devices([dev_name])
     assert len(lp._monitoring_devices) == initial_size
