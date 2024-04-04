@@ -411,7 +411,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
             )
             thread.start()
-            self.push_command_result(ResultCode.OK, "AssignResources")
+            result_thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[ResultCode.OK, "AssignResources"],
+            )
+            result_thread.start()
             self.logger.debug(
                 "AssignResources command invoked, obsState will transition to"
                 + "IDLE, current obsState is %s",
@@ -465,8 +470,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 self._delay, self.update_device_obsstate, args=[ObsState.READY]
             )
             thread.start()
-            self.push_command_result(ResultCode.OK, "Configure")
-            self.logger.debug(
+            result_thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[ResultCode.OK, "Configure"],
+            )
+            result_thread.start()
+            self.logger.info(
                 "Configure command invoked, obsState will transition to"
                 + "READY, current obsState is %s",
                 self._obs_state,

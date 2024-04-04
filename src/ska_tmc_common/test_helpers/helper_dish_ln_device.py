@@ -759,11 +759,6 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
-        achieved_pointing_thread = threading.Timer(
-            interval=self._delay,
-            function=self.set_achieved_pointing,
-        )
-        achieved_pointing_thread.start()
 
         self.push_command_result(ResultCode.OK, "TrackStop")
         self.logger.info("TrackStop command completed.")

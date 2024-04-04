@@ -10,7 +10,7 @@ import json
 import threading
 import time
 from logging import Logger
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import tango
 from ska_tango_base.control_model import HealthState, ObsState
@@ -25,7 +25,6 @@ from ska_tmc_common.enum import LivelinessProbeType, TimeoutState
 from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.input import InputParameter
 from ska_tmc_common.liveliness_probe import (
-    BaseLivelinessProbe,
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
 )
@@ -123,7 +122,9 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 sleep_time=sleep_time,
             )
         self.timer_object = None
-        self.liveliness_probe_object: BaseLivelinessProbe
+        self.liveliness_probe_object: Union[
+            SingleDeviceLivelinessProbe, MultiDeviceLivelinessProbe
+        ] | None = None
         self._command_id: str = ""
 
     @property
