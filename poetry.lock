@@ -1318,7 +1318,7 @@ reference = 'ska-nexus'
 
 [[package]]
 name = "ska-telmodel"
-version = "1.14.0"
+version = "1.15.0"
 description = "SKA telescope model library"
 category = "main"
 optional = false
@@ -1702,7 +1702,7 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "ff5f67b14fbcd612f1a38cd673eb66c32894471312646f1b5d15027882b164dc"
+content-hash = "b47aedcd2a455b5d3f94fe5844c3d339c4dda529ff31c9430a7a8455c0544178"
 
 [metadata.files]
 alabaster = [
@@ -2600,8 +2600,8 @@ ska-tango-testing = [
     {file = "ska_tango_testing-0.6.0.tar.gz", hash = "sha256:fdc1d807dc1cad2ddc1d754cb5ee9debe846db667de12e412474388c3fff97d6"},
 ]
 ska-telmodel = [
-    {file = "ska_telmodel-1.14.0-py3-none-any.whl", hash = "sha256:bd249a3b426f0163d05888cc648d3957a38b1b86f31f6555d47fcba7ef6f0e23"},
-    {file = "ska_telmodel-1.14.0.tar.gz", hash = "sha256:fcb38de7d69b9ac54e1b0bf6f974238064e1a2068faab66f46d34a67bb63d966"},
+    {file = "ska_telmodel-1.15.0-py3-none-any.whl", hash = "sha256:bdbe298ce26b62e0fd2dda8e57032ccdeb6feda505447d9d6b1a238b745603ef"},
+    {file = "ska_telmodel-1.15.0.tar.gz", hash = "sha256:dbf864ad9536e41ce1f0ec22b78f1848de97a44aa26a961122781cdf051f23af"},
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
