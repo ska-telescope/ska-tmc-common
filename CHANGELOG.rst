@@ -38,7 +38,7 @@ Fixed
 [0.15.4]
 ************
 
-* **is_AssignResources_allowed** removed from helper sdp subarray
+* **is_command_allowed** methods for all commands is removed from helper sdp subarray
 
 [0.15.1]
 ************
