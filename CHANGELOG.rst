@@ -35,6 +35,11 @@ Added
 Fixed
 -----
 
+[0.15.4]
+************
+
+* **is_command_allowed** methods for all commands is removed from helper sdp subarray
+
 [0.15.1]
 ************
 
