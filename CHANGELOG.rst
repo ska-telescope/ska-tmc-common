@@ -8,7 +8,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Added
 -----
 
-[0.15.4]
+[0.15.5]
 ************
 * Added a method **remove_devices** in liveliness probe to allow removal of devices from monitoring list.
 
@@ -38,6 +38,9 @@ Added
 
 Fixed
 -----
+[0.15.4]
+************
+* **is_command_allowed** methods for all commands is removed from helper sdp subarray
 
 [0.15.2]
 ************

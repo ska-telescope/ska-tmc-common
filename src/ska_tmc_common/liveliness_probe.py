@@ -131,8 +131,9 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
             except ValueError:
                 self._logger.debug(
                     "Device: %s is not present in the list of monitoring "
-                    + "devices.",
+                    + "devices. Current list is: %s",
                     dev_name,
+                    self._monitoring_devices,
                 )
 
     def run(self) -> None:

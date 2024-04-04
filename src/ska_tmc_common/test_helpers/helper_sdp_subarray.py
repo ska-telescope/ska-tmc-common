@@ -13,7 +13,7 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
-from ska_tmc_common import CommandNotAllowed, FaultType, HelperSubArrayDevice
+from ska_tmc_common import HelperSubArrayDevice
 
 from .constants import (
     ABORT,
@@ -149,27 +149,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state = obs_state
             self.push_obs_state_event(self._obs_state)
 
-    def is_On_allowed(self) -> bool:
-        """
-        Check if command On is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
-        return True
-
     @command()
     def On(self):
         self.update_command_info(ON, "")
@@ -182,25 +161,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_change_event("State", self.dev_state())
             self.push_command_result(ResultCode.OK, "On")
 
-    def is_Off_allowed(self) -> bool:
-        """
-        Check if command Off is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                logger.info("Device is defective, cannot process command.")
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off Command is allowed")
-        return True
-
     @command()
     def Off(self):
         self.update_command_info(OFF, "")
@@ -212,17 +172,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.push_command_result(ResultCode.OK, "Off")
-
-    def is_AssignResources_allowed(self):
-        """
-        Check if command `AssignResources` is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        """
-        self.logger.info("AssignResources Command is allowed")
-        return True
 
     @command(
         dtype_in=("str"),
@@ -303,24 +252,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.push_command_result(ResultCode.OK, "AssignResources")
         return None
 
-    def is_ReleaseResources_allowed(self):
-        """
-        Check if command `ReleaseResources` is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseResource Command is allowed")
-        return True
-
     @command()
     def ReleaseResources(self):
         """This method invokes ReleaseResources command on SdpSubarray
@@ -346,27 +277,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             self.push_command_result(ResultCode.OK, "ReleaseResources")
 
-    def is_ReleaseAllResources_allowed(self):
-        """
-        Check if command `ReleaseAllResources` is allowed in the current
-        device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources Command is allowed")
-        return True
-
     @command()
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray
@@ -386,26 +296,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             thread.start()
             self.push_command_result(ResultCode.OK, "ReleaseAllResources")
-
-    def is_Configure_allowed(self):
-        """
-        Check if command `Configure` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Configure Command is allowed")
-        return True
 
     @command(
         dtype_in=("str"),
@@ -483,26 +373,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 thread.start()
                 self.push_command_result(ResultCode.OK, "Configure")
 
-    def is_Scan_allowed(self):
-        """
-        Check if command `Scan` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Scan Command is allowed")
-        return True
-
     @command(
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
@@ -531,26 +401,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.push_obs_state_event(self._obs_state)
             self.push_command_result(ResultCode.OK, "Scan")
 
-    def is_EndScan_allowed(self):
-        """
-        Check if command `EndScan` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("EndScan Command is allowed")
-        return True
-
     @command()
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
@@ -563,25 +413,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.READY
             self.push_obs_state_event(self._obs_state)
             self.push_command_result(ResultCode.OK, "EndScan")
-
-    def is_End_allowed(self):
-        """
-        Check if command `End` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        return True
 
     @command()
     def End(self):
@@ -608,25 +439,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 )
                 self.push_command_result(ResultCode.OK, "End")
 
-    def is_Abort_allowed(self):
-        """
-        Check if command `Abort` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        return True
-
     @command()
     def Abort(self):
         """This method invokes Abort command on SdpSubarray device."""
@@ -645,25 +457,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             thread.start()
             self.push_command_result(ResultCode.OK, "Abort")
-
-    def is_Restart_allowed(self):
-        """
-        Check if command `Restart` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: boolean
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        return True
 
     @command()
     def Restart(self):
