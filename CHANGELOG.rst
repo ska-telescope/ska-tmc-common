@@ -8,6 +8,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Added
 -----
 
+[0.15.6]
+************
+* Utilised ska-telmodel v1.15.1
+
 [0.15.5]
 ************
 * Added a method **remove_devices** in liveliness probe to allow removal of devices from monitoring list.
