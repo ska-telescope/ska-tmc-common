@@ -10,7 +10,7 @@ Added
 
 [0.15.6]
 ************
-* Utilised ska-telmodel v1.15.0
+* Utilised ska-telmodel v1.15.1
 
 [0.15.5]
 ************
