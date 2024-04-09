@@ -396,9 +396,13 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.induce_fault(
                 "Scan",
             )
-        else:
-            self._obs_state = ObsState.SCANNING
-            self.push_obs_state_event(self._obs_state)
+        elif self._obs_state != ObsState.SCANNING:
+            thread = threading.Timer(
+                self._command_delay_info[SCAN],
+                self.update_device_obsstate,
+                args=[ObsState.SCANNING, SCAN],
+            )
+            thread.start()
             self.push_command_result(ResultCode.OK, "Scan")
 
     @command()
