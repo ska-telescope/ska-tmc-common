@@ -194,7 +194,6 @@ class HelperSubArrayDevice(SKASubarray):
             RESTART: 2,
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
-            SCAN: 2,
         }
         self._scan_id = None
         self._assigned_resources = "{ }"
@@ -533,7 +532,6 @@ class HelperSubArrayDevice(SKASubarray):
             RESTART: 2,
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
-            SCAN: 2,
         }
 
     @command(
@@ -1195,12 +1193,8 @@ class HelperSubArrayDevice(SKASubarray):
                 "Scan",
             )
         if self._obs_state != ObsState.SCANNING:
-            thread = threading.Timer(
-                self._command_delay_info[SCAN],
-                self.update_device_obsstate,
-                args=[ObsState.SCANNING, SCAN],
-            )
-            thread.start()
+            self._obs_state = ObsState.SCANNING
+            self.push_change_event("obsState", self._obs_state)
         self.logger.info("Scan command completed.")
         return [ResultCode.OK], [""]
 
