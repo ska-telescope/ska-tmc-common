@@ -402,11 +402,9 @@ class HelperSubArrayDevice(SKASubarray):
         self, value: ObsState, command_name: str = ""
     ) -> None:
         """Updates the given data after a delay."""
-        delay_value = 0
         with tango.EnsureOmniThread():
             if command_name in self._command_delay_info:
                 delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
             )
@@ -451,7 +449,6 @@ class HelperSubArrayDevice(SKASubarray):
                 self.logger.info(
                     "Sleep %s for obs state %s", duration, obs_state
                 )
-                time.sleep(duration)
                 self._obs_state = obs_state_enum
                 self.push_change_event("obsState", self._obs_state)
 
@@ -960,8 +957,10 @@ class HelperSubArrayDevice(SKASubarray):
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["AssignResources"]
+            self.thread = threading.Timer(
+                interval=5,
+                function=self.wait_and_update_exception,
+                args=["AssignResources"],
             )
             self.thread.start()
             return [ResultCode.QUEUED], [""]
@@ -982,7 +981,6 @@ class HelperSubArrayDevice(SKASubarray):
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
-            time.sleep(5)
             command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
@@ -1081,8 +1079,9 @@ class HelperSubArrayDevice(SKASubarray):
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception,
+            self.thread = threading.Timer(
+                interval=5,
+                function=self.wait_and_update_exception,
                 args=["ReleaseAllResources"],
             )
             self.thread.start()
