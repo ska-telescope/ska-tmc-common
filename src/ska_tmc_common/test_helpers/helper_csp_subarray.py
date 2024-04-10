@@ -78,8 +78,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
         )
         command_result_thread.start()
 
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
+        thread = threading.Timer(
+            interval=2,
+            function=self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
@@ -175,8 +176,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
         )
         command_result_thread.start()
 
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
+        thread = threading.Timer(
+            interval=2,
+            function=self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
         thread.start()
@@ -222,8 +224,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             command_result_thread.start()
 
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=2,
+                function=self.update_device_obsstate,
                 args=[ObsState.READY, CONFIGURE],
             )
             thread.start()
@@ -380,8 +383,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             command_result_thread.start()
 
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=2,
+                function=self.update_device_obsstate,
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
@@ -416,8 +420,9 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             command_result_thread.start()
 
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=2,
+                function=self.update_device_obsstate,
                 args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
