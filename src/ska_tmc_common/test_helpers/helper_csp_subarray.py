@@ -3,7 +3,7 @@ This module implements the Helper devices for subarray nodes for testing
 an integrated TMC
 """
 
-# pylint: disable=attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init,invalid-name
 import threading
 from typing import List, Tuple
 
