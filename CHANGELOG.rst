@@ -42,6 +42,10 @@ Added
 
 Fixed
 -----
+[0.15.7]
+************
+* Updated Scan Command of HelperSubarrayLeafDevice to introduce a delay in ObsState event received on SubarrayNode.
+
 [0.15.4]
 ************
 * **is_command_allowed** methods for all commands is removed from helper sdp subarray

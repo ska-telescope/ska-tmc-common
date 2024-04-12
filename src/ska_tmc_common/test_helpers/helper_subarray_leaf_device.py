@@ -521,9 +521,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 "Scan",
             )
 
-        self._obs_state = ObsState.SCANNING
-        self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "Scan")
+        if self._obs_state != ObsState.SCANNING:
+            thread = threading.Timer(
+                self._delay,
+                self.update_device_obsstate,
+                args=[ObsState.SCANNING],
+            )
+            thread.start()
         self.logger.info("Scan command completed.")
         return [ResultCode.OK], [""]
 
