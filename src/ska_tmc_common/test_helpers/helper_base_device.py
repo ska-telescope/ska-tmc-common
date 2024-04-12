@@ -41,11 +41,6 @@ class HelperBaseDevice(SKABaseDevice):
 
         def do(self) -> Tuple[ResultCode, str]:
             super().do()
-            self._device.set_change_event("State", True, False)
-            self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event(
-                "longRunningCommandResult", True, False
-            )
             self._device.set_change_event("isSubsystemAvailable", True, False)
             return (ResultCode.OK, "")
 

@@ -76,9 +76,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event(
                 "kValueValidationResult", True, False
             )
-            self._device.set_change_event(
-                "longRunningCommandResult", True, False
-            )
             self._device.set_change_event("actualPointing", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)

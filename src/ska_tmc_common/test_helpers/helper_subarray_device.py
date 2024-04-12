@@ -218,13 +218,8 @@ class HelperSubArrayDevice(SKASubarray):
             :return: ResultCode
             """
             super().do()
-            self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             # self._device.set_change_event("commandInProgress", True, False)
-            self._device.set_change_event("healthState", True, False)
-            # self._device.set_change_event(
-            #     "longRunningCommandResult", True, False
-            # )
             # self._device.set_change_event("commandCallInfo", True, False)
             # self._device.set_change_event("assignedResources", True, False)
             # self._device.set_change_event("isSubsystemAvailable", True, False)

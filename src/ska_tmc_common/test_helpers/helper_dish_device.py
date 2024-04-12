@@ -58,8 +58,6 @@ class HelperDishDevice(HelperDishLNDevice):
             :return: ResultCode and message
             """
             super().do()
-            self._device.set_change_event("pointingState", True, False)
-            self._device.set_change_event("dishMode", True, False)
             self._device.set_change_event("configuredBand", True, False)
             self._device.set_change_event("achievedPointing", True, False)
             return (ResultCode.OK, "")
