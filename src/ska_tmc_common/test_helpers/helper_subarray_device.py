@@ -19,8 +19,7 @@ from tango import AttrWriteType, DevState, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ASSIGN_RESOURCES,
     CONFIGURE,
@@ -182,7 +181,6 @@ class HelperSubArrayDevice(SKASubarray):
 
     def init_device(self):
         super().init_device()
-        # super(SKASubarray, self).init_device()
         self._health_state = HealthState.OK
         self._isSubsystemAvailable = True
         self._command_in_progress = ""
@@ -202,6 +200,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._command_info = ("", "")
         self._state_duration_info = []
         self._delay = 2
+        self.exception_delay: int = 5
         self._raise_exception = False
         self.defective_params = {
             "enabled": False,
@@ -219,13 +218,8 @@ class HelperSubArrayDevice(SKASubarray):
             :return: ResultCode
             """
             super().do()
-            self._device.set_change_event("State", True, False)
             self._device.set_change_event("obsState", True, False)
             self._device.set_change_event("commandInProgress", True, False)
-            self._device.set_change_event("healthState", True, False)
-            self._device.set_change_event(
-                "longRunningCommandResult", True, False
-            )
             self._device.set_change_event("commandCallInfo", True, False)
             self._device.set_change_event("assignedResources", True, False)
             self._device.set_change_event("isSubsystemAvailable", True, False)
@@ -257,7 +251,7 @@ class HelperSubArrayDevice(SKASubarray):
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
 
     @attribute(dtype=("DevString"), max_dim_x=1024)
-    def assignedResources(self) -> list:
+    def assignedResources(self) -> str:
         return self._assigned_resources
 
     def read_scanId(self) -> int:
@@ -402,13 +396,11 @@ class HelperSubArrayDevice(SKASubarray):
         self, value: ObsState, command_name: str = ""
     ) -> None:
         """Updates the given data after a delay."""
-        delay_value = 0
         with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
             self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
+                "Pushing ObsState event for command: %s and obsState: %s",
+                command_name,
+                value,
             )
             self._obs_state = value
             self.push_change_event("obsState", self._obs_state)
@@ -451,7 +443,6 @@ class HelperSubArrayDevice(SKASubarray):
                 self.logger.info(
                     "Sleep %s for obs state %s", duration, obs_state
                 )
-                time.sleep(duration)
                 self._obs_state = obs_state_enum
                 self.push_change_event("obsState", self._obs_state)
 
@@ -960,15 +951,18 @@ class HelperSubArrayDevice(SKASubarray):
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception, args=["AssignResources"]
+            self.thread = threading.Timer(
+                interval=self.exception_delay,
+                function=self.wait_and_update_exception,
+                args=["AssignResources"],
             )
             self.thread.start()
             return [ResultCode.QUEUED], [""]
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
+        thread = threading.Timer(
+            interval=2,
+            function=self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
@@ -982,7 +976,6 @@ class HelperSubArrayDevice(SKASubarray):
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
-            time.sleep(5)
             command_id = f"1000_{command_name}"
             command_result = (
                 command_id,
@@ -1081,8 +1074,9 @@ class HelperSubArrayDevice(SKASubarray):
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Thread(
-                target=self.wait_and_update_exception,
+            self.thread = threading.Timer(
+                interval=self.exception_delay,
+                function=self.wait_and_update_exception,
                 args=["ReleaseAllResources"],
             )
             self.thread.start()
@@ -1090,8 +1084,9 @@ class HelperSubArrayDevice(SKASubarray):
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
+        thread = threading.Timer(
+            interval=2,
+            function=self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
         thread.start()
@@ -1401,8 +1396,9 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=2,
+                function=self.update_device_obsstate,
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
@@ -1445,8 +1441,9 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=2,
+                function=self.update_device_obsstate,
                 args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
