@@ -42,6 +42,11 @@ Added
 
 Fixed
 -----
+[0.15.8]
+************
+* Removed duplicate set_change_event calls for the attributes inherited from the base classes
+* Utilised Timer thread to simulate pushing of the transitional and final obstate events
+
 [0.15.7]
 ************
 * Updated Scan Command of HelperSubarrayLeafDevice to introduce a delay in ObsState event received on SubarrayNode.
