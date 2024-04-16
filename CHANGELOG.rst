@@ -46,6 +46,7 @@ Fixed
 ************
 * Removed duplicate set_change_event calls for the attributes inherited from the base classes
 * Utilised Timer thread to simulate pushing of the transitional and final obstate events
+* Updated **DeviceInfo** and child classes to implement their own locks
 
 [0.15.7]
 ************

@@ -200,6 +200,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._command_info = ("", "")
         self._state_duration_info = []
         self._delay = 2
+        self.exception_delay: int = 5
         self._raise_exception = False
         self.defective_params = {
             "enabled": False,
@@ -951,7 +952,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             self.thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=["AssignResources"],
             )
@@ -1074,7 +1075,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             self.thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=["ReleaseAllResources"],
             )
