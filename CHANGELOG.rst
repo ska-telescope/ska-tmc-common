@@ -42,6 +42,10 @@ Added
 
 Fixed
 -----
+[0.15.9]
+************
+* Fixed Scan Command of HelperSubarrayLeafDevice to directly send the ObsState event.
+
 [0.15.8]
 ************
 * Removed duplicate set_change_event calls for the attributes inherited from the base classes
