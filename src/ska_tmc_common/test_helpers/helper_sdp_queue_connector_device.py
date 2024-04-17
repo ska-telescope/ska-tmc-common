@@ -3,16 +3,14 @@ This module defines a helper device that acts as SDP
 Queue Connector in testing.
 """
 
-import logging
+from tango import ArgType, AttrDataFormat, AttrWriteType
+from tango.server import attribute, command, run
 
-from tango import AttrWriteType, CmdArgType
-from tango.server import Device, attribute, command, run
-
-logger = logging.getLogger(__name__)
+from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
 # pylint: disable=invalid-name
-class HelperSdpQueueConnector(Device):
+class HelperSdpQueueConnector(HelperBaseDevice):
     """A helper device that emulates the behavior of pointing_offsets attribute
     from SdpQueueConnector device for testing.
     Queue Connector is a tango device of SDP.
@@ -20,66 +18,121 @@ class HelperSdpQueueConnector(Device):
 
     def init_device(self):
         super().init_device()
-        # The 0th index is a placeholder and the data at
-        # index 1 is in byte format
-        self._pointing_offsets = ("msgpack_numpy", b"")
-        self.set_change_event("pointing_offsets", True, False)
+        for i in range(1, 5):
+            pointing_cal_name = f"pointing_cal_SKA{i:03}"
+            setattr(self, f"_pointing_cal_ska{i:03}", [0.0, 0.0, 0.0])
+            self.set_change_event(pointing_cal_name, True, False)
 
     @attribute(
-        dtype=CmdArgType.DevEncoded,
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
         access=AttrWriteType.READ,
+        max_dim_x=3,
     )
-    def pointing_offsets(self) -> tuple[str, bytes]:
-        """Returns the attribute value for
-        pointing_offsets from QueueConnector SDP device.
-        The returned tuple contains a string literal msgpack_numpy
-        and a numpy ndarray in encoded byte form with
-        below values in each array:
-        [
-        "Antenna_Name,"
-        "CrossElevation_Offset,CrossElevation_Offset_Std,"
-        "Elevation_Offset,Elevation_Offset_Std,"
-        "Expected_Width_H,Expected_Width_V,"
-        "Fitted_Width_H,Fitted_Width_H_Std,"
-        "Fitted_Width_V,Fitted_Width_V_Std,"
-        "Fitted_Height,Fitted_Height_Std"
-        ]
-        :return: the attribute value for
-        pointing_offsets from QueueConnector SDP device
-        """
-        return self._pointing_offsets
+    def pointing_cal_SKA001(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA001"""
+        return self._pointing_cal_ska001
+
+    @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=3,
+    )
+    def pointing_cal_SKA002(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA001"""
+        return self._pointing_cal_ska002
+
+    @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=3,
+    )
+    def pointing_cal_SKA003(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA001"""
+        return self._pointing_cal_ska003
+
+    @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=3,
+    )
+    def pointing_cal_SKA004(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA001"""
+        return self._pointing_cal_ska004
 
     @command(
-        dtype_in=CmdArgType.DevEncoded,
-        doc_in="Set pointing offsets",
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetDirectPointingOffsets(
-        self, pointing_offsets_data
-    ) -> CmdArgType.DevVoid:
-        """Sets the attribute value for pointing_offsets for testing purposes.
-        :param pointing_offsets_data: The variable contains a string literal
-        msgpack_numpy and a numpy ndarray in encoded byte form
-        with below values in each array:
-        [
-        Antenna_Name,
-        CrossElevation_Offset,CrossElevation_Offset_Std,
-        Elevation_Offset,Elevation_Offset_Std,
-        Expected_Width_H,Expected_Width_VFitted_Width_H,
-        Fitted_Width_H_Std,Fitted_Width_V,Fitted_Width_V_Std,
-        Fitted_Height,Fitted_Height_Std
-        ]
-        """
-        # pylint: disable=attribute-defined-outside-init
-        self._pointing_offsets = pointing_offsets_data
-        # Below syntax is as per the pytango docs for DevEncoded data type
-        # Syntax: push_change_event(self, attr_name, str_data, data)
+    def set_pointing_cal_ska001(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_ska001 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska001 = pointing_cal
         self.push_change_event(
-            "pointing_offsets",
-            self._pointing_offsets[0],
-            self._pointing_offsets[1],
+            "pointing_cal_ska001", self._pointing_cal_ska001
         )
-        logger.info(
-            "Received pointing offsets data is: %s", self._pointing_offsets
+        self.logger.info(
+            "pointing_cal_ska001 attribute value updated to %s", pointing_cal
+        )
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
+    )
+    def set_pointing_cal_ska002(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_ska002 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska002 = pointing_cal
+        self.push_change_event(
+            "pointing_cal_ska002", self._pointing_cal_ska001
+        )
+        self.logger.info(
+            "pointing_cal_ska002 attribute value updated to %s", pointing_cal
+        )
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
+    )
+    def set_pointing_cal_ska003(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_ska003 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska003 = pointing_cal
+        self.push_change_event(
+            "pointing_cal_ska003", self._pointing_cal_ska001
+        )
+        self.logger.info(
+            "pointing_cal_ska003 attribute value updated to %s", pointing_cal
+        )
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
+    )
+    def set_pointing_cal_ska004(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_ska004 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska004 = pointing_cal
+        self.push_change_event(
+            "pointing_cal_ska004", self._pointing_cal_ska001
+        )
+        self.logger.info(
+            "pointing_cal_ska004 attribute value updated to %s", pointing_cal
         )
 
 

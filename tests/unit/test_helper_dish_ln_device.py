@@ -1,6 +1,7 @@
 import json
 import time
 
+import numpy
 import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
@@ -203,3 +204,14 @@ def test_to_check_kvalidationresult_result_code_ok(tango_context):
         elapsed_time = time.time() - start_time
     # Assert initial value is getting set
     assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
+
+
+def test_source_offsets_dishln(tango_context):
+    """
+    This test case verifies sourceOffset dish leaf node attribute.
+    """
+    SOURCE_OFFSET = [0.0, 5.0]
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.set_source_offset(SOURCE_OFFSET)
+    assert numpy.array_equal(SOURCE_OFFSET, dishln_device.sourceOffset)

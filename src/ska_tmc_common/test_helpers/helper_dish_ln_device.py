@@ -6,12 +6,20 @@ integrated TMC.
 import json
 import threading
 import time
+from datetime import datetime as dt
 from typing import List, Tuple, Union
 
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, Database, DevEnum, DevState
+from tango import (
+    ArgType,
+    AttrDataFormat,
+    AttrWriteType,
+    Database,
+    DevEnum,
+    DevState,
+)
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -53,12 +61,17 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._command_info: Tuple = ("", "")
         self._state_duration_info: list = []
         self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
-        self._actual_pointing: list = []
+        self._actual_pointing: list = [
+            dt.now().strftime("%Y-%m-%d %H:%M:%S"),
+            287.2504396,
+            77.8694392,
+        ]
         self._kvalue: int = 0
         self._isSubsystemAvailable = True
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
         self._dish_mode = DishMode.STANDBY_LP
         self._pointing_state = PointingState.NONE
+        self._sourceOffset: list = [0.0, 0.0]
 
     # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
@@ -83,6 +96,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             self._device.op_state_model.perform_action("component_on")
+            self._device.set_change_event("sourceOffset", True, False)
             self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
 
@@ -104,6 +118,22 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._dish_kvalue_validation_result
 
     @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=2,
+    )
+    def sourceOffset(self) -> list[float]:
+        """
+        This attribute is used for storing the commanded offsets
+        received as a part of delta/partial configuration.
+        This attribute is subscribed by SDP queue connector
+        device.
+        :return: sourceOffset
+        """
+        return self._sourceOffset
+
+    @attribute(
         dtype=int,
         access=AttrWriteType.READ_WRITE,
         memorized=True,
@@ -119,7 +149,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._kvalue
 
     @kValue.write
-    def kValue(self, kvalue: str) -> None:
+    def kValue(self, kvalue: int) -> None:
         """Set memorized dish vcc map
         :param kvalue: dish vcc config json string
         :type str
@@ -310,10 +340,24 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._dish_kvalue_validation_result,
         )
 
+    # Is this definition and variable needed ?????
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
         """Sets the offset for Dish."""
         self._offset["off_xel"] = cross_elevation
         self._offset["off_el"] = elevation
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([cross_elevation_offset, elevation_offset])",
+    )
+    def set_source_offset(self, sourceOffset: list) -> None:
+        """Sets the commanded offsets"""
+        self._sourceOffset = sourceOffset
+        self.push_change_event("sourceOffset", self._sourceOffset)
+        self.logger.debug(
+            "sourceOffset attribute value updated to: %s", self._sourceOffset
+        )
 
     def read_commandCallInfo(self):
         """
