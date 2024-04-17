@@ -42,6 +42,11 @@ Added
 
 Fixed
 -----
+
+[0.15.10]
+************
+* Fixed Configure command of HelperDishLNDevice send pointingState and dishMode with delay interval
+
 [0.15.9]
 ************
 * Fixed Scan Command of HelperSubarrayLeafDevice to directly send the ObsState event.
