@@ -859,10 +859,11 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self.logger.info("Pointing State: %s", self._pointing_state)
 
         # Set dish mode
+        self._dish_mode = DishMode.OPERATE
         thread = threading.Timer(
             interval=self._delay,
             function=self.set_dish_mode,
-            args=["dishMode", DishMode.OPERATE],
+            args=["dishMode", self._dish_mode],
         )
         thread.start()
 
