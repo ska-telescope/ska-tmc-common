@@ -11,8 +11,8 @@ from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 # pylint: disable=invalid-name
 class HelperSdpQueueConnector(HelperBaseDevice):
-    """A helper device that emulates the behavior of pointing_offsets attribute
-    from SdpQueueConnector device for testing.
+    """A helper device that emulates the behavior of pointing_cal_{dish_id}
+    attributes from SdpQueueConnector device for testing.
     Queue Connector is a tango device of SDP.
     """
 
@@ -42,7 +42,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
     )
     def pointing_cal_SKA002(self) -> list[float]:
         """Attribute to give calibrated pointing offsets of dish
-        SKA001"""
+        SKA002"""
         return self._pointing_cal_ska002
 
     @attribute(
@@ -53,7 +53,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
     )
     def pointing_cal_SKA003(self) -> list[float]:
         """Attribute to give calibrated pointing offsets of dish
-        SKA001"""
+        SKA003"""
         return self._pointing_cal_ska003
 
     @attribute(
@@ -64,7 +64,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
     )
     def pointing_cal_SKA004(self) -> list[float]:
         """Attribute to give calibrated pointing offsets of dish
-        SKA001"""
+        SKA004"""
         return self._pointing_cal_ska004
 
     @command(
