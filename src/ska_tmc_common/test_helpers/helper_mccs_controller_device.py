@@ -226,7 +226,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=[command_id],
             )
@@ -290,7 +290,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=[command_id],
             )
@@ -352,7 +352,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self._raise_exception:
             self.logger.info("exception thread")
             thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=[command_id],
             )

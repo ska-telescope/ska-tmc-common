@@ -25,6 +25,8 @@ class HelperBaseDevice(SKABaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
+        self._delay: int = 2
+        self.exception_delay: int = 5
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
