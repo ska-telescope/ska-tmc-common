@@ -76,9 +76,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event(
                 "kValueValidationResult", True, False
             )
-            self._device.set_change_event(
-                "longRunningCommandResult", True, False
-            )
             self._device.set_change_event("actualPointing", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
@@ -203,8 +200,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method set the Dish Mode
         """
         self._dish_mode = dishMode
-        time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
+        self.logger.info("Dish Mode: %s", self._dish_mode)
 
     def set_pointing_state(self, pointingState: PointingState) -> None:
         """
@@ -859,11 +856,10 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self.logger.info("Pointing State: %s", self._pointing_state)
 
         # Set dish mode
-        self._dish_mode = DishMode.OPERATE
         thread = threading.Timer(
             interval=self._delay,
             function=self.set_dish_mode,
-            args=["dishMode", self._dish_mode],
+            args=["dishMode", DishMode.OPERATE],
         )
         thread.start()
 
