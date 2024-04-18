@@ -72,7 +72,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def set_pointing_cal_ska001(self, pointing_cal: list) -> None:
+    def SetPointingCalSKA001(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_ska001 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -89,13 +89,13 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def set_pointing_cal_ska002(self, pointing_cal: list) -> None:
+    def SetPointingCalSKA002(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_ska002 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska002 = pointing_cal
         self.push_change_event(
-            "pointing_cal_ska002", self._pointing_cal_ska001
+            "pointing_cal_ska002", self._pointing_cal_ska002
         )
         self.logger.info(
             "pointing_cal_ska002 attribute value updated to %s", pointing_cal
@@ -106,13 +106,13 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def set_pointing_cal_ska003(self, pointing_cal: list) -> None:
+    def SetPointingCalSKA003(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_ska003 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska003 = pointing_cal
         self.push_change_event(
-            "pointing_cal_ska003", self._pointing_cal_ska001
+            "pointing_cal_ska003", self._pointing_cal_ska003
         )
         self.logger.info(
             "pointing_cal_ska003 attribute value updated to %s", pointing_cal
@@ -123,13 +123,13 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def set_pointing_cal_ska004(self, pointing_cal: list) -> None:
+    def SetPointingCalSKA004(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_ska004 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska004 = pointing_cal
         self.push_change_event(
-            "pointing_cal_ska004", self._pointing_cal_ska001
+            "pointing_cal_ska004", self._pointing_cal_ska004
         )
         self.logger.info(
             "pointing_cal_ska004 attribute value updated to %s", pointing_cal

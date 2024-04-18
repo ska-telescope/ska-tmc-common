@@ -15,6 +15,7 @@ from ska_tango_base.commands import ResultCode
 from tango import (
     ArgType,
     AttrDataFormat,
+    AttributeProxy,
     AttrWriteType,
     Database,
     DevEnum,
@@ -72,6 +73,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._dish_mode = DishMode.STANDBY_LP
         self._pointing_state = PointingState.NONE
         self._sourceOffset: list = [0.0, 0.0]
+        self._sdpQueueConnectorFqdn = None
 
     # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
@@ -132,6 +134,50 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: sourceOffset
         """
         return self._sourceOffset
+
+    @attribute(
+        dtype=ArgType.DevString,
+        dformat=AttrDataFormat.SCALAR,
+        access=AttrWriteType.READ,
+    )
+    def sdpQueueConnectorFQDN(self) -> str:
+        """
+        This attribute is used for storing the FQDN of pointing_cal
+        attribute SDP queue connector device, which is required in
+        calibration scan.
+        :return: str
+        """
+        return self._sdpQueueConnectorFqdn
+
+    @sdpQueueConnectorFQDN.write
+    def sdpQueueConnectorFQDN(self, sdpqc_fqdn: str) -> None:
+        """
+        This Method is used to get the SDP queue connector FQDN from
+        subarray node and then Dish Leaf Node have to subscribe to its
+        respective pointing_cal attribute on queue connector device.
+        """
+        dish_id = self._dishln_name.split("/")[-1][-3:]
+        self._sdpQueueConnectorFqdn = sdpqc_fqdn + f"pointing_cal_SKA{dish_id}"
+        sdpqc_pointing_cal_proxy = AttributeProxy(self._sdpQueueConnectorFqdn)
+        event_id = sdpqc_pointing_cal_proxy.subscribe_event(
+            tango.EventType.CHANGE_EVENT, self.process_pointing_cal
+        )
+        self.logger.info("Pointing Cal attribute event ID: %s", event_id)
+
+    def process_pointing_cal(self, event_data):
+        """This Method takes the pointing calibration data from
+        SDP queue connector device and invokes the TrackLoadStaticOff
+        command on the Dish Master"""
+
+        offsets = [
+            event_data.attr_value.value[1],
+            event_data.attr_value.value[2],
+        ]
+        # self.TrackLoadStaticOff(json.dumps(offsets))
+        self.logger.info(
+            "Pointing cal received from SDP Queue connector device: %s",
+            offsets,
+        )
 
     @attribute(
         dtype=int,
@@ -300,6 +346,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_y=1000,
     )
 
+    def set_offset(self, cross_elevation: float, elevation: float) -> None:
+        """Sets the offset for Dish."""
+        self._offset["off_xel"] = cross_elevation
+        self._offset["off_el"] = elevation
+
     def _update_pointing_state_in_sequence(self) -> None:
         """This method update pointing state in sequence as per
         state duration info
@@ -340,18 +391,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._dish_kvalue_validation_result,
         )
 
-    # Is this definition and variable needed ?????
-    def set_offset(self, cross_elevation: float, elevation: float) -> None:
-        """Sets the offset for Dish."""
-        self._offset["off_xel"] = cross_elevation
-        self._offset["off_el"] = elevation
-
     @command(
         dtype_in=ArgType.DevDouble,
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([cross_elevation_offset, elevation_offset])",
     )
-    def set_source_offset(self, sourceOffset: list) -> None:
+    def SetSourceOffset(self, sourceOffset: list) -> None:
         """Sets the commanded offsets"""
         self._sourceOffset = sourceOffset
         self.push_change_event("sourceOffset", self._sourceOffset)

@@ -19,16 +19,16 @@ def test_pointing_offsets(tango_context):
     )
 
     # Raise event on pointing_cal_SKA001 attribute
-    sdp_queue_connector_device.set_pointing_cal_ska001(POINTING_CAL_SKA001)
+    sdp_queue_connector_device.SetPointingCalSKA001(POINTING_CAL_SKA001)
 
     # Raise event on pointing_cal_SKA002 attribute
-    sdp_queue_connector_device.set_pointing_cal_ska002(POINTING_CAL_SKA002)
+    sdp_queue_connector_device.SetPointingCalSKA002(POINTING_CAL_SKA002)
 
     # Raise event on pointing_cal_SKA003 attribute
-    sdp_queue_connector_device.set_pointing_cal_ska003(POINTING_CAL_SKA003)
+    sdp_queue_connector_device.SetPointingCalSKA003(POINTING_CAL_SKA003)
 
     # Raise event on pointing_cal_SKA004 attribute
-    sdp_queue_connector_device.set_pointing_cal_ska004(POINTING_CAL_SKA004)
+    sdp_queue_connector_device.SetPointingCalSKA004(POINTING_CAL_SKA004)
 
     # Validate the values
     assert numpy.array_equal(

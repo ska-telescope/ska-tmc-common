@@ -213,5 +213,5 @@ def test_source_offsets_dishln(tango_context):
     SOURCE_OFFSET = [0.0, 5.0]
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
-    dishln_device.set_source_offset(SOURCE_OFFSET)
+    dishln_device.SetSourceOffset(SOURCE_OFFSET)
     assert numpy.array_equal(SOURCE_OFFSET, dishln_device.sourceOffset)
