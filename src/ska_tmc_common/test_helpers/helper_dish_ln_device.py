@@ -200,8 +200,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         This method set the Dish Mode
         """
         self._dish_mode = dishMode
-        time.sleep(0.1)
         self.push_change_event("dishMode", self._dish_mode)
+        self.logger.info("Dish Mode: %s", self._dish_mode)
 
     def set_pointing_state(self, pointingState: PointingState) -> None:
         """
@@ -847,11 +847,21 @@ class HelperDishLNDevice(HelperBaseDevice):
                 self._follow_state_duration()
             else:
                 self._pointing_state = PointingState.TRACK
-                self.push_change_event("pointingState", self._pointing_state)
+                thread = threading.Timer(
+                    interval=self._delay,
+                    function=self.push_change_event,
+                    args=["pointingState", self._pointing_state],
+                )
+                thread.start()
                 self.logger.info("Pointing State: %s", self._pointing_state)
 
         # Set dish mode
-        self.set_dish_mode(DishMode.OPERATE)
+        thread = threading.Timer(
+            interval=self._delay,
+            function=self.set_dish_mode,
+            args=["dishMode", DishMode.OPERATE],
+        )
+        thread.start()
 
         thread = threading.Timer(
             self._delay,
