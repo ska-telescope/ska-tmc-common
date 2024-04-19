@@ -25,6 +25,7 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import DishMode, PointingState
+from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
@@ -74,6 +75,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._pointing_state = PointingState.NONE
         self._sourceOffset: list = [0.0, 0.0]
         self._sdpQueueConnectorFqdn = None
+        self.attribute_subscription_data = {}
 
     # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
@@ -157,26 +159,25 @@ class HelperDishLNDevice(HelperBaseDevice):
         respective pointing_cal attribute on queue connector device.
         """
         dish_id = self._dishln_name.split("/")[-1][-3:]
-        self._sdpQueueConnectorFqdn = sdpqc_fqdn + f"pointing_cal_SKA{dish_id}"
-        sdpqc_pointing_cal_proxy = AttributeProxy(self._sdpQueueConnectorFqdn)
-        event_id = sdpqc_pointing_cal_proxy.subscribe_event(
-            tango.EventType.CHANGE_EVENT, self.process_pointing_cal
+        self._sdpQueueConnectorFqdn = sdpqc_fqdn
+        for dict_value in self.attribute_subscription_data.items():
+            if dict_value == "sdpQueueConnectorFqdn":
+                return
+        sdp_queue_connector_proxy = AttributeProxy(
+            sdpqc_fqdn + f"/pointing_cal_SKA{dish_id}"
         )
-        self.logger.info("Pointing Cal attribute event ID: %s", event_id)
-
-    def process_pointing_cal(self, event_data):
-        """This Method takes the pointing calibration data from
-        SDP queue connector device and invokes the TrackLoadStaticOff
-        command on the Dish Master"""
-
-        offsets = [
-            event_data.attr_value.value[1],
-            event_data.attr_value.value[2],
-        ]
-        # self.TrackLoadStaticOff(json.dumps(offsets))
+        event_callback = EventCallback(
+            event_callback=self.process_pointing_cal
+        )
+        event_id = sdp_queue_connector_proxy.subscribe_event(
+            tango.EventType.CHANGE_EVENT,
+            event_callback,
+        )
+        self.attribute_subscription_data["sdpQueueConnectorFqdn"] = event_id
         self.logger.info(
-            "Pointing cal received from SDP Queue connector device: %s",
-            offsets,
+            "Successfully subscribed to %s and event id is %s",
+            sdpqc_fqdn,
+            event_id,
         )
 
     @attribute(
@@ -273,6 +274,25 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self._pointing_state != value:
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
+
+    def process_pointing_cal(self, event_data):
+        """This Method takes the pointing calibration data from
+        SDP queue connector device and invokes the TrackLoadStaticOff
+        command on the Dish Master"""
+        try:
+            offsets = [
+                event_data.attr_value.value[1],
+                event_data.attr_value.value[2],
+            ]
+            self.TrackLoadStaticOff(json.dumps(offsets))
+            self.logger.info(
+                "Pointing cal received from SDP Queue connector device: %s",
+                event_data.attr_value.value,
+            )
+        except ValueError as e:
+            self.logger.info(
+                "Exception occurred while processing pointing_cal %s", e
+            )
 
     def set_dish_mode(self, dishMode: DishMode) -> None:
         """

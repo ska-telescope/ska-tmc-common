@@ -8,6 +8,16 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
+DISH_DEVICE_LIST = [
+    "SKA001",
+    "SKA002",
+    "SKA003",
+    "SKA004",
+    "SKA063",
+    "SKA036",
+    "SKA100",
+]
+
 
 # pylint: disable=invalid-name
 class HelperSdpQueueConnector(HelperBaseDevice):
@@ -18,9 +28,9 @@ class HelperSdpQueueConnector(HelperBaseDevice):
 
     def init_device(self):
         super().init_device()
-        for i in range(1, 5):
-            pointing_cal_name = f"pointing_cal_SKA{i:03}"
-            setattr(self, f"_pointing_cal_ska{i:03}", [0.0, 0.0, 0.0])
+        for dish_id in DISH_DEVICE_LIST:
+            pointing_cal_name = f"pointing_cal_{dish_id}"
+            setattr(self, f"_pointing_cal_{dish_id.lower()}", [0.0, 0.0, 0.0])
             self.set_change_event(pointing_cal_name, True, False)
 
     @attribute(
@@ -67,21 +77,52 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         SKA004"""
         return self._pointing_cal_ska004
 
+    @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=3,
+    )
+    def pointing_cal_SKA036(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA036"""
+        return self._pointing_cal_ska036
+
+    @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=3,
+    )
+    def pointing_cal_SKA063(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA063"""
+        return self._pointing_cal_ska063
+
+    @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=3,
+    )
+    def pointing_cal_SKA100(self) -> list[float]:
+        """Attribute to give calibrated pointing offsets of dish
+        SKA100"""
+        return self._pointing_cal_ska100
+
     @command(
         dtype_in=ArgType.DevDouble,
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
     def SetPointingCalSKA001(self, pointing_cal: list) -> None:
-        """This method sets the value of pointing_cal_ska001 attribute also
+        """This method sets the value of pointing_cal_SKA001 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska001 = pointing_cal
-        self.push_change_event(
-            "pointing_cal_ska001", self._pointing_cal_ska001
-        )
+        self.push_change_event("pointing_cal_SKA001", pointing_cal)
         self.logger.info(
-            "pointing_cal_ska001 attribute value updated to %s", pointing_cal
+            "pointing_cal_SKA001 attribute value updated to %s", pointing_cal
         )
 
     @command(
@@ -90,15 +131,15 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
     def SetPointingCalSKA002(self, pointing_cal: list) -> None:
-        """This method sets the value of pointing_cal_ska002 attribute also
+        """This method sets the value of pointing_cal_SKA002 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska002 = pointing_cal
         self.push_change_event(
-            "pointing_cal_ska002", self._pointing_cal_ska002
+            "pointing_cal_SKA002", self._pointing_cal_ska002
         )
         self.logger.info(
-            "pointing_cal_ska002 attribute value updated to %s", pointing_cal
+            "pointing_cal_SKA002 attribute value updated to %s", pointing_cal
         )
 
     @command(
@@ -107,15 +148,15 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
     def SetPointingCalSKA003(self, pointing_cal: list) -> None:
-        """This method sets the value of pointing_cal_ska003 attribute also
+        """This method sets the value of pointing_cal_SKA003 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska003 = pointing_cal
         self.push_change_event(
-            "pointing_cal_ska003", self._pointing_cal_ska003
+            "pointing_cal_SKA003", self._pointing_cal_ska003
         )
         self.logger.info(
-            "pointing_cal_ska003 attribute value updated to %s", pointing_cal
+            "pointing_cal_SKA003 attribute value updated to %s", pointing_cal
         )
 
     @command(
@@ -124,15 +165,60 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
     def SetPointingCalSKA004(self, pointing_cal: list) -> None:
-        """This method sets the value of pointing_cal_ska004 attribute also
+        """This method sets the value of pointing_cal_SKA004 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
         self._pointing_cal_ska004 = pointing_cal
         self.push_change_event(
-            "pointing_cal_ska004", self._pointing_cal_ska004
+            "pointing_cal_SKA004", self._pointing_cal_ska004
         )
         self.logger.info(
-            "pointing_cal_ska004 attribute value updated to %s", pointing_cal
+            "pointing_cal_SKA004 attribute value updated to %s", pointing_cal
+        )
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
+    )
+    def SetPointingCalSKA036(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_SKA036 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska036 = pointing_cal
+        self.push_change_event("pointing_cal_SKA036", pointing_cal)
+        self.logger.info(
+            "pointing_cal_SKA036 attribute value updated to %s", pointing_cal
+        )
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
+    )
+    def SetPointingCalSKA063(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_SKA063 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska063 = pointing_cal
+        self.push_change_event("pointing_cal_SKA063", pointing_cal)
+        self.logger.info(
+            "pointing_cal_SKA063 attribute value updated to %s", pointing_cal
+        )
+
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
+    )
+    def SetPointingCalSKA100(self, pointing_cal: list) -> None:
+        """This method sets the value of pointing_cal_SKA100 attribute also
+        push the event for the attribute"""
+        # pylint:disable = attribute-defined-outside-init
+        self._pointing_cal_ska100 = pointing_cal
+        self.push_change_event("pointing_cal_SKA100", pointing_cal)
+        self.logger.info(
+            "pointing_cal_SKA100 attribute value updated to %s", pointing_cal
         )
 
 
