@@ -15,15 +15,14 @@ from ska_tango_base.commands import ResultCode
 from tango import (
     ArgType,
     AttrDataFormat,
-    AttributeProxy,
     AttrWriteType,
     Database,
     DevEnum,
     DevState,
 )
-from tango.server import attribute, command, run
+from tango.server import attribute, command, device_property, run
 
-from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
@@ -51,6 +50,11 @@ class HelperDishLNDevice(HelperBaseDevice):
     device.
     """
 
+    DishMasterFQDN = device_property(
+        dtype="str",
+        doc="FQDN of Dish Master Device",
+    )
+
     def init_device(self) -> None:
         super().init_device()
         self._delay: int = 2
@@ -74,7 +78,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._dish_mode = DishMode.STANDBY_LP
         self._pointing_state = PointingState.NONE
         self._sourceOffset: list = [0.0, 0.0]
-        self._sdpQueueConnectorFqdn = None
+        self._sdpQueueConnectorFqdn: str = ""
         self.attribute_subscription_data = {}
 
     # pylint: disable=protected-access
@@ -142,7 +146,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dformat=AttrDataFormat.SCALAR,
         access=AttrWriteType.READ,
     )
-    def sdpQueueConnectorFQDN(self) -> str:
+    def sdpQueueConnectorFqdn(self) -> str:
         """
         This attribute is used for storing the FQDN of pointing_cal
         attribute SDP queue connector device, which is required in
@@ -151,25 +155,28 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         return self._sdpQueueConnectorFqdn
 
-    @sdpQueueConnectorFQDN.write
-    def sdpQueueConnectorFQDN(self, sdpqc_fqdn: str) -> None:
+    @sdpQueueConnectorFqdn.write
+    def sdpQueueConnectorFqdn(self, sdpqc_fqdn: str) -> None:
         """
         This Method is used to get the SDP queue connector FQDN from
         subarray node and then Dish Leaf Node have to subscribe to its
         respective pointing_cal attribute on queue connector device.
         """
-        dish_id = self._dishln_name.split("/")[-1][-3:]
+        dish_id = self.DishMasterFQDN.split("/")[0].upper()
+        attribute_name = sdpqc_fqdn.split("/")[-1]
         self._sdpQueueConnectorFqdn = sdpqc_fqdn
-        for dict_value in self.attribute_subscription_data.items():
-            if dict_value == "sdpQueueConnectorFqdn":
+        for key, _ in self.attribute_subscription_data.items():
+            if key == "sdpQueueConnectorFqdn":
                 return
-        sdp_queue_connector_proxy = AttributeProxy(
-            sdpqc_fqdn + f"/pointing_cal_SKA{dish_id}"
+        dev_factory = DevFactory()
+        sdp_queue_connector_proxy = dev_factory.get_device(
+            self._sdpQueueConnectorFqdn.rsplit("/", 1)[0]
         )
         event_callback = EventCallback(
             event_callback=self.process_pointing_cal
         )
         event_id = sdp_queue_connector_proxy.subscribe_event(
+            attribute_name + f"_{dish_id}",
             tango.EventType.CHANGE_EVENT,
             event_callback,
         )
@@ -275,7 +282,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
 
-    def process_pointing_cal(self, event_data):
+    def process_pointing_cal(self, event_data: tango.EventData) -> None:
         """This Method takes the pointing calibration data from
         SDP queue connector device and invokes the TrackLoadStaticOff
         command on the Dish Master"""

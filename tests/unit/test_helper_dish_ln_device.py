@@ -11,6 +11,7 @@ from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_LN_DEVICE,
     FAILED_RESULT_DEFECT,
+    HELPER_SDP_QUEUE_CONNECTOR_DEVICE,
 )
 
 COMMANDS = [
@@ -206,7 +207,7 @@ def test_to_check_kvalidationresult_result_code_ok(tango_context):
     assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
 
 
-def test_source_offsets_dishln(tango_context):
+def test_source_offset_dishln_attribute(tango_context):
     """
     This test case verifies sourceOffset dish leaf node attribute.
     """
@@ -215,3 +216,15 @@ def test_source_offsets_dishln(tango_context):
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     dishln_device.SetSourceOffset(SOURCE_OFFSET)
     assert numpy.array_equal(SOURCE_OFFSET, dishln_device.sourceOffset)
+
+def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
+    """
+    This test case verifies sdpQueueConnectorFQDN dish leaf node attribute.
+    """
+    SDPQC_ATTR_PROXY = "test-sdp/queueconnector/01/pointing_cal"
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
+    dishln_device.sdpQueueConnectorFqdn = SDPQC_ATTR_PROXY
+    sdpqc_device.SetpointingCalSka001([1.0, 2.0, 3.0])
+    assert dishln_device.sdpQueueConnectorFqdn == SDPQC_ATTR_PROXY

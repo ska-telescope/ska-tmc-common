@@ -115,7 +115,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA001(self, pointing_cal: list) -> None:
+    def SetPointingCalSka001(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA001 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -130,7 +130,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA002(self, pointing_cal: list) -> None:
+    def SetPointingCalSka002(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA002 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -147,7 +147,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA003(self, pointing_cal: list) -> None:
+    def SetPointingCalSka003(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA003 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -164,7 +164,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA004(self, pointing_cal: list) -> None:
+    def SetPointingCalSka004(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA004 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -181,7 +181,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA036(self, pointing_cal: list) -> None:
+    def SetPointingCalSka036(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA036 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -196,7 +196,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA063(self, pointing_cal: list) -> None:
+    def SetPointingCalSka063(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA063 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
@@ -211,7 +211,7 @@ class HelperSdpQueueConnector(HelperBaseDevice):
         dformat_in=AttrDataFormat.SPECTRUM,
         doc_in="([scanID, cross_elevation_offsets, elevation_offsets])",
     )
-    def SetPointingCalSKA100(self, pointing_cal: list) -> None:
+    def SetPointingCalSka100(self, pointing_cal: list) -> None:
         """This method sets the value of pointing_cal_SKA100 attribute also
         push the event for the attribute"""
         # pylint:disable = attribute-defined-outside-init
