@@ -219,7 +219,6 @@ def test_source_offset_dishln_attribute(tango_context):
     assert numpy.array_equal(SOURCE_OFFSET, dishln_device.sourceOffset)
 
 
-@pytest.mark.test
 def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     """
     This test case verifies sdpQueueConnectorFQDN dish leaf node attribute.
