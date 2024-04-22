@@ -54,9 +54,9 @@ class DeviceInfo:
 
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         self.dev_name = dev_name
-        self.state: DevState = DevState.UNKNOWN
-        self.health_state: HealthState = HealthState.UNKNOWN
-        self.device_availability = False
+        self._state: DevState = DevState.UNKNOWN
+        self._health_state: HealthState = HealthState.UNKNOWN
+        self._device_availability = False
         self._ping: int = -1
         self.last_event_arrived = None
         self.exception = None
@@ -64,6 +64,51 @@ class DeviceInfo:
         self.lock = threading.Lock()
         self._source_dish_vcc_config = ""
         self._dish_vcc_config = ""
+
+    @property
+    def state(self) -> DevState:
+        """State property"""
+        return self._state
+
+    @state.setter
+    def state(self, value: DevState):
+        """State property setter.
+
+        :param value: Value to be set
+        :type value: `DevState`
+        """
+        with self.lock:
+            self._state = value
+
+    @property
+    def health_state(self) -> HealthState:
+        """HealthState property"""
+        return self._health_state
+
+    @health_state.setter
+    def health_state(self, value: HealthState):
+        """HealthState property setter.
+
+        :param value: Value to be set
+        :type value: `HealthState`
+        """
+        with self.lock:
+            self._health_state = value
+
+    @property
+    def device_availability(self) -> bool:
+        """DeviceAvailability property"""
+        return self._device_availability
+
+    @device_availability.setter
+    def device_availability(self, value: bool):
+        """DeviceAvailability property setter.
+
+        :param value: Value to be set
+        :type value: `bool`
+        """
+        with self.lock:
+            self._device_availability = value
 
     def from_dev_info(self, dev_info) -> None:
         """
@@ -189,7 +234,22 @@ class SubArrayDeviceInfo(DeviceInfo):
         super().__init__(dev_name, _unresponsive)
         self.device_id = -1
         self.resources = []
-        self.obs_state = ObsState.EMPTY
+        self._obs_state = ObsState.EMPTY
+
+    @property
+    def obs_state(self) -> ObsState:
+        """ObsState property"""
+        return self._obs_state
+
+    @obs_state.setter
+    def obs_state(self, value: ObsState):
+        """ObsState property setter.
+
+        :param value: Value to be set
+        :type value: `ObsState`
+        """
+        with self.lock:
+            self._obs_state = value
 
     def from_dev_info(self, dev_info) -> None:
         super().from_dev_info(dev_info)
@@ -255,7 +315,7 @@ class DishDeviceInfo(DeviceInfo):
     def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
         self.device_id = -1
-        self.pointing_state = PointingState.NONE
+        self._pointing_state = PointingState.NONE
         self._dish_mode = DishMode.UNKNOWN
         self.configured_band = Band.NONE
         self.rx_capturing_data = 0
@@ -279,6 +339,21 @@ class DishDeviceInfo(DeviceInfo):
             self._kvalue = value
 
     @property
+    def pointing_state(self) -> PointingState:
+        """PointingState property"""
+        return self._pointing_state
+
+    @pointing_state.setter
+    def pointing_state(self, value: PointingState):
+        """PointingState property setter.
+
+        :param value: Value to be set
+        :type value: `PointingState`
+        """
+        with self.lock:
+            self._pointing_state = value
+
+    @property
     def dish_mode(self) -> DishMode:
         """
         Returns the dish mode value for Dish master device
@@ -289,7 +364,7 @@ class DishDeviceInfo(DeviceInfo):
     @dish_mode.setter
     def dish_mode(self, value: DishMode) -> None:
         """Sets the value of dish mode for Dish master device"""
-        if self._dish_mode != value:
+        with self.lock:
             self._dish_mode = value
 
     # pylint: disable=protected-access

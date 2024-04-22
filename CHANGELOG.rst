@@ -42,6 +42,21 @@ Added
 
 Fixed
 -----
+
+[0.15.10]
+************
+* Fixed Configure command of HelperDishLNDevice send pointingState and dishMode with delay interval
+
+[0.15.9]
+************
+* Fixed Scan Command of HelperSubarrayLeafDevice to directly send the ObsState event.
+
+[0.15.8]
+************
+* Removed duplicate set_change_event calls for the attributes inherited from the base classes
+* Utilised Timer thread to simulate pushing of the transitional and final obstate events
+* Updated **DeviceInfo** and child classes to implement their own locks
+
 [0.15.7]
 ************
 * Updated Scan Command of HelperSubarrayLeafDevice to introduce a delay in ObsState event received on SubarrayNode.

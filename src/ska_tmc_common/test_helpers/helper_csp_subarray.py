@@ -61,7 +61,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             self.thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=["AssignResources"],
             )
@@ -72,14 +72,15 @@ class HelperCspSubarray(HelperSubArrayDevice):
         self.push_change_event("obsState", self._obs_state)
 
         command_result_thread = threading.Timer(
-            interval=5,
+            interval=self.exception_delay,
             function=self.wait_and_update_command_result,
             args=["AssignResources"],
         )
         command_result_thread.start()
 
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
+        thread = threading.Timer(
+            interval=self._delay,
+            function=self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
@@ -158,7 +159,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
             self.thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_exception,
                 args=["ReleaseAllResources"],
             )
@@ -169,14 +170,15 @@ class HelperCspSubarray(HelperSubArrayDevice):
         self.push_change_event("obsState", self._obs_state)
 
         command_result_thread = threading.Timer(
-            interval=5,
+            interval=self.exception_delay,
             function=self.wait_and_update_command_result,
             args=["ReleaseAllResources"],
         )
         command_result_thread.start()
 
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
+        thread = threading.Timer(
+            interval=self._delay,
+            function=self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
         thread.start()
@@ -216,14 +218,15 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.push_change_event("obsState", self._obs_state)
 
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["Configure"],
             )
             command_result_thread.start()
 
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=self._delay,
+                function=self.update_device_obsstate,
                 args=[ObsState.READY, CONFIGURE],
             )
             thread.start()
@@ -253,7 +256,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.SCANNING
 
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["Scan"],
             )
@@ -286,7 +289,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.READY
 
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["EndScan"],
             )
@@ -316,7 +319,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["GoToIdle"],
             )
@@ -342,7 +345,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.IDLE
 
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["ObsReset"],
             )
@@ -374,14 +377,15 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.push_change_event("obsState", self._obs_state)
 
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["Abort"],
             )
             command_result_thread.start()
 
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=self._delay,
+                function=self.update_device_obsstate,
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
@@ -410,14 +414,15 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.push_change_event("obsState", self._obs_state)
 
             command_result_thread = threading.Timer(
-                interval=5,
+                interval=self.exception_delay,
                 function=self.wait_and_update_command_result,
                 args=["Restart"],
             )
             command_result_thread.start()
 
-            thread = threading.Thread(
-                target=self.update_device_obsstate,
+            thread = threading.Timer(
+                interval=self._delay,
+                function=self.update_device_obsstate,
                 args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
