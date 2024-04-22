@@ -1142,7 +1142,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", self._obs_state)
             self.logger.info("Starting Thread for configure")
             thread = threading.Timer(
-                interval=self._delay,
+                interval=self._command_delay_info[CONFIGURE],
                 function=self.update_device_obsstate,
                 args=[ObsState.READY, CONFIGURE],
             )
