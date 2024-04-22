@@ -177,7 +177,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             event_callback=self.process_pointing_cal
         )
         event_id = sdp_queue_connector_proxy.subscribe_event(
-            attribute_name + f"_{dish_id}",
+            attribute_name.format(dish_id=dish_id),
             tango.EventType.CHANGE_EVENT,
             event_callback,
         )

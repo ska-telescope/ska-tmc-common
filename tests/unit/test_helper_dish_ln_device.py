@@ -224,7 +224,7 @@ def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     This test case verifies sdpQueueConnectorFQDN dish leaf node attribute.
     """
     timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
-    SDPQC_ATTR_PROXY = "test-sdp/queueconnector/01/pointing_cal"
+    SDPQC_ATTR_PROXY = "test-sdp/queueconnector/01/pointing_cal_{dish_id}"
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
