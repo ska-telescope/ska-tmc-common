@@ -229,7 +229,7 @@ def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
     dishln_device.sdpQueueConnectorFqdn = SDPQC_ATTR_PROXY
-    sdpqc_device.SetpointingCalSka001([1.0, 2.0, 3.0])
+    sdpqc_device.SetPointingCalSka001([1.0, 2.0, 3.0])
     # actualPointing contains initialized value
     # [timestamp, 287.2504396, 77.8694392], where timestamp is dynamic
     updated_actual_pointing = [
