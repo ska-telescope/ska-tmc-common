@@ -4,6 +4,7 @@ This module implements the Helper Dish Leaf Node Device for testing an
 integrated TMC.
 """
 import json
+import re
 import threading
 import time
 from datetime import datetime as dt
@@ -142,7 +143,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     @attribute(
         dtype=ArgType.DevString,
         dformat=AttrDataFormat.SCALAR,
-        access=AttrWriteType.READ,
+        access=AttrWriteType.READ_WRITE,
     )
     def sdpQueueConnectorFqdn(self) -> str:
         """
@@ -160,11 +161,14 @@ class HelperDishLNDevice(HelperBaseDevice):
         subarray node and then Dish Leaf Node have to subscribe to its
         respective pointing_cal attribute on queue connector device.
         """
-        dish_id = self.DishMasterFQDN.split("/")[0].upper()
+        dish_id = re.findall(
+            r"\bska\w*", self.DishMasterFQDN, flags=re.IGNORECASE
+        )[0]
         attribute_name = sdpqc_fqdn.split("/")[-1]
         self._sdpQueueConnectorFqdn = sdpqc_fqdn
         if "sdpQueueConnectorFqdn" in self.attribute_subscription_data:
             return
+
         dev_factory = DevFactory()
         sdp_queue_connector_proxy = dev_factory.get_device(
             self._sdpQueueConnectorFqdn.rsplit("/", 1)[0]
@@ -177,6 +181,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             tango.EventType.CHANGE_EVENT,
             event_callback,
         )
+
         self.attribute_subscription_data["sdpQueueConnectorFqdn"] = event_id
         self.logger.info(
             "Successfully subscribed to %s and event id is %s",
