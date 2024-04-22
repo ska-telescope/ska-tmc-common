@@ -166,9 +166,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         dish_id = self.DishMasterFQDN.split("/")[0].upper()
         attribute_name = sdpqc_fqdn.split("/")[-1]
         self._sdpQueueConnectorFqdn = sdpqc_fqdn
-        for key, _ in self.attribute_subscription_data.items():
-            if key == "sdpQueueConnectorFqdn":
-                return
+        if "sdpQueueConnectorFqdn" in self.attribute_subscription_data:
+            return
         dev_factory = DevFactory()
         sdp_queue_connector_proxy = dev_factory.get_device(
             self._sdpQueueConnectorFqdn.rsplit("/", 1)[0]
