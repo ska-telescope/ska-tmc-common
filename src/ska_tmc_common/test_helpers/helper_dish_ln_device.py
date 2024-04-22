@@ -80,6 +80,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._sourceOffset: list = [0.0, 0.0]
         self._sdpQueueConnectorFqdn: str = ""
         self.attribute_subscription_data = {}
+        self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
 
     # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
@@ -230,6 +231,15 @@ class HelperDishLNDevice(HelperBaseDevice):
         Read method for actual pointing.
         :return: actual pointing value
         """
+        # The below instruction highlights the instruction Dish
+        # leaf Node needs to execute after doing interpoloation
+        # before doing backward/reverse transform
+        timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
+        azimuth = self._actual_pointing[1] - self._sdp_pointing_offsets[1]
+        elevation = self._actual_pointing[2] - self._sdp_pointing_offsets[2]
+        self._actual_pointing[0] = timestamp
+        self._actual_pointing[1] = azimuth
+        self._actual_pointing[2] = elevation
         return json.dumps(self._actual_pointing)
 
     def read_isSubsystemAvailable(self) -> bool:
@@ -287,6 +297,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         SDP queue connector device and invokes the TrackLoadStaticOff
         command on the Dish Master"""
         try:
+            self._sdp_pointing_offsets = event_data.attr_value.value
             offsets = [
                 event_data.attr_value.value[1],
                 event_data.attr_value.value[2],

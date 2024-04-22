@@ -1,5 +1,6 @@
 import json
 import time
+from datetime import datetime as dt
 
 import numpy
 import pytest
@@ -218,14 +219,26 @@ def test_source_offset_dishln_attribute(tango_context):
     assert numpy.array_equal(SOURCE_OFFSET, dishln_device.sourceOffset)
 
 
+@pytest.mark.test
 def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     """
     This test case verifies sdpQueueConnectorFQDN dish leaf node attribute.
     """
+    timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
     SDPQC_ATTR_PROXY = "test-sdp/queueconnector/01/pointing_cal"
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
     dishln_device.sdpQueueConnectorFqdn = SDPQC_ATTR_PROXY
     sdpqc_device.SetpointingCalSka001([1.0, 2.0, 3.0])
+    # actualPointing contains initialized value
+    # [timestamp, 287.2504396, 77.8694392], where timestamp is dynamic
+    updated_actual_pointing = [
+        timestamp,
+        285.2504396,
+        74.8694392,
+    ]  # instruction to verify the pointing calibration processed as expected
+    assert numpy.array_equal(
+        json.loads(dishln_device.actualPointing), updated_actual_pointing
+    )
     assert dishln_device.sdpQueueConnectorFqdn == SDPQC_ATTR_PROXY
