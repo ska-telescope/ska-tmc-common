@@ -397,13 +397,21 @@ class HelperSubArrayDevice(SKASubarray):
     ) -> None:
         """Updates the given data after a delay."""
         with tango.EnsureOmniThread():
-            self.logger.info(
-                "Pushing ObsState event for command: %s and obsState: %s",
-                command_name,
-                value,
-            )
-            self._obs_state = value
-            self.push_change_event("obsState", self._obs_state)
+            # If the current obsState is ABORTING or ABORTED, don't push events
+            # other than ObsState.ABORTED or ObsState.RESTARTING. This is to
+            # avoid cases where abort is invoked on a device and it still sends
+            # out other ObsState events.
+            if self._obs_state not in [
+                ObsState.ABORTING,
+                ObsState.ABORTED,
+            ] or value in [ObsState.ABORTED, ObsState.RESTARTING]:
+                self.logger.info(
+                    "Pushing ObsState event for command: %s and obsState: %s",
+                    command_name,
+                    value,
+                )
+                self._obs_state = value
+                self.push_change_event("obsState", self._obs_state)
 
     def update_command_info(
         self, command_name: str = "", command_input: str = ""
@@ -1141,7 +1149,12 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.CONFIGURING
             self.push_change_event("obsState", self._obs_state)
             self.logger.info("Starting Thread for configure")
-            self._start_thread([ObsState.READY, CONFIGURE])
+            thread = threading.Timer(
+                interval=self._command_delay_info[CONFIGURE],
+                function=self.update_device_obsstate,
+                args=[ObsState.READY, CONFIGURE],
+            )
+            thread.start()
             self.logger.debug(
                 "Configure command invoked, obsState will transition to"
                 + "READY current obsState is %s",

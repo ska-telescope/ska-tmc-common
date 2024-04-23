@@ -1,6 +1,8 @@
 import json
 import time
+from datetime import datetime as dt
 
+import numpy
 import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
@@ -10,6 +12,7 @@ from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_LN_DEVICE,
     FAILED_RESULT_DEFECT,
+    HELPER_SDP_QUEUE_CONNECTOR_DEVICE,
 )
 
 COMMANDS = [
@@ -203,3 +206,38 @@ def test_to_check_kvalidationresult_result_code_ok(tango_context):
         elapsed_time = time.time() - start_time
     # Assert initial value is getting set
     assert dishln_device.kValueValidationResult == str(int(ResultCode.OK))
+
+
+def test_source_offset_dishln_attribute(tango_context):
+    """
+    This test case verifies sourceOffset dish leaf node attribute.
+    """
+    SOURCE_OFFSET = [0.0, 5.0]
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.SetSourceOffset(SOURCE_OFFSET)
+    assert numpy.array_equal(SOURCE_OFFSET, dishln_device.sourceOffset)
+
+
+def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
+    """
+    This test case verifies sdpQueueConnectorFQDN dish leaf node attribute.
+    """
+    timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
+    SDPQC_ATTR_PROXY = "test-sdp/queueconnector/01/pointing_cal_{dish_id}"
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
+    dishln_device.sdpQueueConnectorFqdn = SDPQC_ATTR_PROXY
+    sdpqc_device.SetPointingCalSka001([1.0, 2.0, 3.0])
+    # actualPointing contains initialized value
+    # [timestamp, 287.2504396, 77.8694392], where timestamp is dynamic
+    updated_actual_pointing = [
+        timestamp,
+        285.2504396,
+        74.8694392,
+    ]  # instruction to verify the pointing calibration processed as expected
+    assert numpy.array_equal(
+        json.loads(dishln_device.actualPointing), updated_actual_pointing
+    )
+    assert dishln_device.sdpQueueConnectorFqdn == SDPQC_ATTR_PROXY
