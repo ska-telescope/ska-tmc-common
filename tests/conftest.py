@@ -120,7 +120,12 @@ def devices_to_load():
         {
             "class": HelperDishLNDevice,
             "devices": [
-                {"name": DISH_LN_DEVICE},
+                {
+                    "name": DISH_LN_DEVICE,
+                    "properties": {
+                        "DishMasterFQDN": "ska001/elt/master",
+                    },
+                },
             ],
         },
         {

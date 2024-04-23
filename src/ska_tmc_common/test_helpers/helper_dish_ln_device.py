@@ -4,18 +4,28 @@ This module implements the Helper Dish Leaf Node Device for testing an
 integrated TMC.
 """
 import json
+import re
 import threading
 import time
+from datetime import datetime as dt
 from typing import List, Tuple, Union
 
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, Database, DevEnum, DevState
-from tango.server import attribute, command, run
+from tango import (
+    ArgType,
+    AttrDataFormat,
+    AttrWriteType,
+    Database,
+    DevEnum,
+    DevState,
+)
+from tango.server import attribute, command, device_property, run
 
-from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
 from ska_tmc_common.enum import DishMode, PointingState
+from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
@@ -41,6 +51,12 @@ class HelperDishLNDevice(HelperBaseDevice):
     device.
     """
 
+    DishMasterFQDN = device_property(
+        dtype="str",
+        doc="FQDN of Dish Master Device",
+        default_value="mkt001/elt/master",
+    )
+
     def init_device(self) -> None:
         super().init_device()
         self._delay: int = 2
@@ -53,12 +69,20 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._command_info: Tuple = ("", "")
         self._state_duration_info: list = []
         self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
-        self._actual_pointing: list = []
+        self._actual_pointing: list = [
+            dt.now().strftime("%Y-%m-%d %H:%M:%S"),
+            287.2504396,
+            77.8694392,
+        ]
         self._kvalue: int = 0
         self._isSubsystemAvailable = True
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
         self._dish_mode = DishMode.STANDBY_LP
         self._pointing_state = PointingState.NONE
+        self._sourceOffset: list = [0.0, 0.0]
+        self._sdpQueueConnectorFqdn: str = ""
+        self.attribute_subscription_data = {}
+        self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
 
     # pylint: disable=protected-access
     class InitCommand(SKABaseDevice.InitCommand):
@@ -80,6 +104,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             self._device.op_state_model.perform_action("component_on")
+            self._device.set_change_event("sourceOffset", True, False)
             self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
 
@@ -101,6 +126,71 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._dish_kvalue_validation_result
 
     @attribute(
+        dtype=ArgType.DevDouble,
+        dformat=AttrDataFormat.SPECTRUM,
+        access=AttrWriteType.READ,
+        max_dim_x=2,
+    )
+    def sourceOffset(self) -> list[float]:
+        """
+        This attribute is used for storing the commanded offsets
+        received as a part of delta/partial configuration.
+        This attribute is subscribed by SDP queue connector
+        device.
+        :return: sourceOffset
+        """
+        return self._sourceOffset
+
+    @attribute(
+        dtype=ArgType.DevString,
+        dformat=AttrDataFormat.SCALAR,
+        access=AttrWriteType.READ_WRITE,
+    )
+    def sdpQueueConnectorFqdn(self) -> str:
+        """
+        This attribute is used for storing the FQDN of pointing_cal
+        attribute SDP queue connector device, which is required in
+        calibration scan.
+        :return: str
+        """
+        return self._sdpQueueConnectorFqdn
+
+    @sdpQueueConnectorFqdn.write
+    def sdpQueueConnectorFqdn(self, sdpqc_fqdn: str) -> None:
+        """
+        This Method is used to get the SDP queue connector FQDN from
+        subarray node and then Dish Leaf Node have to subscribe to its
+        respective pointing_cal attribute on queue connector device.
+        """
+        dish_id = re.findall(
+            r"\b(?:ska|mkt)\w*", self.DishMasterFQDN, flags=re.IGNORECASE
+        )[0].upper()
+        attribute_name = sdpqc_fqdn.split("/")[-1]
+        self._sdpQueueConnectorFqdn = sdpqc_fqdn
+        if "sdpQueueConnectorFqdn" in self.attribute_subscription_data:
+            return
+
+        dev_factory = DevFactory()
+        sdp_queue_connector_proxy = dev_factory.get_device(
+            self._sdpQueueConnectorFqdn.rsplit("/", 1)[0]
+        )
+        event_callback = EventCallback(
+            event_callback=self.process_pointing_cal
+        )
+        event_id = sdp_queue_connector_proxy.subscribe_event(
+            attribute_name.format(dish_id=dish_id),
+            tango.EventType.CHANGE_EVENT,
+            event_callback,
+        )
+
+        self.attribute_subscription_data["sdpQueueConnectorFqdn"] = event_id
+        self.logger.info(
+            "Successfully subscribed to %s and event id is %s",
+            sdpqc_fqdn.format(dish_id=dish_id),
+            event_id,
+        )
+
+    @attribute(
         dtype=int,
         access=AttrWriteType.READ_WRITE,
         memorized=True,
@@ -116,7 +206,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         return self._kvalue
 
     @kValue.write
-    def kValue(self, kvalue: str) -> None:
+    def kValue(self, kvalue: int) -> None:
         """Set memorized dish vcc map
         :param kvalue: dish vcc config json string
         :type str
@@ -143,6 +233,15 @@ class HelperDishLNDevice(HelperBaseDevice):
         Read method for actual pointing.
         :return: actual pointing value
         """
+        # The below instruction highlights the instruction Dish
+        # leaf Node needs to execute after doing interpoloation
+        # before doing backward/reverse transform
+        timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
+        azimuth = self._actual_pointing[1] - self._sdp_pointing_offsets[1]
+        elevation = self._actual_pointing[2] - self._sdp_pointing_offsets[2]
+        self._actual_pointing[0] = timestamp
+        self._actual_pointing[1] = azimuth
+        self._actual_pointing[2] = elevation
         return json.dumps(self._actual_pointing)
 
     def read_isSubsystemAvailable(self) -> bool:
@@ -194,6 +293,26 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self._pointing_state != value:
             self._pointing_state = PointingState(argin)
             self.push_change_event("pointingState", self._pointing_state)
+
+    def process_pointing_cal(self, event_data: tango.EventData) -> None:
+        """This Method takes the pointing calibration data from
+        SDP queue connector device and invokes the TrackLoadStaticOff
+        command on the Dish Master"""
+        try:
+            self._sdp_pointing_offsets = event_data.attr_value.value
+            offsets = [
+                event_data.attr_value.value[1],
+                event_data.attr_value.value[2],
+            ]
+            self.TrackLoadStaticOff(json.dumps(offsets))
+            self.logger.info(
+                "Pointing cal received from SDP Queue connector device: %s",
+                event_data.attr_value.value,
+            )
+        except ValueError as e:
+            self.logger.info(
+                "Exception occurred while processing pointing_cal %s", e
+            )
 
     def set_dish_mode(self, dishMode: DishMode) -> None:
         """
@@ -267,6 +386,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_y=1000,
     )
 
+    def set_offset(self, cross_elevation: float, elevation: float) -> None:
+        """Sets the offset for Dish."""
+        self._offset["off_xel"] = cross_elevation
+        self._offset["off_el"] = elevation
+
     def _update_pointing_state_in_sequence(self) -> None:
         """This method update pointing state in sequence as per
         state duration info
@@ -307,10 +431,18 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._dish_kvalue_validation_result,
         )
 
-    def set_offset(self, cross_elevation: float, elevation: float) -> None:
-        """Sets the offset for Dish."""
-        self._offset["off_xel"] = cross_elevation
-        self._offset["off_el"] = elevation
+    @command(
+        dtype_in=ArgType.DevDouble,
+        dformat_in=AttrDataFormat.SPECTRUM,
+        doc_in="([cross_elevation_offset, elevation_offset])",
+    )
+    def SetSourceOffset(self, sourceOffset: list) -> None:
+        """Sets the commanded offsets"""
+        self._sourceOffset = sourceOffset
+        self.push_change_event("sourceOffset", self._sourceOffset)
+        self.logger.debug(
+            "sourceOffset attribute value updated to: %s", self._sourceOffset
+        )
 
     def read_commandCallInfo(self):
         """
