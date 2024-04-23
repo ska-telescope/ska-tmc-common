@@ -54,7 +54,6 @@ class HelperDishLNDevice(HelperBaseDevice):
     DishMasterFQDN = device_property(
         dtype="str",
         doc="FQDN of Dish Master Device",
-        default_value="mkt001/elt/master",
     )
 
     def init_device(self) -> None:
