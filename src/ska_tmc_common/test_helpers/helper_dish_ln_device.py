@@ -54,6 +54,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     DishMasterFQDN = device_property(
         dtype="str",
         doc="FQDN of Dish Master Device",
+        default_value="mkt001/elt/master",
     )
 
     def init_device(self) -> None:
@@ -162,8 +163,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         respective pointing_cal attribute on queue connector device.
         """
         dish_id = re.findall(
-            r"\bska\w*", self.DishMasterFQDN, flags=re.IGNORECASE
-        )[0]
+            r"\b(?:ska|mkt)\w*", self.DishMasterFQDN, flags=re.IGNORECASE
+        )[0].upper()
         attribute_name = sdpqc_fqdn.split("/")[-1]
         self._sdpQueueConnectorFqdn = sdpqc_fqdn
         if "sdpQueueConnectorFqdn" in self.attribute_subscription_data:
@@ -185,7 +186,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.attribute_subscription_data["sdpQueueConnectorFqdn"] = event_id
         self.logger.info(
             "Successfully subscribed to %s and event id is %s",
-            sdpqc_fqdn,
+            sdpqc_fqdn.format(dish_id=dish_id),
             event_id,
         )
 

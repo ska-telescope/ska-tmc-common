@@ -26,7 +26,7 @@ class EventCallback:
         return self.events
 
     def push_event(self, event_data: tango.EventData):
-        """Push event method to use this class as a callback."""
+        """Push event method to utilize this class as a callback."""
         self.events.append(event_data)
         try:
             if not self.check_event_error(event_data=event_data):
