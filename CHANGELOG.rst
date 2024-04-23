@@ -9,7 +9,7 @@ Added
 -----
 [0.16.0]
 ************
-* Added sourceOffset attribute to expose commanded offset during calibration scan_id
+* Added sourceOffset attribute to expose commanded offset during calibration scan.
 * Added sdpQueueConnectorFqdn attribute to process the pointing calibration received from SDP queue connector device.
 * Removed pointig_offsets and added pointing_cal attribute for Dish Id's SKA001, SKA002, SKA003, SKA004, SKA036, SKA063 and SKA100 in SDP queue connector device.
   
