@@ -42,6 +42,10 @@ Added
 
 Fixed
 -----
+[0.15.11]
+************
+
+* Delay added for MCCS Subarray Configure command
 
 [0.15.10]
 ************

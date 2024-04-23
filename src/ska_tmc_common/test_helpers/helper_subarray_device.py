@@ -1141,7 +1141,12 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.CONFIGURING
             self.push_change_event("obsState", self._obs_state)
             self.logger.info("Starting Thread for configure")
-            self._start_thread([ObsState.READY, CONFIGURE])
+            thread = threading.Timer(
+                interval=self._command_delay_info[CONFIGURE],
+                function=self.update_device_obsstate,
+                args=[ObsState.READY, CONFIGURE],
+            )
+            thread.start()
             self.logger.debug(
                 "Configure command invoked, obsState will transition to"
                 + "READY current obsState is %s",
