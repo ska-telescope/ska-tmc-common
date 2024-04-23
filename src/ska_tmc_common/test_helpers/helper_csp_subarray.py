@@ -254,6 +254,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
+            self.push_change_event("obsState", self._obs_state)
 
             command_result_thread = threading.Timer(
                 interval=self.exception_delay,
@@ -261,8 +262,6 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 args=["Scan"],
             )
             command_result_thread.start()
-
-            self.push_change_event("obsState", self._obs_state)
         self.logger.debug(
             "Scan command invoked current obsState is %s", self._obs_state
         )
@@ -287,6 +286,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
+            self.push_change_event("obsState", self._obs_state)
 
             command_result_thread = threading.Timer(
                 interval=self.exception_delay,
@@ -294,8 +294,6 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 args=["EndScan"],
             )
             command_result_thread.start()
-
-            self.push_change_event("obsState", self._obs_state)
         self.logger.info("EndScan command completed.")
         return [ResultCode.OK], [""]
 
