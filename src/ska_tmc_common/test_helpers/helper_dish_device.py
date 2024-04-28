@@ -770,7 +770,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
-        command_id = f"{time.time()}-Allocate"
+        command_id = f"{time.time()}-Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
