@@ -23,6 +23,7 @@ from ska_tmc_common.test_helpers.constants import (
     END_SCAN,
     SCAN,
     SET_OPERATE_MODE,
+    TRACK,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -733,6 +734,54 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(ResultCode.OK, "ConfigureBand5b")
         self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
+
+    def update_lrcr(
+        self, command_name: str = "", command_id: str = ""
+    ) -> None:
+        """Updates the longrunningcommandresult  after a delay."""
+        delay_value = self._delay
+        with tango.EnsureOmniThread():
+            time.sleep(delay_value)
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+
+            if self._pointing_state != PointingState.TRACK:
+                if self._state_duration_info:
+                    self._follow_state_duration()
+                else:
+                    self._pointing_state = PointingState.TRACK
+                    self.push_change_event(
+                        "pointingState", self._pointing_state
+                    )
+
+                # Set dish mode
+            self.set_dish_mode(DishMode.OPERATE)
+            self.push_command_result(ResultCode.OK, command_id)
+            self.logger.info("Track command completed.")
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Track(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Track command on  Dish Master
+        :return: ResultCode and message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}-Allocate"
+        self.logger.info("Instructed Dish simulator to invoke Track command")
+        self.update_command_info(TRACK, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Track")
+
+        thread = threading.Thread(
+            target=self.update_lrcr, args=["Track", command_id]
+        )
+        thread.start()
+
+        return [ResultCode.QUEUED], [command_id]
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Slew_allowed(self) -> bool:
