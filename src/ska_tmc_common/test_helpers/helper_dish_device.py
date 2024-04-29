@@ -518,6 +518,7 @@ class HelperDishDevice(HelperDishLNDevice):
                     "Device is defective, cannot process command."
                 )
                 raise CommandNotAllowed(self.defective_params["error_message"])
+
         self.logger.info("ConfigureBand2 Command is allowed")
         return True
 
@@ -538,6 +539,15 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         self.logger.info("Processing ConfigureBand2 Command")
+
+        if self.configuredBand == Band.B2:
+            self.push_command_result(
+                ResultCode.REJECTED,
+                "ConfigureBand2",
+                exception="Already in band 2",
+            )
+            return ([ResultCode.REJECTED], ["Already in band 2"])
+
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
         if self.defective_params["enabled"]:
