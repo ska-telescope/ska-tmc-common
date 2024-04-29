@@ -29,6 +29,7 @@ from .dev_factory import DevFactory
 from .device_info import (
     DeviceInfo,
     DishDeviceInfo,
+    SdpQueueConnectorDeviceInfo,
     SdpSubarrayDeviceInfo,
     SubArrayDeviceInfo,
 )
@@ -187,4 +188,5 @@ __all__ = [
     "TimeKeeper",
     "timeout_decorator",
     "error_propagation_decorator",
+    "SdpQueueConnectorDeviceInfo",
 ]

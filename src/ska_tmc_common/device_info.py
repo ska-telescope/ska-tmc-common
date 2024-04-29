@@ -399,3 +399,17 @@ class DishDeviceInfo(DeviceInfo):
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["program_track_table"] = self.program_track_table
         return super_dict
+
+
+class SdpQueueConnectorDeviceInfo:
+    """
+    This class gives SdpQueueConnector device info
+    """
+
+    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
+        self.dev_name = dev_name
+        self._device_availability = False
+        self._ping: int = -1
+        self.event_id: int = -1
+        self.exception = None
+        self._unresponsive = _unresponsive
