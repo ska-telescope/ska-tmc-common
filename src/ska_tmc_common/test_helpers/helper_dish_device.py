@@ -757,7 +757,9 @@ class HelperDishDevice(HelperDishLNDevice):
 
                 # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
-            self.push_command_result(ResultCode.OK, command_id)
+            self.push_command_result(
+                ResultCode.OK, command_name, command_id=command_id
+            )
             self.logger.info("Track command completed.")
 
     @command(
