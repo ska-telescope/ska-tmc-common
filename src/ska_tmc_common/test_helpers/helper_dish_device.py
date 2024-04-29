@@ -540,7 +540,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         self.logger.info("Processing ConfigureBand2 Command")
 
-        if self.configuredBand == Band.B2:
+        if self._configured_band == Band.B2:
             self.push_command_result(
                 ResultCode.REJECTED,
                 "ConfigureBand2",
