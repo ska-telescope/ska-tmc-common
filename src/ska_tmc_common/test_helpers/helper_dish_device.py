@@ -538,7 +538,8 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
-        self.logger.info("Processing ConfigureBand2 Command")
+        self.logger.info("Current band - %s", self._configured_band)
+        # self.logger.info(f"Current band - {configuredBand}")
 
         if self._configured_band == Band.B2:
             self.push_command_result(
