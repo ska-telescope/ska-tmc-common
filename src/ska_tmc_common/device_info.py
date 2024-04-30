@@ -413,4 +413,5 @@ class SdpQueueConnectorDeviceInfo:
         self.event_id: int = -1
         self.exception = None
         self.pointing_data: list = [0.0, 0.0, 0.0]
+        self.subscribed_to_attribute = False
         self._unresponsive = False
