@@ -423,6 +423,8 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
 
+        command_id = f"{time.time()}-TrackLoadStaticOff"
+
         # Set offsets.
         cross_elevation = argin[0]
         elevation = argin[1]
@@ -432,18 +434,23 @@ class HelperDishDevice(HelperDishLNDevice):
         ]:  # Temporary change to set status as failed.
             thread = threading.Timer(
                 self._delay,
-                function=self.push_command_status,
-                args=["FAILED", "TrackLoadStaticOff"],
+                function=self.push_command_result,
+                args=["ResultCode.FAILED", "TrackLoadStaticOff"],
+                kwargs={
+                    "command_id": command_id,
+                    "exception": "Failed to Load the static pointing "
+                    "model offsets",
+                },
             )
         else:
             thread = threading.Timer(
                 self._delay,
-                function=self.push_command_status,
-                args=["COMPLETED", "TrackLoadStaticOff"],
+                function=self.push_command_result,
+                args=["ResultCode.OK", "TrackLoadStaticOff"],
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
-        return ([ResultCode.QUEUED], [""])
+        return [ResultCode.QUEUED], [command_id]
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
@@ -539,7 +546,6 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         self.logger.info("Current band - %s", self._configured_band)
-        # self.logger.info(f"Current band - {configuredBand}")
 
         if self._configured_band == Band.B2:
             self.push_command_result(
