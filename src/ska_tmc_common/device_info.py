@@ -412,4 +412,5 @@ class SdpQueueConnectorDeviceInfo:
         self._ping: int = -1
         self.event_id: int = -1
         self.exception = None
+        self.pointing_data: list = [0.0, 0.0, 0.0]
         self._unresponsive = _unresponsive
