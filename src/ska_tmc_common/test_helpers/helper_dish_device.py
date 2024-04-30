@@ -446,7 +446,7 @@ class HelperDishDevice(HelperDishLNDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=["ResultCode.OK", "TrackLoadStaticOff"],
+                args=[ResultCode.OK, "TrackLoadStaticOff"],
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
