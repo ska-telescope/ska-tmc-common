@@ -406,11 +406,11 @@ class SdpQueueConnectorDeviceInfo:
     This class gives SdpQueueConnector device info
     """
 
-    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
-        self.dev_name = dev_name
+    def __init__(self) -> None:
+        self.dev_name = None
         self._device_availability = False
         self._ping: int = -1
         self.event_id: int = -1
         self.exception = None
         self.pointing_data: list = [0.0, 0.0, 0.0]
-        self._unresponsive = _unresponsive
+        self._unresponsive = False
