@@ -133,18 +133,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         return json.dumps(self.defective_params)
 
-    def push_obs_state_event(self, obs_state: ObsState):
-        """Place holder method. This method will be implemented in the child
-        classes."""
-        self._obs_state = obs_state
-        self.push_change_event("obsState", self._obs_state)
-
-    def update_device_obsstate(self, obs_state: ObsState):
-        """Updates the device obsState"""
-        with tango.EnsureOmniThread():
-            self._obs_state = obs_state
-            self.push_obs_state_event(self._obs_state)
-
     @command()
     def On(self):
         self.update_command_info(ON, "")
@@ -198,7 +186,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
         self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
+        self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
 
         # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
@@ -222,7 +210,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
             # Return to the initial obsState
             self._obs_state = initial_obstate
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Missing receive nodes in the AssignResources input json",
@@ -242,7 +230,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         thread = threading.Timer(
             self._command_delay_info[ASSIGN_RESOURCES],
             self.update_device_obsstate,
-            args=[ObsState.IDLE],
+            args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
         self.push_command_result(ResultCode.OK, "AssignResources")
@@ -259,11 +247,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
         else:
             self._obs_state = ObsState.RESOURCING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, RELEASE_RESOURCES)
             thread = threading.Timer(
                 self._command_delay_info[RELEASE_RESOURCES],
                 self.update_device_obsstate,
-                args=[ObsState.IDLE],
+                args=[ObsState.IDLE, RELEASE_RESOURCES],
             )
             thread.start()
             self.logger.debug(
@@ -284,11 +272,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
         else:
             self._obs_state = ObsState.RESOURCING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
             thread = threading.Timer(
                 self._command_delay_info[RELEASE_ALL_RESOURCES],
                 self.update_device_obsstate,
-                args=[ObsState.EMPTY],
+                args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
             )
             thread.start()
             self.push_command_result(ResultCode.OK, "ReleaseAllResources")
@@ -314,7 +302,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
         self._obs_state = ObsState.CONFIGURING
-        self.push_obs_state_event(self._obs_state)
+        self.update_device_obsstate(self._obs_state, CONFIGURE)
 
         # if scan_type in JSON is invalid , SDP Subarray moves to
         # obsState=IDLE and raises exception
@@ -322,11 +310,13 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         invalid_scan_type = "xxxxxxx_X"
         if scan_type == invalid_scan_type:
             self._obs_state = ObsState.CONFIGURING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, CONFIGURE)
             self.logger.info("Wrong scan_type in the Configure input json")
             self._obs_state = ObsState.IDLE
             thread = threading.Timer(
-                1, self.push_obs_state_event, args=[self._obs_state]
+                1,
+                self.update_device_obsstate,
+                args=[self._obs_state, CONFIGURE],
             )
             thread.start()
             raise tango.Except.throw_exception(
@@ -343,7 +333,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if scan_type == invalid_scan_type:
             self.logger.info("Wrong scan_type in the Configure input json")
             self._obs_state = ObsState.CONFIGURING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, CONFIGURE)
             raise tango.Except.throw_exception(
                 "Incorrect input json string",
                 "Wrong scan_type in the Configure input json",
@@ -360,11 +350,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self._follow_state_duration()
             else:
                 self._obs_state = ObsState.CONFIGURING
-                self.push_obs_state_event(self._obs_state)
+                self.update_device_obsstate(self._obs_state, CONFIGURE)
                 thread = threading.Timer(
                     self._command_delay_info[CONFIGURE],
                     self.update_device_obsstate,
-                    args=[ObsState.READY],
+                    args=[ObsState.READY, CONFIGURE],
                 )
                 thread.start()
                 self.push_command_result(ResultCode.OK, "Configure")
@@ -394,7 +384,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
         else:
             self._obs_state = ObsState.SCANNING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, SCAN)
             self.push_command_result(ResultCode.OK, "Scan")
 
     @command()
@@ -407,7 +397,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
         else:
             self._obs_state = ObsState.READY
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, END_SCAN)
             self.push_command_result(ResultCode.OK, "EndScan")
 
     @command()
@@ -425,7 +415,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 thread = threading.Timer(
                     self._command_delay_info[END],
                     self.update_device_obsstate,
-                    args=[ObsState.IDLE],
+                    args=[ObsState.IDLE, END],
                 )
                 thread.start()
                 self.logger.debug(
@@ -445,11 +435,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
         else:
             self._obs_state = ObsState.ABORTING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, ABORT)
             thread = threading.Timer(
                 self._command_delay_info[ABORT],
                 self.update_device_obsstate,
-                args=[ObsState.ABORTED],
+                args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
             self.push_command_result(ResultCode.OK, "Abort")
@@ -464,11 +454,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
         else:
             self._obs_state = ObsState.RESTARTING
-            self.push_obs_state_event(self._obs_state)
+            self.update_device_obsstate(self._obs_state, RESTART)
             thread = threading.Timer(
                 self._command_delay_info[RESTART],
                 self.update_device_obsstate,
-                args=[ObsState.EMPTY],
+                args=[ObsState.EMPTY, RESTART],
             )
             thread.start()
             self.logger.debug(
