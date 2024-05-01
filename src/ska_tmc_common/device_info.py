@@ -407,11 +407,72 @@ class SdpQueueConnectorDeviceInfo:
     """
 
     def __init__(self) -> None:
-        self.dev_name = None
+        self._dev_name: str = ""
         self._device_availability = False
         self._ping: int = -1
-        self.event_id: int = -1
-        self.exception = None
-        self.pointing_data: list = [0.0, 0.0, 0.0]
-        self.subscribed_to_attribute = False
+        self._event_id: int = -1
+        self._exception = None
+        self._pointing_data: list = [0.0, 0.0, 0.0]
+        self._subscribed_to_attribute = False
         self._unresponsive = False
+        self.lock = threading.Lock()
+
+    @property
+    def dev_name(self) -> str:
+        """Device name property"""
+        return self._dev_name
+
+    @dev_name.setter
+    def dev_name(self, dev_name: str) -> None:
+        """dev_name property setter.
+
+        :param dev_name: device name to be set
+        :type dev_name: `str`
+        """
+        with self.lock:
+            self._dev_name = dev_name
+
+    @property
+    def event_id(self) -> int:
+        """Event ID property"""
+        return self._event_id
+
+    @event_id.setter
+    def event_id(self, event_id: int) -> None:
+        """Event ID property setter.
+
+        :param event_id:  event id to be set
+        :type event_id: `int`
+        """
+        with self.lock:
+            self._event_id = event_id
+
+    @property
+    def pointing_data(self) -> list:
+        """Pointing data property"""
+        return self._pointing_data
+
+    @pointing_data.setter
+    def pointing_data(self, pointing_data: list) -> None:
+        """Pointing data property setter.
+
+        :param pointing_data:  pointing data to be set
+        :type pointing_data: `list`
+        """
+        with self.lock:
+            self._pointing_data = pointing_data
+
+    @property
+    def subscribed_to_attribute(self) -> bool:
+        """Subscribed to attribute property"""
+        return self._subscribed_to_attribute
+
+    @subscribed_to_attribute.setter
+    def subscribed_to_attribute(self, flag: bool) -> None:
+        """subscribed_to_attribute setter.
+
+        :param flag:  flag to check subscribed to attribute or not
+        :type flag: `bool`
+        """
+        with self.lock:
+            self._subscribed_to_attribute = flag
