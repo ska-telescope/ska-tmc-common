@@ -7,6 +7,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.16.2]
+************
+* Added Track command in dish master helper device.
+* Updated TrackLoadStaticOff in dish master helper device to include command Id changes.
+
 [0.16.0]
 ************
 * Added sourceOffset attribute to expose commanded offset during calibration scan.
