@@ -410,7 +410,7 @@ class SdpQueueConnectorDeviceInfo:
         self._dev_name: str = ""
         self._device_availability = False
         self._ping: int = -1
-        self._event_id: int = -1
+        self._event_id: int = 0
         self._exception = None
         self._pointing_data: list = [0.0, 0.0, 0.0]
         self._subscribed_to_attribute = False
