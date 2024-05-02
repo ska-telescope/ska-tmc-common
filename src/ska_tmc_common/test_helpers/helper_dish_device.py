@@ -759,10 +759,10 @@ class HelperDishDevice(HelperDishLNDevice):
         """Updates the longrunningcommandresult  after a delay."""
         delay_value = self._delay
         with tango.EnsureOmniThread():
-            time.sleep(delay_value)
             self.logger.info(
                 "Sleep %s for command %s ", delay_value, command_name
             )
+            time.sleep(delay_value)
 
             if self._pointing_state != PointingState.TRACK:
                 if self._state_duration_info:
