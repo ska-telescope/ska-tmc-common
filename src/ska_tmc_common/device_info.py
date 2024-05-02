@@ -415,7 +415,6 @@ class SdpQueueConnectorDeviceInfo:
         self._pointing_data: list = [0.0, 0.0, 0.0]
         self._subscribed_to_attribute = False
         self._unresponsive = False
-        self.lock = threading.Lock()
 
     @property
     def dev_name(self) -> str:
@@ -429,8 +428,7 @@ class SdpQueueConnectorDeviceInfo:
         :param dev_name: device name to be set
         :type dev_name: `str`
         """
-        with self.lock:
-            self._dev_name = dev_name
+        self._dev_name = dev_name
 
     @property
     def event_id(self) -> int:
@@ -444,8 +442,7 @@ class SdpQueueConnectorDeviceInfo:
         :param event_id:  event id to be set
         :type event_id: `int`
         """
-        with self.lock:
-            self._event_id = event_id
+        self._event_id = event_id
 
     @property
     def pointing_data(self) -> list:
@@ -459,8 +456,7 @@ class SdpQueueConnectorDeviceInfo:
         :param pointing_data:  pointing data to be set
         :type pointing_data: `list`
         """
-        with self.lock:
-            self._pointing_data = pointing_data
+        self._pointing_data = pointing_data
 
     @property
     def subscribed_to_attribute(self) -> bool:
@@ -474,5 +470,4 @@ class SdpQueueConnectorDeviceInfo:
         :param flag:  flag to check subscribed to attribute or not
         :type flag: `bool`
         """
-        with self.lock:
-            self._subscribed_to_attribute = flag
+        self._subscribed_to_attribute = flag
