@@ -47,12 +47,15 @@ def test_sdpqc_device_info():
     pointing_data = [1.1, 2.2, 3.3]
     event_id = 1
     flag = True
+    attribute_name = "pointing_cal"
     sdp_queue_connector_device_info.dev_name = dev_name
     sdp_queue_connector_device_info.pointing_data = pointing_data
     sdp_queue_connector_device_info.event_id = event_id
     sdp_queue_connector_device_info.subscribed_to_attribute = flag
+    sdp_queue_connector_device_info.attribute_name = attribute_name
 
     assert sdp_queue_connector_device_info.dev_name == dev_name
     assert sdp_queue_connector_device_info.event_id == event_id
     assert sdp_queue_connector_device_info.pointing_data == pointing_data
     assert sdp_queue_connector_device_info.subscribed_to_attribute == flag
+    assert sdp_queue_connector_device_info.attribute_name == attribute_name
