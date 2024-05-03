@@ -451,7 +451,7 @@ class HelperDishDevice(HelperDishLNDevice):
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
-        return [ResultCode.QUEUED], [command_id]
+        return ([ResultCode.QUEUED], [command_id])
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
