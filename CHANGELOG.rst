@@ -47,6 +47,10 @@ Added
 
 Fixed
 -----
+[0.16.2]
+************
+* Fix dish leaf node helper device configure command dish mode event push issue.
+
 [0.16.1]
 ************
 * HelperSubarray Devices no longer pushes events if the command invoked is **Abort**.
