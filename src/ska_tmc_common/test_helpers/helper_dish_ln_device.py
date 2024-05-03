@@ -990,7 +990,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         thread = threading.Timer(
             interval=self._delay,
             function=self.set_dish_mode,
-            args=["dishMode", DishMode.OPERATE],
+            args=[DishMode.OPERATE],
         )
         thread.start()
 
