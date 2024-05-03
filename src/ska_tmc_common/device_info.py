@@ -415,6 +415,7 @@ class SdpQueueConnectorDeviceInfo:
         self._pointing_data: list = [0.0, 0.0, 0.0]
         self._subscribed_to_attribute = False
         self._unresponsive = False
+        self._attribute_name: str = ""
 
     @property
     def dev_name(self) -> str:
@@ -471,3 +472,18 @@ class SdpQueueConnectorDeviceInfo:
         :type flag: `bool`
         """
         self._subscribed_to_attribute = flag
+
+    @property
+    def attribute_name(self) -> str:
+        """Attribute name property"""
+        return self._attribute_name
+
+    @attribute_name.setter
+    def attribute_name(self, attribute_name: str) -> None:
+        """Attribute name setter.
+
+        :param attribute_name:  attribute_name to check
+         subscribed to attribute or not
+        :type attribute_name: `str`
+        """
+        self._attribute_name = attribute_name
