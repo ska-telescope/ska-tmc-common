@@ -52,8 +52,8 @@ Added
 
 Fixed
 -----
-[0.16.2]
-************
+[0.16.3]
+***********
 * Fix dish leaf node helper device configure command dish mode event push issue.
 
 [0.16.1]
