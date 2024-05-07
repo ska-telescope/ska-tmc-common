@@ -3,6 +3,7 @@ This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
 import threading
+import time
 from logging import Logger
 from time import sleep
 from typing import List
@@ -38,6 +39,10 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
+        if self.wait_for_devices_to_exported():
+            self._logger.info("devices available")
+        else:
+            self._logger.exception("devices not available in database")
 
     def start(self) -> None:
         """
@@ -45,6 +50,26 @@ class BaseLivelinessProbe:
         """
         if not self._thread.is_alive():
             self._thread.start()
+
+    def wait_for_devices_to_exported(self):
+        """waits for devices to exported in tango database"""
+        start_time = time.time()
+        dev_name = "low-sdp/control/0"
+        while time.time() - start_time < 10:
+            if dev_name not in self.get_exported_devices():
+                time.sleep(1)
+            elif dev_name in self.get_exported_devices():
+                return True
+        return False
+
+    def get_exported_devices(self) -> List[str]:
+        """Method to get exported devices in tango database"""
+        try:
+            exported_device = list(tango.Database().get_device_exported("*"))
+        except tango.DevFailed as e:
+            print("Error:", e)
+            exported_device = []
+        return exported_device
 
     def stop(self) -> None:
         """
