@@ -27,13 +27,12 @@ class DevFactory:
     _test_context = None
 
     def __init__(
-        self, green_mode: tango.GreenMode = tango.GreenMode.Synchronous
+        self
     ) -> None:
         self.dev_proxys = {}
         self.logger = logging.getLogger(__name__)
-        self.default_green_mode = green_mode
 
-    def get_device(self, dev_name: str, green_mode=None) -> tango.DeviceProxy:
+    def get_device(self, dev_name: str) -> tango.DeviceProxy:
         """
         Create (if not done before) a DeviceProxy for the Device fqnm
 
@@ -42,14 +41,12 @@ class DevFactory:
 
         :return: DeviceProxy
         """
-        if green_mode is None:
-            green_mode = self.default_green_mode
         # import debugpy; debugpy.debug_this_thread()
         if DevFactory._test_context is None:
             if dev_name not in self.dev_proxys:
                 self.logger.debug("Creating Proxy for %s", dev_name)
                 self.dev_proxys[dev_name] = tango.DeviceProxy(
-                    dev_name, green_mode=green_mode
+                    dev_name
                 )
             return self.dev_proxys[dev_name]
 
