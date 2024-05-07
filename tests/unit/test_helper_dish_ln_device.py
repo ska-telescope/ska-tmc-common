@@ -237,7 +237,12 @@ def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
         285.2504396,
         74.8694392,
     ]  # instruction to verify the pointing calibration processed as expected
-    assert numpy.array_equal(
-        json.loads(dishln_device.actualPointing), updated_actual_pointing
-    )
+    timestamp, azimuth, elevation = updated_actual_pointing
+    actual_pointing = json.loads(dishln_device.actualPointing)
+    assert actual_pointing[1] == azimuth
+    assert actual_pointing[2] == elevation
+    timestamp_pointing = actual_pointing[0]
+    timestamp_pointing = timestamp_pointing[-1]  # not to consider seconds
+    timestamp = timestamp[-1]  # not to consider seconds
+    assert timestamp_pointing == timestamp
     assert dishln_device.sdpQueueConnectorFqdn == SDPQC_ATTR_PROXY

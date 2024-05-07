@@ -301,6 +301,7 @@ class BaseTMCCommand:
                         + f"thread: {exp}",
                     )
                 # pylint: enable=broad-exception-caught
+                time.sleep(0.5)
 
             if command_id:
                 lrcr_callback.remove_data(command_id)

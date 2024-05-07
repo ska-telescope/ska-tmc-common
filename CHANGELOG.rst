@@ -7,6 +7,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.16.2]
+************
+* Added Track command in dish master helper device.
+* Updated TrackLoadStaticOff in dish master helper device to include command Id changes.
+
 [0.16.0]
 ************
 * Added sourceOffset attribute to expose commanded offset during calibration scan.
@@ -47,6 +52,10 @@ Added
 
 Fixed
 -----
+[0.16.3]
+***********
+* Fix dish leaf node helper device configure command dish mode event push issue.
+
 [0.16.1]
 ************
 * HelperSubarray Devices no longer pushes events if the command invoked is **Abort**.
