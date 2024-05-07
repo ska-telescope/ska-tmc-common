@@ -52,6 +52,10 @@ Added
 
 Fixed
 -----
+[0.16.4]
+***********
+* Added SdpQueueConnectorDeviceInfo class to hold SDP queue connector device information.
+
 [0.16.3]
 ***********
 * Fix dish leaf node helper device configure command dish mode event push issue.

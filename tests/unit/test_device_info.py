@@ -1,7 +1,7 @@
 from ska_tango_base.control_model import HealthState
 from tango import DevState
 
-from ska_tmc_common import DeviceInfo
+from ska_tmc_common import DeviceInfo, SdpQueueConnectorDeviceInfo
 
 
 def test_ping(csp_sln_dev_name):
@@ -39,3 +39,23 @@ def test_to_dict(csp_sln_dev_name):
     assert dev_dict["healthState"] == "HealthState.UNKNOWN"
     assert dev_dict["ping"] == "-1"
     dev_dict["unresponsive"] is False
+
+
+def test_sdpqc_device_info():
+    sdp_queue_connector_device_info = SdpQueueConnectorDeviceInfo()
+    dev_name = "mid-sdp/queueconnector/01"
+    pointing_data = [1.1, 2.2, 3.3]
+    event_id = 1
+    flag = True
+    attribute_name = "pointing_cal"
+    sdp_queue_connector_device_info.dev_name = dev_name
+    sdp_queue_connector_device_info.pointing_data = pointing_data
+    sdp_queue_connector_device_info.event_id = event_id
+    sdp_queue_connector_device_info.subscribed_to_attribute = flag
+    sdp_queue_connector_device_info.attribute_name = attribute_name
+
+    assert sdp_queue_connector_device_info.dev_name == dev_name
+    assert sdp_queue_connector_device_info.event_id == event_id
+    assert sdp_queue_connector_device_info.pointing_data == pointing_data
+    assert sdp_queue_connector_device_info.subscribed_to_attribute == flag
+    assert sdp_queue_connector_device_info.attribute_name == attribute_name

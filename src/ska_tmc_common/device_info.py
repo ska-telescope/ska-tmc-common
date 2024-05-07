@@ -399,3 +399,91 @@ class DishDeviceInfo(DeviceInfo):
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["program_track_table"] = self.program_track_table
         return super_dict
+
+
+class SdpQueueConnectorDeviceInfo:
+    """
+    This class gives SdpQueueConnector device info
+    """
+
+    def __init__(self) -> None:
+        self._dev_name: str = ""
+        self._device_availability = False
+        self._ping: int = -1
+        self._event_id: int = 0
+        self._exception = None
+        self._pointing_data: list = [0.0, 0.0, 0.0]
+        self._subscribed_to_attribute = False
+        self._unresponsive = False
+        self._attribute_name: str = ""
+
+    @property
+    def dev_name(self) -> str:
+        """Device name property"""
+        return self._dev_name
+
+    @dev_name.setter
+    def dev_name(self, dev_name: str) -> None:
+        """dev_name property setter.
+
+        :param dev_name: device name to be set
+        :type dev_name: `str`
+        """
+        self._dev_name = dev_name
+
+    @property
+    def event_id(self) -> int:
+        """Event ID property"""
+        return self._event_id
+
+    @event_id.setter
+    def event_id(self, event_id: int) -> None:
+        """Event ID property setter.
+
+        :param event_id:  event id to be set
+        :type event_id: `int`
+        """
+        self._event_id = event_id
+
+    @property
+    def pointing_data(self) -> list:
+        """Pointing data property"""
+        return self._pointing_data
+
+    @pointing_data.setter
+    def pointing_data(self, pointing_data: list) -> None:
+        """Pointing data property setter.
+
+        :param pointing_data:  pointing data to be set
+        :type pointing_data: `list`
+        """
+        self._pointing_data = pointing_data
+
+    @property
+    def subscribed_to_attribute(self) -> bool:
+        """Subscribed to attribute property"""
+        return self._subscribed_to_attribute
+
+    @subscribed_to_attribute.setter
+    def subscribed_to_attribute(self, flag: bool) -> None:
+        """subscribed_to_attribute setter.
+
+        :param flag:  flag to check subscribed to attribute or not
+        :type flag: `bool`
+        """
+        self._subscribed_to_attribute = flag
+
+    @property
+    def attribute_name(self) -> str:
+        """Attribute name property"""
+        return self._attribute_name
+
+    @attribute_name.setter
+    def attribute_name(self, attribute_name: str) -> None:
+        """Attribute name setter.
+
+        :param attribute_name:  attribute_name to check
+         subscribed to attribute or not
+        :type attribute_name: `str`
+        """
+        self._attribute_name = attribute_name
