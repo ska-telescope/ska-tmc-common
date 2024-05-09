@@ -450,7 +450,7 @@ class HelperDishDevice(HelperDishLNDevice):
         else:
             thread = threading.Timer(
                 self._delay,
-                function=self.push_command_result,
+                function=self.push_command_status,
                 args=["COMPLETED", "TrackLoadStaticOff"],
             )
         thread.start()
