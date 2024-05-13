@@ -506,7 +506,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         thread = threading.Thread(
             target=self.set_dish_mode,
-            args=current_dish_mode,
+            args=[current_dish_mode],
         )
         thread.start()
         # Set dish configured band
