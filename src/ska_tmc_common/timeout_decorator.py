@@ -34,6 +34,7 @@ def timeout_decorator(function: Callable) -> Callable:
         else:
             class_instance.component_manager.start_timer(
                 class_instance.timeout_id,
+                class_instance.component_manager.command_timeout,
                 class_instance.timeout_callback,
             )
         # Execute the function with given args and kwargs
