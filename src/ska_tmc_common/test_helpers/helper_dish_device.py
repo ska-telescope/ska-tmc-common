@@ -16,7 +16,7 @@ from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import Band, DishMode, PointingState
-from ska_tmc_common.test_helpers.constants import (  # TRACK,
+from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE_BAND_1,
     CONFIGURE_BAND_2,
@@ -27,8 +27,6 @@ from ska_tmc_common.test_helpers.constants import (  # TRACK,
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
 )
-
-# TRACK Will be uncommented as part of SAH-1530
 
 
 # pylint: disable=attribute-defined-outside-init,invalid-name
