@@ -67,7 +67,7 @@ class DummyComponentManager(TaskExecutorComponentManager):
         )
         status, msg = self.submit_task(
             self.command_obj.do,
-            args=[argin, self.timeout],
+            kwargs={"argin": argin},
             task_callback=task_callback,
         )
         return status, msg
