@@ -373,6 +373,21 @@ class DishLeafAdapter(BaseAdapter):
         """
         return self._proxy.kValue
 
+    @property
+    def sdpQueueConnectorFqdn(self) -> str:
+        """
+        Get the sdpQueueConnectorFqdn from the dish manager.
+        :return: sdpQueueConnectorFqdn
+        """
+        return self._proxy.sdpQueueConnectorFqdn
+
+    @sdpQueueConnectorFqdn.setter
+    def sdpQueueConnectorFqdn(self, sdp_queue_connector_fqdn: str) -> None:
+        """
+        Set the sdpQueueConnectorFqdn on dish leaf node.
+        """
+        self._proxy.sdpQueueConnectorFqdn = sdp_queue_connector_fqdn
+
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Invokes SetStandbyFPMode on device proxy.
