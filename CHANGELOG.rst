@@ -10,7 +10,7 @@ Added
 [0.16.4]
 ***********
 * Added SdpQueueConnectorDeviceInfo class to hold SDP queue connector device information.
-  
+
 [0.16.2]
 ************
 * Added Track command in dish master helper device.
@@ -56,6 +56,10 @@ Added
 
 Fixed
 -----
+[0.16.6]
+***********
+* Fix issues in **timeout_decorator** and **Error error_propagation_decorator**
+
 [0.16.5]
 ***********
 * Revert the changes done in 0.16.2.
