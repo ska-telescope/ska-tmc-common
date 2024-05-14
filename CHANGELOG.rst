@@ -7,6 +7,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.16.4]
+***********
+* Added SdpQueueConnectorDeviceInfo class to hold SDP queue connector device information.
+  
 [0.16.2]
 ************
 * Added Track command in dish master helper device.
@@ -52,9 +56,9 @@ Added
 
 Fixed
 -----
-[0.16.4]
+[0.16.5]
 ***********
-* Added SdpQueueConnectorDeviceInfo class to hold SDP queue connector device information.
+* Revert the changes done in 0.16.2.
 
 [0.16.3]
 ***********
