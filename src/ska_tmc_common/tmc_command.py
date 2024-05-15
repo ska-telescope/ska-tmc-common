@@ -414,8 +414,8 @@ class BaseTMCCommand:
             # The if else block is to keep backwards compatibility. Once all
             # repositories start using the TimeKeeper class, the block can be
             # replaced with the if part.
-            if hasattr(self.component_manager, "timekeeper"):
-                self.component_manager.timekeeper.stop_timer()
+            if hasattr(self, "timekeeper"):
+                self.timekeeper.stop_timer()
             else:
                 self.component_manager.stop_timer()
 

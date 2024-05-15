@@ -52,8 +52,8 @@ def process_result_and_start_tracker(
             # The if else block is to keep backwards compatibility. Once all
             # repositories start using the TimeKeeper class, the block can be
             # replaced with the if part.
-            if hasattr(class_instance.component_manager, "timekeeper"):
-                class_instance.component_manager.timekeeper.stop_timer()
+            if hasattr(class_instance, "timekeeper"):
+                class_instance.timekeeper.stop_timer()
             else:
                 class_instance.component_manager.stop_timer()
 
@@ -112,7 +112,7 @@ def error_propagation_decorator(
             )
 
             # Extract input argin if present
-            argin, is_argin_present = extract_argin(args)
+            argin = kwargs.get("argin", None)
 
             # Set task callback and task abort event
             class_instance.task_callback = kwargs["task_callback"]
@@ -124,7 +124,7 @@ def error_propagation_decorator(
             setup_data(class_instance)
 
             # Execute the function according to the presence of input argument
-            if is_argin_present:
+            if argin is not None:
                 result, message = function(class_instance, argin)
             else:
                 result, message = function(class_instance)
@@ -157,18 +157,3 @@ def setup_data(class_instance) -> None:
     class_name = class_instance.__class__.__name__
     class_instance.component_manager.command_in_progress = class_name
     class_instance.set_command_id(class_name)
-
-
-def extract_argin(arguments: tuple) -> tuple[str, bool]:
-    """Extracts and returns the argin from the given list of args.
-
-    :param arguments: The input arguments to the function
-    :type arguments: Tuple
-
-    :rtype: Tuple[str, bool]
-    """
-    for element in arguments:
-        if isinstance(element, str):
-            return element, True
-
-    return "", False

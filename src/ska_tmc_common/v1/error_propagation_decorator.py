@@ -33,13 +33,7 @@ def process_result_and_start_tracker(
         # Check if Timeout is considered for the particular command, default:
         # True
         if class_instance.function_map.get("is_timeout_considered", True):
-            # The if else block is to keep backwards compatibility. Once all
-            # repositories start using the TimeKeeper class, the block can be
-            # replaced with the if part.
-            if hasattr(class_instance.component_manager, "timekeeper"):
-                class_instance.component_manager.timekeeper.stop_timer()
-            else:
-                class_instance.component_manager.stop_timer()
+            class_instance.timekeeper.stop_timer()
 
         # Check if a cleanup function is defined, execute if present.
         if class_instance.function_map.get("cleanup_function"):
@@ -80,7 +74,7 @@ def error_propagation_decorator(function: Callable) -> Callable:
             class_instance.function_map["pre_hook"]()
 
         # Extract the input argument if present
-        argin, is_argin_present = extract_argin(args)
+        argin = kwargs.get("argin", None)
 
         # Set the task callback and task abort event
         class_instance.task_callback = kwargs["task_callback"]
@@ -93,7 +87,7 @@ def error_propagation_decorator(function: Callable) -> Callable:
         setup_data(class_instance)
 
         # Execute the command according to existance of input argument
-        if is_argin_present:
+        if argin is not None:
             result, message = function(class_instance, argin)
         else:
             result, message = function(class_instance)
@@ -123,18 +117,3 @@ def setup_data(class_instance) -> None:
     class_name = class_instance.__class__.__name__
     class_instance.component_manager.command_in_progress = class_name
     class_instance.set_command_id(class_name)
-
-
-def extract_argin(arguments: tuple) -> tuple[str, bool]:
-    """Extracts and returns the argin from the given list of args.
-
-    :param arguments: The input arguments to the function
-    :type arguments: Tuple
-
-    :rtype: Tuple[str, bool]
-    """
-    for element in arguments:
-        if isinstance(element, str):
-            return element, True
-
-    return "", False
