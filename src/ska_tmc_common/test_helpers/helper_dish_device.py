@@ -176,7 +176,10 @@ class HelperDishDevice(HelperDishLNDevice):
                 "The programTrackTable attribute value: %s",
                 self._program_track_table,
             )
-            self.set_achieved_pointing()
+            achieve_pointing_thread = threading.Thread(
+                target=self.set_achieved_pointing
+            )
+            achieve_pointing_thread.start()
 
     def read_achievedPointing(self) -> np.ndarray:
         """
@@ -288,34 +291,36 @@ class HelperDishDevice(HelperDishLNDevice):
 
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
-        try:
-            for index in range(0, len(self._program_track_table), 3):
-                self._achieved_pointing = self._program_track_table[
-                    index : index + 3  # noqa
-                ]
-                self.logger.info(
-                    "The achieved pointing value is: %s",
-                    self._achieved_pointing,
+        with tango.EnsureOmniThread():
+            try:
+                for index in range(0, len(self._program_track_table), 3):
+                    self._achieved_pointing = self._program_track_table[
+                        index : index + 3  # noqa
+                    ]
+                    self.logger.info(
+                        "The achieved pointing value is: %s",
+                        self._achieved_pointing,
+                    )
+                    self.push_change_event(
+                        "achievedPointing", self._achieved_pointing
+                    )
+            except (ValueError, TypeError, KeyError) as exp:
+                self.logger.exception(
+                    "Exception occurred while pushing achieved"
+                    + "pointing event: %s",
+                    exp,
                 )
-                self.push_change_event(
-                    "achievedPointing", self._achieved_pointing
-                )
-        except (ValueError, TypeError, KeyError) as exp:
-            self.logger.exception(
-                "Exception occurred while pushing achieved pointing event: %s",
-                exp,
-            )
 
-    def _update_poiniting_state_in_sequence(self) -> None:
+    def _update_pointing_state_in_sequence(self) -> None:
         """This method update pointing state in sequence as per
         state duration info
         """
-        for poiniting_state, duration in self._state_duration_info:
-            pointing_state_enum = PointingState[poiniting_state]
+        for pointing_state, duration in self._state_duration_info:
+            pointing_state_enum = PointingState[pointing_state]
             self.logger.info(
                 "Sleep %s sec for pointing state %s",
                 duration,
-                poiniting_state,
+                pointing_state,
             )
             time.sleep(duration)
             with tango.EnsureOmniThread():
@@ -324,7 +329,7 @@ class HelperDishDevice(HelperDishLNDevice):
     def _follow_state_duration(self):
         """This method will update pointing state as per state duration"""
         thread = threading.Thread(
-            target=self._update_poiniting_state_in_sequence,
+            target=self._update_pointing_state_in_sequence,
         )
         thread.start()
 
