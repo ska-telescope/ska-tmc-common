@@ -51,6 +51,7 @@ class DevFactory:
                 self.dev_proxys[dev_name] = tango.DeviceProxy(
                     dev_name, green_mode=green_mode
                 )
+                self.dev_proxys[dev_name].set_timeout_millis(5000)
             return self.dev_proxys[dev_name]
 
         return DevFactory._test_context.get_device(dev_name)
