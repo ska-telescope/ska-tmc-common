@@ -70,6 +70,10 @@ class BaseLivelinessProbe:
             self._component_manager.update_ping_info(
                 proxy.ping(), dev_info.dev_name
             )
+        except tango.CommunicationFailed as exception:
+            self._logger.exception(
+                f"Error on {dev_info.dev_name}: {exception} "
+            )
         except (AttributeError, tango.DevFailed) as exception:
             self._logger.exception(
                 f"Error on {dev_info.dev_name}: {exception} "
