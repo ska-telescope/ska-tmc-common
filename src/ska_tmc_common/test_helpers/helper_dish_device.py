@@ -289,19 +289,6 @@ class HelperDishDevice(HelperDishLNDevice):
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
-            # for index in range(0, len(self._program_track_table), 3):
-            #     self._achieved_pointing = self._program_track_table[
-            #         index : index + 3  # noqa
-            #     ]
-            #     self.logger.info(
-            #         "The achieved pointing value is: %s",
-            #         self._achieved_pointing,
-            #     )
-            #     self.push_change_event(
-            #         "achievedPointing", self._achieved_pointing
-            #     )
-            #     time.sleep(0.1)
-
             self._achieved_pointing = self._program_track_table[0:3]
             self.logger.info(
                 "The achieved pointing value is: %s",

@@ -56,6 +56,11 @@ Added
 
 Fixed
 -----
+[0.16.7]
+***********
+* Fix the dish unavailability issue observed in tmc-mid integration repository
+* Update achieved pointing events push logic in helper dish device
+
 [0.16.6]
 ***********
 * Fix issues in **timeout_decorator** and **Error error_propagation_decorator**
