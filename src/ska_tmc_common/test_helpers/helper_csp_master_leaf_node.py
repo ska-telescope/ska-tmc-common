@@ -197,6 +197,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     @command(
         dtype_in="str",
         doc_in="Set DishVccValidationResult and push event",
+        dtype_out="str",
     )
     def SetDishVccValidationResult(
         self, result: str

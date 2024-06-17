@@ -628,22 +628,35 @@ class HelperDishLNDevice(HelperBaseDevice):
     )
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This method invokes SetStandbyFPMode command on  Dish Master
+        This method invokes SetStandbyFPMode command on Dish Master
         :return: ResultCode and message
         :rtype: tuple
         """
         self.logger.info("Processing SetStandbyFPMode Command")
         self.update_command_info(SET_STANDBY_FP_MODE, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyFPMode")
+
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
+
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
-        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
+
+        # Correct the push_command_result call
+        self.push_command_result(
+            ResultCode.OK, "CommandCompleted", "SetStandbyFPMode"
+        )
+
         self.logger.info("SetStandbyFPMode command completed.")
-        return ([ResultCode.OK], [""])
+
+        # Return message
+        return (
+            [ResultCode.OK],
+            ["SetStandbyFPMode command completed successfully."],
+        )
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
@@ -689,9 +702,19 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish ModeLP
         self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
+
+        # Correct the push_command_result call
+        self.push_command_result(
+            ResultCode.OK, "CommandCompleted", "SetStandbyLPMode"
+        )
+
         self.logger.info("SetStandbyLPMode command completed.")
-        return ([ResultCode.OK], [""])
+
+        # Return message
+        return (
+            [ResultCode.OK],
+            ["SetStandbyLPMode command completed successfully."],
+        )
 
     def is_SetOperateMode_allowed(self) -> bool:
         """
@@ -741,9 +764,19 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "SetOperateMode")
+
+        # Correct the push_command_result call
+        self.push_command_result(
+            ResultCode.OK, "CommandCompleted", "SetOperateMode"
+        )
+
         self.logger.info("SetOperateMode command completed.")
-        return ([ResultCode.OK], [""])
+
+        # Return meaningful message
+        return (
+            [ResultCode.OK],
+            ["SetOperateMode command completed successfully."],
+        )
 
     def is_SetStowMode_allowed(self) -> bool:
         """
@@ -789,9 +822,18 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
-        self.push_command_result(ResultCode.OK, "SetStowMode")
+        # Correct the push_command_result call
+        self.push_command_result(
+            ResultCode.OK, "CommandCompleted", "SetStowMode"
+        )
+
         self.logger.info("SetStowMode command completed.")
-        return ([ResultCode.OK], [""])
+
+        # Return meaningful message
+        return (
+            [ResultCode.OK],
+            ["SetStowMode command completed successfully."],
+        )
 
     def is_Track_allowed(self) -> bool:
         """

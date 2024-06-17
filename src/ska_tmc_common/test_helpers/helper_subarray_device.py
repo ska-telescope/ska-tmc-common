@@ -370,7 +370,11 @@ class HelperSubArrayDevice(SKASubarray):
         return self._receive_addresses
 
     def push_command_result(
-        self, result: ResultCode, command_name: str, exception: str = ""
+        self,
+        result: ResultCode,
+        command_name: str,
+        message: str,
+        exception: str = "",
     ) -> None:
         """Push long running command result event for given command.
         :param result: The result code to be pushed as an event
@@ -388,7 +392,7 @@ class HelperSubArrayDevice(SKASubarray):
             command_result = (command_id, exception)
             self.logger.info("Sending Event %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
+        command_result = (command_id, json.dumps(result, message))
         self.logger.info("Sending Event %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
 

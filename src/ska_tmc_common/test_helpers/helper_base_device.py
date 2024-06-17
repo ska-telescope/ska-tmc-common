@@ -192,7 +192,11 @@ class HelperBaseDevice(SKABaseDevice):
         return [ResultCode.OK], [""]
 
     def push_command_result(
-        self, result_code: ResultCode, command_name: str, **kwargs
+        self,
+        result_code: ResultCode,
+        command_name: str,
+        message: str,
+        **kwargs,
     ) -> None:
         """Push long running command result event for given command.
         :param result_code: The result code to be pushed as an event
@@ -211,11 +215,10 @@ class HelperBaseDevice(SKABaseDevice):
             command_id,
             result_code,
         )
-        if kwargs.get("exception"):
-            command_result = (command_id, kwargs["exception"])
-            self.logger.info("Sending Event %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result_code))
+        command_result = (
+            command_id,
+            json.dumps({"result_code": result_code, "message": message}),
+        )
         self.logger.info("Sending Event %s", command_result)
         self.push_change_event("longRunningCommandResult", command_result)
 

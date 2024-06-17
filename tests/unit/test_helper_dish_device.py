@@ -85,6 +85,7 @@ def test_program_track_table(tango_context):
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
+@pytest.mark.test
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
@@ -92,7 +93,10 @@ def test_dish_commands_without_input(tango_context, command):
     command_call_info = dish_device.commandCallInfo
     assert command_call_info[0][0] == command
     assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    expected_message = f"{command} command completed successfully."
+    assert (
+        message[0] == expected_message
+    ), f"Expected message: '{expected_message}', but got: '{message[0]}'"
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITH_INPUT)

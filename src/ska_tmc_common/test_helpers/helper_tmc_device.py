@@ -5,11 +5,9 @@ This module contains a dummy TMC device for testing the integrated TMC.
 
 import logging
 from logging import Logger
-from typing import Any, Optional, Tuple
+from typing import Optional, Tuple
 
 from ska_tango_base.commands import ResultCode, SlowCommand
-
-# from tango import DevState
 from tango.server import command
 
 from ska_tmc_common.device_info import (
@@ -161,10 +159,10 @@ class DummyTmcDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_out="DevVoid",
+        dtype_out="str",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetData(self, value: Any) -> None:
+    def SetData(self, value: str) -> None:
         """
         It invokes the SetData Command.
         """

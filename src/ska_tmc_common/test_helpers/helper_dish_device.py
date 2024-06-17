@@ -351,9 +351,18 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "SetOperateMode")
+        # Correct the push_command_result call
+        self.push_command_result(
+            ResultCode.OK, "CommandCompleted", "SetOperateMode"
+        )
+
         self.logger.info("SetOperateMode command completed.")
-        return ([ResultCode.OK], [""])
+
+        # Return meaningful message
+        return (
+            [ResultCode.OK],
+            ["SetOperateMode command completed successfully."],
+        )
 
     @command(
         dtype_out="DevVarLongStringArray",

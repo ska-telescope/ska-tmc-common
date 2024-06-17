@@ -3,7 +3,7 @@ This Module contains Empty Component Manager Class for helper subarray devices.
 """
 from logging import Logger
 
-from ska_tango_base.base.component_manager import BaseComponentManager
+from ska_tango_base.base.base_component_manager import BaseComponentManager
 
 # pylint: disable=abstract-method
 # Disabled as this is also a abstract class and has parent class from
