@@ -602,7 +602,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
 
         self.logger.info("Off command completed.")
-        return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.OK],
+            ["Off command completed successfully."],
+        )
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
@@ -975,7 +978,10 @@ class HelperDishLNDevice(HelperBaseDevice):
             return self.induce_fault("AbortCommands")
 
         self.logger.info("Abort Completed")
-        return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.OK],
+            ["AbortCommands command completed successfully."],
+        )
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -1270,7 +1276,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan")
             # TBD: Add your dish mode change logic here if required
-        return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.OK],
+            ["EndScan command completed successfully."],
+        )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Reset_allowed(self) -> bool:

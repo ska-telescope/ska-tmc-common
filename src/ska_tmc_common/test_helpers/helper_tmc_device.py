@@ -159,10 +159,10 @@ class DummyTmcDevice(HelperBaseDevice):
         return True
 
     @command(
-        dtype_out="str",
+        dtype_out="DevVoid",
         doc_out="(ReturnType, 'informational message')",
     )
-    def SetData(self, value: str) -> None:
+    def SetData(self, value) -> None:
         """
         It invokes the SetData Command.
         """

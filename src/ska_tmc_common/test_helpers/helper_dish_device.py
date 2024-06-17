@@ -382,7 +382,10 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("AbortCommands")
         self.logger.info("Abort Completed")
         # Dish Mode Not Applicable.
-        return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.OK],
+            ["AbortCommands command completed successfully."],
+        )
 
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
@@ -970,7 +973,10 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan")
         self._scan_id = ""
-        return ([ResultCode.OK], [""])
+        return (
+            [ResultCode.OK],
+            ["EndScan command completed successfully."],
+        )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Reset_allowed(self) -> bool:
