@@ -107,7 +107,7 @@ def test_Abort_commands(tango_context):
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
     result, message = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    assert message[0] == "AbortCommands command completed successfully."
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS)
