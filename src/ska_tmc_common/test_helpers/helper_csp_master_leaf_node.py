@@ -184,7 +184,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.push_command_result,
-            args=[ResultCode.OK, "LoadDishCfg"],
+            args=[ResultCode.OK, "LoadDishCfg", "Command Completed"],
         )
         thread.start()
         self._dish_vcc_map_validation_result = ResultCode.OK

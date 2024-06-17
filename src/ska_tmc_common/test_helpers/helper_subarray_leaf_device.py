@@ -293,7 +293,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         self.set_state(DevState.ON)
         self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "On")
+        self.push_command_result(ResultCode.OK, "On", "Command Completed")
         return [ResultCode.OK], [""]
 
     def is_Off_allowed(self) -> bool:
@@ -327,7 +327,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         self.set_state(DevState.OFF)
         self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Off")
+        self.push_command_result(ResultCode.OK, "Off", "Command Completed")
         return [ResultCode.OK], [""]
 
     def is_Standby_allowed(self) -> bool:
@@ -361,7 +361,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         self.set_state(DevState.STANDBY)
         self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Standby")
+        self.push_command_result(ResultCode.OK, "Standby", "Command Completed")
         return [ResultCode.OK], [""]
 
     def is_AssignResources_allowed(self) -> bool:
@@ -414,7 +414,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             result_thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[ResultCode.OK, "AssignResources"],
+                args=[ResultCode.OK, "AssignResources", "Command Completed"],
             )
             result_thread.start()
             self.logger.debug(
@@ -473,7 +473,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             result_thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[ResultCode.OK, "Configure"],
+                args=[ResultCode.OK, "Configure", "Command Completed"],
             )
             result_thread.start()
             self.logger.info(
@@ -563,7 +563,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         self._obs_state = ObsState.READY
         self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "EndScan")
+        self.push_command_result(ResultCode.OK, "EndScan", "Command Completed")
         self.logger.info("EndScan command completed.")
         return [ResultCode.OK], [""]
 
@@ -609,7 +609,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "End")
+        self.push_command_result(ResultCode.OK, "End", "Command Completed")
         self.logger.debug(
             "End command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",
@@ -655,7 +655,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         self._obs_state = ObsState.IDLE
         self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "GoToIdle")
+        self.push_command_result(
+            ResultCode.OK, "GoToIdle", "Command Completed"
+        )
         return [ResultCode.OK], [""]
 
     def is_Abort_allowed(self) -> bool:
@@ -700,7 +702,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.ABORTED]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Abort")
+        self.push_command_result(ResultCode.OK, "Abort", "Command Completed")
         self.logger.debug(
             "Abort command invoked, obsState will transition to"
             + "ABORTED, current obsState is %s",
@@ -750,7 +752,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Restart")
+        self.push_command_result(ResultCode.OK, "Restart", "Command Completed")
         self.logger.info("Restart command completed.")
         return [ResultCode.OK], [""]
 
@@ -796,7 +798,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        self.push_command_result(
+            ResultCode.OK, "ReleaseAllResources", "Command Completed"
+        )
         self.logger.debug(
             "ReleaseAllResources command invoked, obsState will transition to"
             + "EMPTY, current obsState is %s",
@@ -850,7 +854,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "ReleaseResources")
+        self.push_command_result(
+            ResultCode.OK, "ReleaseResources", "Command Completed"
+        )
         self.logger.debug(
             "ReleaseResources command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",

@@ -374,26 +374,22 @@ class HelperSubArrayDevice(SKASubarray):
         result: ResultCode,
         command_name: str,
         message: str,
-        exception: str = "",
     ) -> None:
         """Push long running command result event for given command.
         :param result: The result code to be pushed as an event
         :type: ResultCode
         :param command_name: The command name for which event is being pushed
         :type: str
-        :param exception: Exception message to be pushed as an event
-        :type: str
         """
         command_id = f"{time.time()}-{command_name}"
         self.logger.info(
             "The command_id is %s and the ResultCode is %s", command_id, result
         )
-        if exception:
-            command_result = (command_id, exception)
-            self.logger.info("Sending Event %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result, message))
-        self.logger.info("Sending Event %s", command_result)
+        command_result = command_id, json.dumps((result, message))
+        self.logger.info(
+            "Pushing longRunningCommandResult Event with data: %s",
+            command_result,
+        )
         self.push_change_event("longRunningCommandResult", command_result)
 
     def update_device_obsstate(
@@ -697,8 +693,7 @@ class HelperSubArrayDevice(SKASubarray):
         return True
 
     def induce_fault(
-        self,
-        command_name: str,
+        self, command_name: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.

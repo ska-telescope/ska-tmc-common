@@ -85,7 +85,6 @@ def test_program_track_table(tango_context):
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
-@pytest.mark.test
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)

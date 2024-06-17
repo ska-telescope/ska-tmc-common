@@ -111,8 +111,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.defective_params = input_dict
 
     def induce_fault(
-        self,
-        command_name: str,
+        self, command_name: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -179,8 +178,7 @@ class HelperBaseDevice(SKABaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name],
-                kwargs={"exception": fault_message},
+                args=[result, command_name, fault_message],
             )
             thread.start()
             return [ResultCode.QUEUED], [""]
@@ -196,30 +194,30 @@ class HelperBaseDevice(SKABaseDevice):
         result_code: ResultCode,
         command_name: str,
         message: str,
-        **kwargs,
+        command_id: str = "",
     ) -> None:
-        """Push long running command result event for given command.
-        :param result_code: The result code to be pushed as an event
-        :type: ResultCode
-        :param command_name: The command name for which event is being pushed
-        :type: str
-        :param kwargs: Additional key word arguments
-        :type kwargs: dict
         """
-        if kwargs.get("command_id"):
-            command_id = kwargs["command_id"]
-        else:
+        Push long running command result event for given command.
+
+        :param result_code: The result code to be pushed as an event
+        :type result_code: ResultCode
+        :param command_name: The command name for which event is being pushed
+        :type command_name: str
+        :param message: The message associated with the command result
+        :type message: str
+        :param command_id: The unique command id (optional)
+        :type command_id: str
+        """
+        if not command_id:
             command_id = f"{time.time()}-{command_name}"
-        self.logger.info(
-            "The command_id is %s and the ResultCode is %s",
-            command_id,
-            result_code,
-        )
         command_result = (
             command_id,
-            json.dumps({"result_code": result_code, "message": message}),
+            json.dumps((result_code, message)),
         )
-        self.logger.info("Sending Event %s", command_result)
+        self.logger.info(
+            "Pushing longRunningCommandResult Event with data: %s",
+            command_result,
+        )
         self.push_change_event("longRunningCommandResult", command_result)
 
     @command(

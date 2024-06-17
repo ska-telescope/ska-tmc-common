@@ -597,7 +597,9 @@ class HelperDishLNDevice(HelperBaseDevice):
             self.push_change_event("State", self.dev_state())
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
+        self.push_command_result(
+            ResultCode.OK, "SetStandbyFPMode", "Command Completed"
+        )
         self.logger.info("Off command completed.")
         return ([ResultCode.OK], [""])
 
@@ -644,10 +646,8 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
-
-        # Correct the push_command_result call
         self.push_command_result(
-            ResultCode.OK, "CommandCompleted", "SetStandbyFPMode"
+            ResultCode.OK, "SetStandbyFPMode", "Command Completed"
         )
 
         self.logger.info("SetStandbyFPMode command completed.")
@@ -702,10 +702,8 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish ModeLP
         self.set_dish_mode(DishMode.STANDBY_LP)
-
-        # Correct the push_command_result call
         self.push_command_result(
-            ResultCode.OK, "CommandCompleted", "SetStandbyLPMode"
+            ResultCode.OK, "SetStandbyLPMode", "Command Completed"
         )
 
         self.logger.info("SetStandbyLPMode command completed.")
@@ -764,15 +762,13 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-
-        # Correct the push_command_result call
         self.push_command_result(
-            ResultCode.OK, "CommandCompleted", "SetOperateMode"
+            ResultCode.OK, "SetOperateMode", "Command Completed"
         )
 
         self.logger.info("SetOperateMode command completed.")
 
-        # Return meaningful message
+        # Return message
         return (
             [ResultCode.OK],
             ["SetOperateMode command completed successfully."],
@@ -822,9 +818,8 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
-        # Correct the push_command_result call
         self.push_command_result(
-            ResultCode.OK, "CommandCompleted", "SetStowMode"
+            ResultCode.OK, "SetStowMode", "Command Completed"
         )
 
         self.logger.info("SetStowMode command completed.")
@@ -878,7 +873,11 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "Track")
+        self.push_command_result(
+            ResultCode.OK,
+            "Track",
+            "Command Completed",
+        )
         self.logger.info("Track command completed.")
         return ([ResultCode.OK], [""])
 
@@ -930,7 +929,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
 
-        self.push_command_result(ResultCode.OK, "TrackStop")
+        self.push_command_result(
+            ResultCode.OK, "TrackStop", "Command Completed"
+        )
         self.logger.info("TrackStop command completed.")
         return ([ResultCode.OK], [""])
 
@@ -1039,11 +1040,13 @@ class HelperDishLNDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.push_command_result,
-            args=[ResultCode.OK, "Configure"],
+            args=[ResultCode.OK, "Configure", "Command Completed"],
             kwargs={"command_id": command_id},
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Configure")
+        self.push_command_result(
+            ResultCode.OK, "Configure", "Command Completed"
+        )
         self.logger.info("Configure command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -1096,7 +1099,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         cross_elevation = input_offsets[0]
         elevation = input_offsets[1]
         self.set_offset(cross_elevation, elevation)
-        self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
+        self.push_command_result(
+            ResultCode.OK, "TrackLoadStaticOff", "Command Completed"
+        )
         self.logger.info("TrackLoadStaticOff command completed.")
         return ([ResultCode.OK], [""])
 

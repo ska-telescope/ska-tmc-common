@@ -373,31 +373,26 @@ class HelperMCCSController(HelperBaseDevice):
 
     # pylint: disable=arguments-renamed
     def push_command_result(
-        self, result: ResultCode, command_id: str, exception: str = ""
+        self, result: ResultCode, command_id: str, message: str = ""
     ) -> None:
-        """Push long running command result event for given command.
-
+        """
+        Push long running command result event for given command.
         :params:
-
         result: The result code to be pushed as an event
         dtype: ResultCode
 
         command_id: The command_id for which the event is being pushed
         dtype: str
 
-        exception: Exception message to be pushed as an event
+        message: Message to be pushed as an event
         dtype: str
         """
-
-        if exception:
-            command_result = (
-                command_id,
-                json.dumps([ResultCode.FAILED, exception]),
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps([result, ""]))
-
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
+        command_result = (
+            command_id,
+            json.dumps((result, message)),
         )
+        self.logger.info(
+            "Pushing longRunningCommandResult Event with data: %s",
+            command_result,
+        )
+        self.push_change_event("longRunningCommandResult", command_result)

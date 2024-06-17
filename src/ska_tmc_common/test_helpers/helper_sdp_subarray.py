@@ -143,7 +143,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         else:
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
-            self.push_command_result(ResultCode.OK, "On")
+            self.push_command_result(ResultCode.OK, "On", "Command Completed")
 
     @command()
     def Off(self):
@@ -155,7 +155,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         else:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
-            self.push_command_result(ResultCode.OK, "Off")
+            self.push_command_result(ResultCode.OK, "Off", "Command Completed")
 
     @command(
         dtype_in=("str"),
@@ -233,7 +233,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "AssignResources")
+        self.push_command_result(
+            ResultCode.OK, "AssignResources", "Command Completed"
+        )
         return None
 
     @command()
@@ -259,7 +261,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 + "IDLE, current obsState is %s",
                 self._obs_state,
             )
-            self.push_command_result(ResultCode.OK, "ReleaseResources")
+            self.push_command_result(
+                ResultCode.OK, "ReleaseResources", "Command Completed"
+            )
 
     @command()
     def ReleaseAllResources(self):
@@ -279,7 +283,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
             )
             thread.start()
-            self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+            self.push_command_result(
+                ResultCode.OK, "ReleaseAllResources", "Command Completed"
+            )
 
     @command(
         dtype_in=("str"),
@@ -357,7 +363,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                     args=[ObsState.READY, CONFIGURE],
                 )
                 thread.start()
-                self.push_command_result(ResultCode.OK, "Configure")
+                self.push_command_result(
+                    ResultCode.OK, "Configure", "Command Completed"
+                )
 
     @command(
         dtype_in=("str"),
@@ -385,7 +393,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         else:
             self._obs_state = ObsState.SCANNING
             self.update_device_obsstate(self._obs_state, SCAN)
-            self.push_command_result(ResultCode.OK, "Scan")
+            self.push_command_result(
+                ResultCode.OK, "Scan", "Command Completed"
+            )
 
     @command()
     def EndScan(self):
@@ -398,7 +408,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         else:
             self._obs_state = ObsState.READY
             self.update_device_obsstate(self._obs_state, END_SCAN)
-            self.push_command_result(ResultCode.OK, "EndScan")
+            self.push_command_result(
+                ResultCode.OK, "EndScan", "Command Completed"
+            )
 
     @command()
     def End(self):
@@ -423,7 +435,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                     + "current obsState is %s",
                     self._obs_state,
                 )
-                self.push_command_result(ResultCode.OK, "End")
+                self.push_command_result(
+                    ResultCode.OK, "End", "Command Completed"
+                )
 
     @command()
     def Abort(self):
@@ -442,7 +456,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
-            self.push_command_result(ResultCode.OK, "Abort")
+            self.push_command_result(
+                ResultCode.OK, "Abort", "Command Completed"
+            )
 
     @command()
     def Restart(self):
@@ -466,7 +482,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 + "current obsState is %s",
                 self._obs_state,
             )
-            self.push_command_result(ResultCode.OK, "Restart")
+            self.push_command_result(
+                ResultCode.OK, "Restart", "Command Completed"
+            )
 
 
 def main(args=None, **kwargs):

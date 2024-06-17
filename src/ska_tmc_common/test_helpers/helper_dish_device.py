@@ -351,14 +351,13 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        # Correct the push_command_result call
         self.push_command_result(
-            ResultCode.OK, "CommandCompleted", "SetOperateMode"
+            ResultCode.OK, "SetOperateMode", "Command Completed"
         )
 
         self.logger.info("SetOperateMode command completed.")
 
-        # Return meaningful message
+        # Return message
         return (
             [ResultCode.OK],
             ["SetOperateMode command completed successfully."],
@@ -439,7 +438,11 @@ class HelperDishDevice(HelperDishLNDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=["ResultCode.FAILED", "TrackLoadStaticOff"],
+                args=[
+                    "ResultCode.FAILED",
+                    "TrackLoadStaticOff",
+                    "Command execution failed",
+                ],
             )
 
             # Will be un-commented as part of SAH-1530
@@ -513,7 +516,9 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B1)
-        self.push_command_result(ResultCode.OK, "ConfigureBand1")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand1", "Command Completed"
+        )
         self.logger.info("ConfigureBand1 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -580,7 +585,9 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B2)
-        self.push_command_result(ResultCode.OK, "ConfigureBand2")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand2", "Command Completed"
+        )
         self.logger.info("ConfigureBand2 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -625,7 +632,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B3)
-        self.push_command_result(ResultCode.OK, "ConfigureBand3")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand3", "Command Completed"
+        )
         self.logger.info("ConfigureBand3 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -670,7 +679,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B4)
-        self.push_command_result(ResultCode.OK, "ConfigureBand4")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand4", "Command Completed"
+        )
         self.logger.info("ConfigureBand4 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -714,7 +725,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B5a)
-        self.push_command_result(ResultCode.OK, "ConfigureBand5a")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand5a", "Command Completed"
+        )
         self.logger.info("ConfigureBand5a command completed.")
         return ([ResultCode.OK], [""])
 
@@ -758,12 +771,17 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B5b)
-        self.push_command_result(ResultCode.OK, "ConfigureBand5b")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand5b", "Command Completed"
+        )
         self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
 
     def update_lrcr(
-        self, command_name: str = "", command_id: str = ""
+        self,
+        command_name: str = "",
+        command_id: str = "",
+        message: str = "",
     ) -> None:
         """Updates the longrunningcommandresult  after a delay."""
         delay_value = self._delay
@@ -785,7 +803,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
             self.push_command_result(
-                ResultCode.OK, command_name, command_id=command_id
+                ResultCode.OK, command_name, message, command_id=command_id
             )
             self.logger.info("Track command completed.")
 
