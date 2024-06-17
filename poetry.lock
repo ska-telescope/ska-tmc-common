@@ -1102,13 +1102,14 @@ reference = "PyPI-public"
 
 [[package]]
 name = "ska-control-model"
-version = "0.3.4"
+version = "1.0.0"
 description = "The SKA control model"
 category = "main"
 optional = false
 python-versions = ">=3.10,<4.0"
 
 [package.dependencies]
+pytango = ">=9.4.2,<10.0.0"
 transitions = ">=0.9.0,<0.10.0"
 
 [package.source]
@@ -1148,19 +1149,19 @@ reference = 'ska-nexus'
 
 [[package]]
 name = "ska-tango-base"
-version = "0.19.1"
+version = "1.0.0"
 description = "SKA Tango base classes"
 category = "main"
 optional = false
-python-versions = ">=3.8.1,<4.0.0"
+python-versions = ">=3.10,<4.0"
 
 [package.dependencies]
 debugpy = ">=1.6.2,<2.0.0"
 jsonschema = ">=4.17.3,<5.0.0"
 numpy = {version = ">=1.21.6", markers = "python_version == \"3.10\""}
-pytango = ">=9.3.3,<10.0.0"
-ska-control-model = ">=0.3.1,<0.4.0"
-ska-ser-logging = ">=0.4.1,<0.5.0"
+pytango = ">=9.4.2,<10.0.0"
+ska-control-model = ">=1.0.0,<2.0.0"
+ska-ser-logging = ">=0.4.3,<0.5.0"
 transitions = ">=0.9.0,<0.10.0"
 
 [package.source]
@@ -1572,7 +1573,7 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "324f298eeed3f9eb62b4246ef296234b19fa5bc934d2edfa1d0a6ee0aa55b346"
+content-hash = "742d18ca4d42a8ffd3ed67f58291357f267f067e321d9ad026a05c21ade7224a"
 
 [metadata.files]
 alabaster = [
@@ -2278,8 +2279,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 ska-control-model = [
-    {file = "ska_control_model-0.3.4-py3-none-any.whl", hash = "sha256:61513b3ae3e9c41178daba2c83127054376f5ccb267f66ad2141ce4961944139"},
-    {file = "ska_control_model-0.3.4.tar.gz", hash = "sha256:d5e2e5a4d54cc46ca1259a1259614d4f56bcb8507c0fb674b4d5e8da8d001603"},
+    {file = "ska_control_model-1.0.0-py3-none-any.whl", hash = "sha256:b5573317eb1b18308634d6d88c187310877222bef397a025ad47d01ff2f57d7f"},
+    {file = "ska_control_model-1.0.0.tar.gz", hash = "sha256:8434af88da664d5a74ed4f93e96f498bfa9a70325d1caa39dad5578d9f53c4cf"},
 ]
 ska-ser-logging = [
     {file = "ska_ser_logging-0.4.3-py3-none-any.whl", hash = "sha256:06a337e4e726f36d24b86087ec106fbb9e65be4566fe328eb56f56f2310322f8"},
@@ -2290,8 +2291,8 @@ ska-ser-sphinx-theme = [
     {file = "ska_ser_sphinx_theme-0.1.3.tar.gz", hash = "sha256:6b997c2088ed8f4a906a16faebec671ce217110c915a35ed920cc2c532f1b80d"},
 ]
 ska-tango-base = [
-    {file = "ska_tango_base-0.19.1-py3-none-any.whl", hash = "sha256:d36aa5ecc7b8541fd43cbce5eaab8a1c5cd22730c32a7cd5c8ca992f2af5bcf6"},
-    {file = "ska_tango_base-0.19.1.tar.gz", hash = "sha256:b1348d16303f00cef340ba3c53dbeb2d227c11e60e019e6ce33cb986301b5cad"},
+    {file = "ska_tango_base-1.0.0-py3-none-any.whl", hash = "sha256:edb86c02f7de36b8b8b8ea379e986de7885e48feb2b6aa4210233ff163f4ae0c"},
+    {file = "ska_tango_base-1.0.0.tar.gz", hash = "sha256:20636bb3b3966caa37c53a972ac4031c3d6cf7eebb0bce4e99064f90a76fb5a5"},
 ]
 ska-tango-testing = [
     {file = "ska_tango_testing-0.6.0-py3-none-any.whl", hash = "sha256:3a96b090998b445df013cba33721d110298a946b277a7de6fe312f3da1219504"},
