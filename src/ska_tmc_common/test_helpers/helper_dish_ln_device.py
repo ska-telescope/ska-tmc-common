@@ -598,8 +598,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_LP)
         self.push_command_result(
-            ResultCode.OK, "SetStandbyFPMode", "Command Completed"
+            ResultCode.OK, "Off", "Off command completed successfully"
         )
+
         self.logger.info("Off command completed.")
         return ([ResultCode.OK], [""])
 
