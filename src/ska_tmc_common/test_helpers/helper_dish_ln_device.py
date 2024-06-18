@@ -572,7 +572,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -586,6 +586,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self):
+        """
+        This method invokes Off command on Dish Simulator.
+        """
+        command_id = f"{time.time()}_Off"
         self.logger.info("Instructed Dish simulator to invoke Off command")
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
@@ -604,7 +608,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Off command completed.")
         return (
             [ResultCode.OK],
-            ["Off command completed successfully."],
+            command_id,
         )
 
     def is_SetStandbyFPMode_allowed(self) -> bool:
@@ -619,7 +623,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -638,6 +642,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_On"
         self.logger.info("Processing SetStandbyFPMode Command")
         self.update_command_info(SET_STANDBY_FP_MODE, "")
 
@@ -659,7 +664,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Return message
         return (
             [ResultCode.OK],
-            ["SetStandbyFPMode command completed successfully."],
+            command_id,
         )
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
@@ -674,7 +679,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -693,6 +698,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_SetStandbyLPMode"
         self.logger.info(
             "Instructed Dish simulator to invoke SetStandbyLPMode command"
         )
@@ -715,7 +721,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Return message
         return (
             [ResultCode.OK],
-            ["SetStandbyLPMode command completed successfully."],
+            command_id,
         )
 
     def is_SetOperateMode_allowed(self) -> bool:
@@ -729,7 +735,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -748,6 +754,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_SetOperateMode"
         self.logger.info(
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
@@ -775,7 +782,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Return message
         return (
             [ResultCode.OK],
-            ["SetOperateMode command completed successfully."],
+            command_id,
         )
 
     def is_SetStowMode_allowed(self) -> bool:
@@ -789,7 +796,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -808,6 +815,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype : tuple
         """
+        command_id = f"{time.time()}_SetStowMode"
         self.logger.info(
             "Instructed Dish simulator to invoke SetStowMode command"
         )
@@ -831,7 +839,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Return meaningful message
         return (
             [ResultCode.OK],
-            ["SetStowMode command completed successfully."],
+            command_id,
         )
 
     def is_Track_allowed(self) -> bool:
@@ -845,7 +853,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -864,6 +872,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
@@ -883,7 +892,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Command Completed",
         )
         self.logger.info("Track command completed.")
-        return ([ResultCode.OK], [""])
+        return [ResultCode.QUEUED], command_id
 
     def is_TrackStop_allowed(self) -> bool:
         """
@@ -896,7 +905,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -916,6 +925,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_TrackStop"
         self.logger.info(
             "Instructed Dish simulator to invoke TrackStop command"
         )
@@ -937,7 +947,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             ResultCode.OK, "TrackStop", "Command Completed"
         )
         self.logger.info("TrackStop command completed.")
-        return ([ResultCode.OK], [""])
+        return [ResultCode.QUEUED], command_id
 
     def is_AbortCommands_allowed(self) -> bool:
         """
@@ -950,7 +960,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -969,6 +979,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_AbortCommands"
         self.logger.info(
             "Instructed Dish simulator to invoke AbortCommands command"
         )
@@ -980,7 +991,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Abort Completed")
         return (
             [ResultCode.OK],
-            ["AbortCommands command completed successfully."],
+            command_id,
         )
 
     def is_Configure_allowed(self) -> bool:
@@ -994,7 +1005,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1055,7 +1066,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             ResultCode.OK, "Configure", "Command Completed"
         )
         self.logger.info("Configure command completed.")
-        return [ResultCode.QUEUED], [command_id]
+        return [ResultCode.QUEUED], command_id
 
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
@@ -1068,7 +1079,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1094,6 +1105,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
+        command_id = f"{time.time()}_TrackLoadStaticOff"
         self.logger.info(
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
@@ -1110,7 +1122,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             ResultCode.OK, "TrackLoadStaticOff", "Command Completed"
         )
         self.logger.info("TrackLoadStaticOff command completed.")
-        return ([ResultCode.OK], [""])
+        return [ResultCode.QUEUED], command_id
 
     def update_command_info(
         self, command_name: str = "", command_input: str = ""
@@ -1211,7 +1223,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1232,6 +1244,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
+        command_id = f"{time.time()}_Scan"
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
@@ -1239,7 +1252,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             return self.induce_fault("Scan")
 
             # TBD: Add your dish mode change logic here if required
-        return ([ResultCode.OK], [""])
+        return [ResultCode.QUEUED], command_id
 
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
@@ -1251,7 +1264,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1271,6 +1284,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
+        command_id = f"{time.time()}_EndScan"
         # to record the command data
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
@@ -1278,7 +1292,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             # TBD: Add your dish mode change logic here if required
         return (
             [ResultCode.OK],
-            ["EndScan command completed successfully."],
+            command_id,
         )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.

@@ -271,7 +271,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -285,6 +285,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def On(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke ON command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_On"
         self.update_command_info(ON)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -294,7 +300,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.set_state(DevState.ON)
         self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "On", "Command Completed")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Off_allowed(self) -> bool:
         """
@@ -305,7 +311,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -319,6 +325,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke Off command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Off"
         self.update_command_info(OFF)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -328,7 +340,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.set_state(DevState.OFF)
         self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "Off", "Command Completed")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -339,7 +351,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -353,6 +365,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         doc_out="(ReturnType, 'informational message')",
     )
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke Standby command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Standby"
         self.update_command_info(STAND_BY)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -362,7 +380,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.set_state(DevState.STANDBY)
         self.push_change_event("State", self.dev_state())
         self.push_command_result(ResultCode.OK, "Standby", "Command Completed")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -373,7 +391,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -396,6 +414,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_AssignResources"
         self.update_command_info(ASSIGN_RESOURCES, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -422,7 +441,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 + "IDLE, current obsState is %s",
                 self._obs_state,
             )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -435,7 +454,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -456,6 +475,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Configure"
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -481,7 +501,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 + "READY, current obsState is %s",
                 self._obs_state,
             )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -494,7 +514,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -515,6 +535,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Scan"
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -523,7 +544,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         self.update_device_obsstate(ObsState.SCANNING)
         self.logger.info("Scan command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -536,7 +557,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -555,6 +576,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_EndScan"
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -565,7 +587,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.push_obs_state_event(self._obs_state)
         self.push_command_result(ResultCode.OK, "EndScan", "Command Completed")
         self.logger.info("EndScan command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_End_allowed(self) -> bool:
         """
@@ -578,7 +600,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -597,6 +619,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_End"
         self.update_command_info(END)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -615,7 +638,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -628,7 +651,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -647,6 +670,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_GoToIdle"
         self.update_command_info(GO_TO_IDLE)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -658,7 +682,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.push_command_result(
             ResultCode.OK, "GoToIdle", "Command Completed"
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -671,7 +695,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -690,6 +714,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Abort"
         self.update_command_info(ABORT)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -708,7 +733,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             + "ABORTED, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Restart_allowed(self) -> bool:
         """
@@ -721,7 +746,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -740,6 +765,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Restart"
         self.update_command_info(RESTART)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -754,7 +780,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         thread.start()
         self.push_command_result(ResultCode.OK, "Restart", "Command Completed")
         self.logger.info("Restart command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -767,7 +793,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -786,6 +812,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_ReleaseAllResources"
         self.update_command_info(RELEASE_ALL_RESOURCES)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -806,7 +833,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             + "EMPTY, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -819,7 +846,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -842,6 +869,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_ReleaseResources"
         self.update_command_info(RELEASE_RESOURCES)
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -862,7 +890,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
 
 # ----------

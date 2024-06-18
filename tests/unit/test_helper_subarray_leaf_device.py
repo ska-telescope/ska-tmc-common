@@ -26,9 +26,9 @@ commands_without_argin = [
 def test_leaf_node_command_with_argument(tango_context, command):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
-    result, message = subarray_leaf_device.command_inout(command, "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = subarray_leaf_device.command_inout(command, "")
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_obs_state_transition(tango_context):
@@ -83,9 +83,9 @@ def test_clear_commandCallInfo(tango_context):
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
-    result, message = subarray_leaf_device.command_inout(command)
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = subarray_leaf_device.command_inout(command)
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_assign_resources_failed_result(tango_context):
@@ -131,7 +131,7 @@ def test_assign_resources_command_not_allowed(tango_context):
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
     defect = {
         "enabled": True,
-        "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING,
         "error_message": "Device is stuck in Resourcing state",
         "result": ResultCode.FAILED,
     }

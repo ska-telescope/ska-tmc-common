@@ -63,7 +63,7 @@ def test_assign_resources_command_not_allowed(tango_context):
     )
     defect = {
         "enabled": True,
-        "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING,
         "error_message": "Device is stuck in Resourcing state",
         "result": ResultCode.FAILED,
     }

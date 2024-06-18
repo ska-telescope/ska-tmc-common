@@ -82,7 +82,7 @@ DEFAULT_DEFECT_SETTINGS = {
 
 COMMAND_NOT_ALLOWED_DEFECT = {
     "enabled": True,
-    "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+    "fault_type": FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING,
     "error_message": "Device is stuck in Resourcing state",
     "result": ResultCode.FAILED,
 }

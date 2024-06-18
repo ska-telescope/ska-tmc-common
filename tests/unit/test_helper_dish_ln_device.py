@@ -40,14 +40,11 @@ COMMANDS_WITHOUT_INPUT = [
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
-    result, message = dish_device.command_inout(command)
+    result, command_id = dish_device.command_inout(command)
     command_call_info = dish_device.commandCallInfo
     assert command_call_info[0] == (command, "")
     assert result[0] == ResultCode.OK
-    expected_message = f"{command} command completed successfully."
-    assert (
-        message[0] == expected_message
-    ), f"Expected message: '{expected_message}', but got: '{message[0]}'"
+    assert isinstance(command_id[0], str)
 
 
 def test_dish_commands_with_input(tango_context):
@@ -60,9 +57,9 @@ def test_dish_commands_with_input(tango_context):
 def test_dish_ln_commands_scan(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
-    result, message = dish_device.command_inout("Scan", "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = dish_device.command_inout("Scan", "")
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_scan_command_without_argin_failed_result(tango_context):
@@ -105,9 +102,9 @@ def test_command_with_argin_failed_result(tango_context):
 def test_Abort_commands(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
-    result, message = dish_device.command_inout("AbortCommands")
+    result, command_id = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
-    assert message[0] == "AbortCommands command completed successfully."
+    assert isinstance(command_id[0], str)
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS)

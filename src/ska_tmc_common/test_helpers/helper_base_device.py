@@ -187,6 +187,19 @@ class HelperBaseDevice(SKABaseDevice):
             self._obs_state = intermediate_state
             self.push_obs_state_event(intermediate_state)
             return [ResultCode.QUEUED], [""]
+
+        if fault_type == FaultType.COMMAND_NOT_ALLOWED_AFTER_QUEUING:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[
+                    ResultCode.NOT_ALLOWED,
+                    command_name,
+                    "Command is not allowed",
+                ],
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [""]
         return [ResultCode.OK], [""]
 
     def push_command_result(
@@ -293,7 +306,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -333,7 +346,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -373,7 +386,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("Standby command is allowed")
@@ -410,7 +423,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."

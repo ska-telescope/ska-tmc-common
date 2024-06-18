@@ -218,11 +218,11 @@ def test_call_adapter_method(tango_context):
         ),
         logger,
     )
-    result_code, message = tmc_leaf_node_command_obj.call_adapter_method(
+    result_code, command_id = tmc_leaf_node_command_obj.call_adapter_method(
         HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources", ""
     )
-    assert result_code[0] == ResultCode.OK
-    assert message[0] == ""
+    assert result_code[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_call_adapter_method_exception(tango_context):

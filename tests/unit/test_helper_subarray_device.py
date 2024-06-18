@@ -87,19 +87,20 @@ def test_set_raise_exception(tango_context):
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = subarray_device.command_inout(command, "")
+    result, command_id = subarray_device.command_inout(command, "")
     command_call_info = subarray_device.commandCallInfo
     assert command_call_info[0] == (command, "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = subarray_device.command_inout(command)
-    assert result[0] == ResultCode.OK
+    result, command_id = subarray_device.command_inout(command)
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_assign_resources_defective(tango_context):
@@ -114,9 +115,10 @@ def test_assign_resources_defective(tango_context):
 def test_scan_command(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    result, message = subarray_device.Scan("")
-    assert result[0] == ResultCode.OK
+    result, command_id = subarray_device.Scan("")
+    assert result[0] == ResultCode.QUEUED
     assert subarray_device.obsstate == ObsState.SCANNING
+    assert isinstance(command_id[0], str)
 
 
 def test_release_resources_defective(tango_context):

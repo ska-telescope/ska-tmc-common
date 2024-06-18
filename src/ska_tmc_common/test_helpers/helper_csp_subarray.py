@@ -5,6 +5,7 @@ an integrated TMC
 
 # pylint: disable=attribute-defined-outside-init
 import threading
+import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
@@ -45,6 +46,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         This method invokes AssignResources command on subarray devices
         :return: ResultCode and message
         """
+        command_id = f"{time.time()}_AssignResources"
         self.logger.info(
             "Instructed Csp Subarray to invoke AssignResources command"
         )
@@ -89,7 +91,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -120,6 +122,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         This method invokes ReleaseResources command on subarray device
         :return: ResultCode and message
         """
+        command_id = f"{time.time()}_ReleaseResources"
         self.logger.info(
             "Instructed Csp Subarray to invoke ReleaseResources command"
         )
@@ -132,7 +135,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -145,6 +148,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_ReleaseAllResources"
         self.logger.info(
             "Instructed Csp Subarray to invoke ReleaseAllResources command"
         )
@@ -164,7 +168,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 args=["ReleaseAllResources"],
             )
             self.thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], command_id
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
@@ -187,7 +191,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             + "EMPTY, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_in=("str"),
@@ -201,6 +205,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Configure"
         self.logger.info("Instructed simulator to invoke Configure command")
         self.update_command_info(CONFIGURE, argin)
 
@@ -231,7 +236,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             thread.start()
         self.logger.info("Configure command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_in=("str"),
@@ -245,6 +250,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Scan"
         self.logger.info("Instructed Csp Subarray to invoke Scan command")
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
@@ -265,7 +271,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         self.logger.debug(
             "Scan command invoked current obsState is %s", self._obs_state
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -277,6 +283,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_EndScan"
         self.logger.info("Instructed Csp Subarray to invoke EndScan command")
         self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
@@ -295,7 +302,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             command_result_thread.start()
         self.logger.info("EndScan command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -307,6 +314,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_GoToIdle"
         self.logger.info("Instructed Csp Subarray to invoke GoToIdle command")
         self.update_command_info(GO_TO_IDLE, "")
         if self.defective_params["enabled"]:
@@ -325,13 +333,14 @@ class HelperCspSubarray(HelperSubArrayDevice):
 
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("GoToIdle command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+        command_id = f"{time.time()}_ObsReset"
         self.logger.info("Instructed Csp Subarray to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
@@ -351,7 +360,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
 
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("ObsReset command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -363,6 +372,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Abort"
         self.logger.info("Instructed Csp Subarray to invoke Abort command")
         self.update_command_info(ABORT, "")
         if self.defective_params["enabled"]:
@@ -388,7 +398,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             thread.start()
         self.logger.info("Abort command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -400,6 +410,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Restart"
         self.logger.info("Instructed Csp Subarray to invoke Restart command")
         self.update_command_info(RESTART, "")
         if self.defective_params["enabled"]:
@@ -425,7 +436,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             thread.start()
         self.logger.info("Restart command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
 
 # ----------

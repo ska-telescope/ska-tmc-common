@@ -640,7 +640,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -669,7 +669,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [""]
 
     def is_Off_allowed(self) -> bool:
         """
@@ -683,7 +683,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -831,7 +831,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("longRunningCommandResult", command_result)
             return [ResultCode.QUEUED], [""]
 
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [""]
 
     @command(
         dtype_in=str,
@@ -857,6 +857,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode and message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
@@ -867,7 +868,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off completed")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -881,7 +882,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -900,6 +901,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Standby"
         self.logger.info("Instructed simulator to invoke Standby command")
         self.update_command_info(STAND_BY, "")
         if self.defective_params["enabled"]:
@@ -911,7 +913,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
         self.logger.info("Standby completed")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -925,7 +927,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -947,6 +949,7 @@ class HelperSubArrayDevice(SKASubarray):
         This method invokes AssignResources command on subarray devices
         :return: ResultCode and message
         """
+        command_id = f"{time.time()}_AssignResources"
         self.logger.info(
             "Instructed simulator to invoke AssignResources command"
         )
@@ -978,7 +981,7 @@ class HelperSubArrayDevice(SKASubarray):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -1002,7 +1005,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1022,6 +1025,7 @@ class HelperSubArrayDevice(SKASubarray):
         This method invokes ReleaseResources command on subarray device
         :return: ResultCode and message
         """
+        command_id = f"{time.time()}_ReleaseResources"
         self.logger.info(
             "Instructed simulator to invoke ReleaseResources command"
         )
@@ -1036,7 +1040,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("ReleaseResources command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -1050,7 +1054,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1070,6 +1074,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_ReleaseAllResources"
         self.logger.info(
             "Instructed simulator to invoke ReleaseAllResources command"
         )
@@ -1102,7 +1107,7 @@ class HelperSubArrayDevice(SKASubarray):
             + "EMPTY, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -1115,7 +1120,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1136,6 +1141,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Configure"
         self.logger.info("Instructed simulator to invoke Configure command")
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
@@ -1159,7 +1165,7 @@ class HelperSubArrayDevice(SKASubarray):
                 + "READY current obsState is %s",
                 self._obs_state,
             )
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -1172,7 +1178,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1193,6 +1199,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Scan"
         self.logger.info("Instructed simulator to invoke Scan command")
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
@@ -1203,7 +1210,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("Scan command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -1216,7 +1223,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1235,6 +1242,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_EndScan"
         self.logger.info("Instructed simulator to invoke EndScan command")
         self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
@@ -1245,7 +1253,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.READY
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("EndScan command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_End_allowed(self) -> bool:
         """
@@ -1258,7 +1266,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1277,6 +1285,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_End"
         self.logger.info("Instructed simulator to invoke End command")
         self.update_command_info(END, "")
         if self.defective_params["enabled"]:
@@ -1290,7 +1299,7 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
         self.logger.info("End command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -1303,7 +1312,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1322,6 +1331,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_GoToIdle"
         self.logger.info("Instructed simulator to invoke GoToIdle command")
         self.update_command_info(GO_TO_IDLE, "")
         if self.defective_params["enabled"]:
@@ -1332,7 +1342,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("GoToIdle command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_ObsReset_allowed(self) -> bool:
         """
@@ -1345,7 +1355,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("ObsReset Command is allowed")
@@ -1360,6 +1370,7 @@ class HelperSubArrayDevice(SKASubarray):
         ObsReset Command
         :return: ResultCode and message
         """
+        command_id = f"{time.time()}_ObsReset"
         self.logger.info("Instructed simulator to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
@@ -1370,7 +1381,7 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("ObsReset command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -1383,7 +1394,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1402,6 +1413,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Abort"
         self.logger.info("Instructed simulator to invoke Abort command")
         self.update_command_info(ABORT, "")
 
@@ -1415,7 +1427,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Abort command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
     def is_Restart_allowed(self) -> bool:
         """
@@ -1428,7 +1440,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -1447,6 +1459,8 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        command_id = f"{time.time()}_Restart"
+
         self.logger.info("Instructed simulator to invoke Restart command")
         self.update_command_info(RESTART, "")
 
@@ -1460,7 +1474,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Restart command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], command_id
 
 
 # ----------
