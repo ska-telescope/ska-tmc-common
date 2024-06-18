@@ -287,7 +287,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_change_event("longRunningCommandStatus", command_status)
 
     def push_command_result(self, result_code, command_name):
-        """Waits for 5 secs before pushing a longRunningCommandResult event."""
+        """Pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
             command_id = f"1000_{command_name}"
             command_result = (
@@ -763,32 +763,32 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
 
-    def update_lrcr(
-        self, command_name: str = "", command_id: str = ""
-    ) -> None:
-        """Updates the longrunningcommandresult  after a delay."""
-        delay_value = self._delay
-        with tango.EnsureOmniThread():
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-            time.sleep(delay_value)
+    # def update_lrcr(
+    #     self, command_name: str = "", command_id: str = ""
+    # ) -> None:
+    #     """Updates the longrunningcommandresult  after a delay."""
+    #     delay_value = self._delay
+    #     with tango.EnsureOmniThread():
+    #         self.logger.info(
+    #             "Sleep %s for command %s ", delay_value, command_name
+    #         )
+    #         time.sleep(delay_value)
 
-            if self._pointing_state != PointingState.TRACK:
-                if self._state_duration_info:
-                    self._follow_state_duration()
-                else:
-                    self._pointing_state = PointingState.TRACK
-                    self.push_change_event(
-                        "pointingState", self._pointing_state
-                    )
+    #         if self._pointing_state != PointingState.TRACK:
+    #             if self._state_duration_info:
+    #                 self._follow_state_duration()
+    #             else:
+    #                 self._pointing_state = PointingState.TRACK
+    #                 self.push_change_event(
+    #                     "pointingState", self._pointing_state
+    #                 )
 
-                # Set dish mode
-            self.set_dish_mode(DishMode.OPERATE)
-            self.push_command_result(
-                ResultCode.OK, command_name, command_id=command_id
-            )
-            self.logger.info("Track command completed.")
+    #             # Set dish mode
+    #         self.set_dish_mode(DishMode.OPERATE)
+    #         self.push_command_result(
+    #             ResultCode.OK, command_name, command_id=command_id
+    #         )
+    #         self.logger.info("Track command completed.")
 
     # Below changes will be un-commented in SAH-1530
 
