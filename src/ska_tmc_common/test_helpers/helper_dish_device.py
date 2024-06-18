@@ -295,7 +295,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 command_id,
                 str([result_code, f"{command_name} completed"]),
             )
-            self.logger.info(f"Pushing LRCR event{command_result}")
+            self.logger.info("Pushing LRCR event %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
 
     def set_achieved_pointing(self) -> None:
