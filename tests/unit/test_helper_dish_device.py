@@ -1,8 +1,10 @@
 import json
 import logging
+from datetime import datetime
 
 import numpy as np
 import pytest
+from astropy.time import Time
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
@@ -185,3 +187,19 @@ def test_dish_SetKValue_command(tango_context):
     return_code[0] = ResultCode.OK
 
     assert dish_device.kValue == 1
+
+
+@pytest.mark.utest
+def test_achived_pointing(tango_context):
+    """Test to check timestamp is SKA epoch TAI format."""
+    ska_epoch_tai = Time("1999-12-31T23:59:28Z", scale="utc").unix_tai
+    dev_factory = DevFactory()
+    dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_tai_timestamp = dish_device.achievedPointing[0]
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    tai_date = datetime.fromtimestamp(
+        Time(
+            dish_tai_timestamp + ska_epoch_tai, format="unix_tai", scale="tai"
+        ).unix
+    ).strftime("%Y-%m-%d")
+    assert current_date == tai_date

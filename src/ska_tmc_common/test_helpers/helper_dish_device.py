@@ -5,10 +5,12 @@ This module implements the Helper Dish Device for testing an integrated TMC
 import json
 import threading
 import time
+from datetime import datetime
 from typing import List, Tuple, Union
 
 import numpy as np
 import tango
+from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType, DevState, DevString
@@ -40,7 +42,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._configured_band = Band.NONE
         self._dish_mode = DishMode.STANDBY_LP
         self._achieved_pointing = [
-            1707388147149.508,
+            self.get_timestamp_in_tai(),
             179.880204193508,
             31.877024524259,
         ]
@@ -944,6 +946,14 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("EndScan")
         self._scan_id = ""
         return ([ResultCode.OK], [""])
+
+    def get_timestamp_in_tai(self):
+        """Method to get timestamp in TAI format with SKA epoch"""
+        SKA_EPOCH = "1999-12-31T23:59:28Z"
+        return (
+            Time(datetime.today(), scale="utc").unix_tai
+            - Time(SKA_EPOCH, scale="utc").unix_tai
+        )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Reset_allowed(self) -> bool:
