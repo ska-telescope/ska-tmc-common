@@ -11,7 +11,7 @@ import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState, DevString
+from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -286,6 +286,16 @@ class HelperDishDevice(HelperDishLNDevice):
         command_status = (command_id, status)
         self.push_change_event("longRunningCommandStatus", command_status)
 
+    def push_command_result(self, result_code, command_name):
+        """Waits for 5 secs before pushing a longRunningCommandResult event."""
+        with EnsureOmniThread():
+            command_id = f"1000_{command_name}"
+            command_result = (
+                command_id,
+                str([result_code, f"{command_name} completed"]),
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
+
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
@@ -443,8 +453,8 @@ class HelperDishDevice(HelperDishLNDevice):
         else:
             thread = threading.Timer(
                 self._delay,
-                function=self.push_command_status,
-                args=["COMPLETED", "TrackLoadStaticOff"],
+                function=self.push_command_result,
+                args=["ResultCode.OK", "TrackLoadStaticOff"],
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
