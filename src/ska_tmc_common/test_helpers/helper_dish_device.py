@@ -11,7 +11,7 @@ import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
+from tango import AttrWriteType, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -288,15 +288,15 @@ class HelperDishDevice(HelperDishLNDevice):
 
     def push_command_result(self, result_code, command_name):
         """Pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            command_id = f"1000_{command_name}"
+        # with EnsureOmniThread():
+        command_id = f"1000_{command_name}"
 
-            command_result = (
-                command_id,
-                str([result_code, f"{command_name} completed"]),
-            )
-            self.logger.info("Pushing LRCR event %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
+        command_result = (
+            command_id,
+            str([result_code, f"{command_name} completed"]),
+        )
+        self.logger.info("Pushing LRCR event %s", command_result)
+        self.push_change_event("longRunningCommandResult", command_result)
 
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
