@@ -189,13 +189,12 @@ def test_dish_SetKValue_command(tango_context):
     assert dish_device.kValue == 1
 
 
-@pytest.mark.utest
 def test_achived_pointing(tango_context):
     """Test to check timestamp is SKA epoch TAI format."""
     ska_epoch_tai = Time("1999-12-31T23:59:28Z", scale="utc").unix_tai
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_tai_timestamp = dish_device.achievedPointing[0]
+    dish_tai_timestamp = float(dish_device.achievedPointing[0])
     current_date = datetime.now().strftime("%Y-%m-%d")
     tai_date = datetime.fromtimestamp(
         Time(

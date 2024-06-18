@@ -56,6 +56,10 @@ Added
 
 Fixed
 -----
+[0.16.8]
+***********
+* Fixed the helper dish device achievedPointing attribute to give timestamp in TAI with SKA Epoch.
+
 [0.16.7]
 ***********
 * Fix the dish unavailability issue observed in tmc-mid integration repository
