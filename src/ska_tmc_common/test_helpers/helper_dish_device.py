@@ -295,7 +295,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 command_id,
                 str(
                     [
-                        json.dumps(result_code.value),
+                        int(json.dumps(result_code.value)),
                         f"{command_name} completed",
                     ]
                 ),
