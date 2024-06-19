@@ -56,6 +56,11 @@ Added
 
 Fixed
 -----
+[0.16.8]
+*********
+* Update in the way the helper dish device sends the resultcode and message
+* Use push_command_result instead of push_command_status
+
 [0.16.7]
 ***********
 * Fix the dish unavailability issue observed in tmc-mid integration repository
