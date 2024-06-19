@@ -293,7 +293,12 @@ class HelperDishDevice(HelperDishLNDevice):
 
             command_result = (
                 command_id,
-                str([result_code, f"{command_name} completed"]),
+                str(
+                    [
+                        json.dumps(result_code.value),
+                        f"{command_name} completed",
+                    ]
+                ),
             )
             self.logger.info("Pushing LRCR event %s", command_result)
             self.push_change_event("longRunningCommandResult", command_result)
@@ -363,7 +368,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK.value, "SetOperateMode")
+        self.push_command_result(ResultCode.OK, "SetOperateMode")
         self.logger.info("SetOperateMode command completed.")
         return ([ResultCode.OK], [""])
 
@@ -442,7 +447,7 @@ class HelperDishDevice(HelperDishLNDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[ResultCode.FAILED.value, "TrackLoadStaticOff"],
+                args=[ResultCode.FAILED, "TrackLoadStaticOff"],
             )
 
             # Will be un-commented as part of SAH-1530
@@ -456,7 +461,7 @@ class HelperDishDevice(HelperDishLNDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[ResultCode.OK.value, "TrackLoadStaticOff"],
+                args=[ResultCode.OK, "TrackLoadStaticOff"],
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
@@ -516,7 +521,7 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B1)
-        self.push_command_result(ResultCode.OK.value, "ConfigureBand1")
+        self.push_command_result(ResultCode.OK, "ConfigureBand1")
         self.logger.info("ConfigureBand1 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -583,7 +588,7 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B2)
-        self.push_command_result(ResultCode.OK.value, "ConfigureBand2")
+        self.push_command_result(ResultCode.OK, "ConfigureBand2")
         self.logger.info("ConfigureBand2 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -628,7 +633,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B3)
-        self.push_command_result(ResultCode.OK.value, "ConfigureBand3")
+        self.push_command_result(ResultCode.OK, "ConfigureBand3")
         self.logger.info("ConfigureBand3 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -673,7 +678,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B4)
-        self.push_command_result(ResultCode.OK.value, "ConfigureBand4")
+        self.push_command_result(ResultCode.OK, "ConfigureBand4")
         self.logger.info("ConfigureBand4 command completed.")
         return ([ResultCode.OK], [""])
 
@@ -717,7 +722,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B5a)
-        self.push_command_result(ResultCode.OK.value, "ConfigureBand5a")
+        self.push_command_result(ResultCode.OK, "ConfigureBand5a")
         self.logger.info("ConfigureBand5a command completed.")
         return ([ResultCode.OK], [""])
 
@@ -761,19 +766,13 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B5b)
-        self.push_command_result(ResultCode.OK.value, "ConfigureBand5b")
+        self.push_command_result(ResultCode.OK, "ConfigureBand5b")
         self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
 
     def update_lrcr(self, command_name: str = "") -> None:
         """Updates the longrunningcommandresult  after a delay."""
-        delay_value = self._delay
         with tango.EnsureOmniThread():
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-            time.sleep(delay_value)
-
             if self._pointing_state != PointingState.TRACK:
                 if self._state_duration_info:
                     self._follow_state_duration()
