@@ -3,7 +3,6 @@
 This module implements the Helper Dish Device for testing an integrated TMC
 """
 import json
-import random
 import threading
 import time
 from typing import List, Tuple, Union
@@ -290,8 +289,7 @@ class HelperDishDevice(HelperDishLNDevice):
     def push_command_result(self, result_code, command_name):
         """Pushing a longRunningCommandResult event."""
         with EnsureOmniThread():
-            random_number = random.randint(1000, 9999)
-            command_id = f"{random_number}_{command_name}"
+            command_id = f"{time.time()}_{command_name}"
 
             command_result = (
                 command_id,
