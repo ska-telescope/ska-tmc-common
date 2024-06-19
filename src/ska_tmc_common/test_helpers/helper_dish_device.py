@@ -294,7 +294,8 @@ class HelperDishDevice(HelperDishLNDevice):
             command_result = (
                 command_id,
                 [
-                    json.dumps((result_code, f"{command_name} completed")),
+                    result_code.value,
+                    f"{command_name} completed",
                 ],
             )
             self.logger.info("Pushing LRCR event %s", command_result)
