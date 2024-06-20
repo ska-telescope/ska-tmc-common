@@ -24,9 +24,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
-        self._raise_exception = False
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
