@@ -13,7 +13,6 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
-from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -26,13 +25,10 @@ from .constants import (
     END,
     END_SCAN,
     GO_TO_IDLE,
-    OFF,
-    ON,
     RELEASE_ALL_RESOURCES,
     RELEASE_RESOURCES,
     RESTART,
     SCAN,
-    STAND_BY,
 )
 
 
@@ -43,7 +39,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self._delay = 2
         self._obs_state = ObsState.EMPTY
         self._state_duration_info = []
         # list of tuple
@@ -130,43 +125,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             command_name (str): command name
             command_input (str): Input argin for command
         """
-        self.logger.info(
-            "Recording the command data for Sdp Subarray \
-                 or Csp Subarray simulators"
-        )
         self._command_info = (command_name, command_input)
-        self.logger.info(
-            "Recorded command_info for Helper Subarray Leaf device %s",
-            self._command_info,
-        )
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Recorded command_call_info list for helper subarray leaf device"
-            " is %s",
+            "Recorded command_call_info list for: %s is %s",
+            self.dev_name,
             self._command_call_info,
         )
-
         self.push_change_event("commandCallInfo", self._command_call_info)
-        self.logger.info("CommandCallInfo updates are pushed")
-
-    def _update_obs_state_in_sequence(self):
-        """Update Obs state in sequence as per state duration info
-        This method update obs state of subarray device as per sequence
-        provided in state_duration_info
-        Example:
-        if state_duration_info is [["READY", 1], ["FAULT", 2]]
-        then obsState is updated to READY in 1 sec and after it update
-        it to FAULT in 2 sec
-        """
-        with tango.EnsureOmniThread():
-            for obs_state, duration in self._state_duration_info:
-                obs_state_enum = ObsState[obs_state]
-                self.logger.info(
-                    "Sleep %s for obs state %s", duration, obs_state
-                )
-                time.sleep(duration)
-                self._obs_state = obs_state_enum
-                self.push_change_event("obsState", self._obs_state)
 
     def _follow_state_duration(self):
         """This method will update obs state as per state duration
@@ -175,19 +141,20 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         for updating obs state.As Updating Obs state might take
         more than 3 sec.
         """
-        thread = threading.Thread(
-            target=self._update_obs_state_in_sequence,
-        )
-        thread.start()
+        for obs_state, duration in self._state_duration_info:
+            time.sleep(duration)
+            thread = threading.Thread(
+                target=self.push_obs_state_event,
+                args=[obs_state],
+            )
+            thread.start()
 
     @command(
         doc_in="Clears commandCallInfo",
     )
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
-        self.logger.info(
-            "Clearing CommandCallInfo for Csp and Sdp Subarray simulators"
-        )
+        self.logger.info("Clearing CommandCallInfo for %s", self.dev_name)
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
 
@@ -202,12 +169,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         the specified duration
         """
         self.logger.info(
-            "Adding observation state transitions for Helper "
-            "Subarray Leaf Device"
-        )
-        self.logger.info(
-            "ObsState transitions sequence for "
-            "Helper Subarray Leaf Device is: %s",
+            "ObsState transitions sequence for %s is: %s",
+            self.dev_name,
             state_duration_info,
         )
         self._state_duration_info = json.loads(state_duration_info)
@@ -236,132 +199,14 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
     def push_obs_state_event(self, obs_state: ObsState) -> None:
         """Push Obs State Change Event"""
-        self.logger.info(
-            "Pushing change event for HelperSubarrayLeafDeviceObsState: %s",
-            obs_state,
-        )
-        self._obs_state = obs_state
-        self.push_change_event("obsState", self._obs_state)
-
-    def update_device_obsstate(self, obs_state: ObsState):
-        """Updates the device obsState"""
         with tango.EnsureOmniThread():
+            self.logger.info(
+                "Pushing change event for %s: %s",
+                self.dev_name,
+                obs_state,
+            )
             self._obs_state = obs_state
-            self.push_obs_state_event(self._obs_state)
-
-    def is_On_allowed(self) -> bool:
-        """
-        This method checks if the On command is allowed or not
-        :return: ``True`` if the command is allowed
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def On(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This is the method to invoke ON command.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_On"
-        self.update_command_info(ON)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("On", command_id)
-
-        self.set_state(DevState.ON)
-        self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "On")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Off_allowed(self) -> bool:
-        """
-        This method checks if the Off command is allowed or not
-        :return: ``True`` if the command is allowed
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Off(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This is the method to invoke Off command.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Off"
-        self.update_command_info(OFF)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("Off", command_id)
-
-        self.set_state(DevState.OFF)
-        self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Off")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Standby_allowed(self) -> bool:
-        """
-        This method checks if the Standby command is allowed or not
-        :return: ``True`` if the command is allowed
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Standby Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This is the method to invoke Standby command.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Standby"
-        self.update_command_info(STAND_BY)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("Standby", command_id)
-
-        self.set_state(DevState.STANDBY)
-        self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Standby")
-        return [ResultCode.QUEUED], [command_id]
+            self.push_change_event("obsState", self._obs_state)
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -406,10 +251,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self._state_duration_info:
             self._follow_state_duration()
         else:
-            self._obs_state = ObsState.RESOURCING
-            self.push_obs_state_event(self._obs_state)
+            self.push_obs_state_event(ObsState.RESOURCING)
             thread = threading.Timer(
-                self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+                self._delay, self.push_obs_state_event, args=[ObsState.IDLE]
             )
             thread.start()
             result_thread = threading.Timer(
@@ -465,10 +309,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self._state_duration_info:
             self._follow_state_duration()
         else:
-            self._obs_state = ObsState.CONFIGURING
-            self.push_obs_state_event(self._obs_state)
+            self.push_obs_state_event(ObsState.CONFIGURING)
             thread = threading.Timer(
-                self._delay, self.update_device_obsstate, args=[ObsState.READY]
+                self._delay, self.push_obs_state_event, args=[ObsState.READY]
             )
             thread.start()
             result_thread = threading.Timer(
@@ -525,7 +368,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id)
 
-        self.update_device_obsstate(ObsState.SCANNING)
+        self.push_obs_state_event(ObsState.SCANNING)
         self.logger.info("Scan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -564,9 +407,10 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id)
 
-        self._obs_state = ObsState.READY
-        self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "EndScan")
+        self.push_obs_state_event(ObsState.READY)
+        self.push_command_result(
+            ResultCode.OK, "EndScan", command_id=command_id
+        )
         self.logger.info("EndScan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -605,13 +449,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("End", command_id)
 
-        self._obs_state = ObsState.CONFIGURING
-        self.push_obs_state_event(self._obs_state)
-        thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
-        )
-        thread.start()
-        self.push_command_result(ResultCode.OK, "End")
+        self.push_obs_state_event(ObsState.IDLE)
+        self.push_command_result(ResultCode.OK, "End", command_id=command_id)
         self.logger.debug(
             "End command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",
@@ -694,13 +533,18 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Abort", command_id)
 
-        self._obs_state = ObsState.ABORTING
-        self.push_obs_state_event(self._obs_state)
+        self.push_obs_state_event(ObsState.ABORTING)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.ABORTED]
+            self._delay, self.push_obs_state_event, args=[ObsState.ABORTED]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Abort")
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "Abort"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.debug(
             "Abort command invoked, obsState will transition to"
             + "ABORTED, current obsState is %s",
@@ -743,13 +587,18 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Restart", command_id)
 
-        self._obs_state = ObsState.RESTARTING
-        self.push_obs_state_event(self._obs_state)
+        self.push_obs_state_event(ObsState.RESTARTING)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+            self._delay, self.push_obs_state_event, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Restart")
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "Restart"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("Restart command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -788,13 +637,18 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseAllResources", command_id)
 
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
+        self.push_obs_state_event(ObsState.RESOURCING)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
+            self._delay, self.push_obs_state_event, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "ReleaseAllResources"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.debug(
             "ReleaseAllResources command invoked, obsState will transition to"
             + "EMPTY, current obsState is %s",
@@ -841,13 +695,18 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseResources", command_id)
 
-        self._obs_state = ObsState.RESOURCING
-        self.push_obs_state_event(self._obs_state)
+        self.push_obs_state_event(ObsState.RESOURCING)
         thread = threading.Timer(
-            self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
+            self._delay, self.push_obs_state_event, args=[ObsState.IDLE]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "ReleaseResources")
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "ReleaseResources"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.debug(
             "ReleaseResources command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",

@@ -23,7 +23,6 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self._delay: int = 2
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
         self._dish_vcc_map_validation_result = ResultCode.STARTED
@@ -163,6 +162,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
                 "LoadDishCfg",
                 command_id,
             )
+
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
