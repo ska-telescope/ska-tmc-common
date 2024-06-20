@@ -67,7 +67,7 @@ Fixed
 * **Decorators** are updated to support the new **update_task_status** calls.
 * **HelperCspSubarrayDevice** is removed.
 * **COMMAND_NOT_ALLOWED** fault type is changed to **COMMAND_NOT_ALLOWED_BEFORE_QUEUING**
-* New fault type **COMMAND_NOT_ALLOWED_AFTER_QUEUING** introduced
+* New fault types **COMMAND_NOT_ALLOWED_AFTER_QUEUING** and **COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING** introduced
 * **max_workers** parameter removed from component manager
 
 [0.16.8]

@@ -160,6 +160,10 @@ class HelperBaseDevice(SKABaseDevice):
             This fault type sends a ResultCode.NOT_ALLOWED event through the
             LongRunningCommandResult attribute.
 
+        - COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING:
+            This fault type sends a ResultCode.REJECTED event through the
+            LongRunningCommandResult attribute.
+
         """
 
         fault_type = self.defective_params.get("fault_type")
@@ -200,6 +204,25 @@ class HelperBaseDevice(SKABaseDevice):
                 ],
                 kwargs={
                     "message": "Command is not allowed",
+                    "command_id": command_id,
+                },
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [command_id]
+
+        if fault_type == FaultType.COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[
+                    ResultCode.REJECTED,
+                    command_name,
+                ],
+                kwargs={
+                    "message": (
+                        "Exception from 'is_cmd_allowed' method: "
+                        + f"{fault_message}"
+                    ),
                     "command_id": command_id,
                 },
             )

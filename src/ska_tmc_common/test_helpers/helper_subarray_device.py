@@ -718,6 +718,10 @@ class HelperSubArrayDevice(SKASubarray):
             This fault type sends a ResultCode.NOT_ALLOWED event through the
             LongRunningCommandResult attribute.
 
+        - COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING:
+            This fault type sends a ResultCode.REJECTED event through the
+            LongRunningCommandResult attribute.
+
         - STUCK_IN_OBS_STATE:
             This fault type sets the device to given obsState and sends out an
             event on the LongRunningCommandResult attribute.
@@ -779,6 +783,22 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("obsState", intermediate_state)
             return [ResultCode.QUEUED], [command_id]
 
+        if fault_type == FaultType.COMMAND_NOT_ALLOWED_AFTER_QUEUING:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[
+                    ResultCode.NOT_ALLOWED,
+                    command_name,
+                ],
+                kwargs={
+                    "message": "Command is not allowed",
+                    "command_id": command_id,
+                },
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [command_id]
+
         if fault_type == FaultType.STUCK_IN_OBSTATE:
             self._obs_state = intermediate_state
             self.push_change_event("obsState", intermediate_state)
@@ -796,6 +816,25 @@ class HelperSubArrayDevice(SKASubarray):
                 "pushing longRunningCommandResult %s event", command_result
             )
             self.push_change_event("longRunningCommandResult", command_result)
+            return [ResultCode.QUEUED], [command_id]
+
+        if fault_type == FaultType.COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[
+                    ResultCode.REJECTED,
+                    command_name,
+                ],
+                kwargs={
+                    "message": (
+                        "Exception from 'is_cmd_allowed' method: "
+                        + f"{fault_message}"
+                    ),
+                    "command_id": command_id,
+                },
+            )
+            thread.start()
             return [ResultCode.QUEUED], [command_id]
 
         return [ResultCode.OK], [command_id]
