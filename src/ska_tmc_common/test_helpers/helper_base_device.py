@@ -30,7 +30,6 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
-        self._raise_exception = False
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -54,7 +53,6 @@ class HelperBaseDevice(SKABaseDevice):
         """
         empty_component_manager = EmptyComponentManager(
             logger=self.logger,
-            max_workers=1,
             communication_state_callback=None,
             component_state_callback=None,
         )
@@ -63,16 +61,6 @@ class HelperBaseDevice(SKABaseDevice):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
-
-    raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
-
-    def read_raiseException(self) -> bool:
-        """
-        This method is used to read the attribute value for raise exception
-        :return: attribute value for raise exception
-        :rtype: bool
-        """
-        return self._raise_exception
 
     def read_defective(self) -> str:
         """
@@ -116,51 +104,46 @@ class HelperBaseDevice(SKABaseDevice):
         """
         Induces a fault into the device based on the given parameters.
 
-        :param command_name: The name of the
-         command for which a fault is being induced.
+        :param command_name: The name of the command for which a fault is
+            being induced.
         :type command_name: str
-        :return: ResultCode and message
+        :param command_id: The command id over which the LRCR event is to be
+            pushed.
+        :type command_id: str
+
+        :return: ResultCode and Unique_ID
         :rtype: Tuple[List[ResultCode], List[str]]
 
         Example:
-        defective = json.dumps(
-        {
-        "enabled": False,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Default exception.",
-        "result": ResultCode.FAILED,
-        }
-        )
-        defective_params = json.loads(defective)
+            defective_params = json.dumps({"enabled": False,"fault_type":
+            FaultType.FAILED_RESULT,"error_message": "Default exception.",
+            "result": ResultCode.FAILED,})
+            proxy.SetDefective(defective_params)
 
-        Detailed Explanation:
-        This method simulates inducing various types of faults into a device
-        to test its robustness and error-handling capabilities.
+        Explanation:
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
 
         - FAILED_RESULT:
-          A fault type that triggers a failed result code
-          for the command. The device will return a result code of 'FAILED'
-          along with a custom error message, indicating that
-          the command execution has failed.
+            A fault type that triggers a failed result code
+            for the command. The device will return a result code of 'FAILED'
+            along with a unique_id indicating that the command execution has
+            failed.
 
-        - LONG_defaultmediate state for an extended period.
-          This could simulate a situation where a command execution
-          hangs due to some internal processing issue.
+        - LONG_RUNNING_EXCEPTION:
+            A fault type where a failed result will be sent over the
+            LongRunningCommandResult attribute in 'delay' amount of time.
 
         - STUCK_IN_INTERMEDIATE_STATE:
-          This fault type represents a scenario where the
-          device gets stuck in an intermediate state between two
-          well-defined states. This can help test the device's state
-          recovery and error handling mechanisms.
+            This fault type makes it such that the device is stuck in the given
+            Observation state.
 
-        - COMMAND_NOT_ALLOWED:
-          This fault type represents a situation where the
-          given command is not allowed to be executed due to some
-          authorization or permission issues. The device
-          should respond with an appropriate error code and message.
+        - COMMAND_NOT_ALLOWED_AFTER_QUEUING:
+            This fault type sends a ResultCode.NOT_ALLOWED event through the
+            LongRunningCommandResult attribute.
 
-        :raises: None
         """
+
         fault_type = self.defective_params["fault_type"]
         result = self.defective_params["result"]
         fault_message = self.defective_params["error_message"]
@@ -176,7 +159,8 @@ class HelperBaseDevice(SKABaseDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name, fault_message],
+                args=[result, command_name],
+                kwargs={"message": fault_message, "command_id": command_id},
             )
             thread.start()
             return [ResultCode.QUEUED], [command_id]
@@ -193,11 +177,15 @@ class HelperBaseDevice(SKABaseDevice):
                 args=[
                     ResultCode.NOT_ALLOWED,
                     command_name,
-                    "Command is not allowed",
                 ],
+                kwargs={
+                    "message": "Command is not allowed",
+                    "command_id": command_id,
+                },
             )
             thread.start()
             return [ResultCode.QUEUED], [command_id]
+
         return [ResultCode.OK], [command_id]
 
     def push_command_result(
@@ -215,10 +203,11 @@ class HelperBaseDevice(SKABaseDevice):
         :param command_name: The command name for which event is being pushed
         :type command_name: str
         :param message: The message associated with the command result
-        :type message: str
-        :param command_id: The unique command id (optional)
-        :type command_id: str
+        :type message: Optional[str]
+        :param command_id: The unique command id
+        :type command_id: Optional[str]
         """
+
         if not command_id:
             command_id = f"{time.time()}-{command_name}"
         command_result = (
@@ -278,21 +267,11 @@ class HelperBaseDevice(SKABaseDevice):
         )
         value = HealthState(argin)
         if self._health_state != value:
-            self.logger.info(
-                "Setting HealthState value for simulator to : %s", value
-            )
             self._health_state = HealthState(argin)
             self.push_change_event("healthState", self._health_state)
-            self.logger.info("Pushed updated HealthState value for simulator")
-
-    @command(
-        dtype_in=bool,
-        doc_in="Raise Exception",
-    )
-    def SetRaiseException(self, value: bool) -> None:
-        """Set Raise Exception"""
-        self.logger.info("Setting the raise exception value to : %s", value)
-        self._raise_exception = value
+            self.logger.info(
+                "HealthState is set to: %s", self._health_state.name
+            )
 
     def is_On_allowed(self) -> bool:
         """
@@ -417,7 +396,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("Standy command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    def is_disable_allowed(self) -> bool:
+    def is_Disable_allowed(self) -> bool:
         """
         This method checks if the Disable command is allowed in current state.
         :return: ``True`` if the command is allowed
