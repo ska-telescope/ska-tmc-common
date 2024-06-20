@@ -14,8 +14,8 @@ def test_csp_commands(tango_context, command):
     dev_factory = DevFactory()
     csp_device = dev_factory.get_device(CSP_DEVICE)
     result, command_id = csp_device.command_inout(command, "")
-    assert result[0] == ResultCode.QUEUED
-    assert isinstance(command_id[0], str)
+    assert result[0] == ResultCode.OK
+    assert command in command_id[0]
 
 
 @pytest.mark.parametrize("command", commands)
@@ -25,7 +25,7 @@ def test_csp_command_defective(tango_context, command):
     csp_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, command_id = csp_device.command_inout(command, "")
     assert result[0] == ResultCode.FAILED
-    assert isinstance(command_id[0], str)
+    assert command in command_id[0]
 
 
 def test_csp_loadDishConfig_command(tango_context, json_factory):

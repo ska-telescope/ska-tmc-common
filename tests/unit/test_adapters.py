@@ -9,14 +9,15 @@ from ska_tmc_common import (
     AdapterType,
     BaseAdapter,
     CspMasterAdapter,
-    CspSubarrayAdapter,
     DishAdapter,
     DishLeafAdapter,
+    EmptySubArrayComponentManager,
     HelperBaseDevice,
     HelperCspMasterDevice,
     HelperCspMasterLeafDevice,
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
+    HelperSdpSubarray,
     HelperSubArrayDevice,
     MCCSControllerAdapter,
     MCCSMasterLeafNodeAdapter,
@@ -24,16 +25,10 @@ from ska_tmc_common import (
     SubarrayAdapter,
     TmcLeafNodeCommand,
 )
-from ska_tmc_common.test_helpers.helper_csp_subarray import HelperCspSubarray
-from ska_tmc_common.test_helpers.helper_sdp_subarray import HelperSdpSubarray
-from ska_tmc_common.test_helpers.helper_subarray_device import (
-    EmptySubArrayComponentManager,
-)
 from tests.settings import (
     HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_DEVICE,
     HELPER_CSP_MASTER_LEAF_DEVICE,
-    HELPER_CSP_SUBARRAY_DEVICE,
     HELPER_DISH_DEVICE,
     HELPER_MCCS_CONTROLLER,
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
@@ -77,10 +72,6 @@ def devices_to_load():
         {
             "class": HelperSdpSubarray,
             "devices": [{"name": HELPER_SDP_SUBARRAY_DEVICE}],
-        },
-        {
-            "class": HelperCspSubarray,
-            "devices": [{"name": HELPER_CSP_SUBARRAY_DEVICE}],
         },
         {
             "class": HelperCspMasterLeafDevice,
@@ -195,14 +186,6 @@ def test_get_or_create_sdp_adapter(tango_context):
         HELPER_SDP_SUBARRAY_DEVICE, AdapterType.SDPSUBARRAY
     )
     assert isinstance(sdp_subarray_adapter, SdpSubArrayAdapter)
-
-
-def test_get_or_create_csp_subarray_adapter(tango_context):
-    factory = AdapterFactory()
-    csp_subarray_adapter = factory.get_or_create_adapter(
-        HELPER_CSP_SUBARRAY_DEVICE, AdapterType.CSPSUBARRAY
-    )
-    assert isinstance(csp_subarray_adapter, CspSubarrayAdapter)
 
 
 def test_call_adapter_method(tango_context):

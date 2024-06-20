@@ -232,8 +232,6 @@ class HelperSubArrayDevice(SKASubarray):
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
 
-    raiseException = attribute(dtype=bool, access=AttrWriteType.READ)
-
     commandCallInfo = attribute(
         dtype=(("str",),),
         access=AttrWriteType.READ,

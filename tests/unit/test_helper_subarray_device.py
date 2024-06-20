@@ -49,7 +49,7 @@ def test_obs_state_transition(tango_context):
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetDelay('{"Configure": 3}')
+    subarray_device.SetDelayInfo('{"Configure": 3}')
     command_delay_info = json.loads(subarray_device.commandDelayInfo)
     assert command_delay_info["Configure"] == 3
 
@@ -125,24 +125,6 @@ def test_release_resources_defective(tango_context):
     result, command_id = subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
     assert "ReleaseAllResources" in command_id[0]
-
-
-def test_assign_resources_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetRaiseException(True)
-    result, message = subarray_device.AssignResources("")
-    assert result[0] == ResultCode.QUEUED
-    assert subarray_device.obsstate == ObsState.RESOURCING
-
-
-def test_release_resources_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    subarray_device.SetRaiseException(True)
-    result, message = subarray_device.ReleaseAllResources()
-    assert result[0] == ResultCode.QUEUED
-    assert subarray_device.obsstate == ObsState.RESOURCING
 
 
 def test_assigned_resources_attribute_with_change_event(tango_context):

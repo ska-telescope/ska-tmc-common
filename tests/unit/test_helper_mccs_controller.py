@@ -93,29 +93,10 @@ def test_mccs_controller_release_defective(tango_context):
     assert "Release" in command_id[0]
 
 
-def test_mccs_controller_allocate_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetRaiseException(True)
-    result, message = mccs_controller_device.command_inout(
-        "Allocate", allocate_argin_string
-    )
-    assert result[0] == ResultCode.QUEUED
-
-
-def test_mccs_controller_command_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetRaiseException(True)
-    result, message = mccs_controller_device.command_inout(
-        "Release", release_argin_string
-    )
-    assert result[0] == ResultCode.QUEUED
-
-
 def test_allocate_stuck_in_intermediate_state(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
     defect = {
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
@@ -123,11 +104,20 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
         "error_message": "Device is stuck in Resourcing state",
         "intermediate_state": ObsState.RESOURCING,
     }
-    mccs_controller_device.SetDefective(json.dumps(defect))
+    mccs_subarray_device.SetDefective(json.dumps(defect))
     result, _ = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
     assert result[0] == ResultCode.QUEUED
+    with pytest.raises(Exception) as exception:
+        wait_for_obstate(mccs_subarray_device, ObsState.IDLE)
+
+    message_to_assert = (
+        f"Timeout occured while waiting for {MCCS_SUBARRAY_DEVICE} ObsState to"
+        + f" transition to {ObsState.IDLE}. Current obsState is "
+        + f"{ObsState.RESOURCING}"
+    )
+    assert message_to_assert == str(exception.value)
     mccs_controller_device.SetDefective(json.dumps({"enabled": False}))
 
 

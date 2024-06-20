@@ -80,9 +80,11 @@ from .test_helpers.helper_mccs_controller_device import HelperMCCSController
 from .test_helpers.helper_mccs_master_leaf_node_device import (
     HelperMCCSMasterLeafNode,
 )
+from .test_helpers.helper_mccs_subarray_device import HelperMccsSubarrayDevice
 from .test_helpers.helper_sdp_queue_connector_device import (
     HelperSdpQueueConnector,
 )
+from .test_helpers.helper_sdp_subarray import HelperSdpSubarray
 from .test_helpers.helper_sdp_subarray_leaf_device import (
     HelperSdpSubarrayLeafDevice,
 )
@@ -172,10 +174,12 @@ __all__ = [
     "HelperDishLNDevice",
     "HelperMCCSController",
     "HelperMCCSMasterLeafNode",
+    "HelperMccsSubarrayDevice",
     "HelperSubArrayDevice",
     "HelperCspMasterDevice",
     "HelperCspMasterLeafDevice",
     "EmptySubArrayComponentManager",
+    "HelperSdpSubarray",
     "HelperSubarrayLeafDevice",
     "HelperSdpSubarrayLeafDevice",
     "HelperCspSubarrayLeafDevice",

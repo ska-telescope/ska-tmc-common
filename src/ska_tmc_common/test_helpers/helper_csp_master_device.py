@@ -12,6 +12,7 @@ from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_telmodel.data import TMData
+from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
@@ -59,6 +60,74 @@ class HelperCspMasterDevice(HelperBaseDevice):
         :rtype:str
         """
         return self._dish_vcc_config
+
+    @command(
+        dtype_in="DevVarStringArray",
+        doc_in="Input argument as an empty list",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes On command on CSP Master
+        :return: ResultCode and message
+        :rtype: Tuple
+        """
+        command_id = f"{time.time()}_On"
+        self.logger.info("Instructed simulator to invoke On command")
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault("On", command_id)
+        if self.dev_state() != DevState.ON:
+            self.set_state(DevState.ON)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("On command completed.")
+        return [ResultCode.OK], [command_id]
+
+    @command(
+        dtype_in="DevVarStringArray",
+        doc_in="Input argument as an empty list",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Off command on CSP Master
+        :return: ResultCode and message
+        :rtype: Tuple
+        """
+        command_id = f"{time.time()}_Off"
+        self.logger.info("Instructed simulator to invoke On command")
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault("Off", command_id)
+        if self.dev_state() != DevState.OFF:
+            self.set_state(DevState.OFF)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("Off command completed.")
+        return [ResultCode.OK], [command_id]
+
+    @command(
+        dtype_in="DevVarStringArray",
+        doc_in="Input argument as an empty list",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Standby command on CSP Master
+        :return: ResultCode and message
+        :rtype: Tuple
+        """
+        command_id = f"{time.time()}_Standby"
+        if self.defective_params["enabled"]:
+            self.logger.info("Device is defective, cannot process command.")
+            return self.induce_fault("Standby", command_id)
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+            self.push_change_event("State", self.dev_state())
+            self.logger.info("Standby command completed.")
+        return [ResultCode.OK], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",

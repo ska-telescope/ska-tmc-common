@@ -13,7 +13,9 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
-from ska_tmc_common import HelperSubArrayDevice
+from ska_tmc_common.test_helpers.helper_subarray_device import (
+    HelperSubArrayDevice,
+)
 
 from .constants import (
     ABORT,
