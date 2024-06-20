@@ -48,9 +48,9 @@ def test_set_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
     csp_subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, message = csp_subarray_device.AssignResources("")
+    result, command_id = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Default exception."
+    assert "AssignResources" in command_id[0]
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -66,44 +66,46 @@ def test_set_raise_exception(tango_context):
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    result, message = csp_subarray_device.command_inout(command, "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = csp_subarray_device.command_inout(command, "")
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
 def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    result, message = csp_subarray_device.command_inout(command)
-    assert result[0] == ResultCode.OK
+    result, command_id = csp_subarray_device.command_inout(command)
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
     csp_subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, message = csp_subarray_device.AssignResources("")
+    result, command_id = csp_subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Default exception."
+    assert "AssignResources" in command_id[0]
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_scan_command(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
-    result, message = csp_subarray_device.Scan("")
-    assert result[0] == ResultCode.OK
+    result, command_id = csp_subarray_device.Scan("")
+    assert result[0] == ResultCode.QUEUED
     assert csp_subarray_device.obsstate == ObsState.SCANNING
+    assert isinstance(command_id[0], str)
 
 
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE)
     csp_subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, message = csp_subarray_device.ReleaseAllResources()
+    result, command_id = csp_subarray_device.ReleaseAllResources()
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Default exception."
+    assert "ReleaseAllResources" in command_id[0]
     csp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 

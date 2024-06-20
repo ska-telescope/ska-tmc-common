@@ -82,7 +82,7 @@ DEFAULT_DEFECT_SETTINGS = {
 
 COMMAND_NOT_ALLOWED_DEFECT = {
     "enabled": True,
-    "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+    "fault_type": FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING,
     "error_message": "Device is stuck in Resourcing state",
     "result": ResultCode.FAILED,
 }
@@ -320,10 +320,10 @@ class DummyCommandClass(TmcLeafNodeCommand):
         message = kwargs.get("message")
 
         if result == ResultCode.OK:
-            self.task_callback(result=result, status=status)
+            self.task_callback(result=(result, message), status=status)
         else:
             self.task_callback(
-                result=result,
+                result=(result, message),
                 status=status,
                 exception=message,
             )

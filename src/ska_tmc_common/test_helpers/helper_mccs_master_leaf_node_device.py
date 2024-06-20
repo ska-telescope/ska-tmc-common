@@ -84,7 +84,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -111,10 +111,10 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         """
         command_id = f"{time.time()}-AssignResources"
         if self.defective_params["enabled"]:
-            return self.induce_fault(command_id)
-        self.push_command_result(ResultCode.OK, command_id)
+            return self.induce_fault("AssignResources", command_id)
+        self.push_command_result(ResultCode.OK, "AssignResources")
         self.logger.info("AssignResourses command complete")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -128,7 +128,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -155,7 +155,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         """
         command_id = f"{time.time()}-ReleaseAllResources"
         if self.defective_params["enabled"]:
-            return self.induce_fault(command_id)
-        self.push_command_result(ResultCode.OK, command_id)
+            return self.induce_fault("ReleaseAllResources", command_id)
+        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
         self.logger.info("ReleaseAllResources command complete")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]

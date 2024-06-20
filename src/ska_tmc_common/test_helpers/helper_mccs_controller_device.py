@@ -53,7 +53,7 @@ class HelperMCCSController(HelperBaseDevice):
     def induce_fault(
         self,
         command_name: str,
-        command_id: str,
+        command_id: str = "",
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -115,7 +115,7 @@ class HelperMCCSController(HelperBaseDevice):
         fault_message = self.defective_params["error_message"]
 
         if fault_type == FaultType.FAILED_RESULT:
-            return [result], [fault_message]
+            return [result], [command_id]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
@@ -196,7 +196,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -259,7 +259,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -321,7 +321,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -373,31 +373,26 @@ class HelperMCCSController(HelperBaseDevice):
 
     # pylint: disable=arguments-renamed
     def push_command_result(
-        self, result: ResultCode, command_id: str, exception: str = ""
+        self, result: ResultCode, command_id: str, message: str = ""
     ) -> None:
-        """Push long running command result event for given command.
-
+        """
+        Push long running command result event for given command.
         :params:
-
         result: The result code to be pushed as an event
         dtype: ResultCode
 
         command_id: The command_id for which the event is being pushed
         dtype: str
 
-        exception: Exception message to be pushed as an event
+        message: Message to be pushed as an event
         dtype: str
         """
-
-        if exception:
-            command_result = (
-                command_id,
-                json.dumps([ResultCode.FAILED, exception]),
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps([result, ""]))
-
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
+        command_result = (
+            command_id,
+            json.dumps((result, message)),
         )
+        self.logger.info(
+            "Pushing longRunningCommandResult Event with data: %s",
+            command_result,
+        )
+        self.push_change_event("longRunningCommandResult", command_result)

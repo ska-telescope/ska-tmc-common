@@ -111,8 +111,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.defective_params = input_dict
 
     def induce_fault(
-        self,
-        command_name: str,
+        self, command_name: str, command_id: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -144,9 +143,7 @@ class HelperBaseDevice(SKABaseDevice):
           along with a custom error message, indicating that
           the command execution has failed.
 
-        - LONG_RUNNING_EXCEPTION:
-          A fault type that simulates a command getting stuck in an
-          intermediate state for an extended period.
+        - LONG_defaultmediate state for an extended period.
           This could simulate a situation where a command execution
           hangs due to some internal processing issue.
 
@@ -173,50 +170,65 @@ class HelperBaseDevice(SKABaseDevice):
         )
 
         if fault_type == FaultType.FAILED_RESULT:
-            return [result], [fault_message]
+            return [result], [command_id]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[result, command_name],
-                kwargs={"exception": fault_message},
+                args=[result, command_name, fault_message],
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
             self.push_obs_state_event(intermediate_state)
-            return [ResultCode.QUEUED], [""]
-        return [ResultCode.OK], [""]
+            return [ResultCode.QUEUED], [command_id]
+
+        if fault_type == FaultType.COMMAND_NOT_ALLOWED_AFTER_QUEUING:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[
+                    ResultCode.NOT_ALLOWED,
+                    command_name,
+                    "Command is not allowed",
+                ],
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [command_id]
+        return [ResultCode.OK], [command_id]
 
     def push_command_result(
-        self, result_code: ResultCode, command_name: str, **kwargs
+        self,
+        result_code: ResultCode,
+        command_name: str,
+        message: str = "Command Completed",
+        command_id: str = "",
     ) -> None:
-        """Push long running command result event for given command.
-        :param result_code: The result code to be pushed as an event
-        :type: ResultCode
-        :param command_name: The command name for which event is being pushed
-        :type: str
-        :param kwargs: Additional key word arguments
-        :type kwargs: dict
         """
-        if kwargs.get("command_id"):
-            command_id = kwargs["command_id"]
-        else:
+        Push long running command result event for given command.
+
+        :param result_code: The result code to be pushed as an event
+        :type result_code: ResultCode
+        :param command_name: The command name for which event is being pushed
+        :type command_name: str
+        :param message: The message associated with the command result
+        :type message: str
+        :param command_id: The unique command id (optional)
+        :type command_id: str
+        """
+        if not command_id:
             command_id = f"{time.time()}-{command_name}"
-        self.logger.info(
-            "The command_id is %s and the ResultCode is %s",
+        command_result = (
             command_id,
-            result_code,
+            json.dumps((result_code, message)),
         )
-        if kwargs.get("exception"):
-            command_result = (command_id, kwargs["exception"])
-            self.logger.info("Sending Event %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result_code))
-        self.logger.info("Sending Event %s", command_result)
+        self.logger.info(
+            "Pushing longRunningCommandResult Event with data: %s",
+            command_result,
+        )
         self.push_change_event("longRunningCommandResult", command_result)
 
     @command(
@@ -292,7 +304,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -311,16 +323,18 @@ class HelperBaseDevice(SKABaseDevice):
         :return: ResultCode and message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "On",
+                command_id,
             )
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Off_allowed(self) -> bool:
         """
@@ -332,7 +346,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -351,16 +365,18 @@ class HelperBaseDevice(SKABaseDevice):
         :return: ResultCode and message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
+                command_id,
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -372,7 +388,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 raise CommandNotAllowed(self.defective_params["error_message"])
         self.logger.info("Standby command is allowed")
@@ -388,16 +404,18 @@ class HelperBaseDevice(SKABaseDevice):
         :return: ResultCode and message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}_Standby"
         self.logger.info("Instructed simulator to invoke Standby command")
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",
+                command_id,
             )
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standy command completed.")
-        return [ResultCode.OK], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_disable_allowed(self) -> bool:
         """
@@ -409,7 +427,7 @@ class HelperBaseDevice(SKABaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -428,15 +446,17 @@ class HelperBaseDevice(SKABaseDevice):
         :return: ResultCode and message
         :rtype: Tuple
         """
+        command_id = f"{time.time()}_Disable"
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Disable",
+                command_id,
             )
         if self.dev_state() != DevState.DISABLE:
             self.set_state(DevState.DISABLE)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Disable command completed.")
-        return [ResultCode.OK], ["Disable command invoked on SDP Master"]
+        return [ResultCode.OK], [command_id]
 
 
 # ----------

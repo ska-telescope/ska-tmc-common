@@ -7,6 +7,7 @@ This module defines a helper device that acts as csp master in our testing.
 # pylint: disable=unused-argument
 import json
 import threading
+import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
@@ -155,10 +156,12 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
 
         }
         """
+        command_id = f"{time.time()}_LoadDishCgf"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "LoadDishCfg",
+                command_id,
             )
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
@@ -185,6 +188,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             self._delay,
             self.push_command_result,
             args=[ResultCode.OK, "LoadDishCfg"],
+            kwargs={"command_id": command_id},
         )
         thread.start()
         self._dish_vcc_map_validation_result = ResultCode.OK
@@ -192,11 +196,12 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             "DishVccMapValidationResult",
             str(int(self._dish_vcc_map_validation_result)),
         )
-        return [ResultCode.QUEUED], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_in="str",
         doc_in="Set DishVccValidationResult and push event",
+        dtype_out="DevVarLongStringArray",
     )
     def SetDishVccValidationResult(
         self, result: str
