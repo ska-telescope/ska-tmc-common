@@ -3,7 +3,7 @@ import json
 import pytest
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
-from tango import DevFailed
+from tango import DevFailed, EventType
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import SDP_LEAF_NODE_DEVICE, wait_for_obstate
@@ -103,6 +103,61 @@ def test_assign_resources_failed_result(tango_context):
     result, command_id = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert "AssignResources" in command_id[0]
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_assign_resources_long_running_exception(
+    tango_context, group_callback
+):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.LONG_RUNNING_EXCEPTION,
+        "error_message": "Exception occurred",
+        "result": ResultCode.FAILED,
+    }
+    subarray_leaf_device.SetDefective(json.dumps(defect))
+    subarray_leaf_device.subscribe_event(
+        "longRunningCommandResult",
+        EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = subarray_leaf_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert "AssignResources" in command_id[0]
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (command_id[0], json.dumps((ResultCode.FAILED, "Exception occurred"))),
+        lookahead=3,
+    )
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_assign_resources_command_not_allowed_after_queuing(
+    tango_context, group_callback
+):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED_AFTER_QUEUING,
+    }
+    subarray_leaf_device.SetDefective(json.dumps(defect))
+    subarray_leaf_device.subscribe_event(
+        "longRunningCommandResult",
+        EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = subarray_leaf_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert "AssignResources" in command_id[0]
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (
+            command_id[0],
+            json.dumps((ResultCode.NOT_ALLOWED, "Command is not allowed")),
+        ),
+        lookahead=3,
+    )
     subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
 

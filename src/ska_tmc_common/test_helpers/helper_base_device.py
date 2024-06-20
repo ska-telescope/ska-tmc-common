@@ -162,9 +162,11 @@ class HelperBaseDevice(SKABaseDevice):
 
         """
 
-        fault_type = self.defective_params["fault_type"]
-        result = self.defective_params["result"]
-        fault_message = self.defective_params["error_message"]
+        fault_type = self.defective_params.get("fault_type")
+        result = self.defective_params.get("result", ResultCode.FAILED)
+        fault_message = self.defective_params.get(
+            "error_message", "Exception occurred"
+        )
         intermediate_state = (
             self.defective_params.get("intermediate_state")
             or ObsState.RESOURCING
