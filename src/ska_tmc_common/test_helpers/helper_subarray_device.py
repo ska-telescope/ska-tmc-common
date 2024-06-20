@@ -15,7 +15,7 @@ import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
-from tango import AttrWriteType, DevState, EnsureOmniThread
+from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -193,6 +193,7 @@ class HelperSubArrayDevice(SKASubarray):
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
         }
+        self.dev_name = self.get_name()
         self._scan_id = None
         self._assigned_resources = "{ }"
         # tuple of list
@@ -200,8 +201,6 @@ class HelperSubArrayDevice(SKASubarray):
         self._command_info = ("", "")
         self._state_duration_info = []
         self._delay = 2
-        self.exception_delay: int = 5
-        self._raise_exception = False
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -302,12 +301,8 @@ class HelperSubArrayDevice(SKASubarray):
         after provided duration
         """
         self.logger.info(
-            "Adding observation state transitions for Csp Subarray and \
-                         Sdp Subarray Simulators"
-        )
-        self.logger.info(
-            "ObsState transitions sequence for Csp Subarray and \
-                Sdp Subarray Simulators is: %s",
+            "ObsState transitions sequence for %s simulator is: %s",
+            self.dev_name,
             state_duration_info,
         )
         self._state_duration_info = json.loads(state_duration_info)
@@ -336,15 +331,6 @@ class HelperSubArrayDevice(SKASubarray):
 
         return json.dumps(self._command_delay_info)
 
-    def read_raiseException(self) -> bool:
-        """
-        This method is used to read the attribute value for raise exception
-        :return: attribute value for raise exception
-
-        :rtype: bool
-        """
-        return self._raise_exception
-
     def read_commandInProgress(self) -> str:
         """
         This method is used to read, which command is in progress
@@ -371,21 +357,30 @@ class HelperSubArrayDevice(SKASubarray):
 
     def push_command_result(
         self,
-        result: ResultCode,
+        result_code: ResultCode,
         command_name: str,
-        message: str,
+        message: str = "Command Completed",
+        command_id: str = "",
     ) -> None:
-        """Push long running command result event for given command.
-        :param result: The result code to be pushed as an event
-        :type: ResultCode
-        :param command_name: The command name for which event is being pushed
-        :type: str
         """
-        command_id = f"{time.time()}-{command_name}"
-        self.logger.info(
-            "The command_id is %s and the ResultCode is %s", command_id, result
+        Push long running command result event for given command.
+
+        :param result_code: The result code to be pushed as an event
+        :type result_code: ResultCode
+        :param command_name: The command name for which event is being pushed
+        :type command_name: str
+        :param message: The message associated with the command result
+        :type message: str
+        :param command_id: The unique command id
+        :type command_id: str
+        """
+
+        if not command_id:
+            command_id = f"{time.time()}-{command_name}"
+        command_result = (
+            command_id,
+            json.dumps((result_code, message)),
         )
-        command_result = command_id, json.dumps((result, message))
         self.logger.info(
             "Pushing longRunningCommandResult Event with data: %s",
             command_result,
@@ -423,55 +418,31 @@ class HelperSubArrayDevice(SKASubarray):
             command_name (str): command name
             command_input (str): Input argin for command
         """
-        self.logger.info(
-            "Recording the command data for Sdp Subarray \
-                 or Csp Subarray simulators"
-        )
         self._command_info = (command_name, command_input)
-        self.logger.info(
-            "Recorded command_info for Sdp Subarray \
-            or Csp Subarray simulators is %s",
-            self._command_info,
-        )
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Recorded command_call_info list for Csp Subarray or \
-                Sdp Subarray simulators is %s",
+            "Recorded command_call_info list for %s is %s",
+            self.dev_name,
             self._command_call_info,
         )
 
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
 
-    def _update_obs_state_in_sequence(self):
-        """Update Obs state in sequence as per state duration info"""
-        with tango.EnsureOmniThread():
-            for obs_state, duration in self._state_duration_info:
-                obs_state_enum = ObsState[obs_state]
-                self.logger.info(
-                    "Sleep %s for obs state %s", duration, obs_state
-                )
-                self._obs_state = obs_state_enum
-                self.push_change_event("obsState", self._obs_state)
-
-    def _start_thread(self, args: list) -> None:
-        """This method start thread which is required for
-        changing obs state after certain duration
-        """
-        thread = threading.Thread(
-            target=self.update_device_obsstate,
-            args=args,
-        )
-        thread.start()
-
     def _follow_state_duration(self):
         """This method will update obs state as per state duration
-        in separate thread
+        in separate thread.
+        To avoid Tango default 3 sec timeout creating seperate thread
+        for updating obs state.As Updating Obs state might take
+        more than 3 sec.
         """
-        thread = threading.Thread(
-            target=self._update_obs_state_in_sequence,
-        )
-        thread.start()
+        for obs_state, duration in self._state_duration_info:
+            time.sleep(duration)
+            thread = threading.Thread(
+                target=self.push_obs_state_event,
+                args=[obs_state],
+            )
+            thread.start()
 
     def create_component_manager(self) -> EmptySubArrayComponentManager:
         """
@@ -488,39 +459,29 @@ class HelperSubArrayDevice(SKASubarray):
         return cm
 
     @command(
-        dtype_in=bool,
-        doc_in="Raise Exception",
-    )
-    def SetRaiseException(self, value: bool) -> None:
-        """Set Raise Exception"""
-        self.logger.info("Setting the raise exception value to : %s", value)
-        self._raise_exception = value
-
-    @command(
         dtype_in=str,
         doc_in="Set Delay",
     )
-    def SetDelay(self, command_delay_info: str) -> None:
+    def SetDelayInfo(self, command_delay_info: str) -> None:
         """Update delay value"""
         self.logger.info(
-            "Setting the Delay value for Csp Subarray \
-                or Sdp Subarray simulator to : %s",
+            "Setting the Delay value for %s to : %s",
+            self.dev_name,
             command_delay_info,
         )
         # set command info
         command_delay_info_dict = json.loads(command_delay_info)
         for key, value in command_delay_info_dict.items():
             self._command_delay_info[key] = value
-        self.logger.info("Command Delay Info Set %s", self._command_delay_info)
 
     @command(
         doc_in="Reset Delay",
     )
-    def ResetDelay(self) -> None:
+    def ResetDelayInfo(self) -> None:
         """Reset Delay to it's default values"""
         self.logger.info(
-            "Resetting Command Delays for \
-            Csp Subarray or Sdp Simulators"
+            "Resetting Command Delays for %s",
+            self.dev_name,
         )
         # Reset command info
         self._command_delay_info = {
@@ -539,7 +500,8 @@ class HelperSubArrayDevice(SKASubarray):
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
         self.logger.info(
-            "Clearing CommandCallInfo for Csp and Sdp Subarray simulators"
+            "Clearing CommandCallInfo for %s",
+            self.dev_name,
         )
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
@@ -553,7 +515,6 @@ class HelperSubArrayDevice(SKASubarray):
         Trigger a ObsState change
         """
         # import debugpy; debugpy.debug_this_thread()
-        self.logger.info("Setting the obsState to %s", argin)
         value = ObsState(argin)
         if self._obs_state != value:
             self._obs_state = value
@@ -691,163 +652,6 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Off command is allowed")
         return True
 
-    def induce_fault(
-        self,
-        command_name: str,
-        command_id: str,
-    ) -> Tuple[List[ResultCode], List[str]]:
-        """
-        Induces a fault into the device based on the given parameters.
-
-        :param command_name: The name of the
-         command for which a fault is being induced.
-        :type command_name: str
-        :return: ResultCode and message
-        :rtype: Tuple[List[ResultCode], List[str]]
-
-        Example:
-        defective = json.dumps(
-        {
-        "enabled": False,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Default exception.",
-        "result": ResultCode.FAILED,
-        "target_obsstates": [ObsState.RESOURCING, ObsState.EMPTY],
-        }
-        )
-        defective_params = json.loads(defective)
-
-        Detailed Explanation:
-        This method simulates inducing various types of faults into a device
-        to test its robustness and error-handling capabilities.
-
-        - FAILED_RESULT:
-          A fault type that triggers a failed result code
-          for the command. The device will return a result code of 'FAILED'
-          along with a custom error message, indicating that
-          the command execution has failed.
-
-        - LONG_RUNNING_EXCEPTION:
-          A fault type that simulates a command getting stuck in an
-          intermediate state for an extended period.
-          This could simulate a situation where a command execution
-          hangs due to some internal processing issue.
-
-        - STUCK_IN_INTERMEDIATE_STATE:
-          This fault type represents a scenario where the
-          device gets stuck in an intermediate state between two
-          well-defined states. This can help test the device's state
-          recovery and error handling mechanisms.
-
-        - STUCK_IN_OBS_STATE:
-          This fault type represents a scenario where the
-          device gets stuck in a transitional obsstate as there is
-          some failure. It also raise exception of the same.
-
-        - COMMAND_NOT_ALLOWED:
-          This fault type represents a situation where the
-          given command is not allowed to be executed due to some
-          authorization or permission issues. The device
-          should respond with an appropriate error code and message.
-
-        :raises: None
-        """
-        self.logger.info("Inducing fault for command %s", command_name)
-        fault_type = self.defective_params["fault_type"]
-        result = self.defective_params["result"]
-        fault_message = self.defective_params["error_message"]
-
-        if self.defective_params.get("intermediate_state"):
-            intermediate_state = self.defective_params.get(
-                "intermediate_state"
-            )
-        else:
-            intermediate_state = ObsState.RESOURCING
-            self.logger.info("intermediate_state is: %s", intermediate_state)
-
-        if fault_type == FaultType.FAILED_RESULT:
-            self.logger.info("FAILED RESULT Fault type")
-            self.logger.info(
-                "Target obsStates are: %s",
-                self.defective_params.get("target_obsstates"),
-            )
-            if "target_obsstates" in self.defective_params:
-                # Utilise target_obsstate parameter when Subarray should
-                # transition to specific obsState while returning
-                # ResultCode.FAILED
-                obsstate_list = self.defective_params.get("target_obsstates")
-                for obsstate in obsstate_list:
-                    self._obs_state = obsstate
-                    self.logger.info(
-                        "pushing target obsstate %s event", self._obs_state
-                    )
-                    self.push_change_event("obsState", self._obs_state)
-
-                command_id = f"1000_{command_name}"
-                command_result = (
-                    command_id,
-                    f"Exception occured on device: {self.get_name()}",
-                )
-                self.logger.info(
-                    "pushing longRunningCommandResult %s event", command_result
-                )
-                self.push_change_event(
-                    "longRunningCommandResult", command_result
-                )
-            return [result], [command_id]
-
-        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[result, command_name, fault_message],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [command_id]
-
-        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            self._obs_state = intermediate_state
-            self.logger.info("pushing obsState %s event", intermediate_state)
-            self.push_change_event("obsState", intermediate_state)
-            return [ResultCode.QUEUED], [command_id]
-
-        if fault_type == FaultType.STUCK_IN_OBSTATE:
-            self._obs_state = intermediate_state
-            self.logger.info("pushing obsState %s event", intermediate_state)
-            self.push_change_event("obsState", intermediate_state)
-
-            command_id = f"1000_{command_name}"
-            command_result = (
-                command_id,
-                json.dumps(
-                    [
-                        ResultCode.FAILED,
-                        f"Exception occured on device: {self.get_name()}",
-                    ]
-                ),
-            )
-            self.logger.info(
-                "pushing longRunningCommandResult %s event", command_result
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.QUEUED], [command_id]
-
-        return [ResultCode.QUEUED], [command_id]
-
-    @command(
-        dtype_in=str,
-        doc_in="Set Defective parameters",
-    )
-    def SetDefective(self, values: str) -> None:
-        """
-        Trigger defective change
-        :param: values
-        :type: str
-        """
-        input_dict = json.loads(values)
-        self.logger.info("Setting defective params to %s", input_dict)
-        self.defective_params = input_dict
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -868,6 +672,146 @@ class HelperSubArrayDevice(SKASubarray):
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off completed")
         return [ResultCode.QUEUED], [command_id]
+
+    def induce_fault(
+        self,
+        command_name: str,
+        command_id: str,
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Induces a fault into the device based on the given parameters.
+
+        :param command_name: The name of the command for which a fault is
+            being induced.
+        :type command_name: str
+        :param command_id: The command id over which the LRCR event is to be
+            pushed.
+        :type command_id: str
+
+        :return: ResultCode and Unique_ID
+        :rtype: Tuple[List[ResultCode], List[str]]
+
+        Example:
+            defective_params = json.dumps({"enabled": False,"fault_type":
+            FaultType.FAILED_RESULT,"error_message": "Default exception.",
+            "result": ResultCode.FAILED,})
+            proxy.SetDefective(defective_params)
+
+        Explanation:
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
+
+        - FAILED_RESULT:
+            A fault type that triggers a failed result code
+            for the command. The device will return a result code of 'FAILED'
+            along with a unique_id indicating that the command execution has
+            failed.
+
+        - LONG_RUNNING_EXCEPTION:
+            A fault type where a failed result will be sent over the
+            LongRunningCommandResult attribute in 'delay' amount of time.
+
+        - STUCK_IN_INTERMEDIATE_STATE:
+            This fault type makes it such that the device is stuck in the given
+            Observation state.
+
+        - COMMAND_NOT_ALLOWED_AFTER_QUEUING:
+            This fault type sends a ResultCode.NOT_ALLOWED event through the
+            LongRunningCommandResult attribute.
+
+        - STUCK_IN_OBS_STATE:
+            This fault type sets the device to given obsState and sends out an
+            event on the LongRunningCommandResult attribute.
+
+        """
+        self.logger.info("Inducing fault for command %s", command_name)
+        fault_type = self.defective_params["fault_type"]
+        result = self.defective_params["result"]
+        fault_message = self.defective_params["error_message"]
+        intermediate_state = (
+            self.defective_params.get("intermediate_state")
+            or ObsState.RESOURCING
+        )
+
+        if fault_type == FaultType.FAILED_RESULT:
+            if "target_obsstates" in self.defective_params:
+                # Utilise target_obsstate parameter when Subarray should
+                # transition to specific obsState while returning
+                # ResultCode.FAILED
+                obsstate_list = self.defective_params["target_obsstates"]
+                for obsstate in obsstate_list:
+                    self._obs_state = obsstate
+                    self.logger.info(
+                        "pushing target obsstate %s event", self._obs_state
+                    )
+                    self.push_change_event("obsState", self._obs_state)
+
+                command_result = (
+                    command_id,
+                    json.dumps(
+                        (
+                            ResultCode.FAILED,
+                            f"Exception occured on device: {self.get_name()}",
+                        )
+                    ),
+                )
+                self.logger.info(
+                    "pushing longRunningCommandResult %s event", command_result
+                )
+                self.push_change_event(
+                    "longRunningCommandResult", command_result
+                )
+            return [result], [command_id]
+
+        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[result, command_name],
+                kwargs={"message": fault_message, "command_id": command_id},
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [command_id]
+
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            self._obs_state = intermediate_state
+            self.push_change_event("obsState", intermediate_state)
+            return [ResultCode.QUEUED], [command_id]
+
+        if fault_type == FaultType.STUCK_IN_OBSTATE:
+            self._obs_state = intermediate_state
+            self.push_change_event("obsState", intermediate_state)
+
+            command_result = (
+                command_id,
+                json.dumps(
+                    [
+                        ResultCode.FAILED,
+                        f"Exception occured on device: {self.get_name()}",
+                    ]
+                ),
+            )
+            self.logger.info(
+                "pushing longRunningCommandResult %s event", command_result
+            )
+            self.push_change_event("longRunningCommandResult", command_result)
+            return [ResultCode.QUEUED], [command_id]
+
+        return [ResultCode.OK], [command_id]
+
+    @command(
+        dtype_in=str,
+        doc_in="Set Defective parameters",
+    )
+    def SetDefective(self, values: str) -> None:
+        """
+        Trigger defective change
+        :param: values
+        :type: str
+        """
+        input_dict = json.loads(values)
+        self.logger.info("Setting defective params to %s", input_dict)
+        self.defective_params = input_dict
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -953,16 +897,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(ASSIGN_RESOURCES, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("AssignResources", command_id)
-        if self._raise_exception:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Timer(
-                interval=self.exception_delay,
-                function=self.wait_and_update_exception,
-                args=["AssignResources"],
-            )
-            self.thread.start()
-            return [ResultCode.QUEUED], [""]
+
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Timer(
@@ -977,16 +912,6 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state,
         )
         return [ResultCode.QUEUED], [command_id]
-
-    def wait_and_update_exception(self, command_name):
-        """Waits for 5 secs before pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            command_id = f"1000_{command_name}"
-            command_result = (
-                command_id,
-                f"Exception occurred on device: {self.get_name()}",
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -1029,10 +954,25 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseResources", command_id)
 
-        if self._obs_state != ObsState.EMPTY:
-            self._obs_state = ObsState.EMPTY
-            self.push_change_event("obsState", self._obs_state)
-        self.logger.info("ReleaseResources command completed.")
+        self.update_device_obsstate(ObsState.RESOURCING, RELEASE_RESOURCES)
+        thread = threading.Timer(
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.IDLE, RELEASE_RESOURCES],
+        )
+        thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, RELEASE_RESOURCES],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
+        self.logger.debug(
+            "ReleaseResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
+        )
         return [ResultCode.QUEUED], [command_id]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
@@ -1074,16 +1014,6 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(RELEASE_ALL_RESOURCES, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseAllResources", command_id)
-        if self._raise_exception:
-            self._obs_state = ObsState.RESOURCING
-            self.push_change_event("obsState", self._obs_state)
-            self.thread = threading.Timer(
-                interval=self.exception_delay,
-                function=self.wait_and_update_exception,
-                args=["ReleaseAllResources"],
-            )
-            self.thread.start()
-            return [ResultCode.QUEUED], [""]
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
@@ -1091,6 +1021,13 @@ class HelperSubArrayDevice(SKASubarray):
             interval=2,
             function=self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+        )
+        thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, RELEASE_ALL_RESOURCES],
+            kwargs={"command_id": command_id},
         )
         thread.start()
         self.logger.debug(
@@ -1149,6 +1086,13 @@ class HelperSubArrayDevice(SKASubarray):
                 args=[ObsState.READY, CONFIGURE],
             )
             thread.start()
+            thread = threading.Timer(
+                self._delay,
+                self.push_command_result,
+                args=[ResultCode.OK, CONFIGURE],
+                kwargs={"command_id": command_id},
+            )
+            thread.start()
             self.logger.debug(
                 "Configure command invoked, obsState will transition to"
                 + "READY current obsState is %s",
@@ -1193,6 +1137,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id)
+
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
@@ -1234,6 +1179,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id)
+
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
             self.push_change_event("obsState", self._obs_state)
@@ -1275,6 +1221,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.update_command_info(END, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("End", command_id)
+
         if self._obs_state != ObsState.IDLE:
             if self._state_duration_info:
                 self._follow_state_duration()
@@ -1400,9 +1347,16 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Timer(
-                interval=2,
+                interval=self._delay,
                 function=self.update_device_obsstate,
                 args=[ObsState.ABORTED, ABORT],
+            )
+            thread.start()
+            thread = threading.Timer(
+                self._delay,
+                self.push_command_result,
+                args=[ResultCode.OK, ABORT],
+                kwargs={"command_id": command_id},
             )
             thread.start()
         self.logger.info("Abort command completed.")
@@ -1447,9 +1401,16 @@ class HelperSubArrayDevice(SKASubarray):
             self._obs_state = ObsState.RESTARTING
             self.push_change_event("obsState", self._obs_state)
             thread = threading.Timer(
-                interval=2,
+                interval=self._delay,
                 function=self.update_device_obsstate,
                 args=[ObsState.EMPTY, RESTART],
+            )
+            thread.start()
+            thread = threading.Timer(
+                self._delay,
+                self.push_command_result,
+                args=[ResultCode.OK, RESTART],
+                kwargs={"command_id": command_id},
             )
             thread.start()
         self.logger.info("Restart command completed.")

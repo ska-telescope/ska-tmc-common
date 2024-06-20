@@ -215,9 +215,9 @@ class HelperBaseDevice(SKABaseDevice):
         :param command_name: The command name for which event is being pushed
         :type command_name: str
         :param message: The message associated with the command result
-        :type message: Optional[str]
+        :type message: str
         :param command_id: The unique command id
-        :type command_id: Optional[str]
+        :type command_id: str
         """
 
         if not command_id:
