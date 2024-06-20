@@ -56,6 +56,20 @@ Added
 
 Fixed
 -----
+[0.17.0]
+*********
+* **BaseClasses** version updated to **1.0.0**
+* **PyTango** version updated to **9.5.0**
+* Helper Devices updated to send the correct format of **LongRunningCommandResult** events - **(unique_id, (ResultCode.OK, message))**
+* The result sent through **update_task_status** method from **track_and_update_command_status** thread is now a **Tuple(ResultCode, Message)**
+* **SetDelay** command is renamed to **SetDelayInfo** for HelperSubarrayDevice and HelperDishDevice
+* SetException is removed from Helper Devices
+* **Decorators** are updated to support the new **update_task_status** calls.
+* **HelperCspSubarrayDevice** is removed.
+* **COMMAND_NOT_ALLOWED** fault type is changed to **COMMAND_NOT_ALLOWED_BEFORE_QUEUING**
+* New fault type **COMMAND_NOT_ALLOWED_AFTER_QUEUING** introduced
+* **max_workers** parameter removed from component manager
+
 [0.16.8]
 *********
 * Update in the way the helper dish device sends the resultcode and message
