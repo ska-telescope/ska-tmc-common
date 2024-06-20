@@ -234,19 +234,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self._obs_state = ObsState(value)
         self.push_change_event("obsState", self._obs_state)
 
-    @command(
-        dtype_in=int,
-        doc_in="Set Delay",
-    )
-    def SetDelay(self, value: int) -> None:
-        """Update delay value"""
-        self.logger.info(
-            "Setting the Delay for CspSubarrayLeafNode \
-            and SdpSubarrayLeafNode simulator to : %s",
-            value,
-        )
-        self._delay = value
-
     def push_obs_state_event(self, obs_state: ObsState) -> None:
         """Push Obs State Change Event"""
         self.logger.info(

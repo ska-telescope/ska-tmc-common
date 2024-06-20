@@ -12,10 +12,8 @@ from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
 from ska_telmodel.data import TMData
-from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
-from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -25,7 +23,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self._delay: int = 2
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
 
@@ -63,140 +60,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         return self._dish_vcc_config
 
-    def is_On_allowed(self) -> bool:
-        """
-        This method checks if the On command is allowed in current state.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("On command is allowed")
-        return True
-
-    @command(
-        dtype_in="DevVarStringArray",
-        doc_in="Input argument as an empty list",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes On command on CSP Master
-        :return: ResultCode and message
-        :rtype: Tuple
-        """
-        command_id = f"{time.time()}_On"
-        self.logger.info("Instructed simulator to invoke On command")
-        if self.defective_params["enabled"]:
-            self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "On",
-                command_id,
-            )
-        if self.dev_state() != DevState.ON:
-            self.set_state(DevState.ON)
-            self.push_change_event("State", self.dev_state())
-            self.logger.info("On command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Off_allowed(self) -> bool:
-        """
-        This method checks if the Off command is allowed in current state.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Off command is allowed")
-        return True
-
-    @command(
-        dtype_in="DevVarStringArray",
-        doc_in="Input argument as an empty list",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Off command on CSP Master
-        :return: ResultCode and message
-        :rtype: Tuple
-        """
-        command_id = f"{time.time()}_Off"
-        self.logger.info("Instructed simulator to invoke On command")
-        if self.defective_params["enabled"]:
-            self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "Off",
-                command_id,
-            )
-        if self.dev_state() != DevState.OFF:
-            self.set_state(DevState.OFF)
-            self.push_change_event("State", self.dev_state())
-            self.logger.info("Off command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Standby_allowed(self) -> bool:
-        """
-        This method checks if the Standby command is allowed in current state.
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: Standby command not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Standby command is allowed")
-        return True
-
-    @command(
-        dtype_in="DevVarStringArray",
-        doc_in="Input argument as an empty list",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Standby command on CSP Master
-        :return: ResultCode and message
-        :rtype: Tuple
-        """
-        command_id = f"{time.time()}_Standby"
-        if self.defective_params["enabled"]:
-            self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "Standby",
-                command_id,
-            )
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            self.push_change_event("State", self.dev_state())
-            self.logger.info("Standby command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
     @command(
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
@@ -225,7 +88,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
             "sourceDishVccConfig", self._source_dish_vcc_config
         )
         self.push_change_event("dishVccConfig", self._dish_vcc_config)
-        self.logger.info("Pushed dishVccConfig and sourceDishVccConfig event")
+        self.logger.info(
+            "Pushed dishVccConfig and sourceDishVccConfig event with values: "
+            + "%s, %s",
+            self._source_dish_vcc_config,
+            self._dish_vcc_config,
+        )
 
     @command(
         dtype_in="str",
@@ -237,11 +105,11 @@ class HelperCspMasterDevice(HelperBaseDevice):
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig
-        :return: ResultCode and message
-        :rtype: Tuple
 
         :param argin: json with File URI.
         :dtype: str
+        :return: ResultCode and message
+        :rtype: Tuple
 
         Example argin:
         {
@@ -262,6 +130,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("LoadDishCfg", command_id)
+
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
@@ -290,9 +159,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self._delay + 1,
             self.push_command_result,
             args=[
-                [ResultCode.OK, "command LoadDishCfg completed"],
+                ResultCode.OK,
                 "LoadDishCfg",
             ],
+            kwargs={"message": "command LoadDishCfg completed"},
         )
         push_command_result_thread.start()
         return [ResultCode.QUEUED], [command_id]

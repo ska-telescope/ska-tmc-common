@@ -85,6 +85,18 @@ class HelperBaseDevice(SKABaseDevice):
         pass
 
     @command(
+        dtype_in=int,
+        doc_in="Set Delay",
+    )
+    def SetDelay(self, delay: int) -> None:
+        """
+        Set the delay value.
+        :param delay: Delay to be set
+        :type delay: int
+        """
+        self._delay = delay
+
+    @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
     )

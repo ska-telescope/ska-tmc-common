@@ -526,7 +526,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_in=str,
         doc_in="Set Delay",
     )
-    def SetDelay(self, command_delay_info: str) -> None:
+    def SetDelayInfo(self, command_delay_info: str) -> None:
         """Update delay value"""
         self.logger.info(
             "Setting the Delay value for Dish simulator to : %s",
@@ -541,7 +541,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     @command(
         doc_in="Reset Delay",
     )
-    def ResetDelay(self) -> None:
+    def ResetDelayInfo(self) -> None:
         """Reset Delay to it's default values"""
         self.logger.info("Resetting Command Delays for Dish Master Simulator")
         # Reset command info
