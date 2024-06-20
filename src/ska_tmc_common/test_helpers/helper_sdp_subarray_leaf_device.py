@@ -68,6 +68,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.logger.info(
             "Pushing change event for SdpSubarrayObsState: %s", obs_state
         )
+        self._obs_state = obs_state
         self.push_change_event("sdpSubarrayObsState", obs_state)
 
 

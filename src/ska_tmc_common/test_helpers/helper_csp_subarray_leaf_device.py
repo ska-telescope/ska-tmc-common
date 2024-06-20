@@ -67,6 +67,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.logger.info(
             "Pushing change event for CspSubarrayObsState: %s", obs_state
         )
+        self._obs_state = obs_state
         self.push_change_event("cspSubarrayObsState", obs_state)
 
 

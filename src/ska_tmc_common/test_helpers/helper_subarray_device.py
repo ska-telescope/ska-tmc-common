@@ -435,6 +435,7 @@ class HelperSubArrayDevice(SKASubarray):
         more than 3 sec.
         """
         for obs_state, duration in self._state_duration_info:
+            obs_state = ObsState[obs_state]
             time.sleep(duration)
             thread = threading.Thread(
                 target=self.push_obs_state_event,

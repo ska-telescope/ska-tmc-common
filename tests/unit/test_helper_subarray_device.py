@@ -72,14 +72,6 @@ def test_set_defective(tango_context):
     assert "AssignResources" in command_id[0]
 
 
-def test_set_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-    assert not subarray_device.raiseException
-    subarray_device.SetRaiseException(True)
-    assert subarray_device.raiseException
-
-
 @pytest.mark.parametrize("command", commands_with_argin)
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()

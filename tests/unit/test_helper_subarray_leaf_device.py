@@ -31,7 +31,7 @@ def test_leaf_node_command_with_argument(tango_context, command):
     assert isinstance(command_id[0], str)
 
 
-def test_obs_state_transition(tango_context):
+def test_set_obs_state_transition(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
     subarray_device.AddTransition('[["CONFIGURING", 0.1]]')
