@@ -41,8 +41,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     def init_device(self):
         super().init_device()
-        self._delay = 2
-        self._obs_state = ObsState.EMPTY
         self._state = DevState.OFF
         # pylint: disable=line-too-long
         self._receive_addresses = json.dumps(
@@ -135,12 +133,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     @command()
     def On(self):
+        """
+        This method simulates On command on SDP Subarray
+        """
         self.update_command_info(ON, "")
         self.set_state(DevState.ON)
         self.push_change_event("State", self.dev_state())
 
     @command()
     def Off(self):
+        """
+        This method simulates OFF command on SDP Subarray
+        """
         self.update_command_info(OFF, "")
         self.set_state(DevState.OFF)
         self.push_change_event("State", self.dev_state())
@@ -151,7 +155,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     )
     def AssignResources(self, argin):
         """
-        This method invokes AssignResources command on SdpSubarray
+        This method simulates AssignResources command on SdpSubarray
         device.
         :raises throw_exception: when input json is wrong
         """
