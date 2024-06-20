@@ -8,10 +8,9 @@ import time
 from typing import List, Tuple, Union
 
 import numpy as np
-import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
+from tango import AttrWriteType, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -36,9 +35,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
     def init_device(self):
         super().init_device()
-        self._pointing_state = PointingState.NONE
         self._configured_band = Band.NONE
-        self._dish_mode = DishMode.STANDBY_LP
         self._achieved_pointing = [
             1707388147149.508,
             179.880204193508,
@@ -60,16 +57,12 @@ class HelperDishDevice(HelperDishLNDevice):
             super().do()
             self._device.set_change_event("configuredBand", True, False)
             self._device.set_change_event("achievedPointing", True, False)
-            self._device.set_change_event("pointingState", True, False)
-            self._device.set_change_event("dishMode", True, False)
             return (ResultCode.OK, "")
 
-    pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     configuredBand = attribute(dtype=Band, access=AttrWriteType.READ)
     achievedPointing = attribute(
         dtype=(float,), access=AttrWriteType.READ, max_dim_x=3
     )
-    dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
     offset = attribute(dtype=str, access=AttrWriteType.READ)
     programTrackTable = attribute(
         dtype=(float,),
@@ -243,65 +236,15 @@ class HelperDishDevice(HelperDishLNDevice):
             command_name (str): command name
             command_input(str or bool): Input argin for command
         """
-        self.logger.info(
-            "Recording the command data for DishMaster simulators"
-        )
-
         self._command_info = (command_name, str(command_input))
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Recorded command_call_info list for DishMaster simulators \
-            is %s",
+            "Recorded command_call_info list for %s is %s",
+            self.dev_name,
             self._command_call_info,
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
         self.logger.info("CommandCallInfo updates are pushed")
-
-    def push_command_status(
-        self,
-        status,
-        command_name: str,
-        command_id=None,
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command_name: The command name for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-        if status == "COMPLETED":
-            self.logger.info("Successfully processed %s command", command_name)
-        elif status == "FAILED":
-            self.logger.info(
-                "Command %s failed, TaskStatus: %d", command_name, status
-            )
-        command_id = command_id or f"{time.time()}-{command_name}"
-        command_status = (command_id, status)
-        self.push_change_event("longRunningCommandStatus", command_status)
-
-    def push_command_result(self, result_code, command_name):
-        """Pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            command_id = f"{time.time()}_{command_name}"
-
-            command_result = (
-                command_id,
-                str(
-                    [
-                        result_code.value,
-                        f"{command_name} completed",
-                    ]
-                ),
-            )
-            self.logger.info("Pushing LRCR event %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
 
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
@@ -317,28 +260,6 @@ class HelperDishDevice(HelperDishLNDevice):
                 "Exception occurred while pushing achieved pointing event: %s",
                 exp,
             )
-
-    def _update_poiniting_state_in_sequence(self) -> None:
-        """This method update pointing state in sequence as per
-        state duration info
-        """
-        for poiniting_state, duration in self._state_duration_info:
-            pointing_state_enum = PointingState[poiniting_state]
-            self.logger.info(
-                "Sleep %s sec for pointing state %s",
-                duration,
-                poiniting_state,
-            )
-            time.sleep(duration)
-            with tango.EnsureOmniThread():
-                self.set_pointing_state(pointing_state_enum)
-
-    def _follow_state_duration(self):
-        """This method will update pointing state as per state duration"""
-        thread = threading.Thread(
-            target=self._update_poiniting_state_in_sequence,
-        )
-        thread.start()
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -369,7 +290,9 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "SetOperateMode")
+        self.push_command_result(
+            ResultCode.OK, "SetOperateMode", command_id=command_id
+        )
         self.logger.info("SetOperateMode command completed.")
         return (
             [ResultCode.QUEUED],
@@ -398,7 +321,7 @@ class HelperDishDevice(HelperDishLNDevice):
         # Dish Mode Not Applicable.
         return (
             [ResultCode.OK],
-            ["AbortCommands command completed successfully."],
+            [command_id],
         )
 
     def is_TrackLoadStaticOff_allowed(self) -> bool:
@@ -457,28 +380,21 @@ class HelperDishDevice(HelperDishLNDevice):
                 self._delay,
                 function=self.push_command_result,
                 args=[ResultCode.FAILED, "TrackLoadStaticOff"],
-                kwargs={"command_id": command_id},
+                kwargs={
+                    "message": "Failed to execute TrackLoadStaticOff",
+                    "command_id": command_id,
+                },
             )
-
-            # Will be un-commented as part of SAH-1530
-            #     kwargs={
-            #         "command_id": command_id,
-            #         "exception": "Failed to Load the static pointing "
-            #         "model offsets",
-            #     },
-            # )
         else:
             thread = threading.Timer(
                 self._delay,
-                function=self.push_command_status,
-                args=["COMPLETED", "TrackLoadStaticOff"],
+                function=self.push_command_result,
+                args=[ResultCode.OK, "TrackLoadStaticOff"],
                 kwargs={"command_id": command_id},
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return [ResultCode.QUEUED], [command_id]
-        # will be un-commented as a part of SAH-1530
-        # return ([ResultCode.QUEUED], [command_id])
 
     def is_ConfigureBand1_allowed(self) -> bool:
         """
@@ -533,7 +449,9 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B1)
-        self.push_command_result(ResultCode.OK, "ConfigureBand1")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand1", command_id=command_id
+        )
         self.logger.info("ConfigureBand1 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -601,7 +519,9 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B2)
-        self.push_command_result(ResultCode.OK, "ConfigureBand2")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand2", command_id=command_id
+        )
         self.logger.info("ConfigureBand2 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -648,7 +568,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B3)
-        self.push_command_result(ResultCode.OK, "ConfigureBand3")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand3", command_id=command_id
+        )
         self.logger.info("ConfigureBand3 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -694,7 +616,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B4)
-        self.push_command_result(ResultCode.OK, "ConfigureBand4")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand4", command_id=command_id
+        )
         self.logger.info("ConfigureBand4 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -739,7 +663,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B5a)
-        self.push_command_result(ResultCode.OK, "ConfigureBand5a")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand5a", command_id=command_id
+        )
         self.logger.info("ConfigureBand5a command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -785,7 +711,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.set_dish_mode(DishMode.CONFIG)
         # Set dish configured band
         self.set_configured_band(Band.B5b)
-        self.push_command_result(ResultCode.OK, "ConfigureBand5b")
+        self.push_command_result(
+            ResultCode.OK, "ConfigureBand5b", command_id=command_id
+        )
         self.logger.info("ConfigureBand5b command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -915,7 +843,7 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id)
         self._scan_id = argin
-        self.push_command_status("COMPLETED", "Scan")
+        self.push_command_result(ResultCode.OK, "Scan", command_id=command_id)
         return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
@@ -956,7 +884,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._scan_id = ""
         return (
             [ResultCode.QUEUED],
-            command_id,
+            [command_id],
         )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.

@@ -26,7 +26,6 @@ class HelperBaseDevice(SKABaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._delay: int = 2
-        self.exception_delay: int = 5
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
@@ -58,9 +57,16 @@ class HelperBaseDevice(SKABaseDevice):
         )
         return empty_component_manager
 
+    delay = attribute(dtype=int, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
-
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+
+    def read_delay(self) -> int:
+        """
+        This method is used to read the attribute value for delay.
+        :return: delay
+        """
+        return self._delay
 
     def read_defective(self) -> str:
         """

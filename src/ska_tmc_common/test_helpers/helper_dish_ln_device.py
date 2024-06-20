@@ -58,7 +58,6 @@ class HelperDishLNDevice(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self._delay: int = 2
         self._command_delay_info: dict = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -74,7 +73,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             77.8694392,
         ]
         self._kvalue: int = 0
-        self._isSubsystemAvailable = True
         self._dish_kvalue_validation_result = str(int(ResultCode.STARTED))
         self._dish_mode = DishMode.STANDBY_LP
         self._pointing_state = PointingState.NONE
@@ -95,7 +93,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             super().do()
             self._device._dishln_name = self._device.get_name()
             self._device.set_change_event("commandCallInfo", True, False)
-            self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event(
                 "kValueValidationResult", True, False
             )
@@ -108,12 +105,17 @@ class HelperDishLNDevice(HelperBaseDevice):
             return (ResultCode.OK, "")
 
     defective = attribute(dtype=str, access=AttrWriteType.READ)
-    delay = attribute(dtype=int, access=AttrWriteType.READ)
     actualPointing = attribute(dtype=str, access=AttrWriteType.READ)
-    isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
     kValueValidationResult = attribute(dtype=str, access=AttrWriteType.READ)
     pointingState = attribute(dtype=PointingState, access=AttrWriteType.READ)
     dishMode = attribute(dtype=DishMode, access=AttrWriteType.READ)
+    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+    commandCallInfo = attribute(
+        dtype=(("str",),),
+        access=AttrWriteType.READ,
+        max_dim_x=1000,
+        max_dim_y=1000,
+    )
 
     # pylint: enable=protected-access
     def read_kValueValidationResult(self) -> str:
@@ -212,13 +214,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         self._kvalue = kvalue
 
-    def read_delay(self) -> int:
-        """
-        This method is used to read the attribute value for delay.
-        :return: delay
-        """
-        return self._delay
-
     def read_defective(self) -> str:
         """
         Returns defective status of devices
@@ -242,14 +237,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._actual_pointing[1] = azimuth
         self._actual_pointing[2] = elevation
         return json.dumps(self._actual_pointing)
-
-    def read_isSubsystemAvailable(self) -> bool:
-        """
-        Returns avalability status for the leaf nodes devices
-        :return: boolean value for attribute isSubsystemAvailable
-        :rtype: bool
-        """
-        return self._isSubsystemAvailable
 
     def read_pointingState(self) -> PointingState:
         """
@@ -330,87 +317,20 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_change_event("pointingState", self._pointing_state)
         self.logger.info("Pointing State: %s", self._pointing_state)
 
-    def update_dish_mode(
-        self, dish_mode: DishMode, command_name: str = ""
-    ) -> None:
-        """
-        Updates the dish mode of dish
-        leaf node's respective dish.
-
-        :param dish_mode: Dish Mode to update.
-        :dish_mode dtype: DishMode
-        :param command_name: Command name
-        :command_name dtype: str
-
-        :rtype: None
-        """
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-                time.sleep(delay_value)
-                self.logger.info(
-                    "Sleep %s for command %s ", delay_value, command_name
-                )
-        self.set_dish_mode(dish_mode)
-
-    def update_pointing_state(
-        self, pointing_state: PointingState, command_name: str
-    ) -> None:
-        """
-        Updates the pointing state of dish
-        leaf node's respective dish.
-
-        :param pointing_state: Pointing state to update.
-        :pointing_state dtype: PointingState
-        :param command_name: Command name
-        :command_name dtype: str
-
-        :rtype: None
-        """
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-                time.sleep(delay_value)
-                self.logger.info(
-                    "Sleep %s for command %s ", delay_value, command_name
-                )
-        self.set_pointing_state(pointing_state)
-
-    commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
-
-    commandCallInfo = attribute(
-        dtype=(("str",),),
-        access=AttrWriteType.READ,
-        max_dim_x=1000,
-        max_dim_y=1000,
-    )
-
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
         """Sets the offset for Dish."""
         self._offset["off_xel"] = cross_elevation
         self._offset["off_el"] = elevation
 
-    def _update_pointing_state_in_sequence(self) -> None:
-        """This method update pointing state in sequence as per
-        state duration info
-        """
-        for pointing_state, duration in self._state_duration_info:
-            pointing_state_enum = PointingState[pointing_state]
-            self.logger.info(
-                "Sleep %s sec for pointing state %s",
-                duration,
-                pointing_state,
-            )
-            time.sleep(duration)
-            with tango.EnsureOmniThread():
-                self.set_pointing_state(pointing_state_enum)
-
     def _follow_state_duration(self):
         """This method will update pointing state as per state duration"""
-        thread = threading.Thread(
-            target=self._update_pointing_state_in_sequence,
-        )
-        thread.start()
+        for pointing_state, duration in self._state_duration_info:
+            time.sleep(duration)
+            pointing_state_enum = PointingState[pointing_state]
+            thread = threading.Thread(
+                target=self.set_pointing_state, args=[pointing_state_enum]
+            )
+            thread.start()
 
     @command(
         dtype_in=str,
@@ -528,11 +448,6 @@ class HelperDishLNDevice(HelperBaseDevice):
     )
     def SetDelayInfo(self, command_delay_info: str) -> None:
         """Update delay value"""
-        self.logger.info(
-            "Setting the Delay value for Dish simulator to : %s",
-            command_delay_info,
-        )
-        # set command info
         command_delay_info_dict = json.loads(command_delay_info)
         for key, value in command_delay_info_dict.items():
             self._command_delay_info[key] = value
@@ -543,7 +458,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     )
     def ResetDelayInfo(self) -> None:
         """Reset Delay to it's default values"""
-        self.logger.info("Resetting Command Delays for Dish Master Simulator")
+        self.logger.info("Resetting Command Delays for %s", self.dev_name)
         # Reset command info
         self._command_delay_info = {
             CONFIGURE: 2,
@@ -556,7 +471,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     )
     def ClearCommandCallInfo(self) -> None:
         """Clears commandCallInfo to empty list"""
-        self.logger.info("Clearing CommandCallInfo for DishMaster simulators")
+        self.logger.info("Clearing CommandCallInfo for %s", self.dev_name)
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
 
@@ -654,10 +569,11 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
-        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
+        self.push_command_result(
+            ResultCode.OK, "SetStandbyFPMode", command_id=command_id
+        )
 
         self.logger.info("SetStandbyFPMode command completed.")
-
         # Return message
         return (
             [ResultCode.QUEUED],
@@ -709,14 +625,15 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish ModeLP
         self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
+        self.push_command_result(
+            ResultCode.OK, "SetStandbyLPMode", command_id=command_id
+        )
 
         self.logger.info("SetStandbyLPMode command completed.")
-
         # Return message
         return (
             [ResultCode.QUEUED],
-            command_id,
+            [command_id],
         )
 
     def is_SetOperateMode_allowed(self) -> bool:
@@ -768,13 +685,15 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(ResultCode.OK, "SetOperateMode")
+        self.push_command_result(
+            ResultCode.OK, "SetOperateMode", command_id=command_id
+        )
         self.logger.info("SetOperateMode command completed.")
 
         # Return message
         return (
             [ResultCode.QUEUED],
-            command_id,
+            [command_id],
         )
 
     def is_SetStowMode_allowed(self) -> bool:
@@ -822,7 +741,9 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
-        self.push_command_result(ResultCode.OK, "SetStowMode")
+        self.push_command_result(
+            ResultCode.OK, "SetStowMode", command_id=command_id
+        )
 
         self.logger.info("SetStowMode command completed.")
 
@@ -876,10 +797,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(
-            ResultCode.OK,
-            "Track",
-        )
+        self.push_command_result(ResultCode.OK, "Track", command_id=command_id)
         self.logger.info("Track command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -932,7 +850,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
 
-        self.push_command_result(ResultCode.OK, "TrackStop")
+        self.push_command_result(
+            ResultCode.OK, "TrackStop", command_id=command_id
+        )
         self.logger.info("TrackStop command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -1045,10 +965,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             kwargs={"command_id": command_id},
         )
         thread.start()
-        self.push_command_result(
-            ResultCode.OK,
-            "Configure",
-        )
         self.logger.info("Configure command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -1102,7 +1018,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         cross_elevation = input_offsets[0]
         elevation = input_offsets[1]
         self.set_offset(cross_elevation, elevation)
-        self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
+        self.push_command_result(
+            ResultCode.OK, "TrackLoadStaticOff", command_id=command_id
+        )
         self.logger.info("TrackLoadStaticOff command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -1123,8 +1041,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._command_info = (command_name, command_input)
         self._command_call_info.append(self._command_info)
         self.logger.info(
-            "Recorded command_call_info list for DishMaster simulators \
-            is %s",
+            "Recorded command_call_info list for %s is %s",
+            self.dev_name,
             self._command_call_info,
         )
         self.push_change_event("commandCallInfo", self._command_call_info)
@@ -1274,7 +1192,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             # TBD: Add your dish mode change logic here if required
         return (
             [ResultCode.QUEUED],
-            command_id,
+            [command_id],
         )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.

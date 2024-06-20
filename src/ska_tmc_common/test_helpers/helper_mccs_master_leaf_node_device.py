@@ -2,9 +2,6 @@
 This module implements the Helper MCCS master leaf node devices for testing
 an integrated TMC
 """
-# pylint: disable=unused-argument
-import json
-import threading
 import time
 from typing import List, Tuple
 
@@ -23,10 +20,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
-        self._delay: int = 2
-        self._raise_exception = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
@@ -41,36 +35,6 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
-
-    # pylint: disable=arguments-renamed
-    # Disabled because here command_id is passed as parameter instead of
-    # command_name
-    def push_command_result(
-        self, result: ResultCode, command_id: str, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-
-        :params:
-
-        result: The result code to be pushed as an event
-        dtype: ResultCode
-
-        command_id: The command_id for which the event is being pushed
-        dtype: str
-
-        exception: Exception message to be pushed as an event
-        dtype: str
-        """
-        if exception:
-            command_result = (command_id, exception)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps(result))
-        thread = threading.Timer(
-            self._delay,
-            function=self.push_change_event,
-            args=["longRunningCommandResult", command_result],
-        )
-        thread.start()
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -112,8 +76,12 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         command_id = f"{time.time()}-AssignResources"
         if self.defective_params["enabled"]:
             return self.induce_fault("AssignResources", command_id)
-        self.push_command_result(ResultCode.OK, "AssignResources")
-        self.logger.info("AssignResourses command complete")
+        self.push_command_result(
+            ResultCode.OK, "AssignResources", command_id=command_id
+        )
+        self.logger.info(
+            "AssignResourses command complete with argin: %s", argin
+        )
         return [ResultCode.QUEUED], [command_id]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
@@ -156,6 +124,10 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         command_id = f"{time.time()}-ReleaseAllResources"
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseAllResources", command_id)
-        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
-        self.logger.info("ReleaseAllResources command complete")
+        self.push_command_result(
+            ResultCode.OK, "ReleaseAllResources", command_id=command_id
+        )
+        self.logger.info(
+            "ReleaseAllResources command complete with argin: %s", argin
+        )
         return [ResultCode.QUEUED], [command_id]
