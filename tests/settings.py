@@ -320,10 +320,10 @@ class DummyCommandClass(TmcLeafNodeCommand):
         message = kwargs.get("message")
 
         if result == ResultCode.OK:
-            self.task_callback(result=result, status=status)
+            self.task_callback(result=(result, message), status=status)
         else:
             self.task_callback(
-                result=result,
+                result=(result, message),
                 status=status,
                 exception=message,
             )

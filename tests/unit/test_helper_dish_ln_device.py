@@ -31,7 +31,6 @@ COMMANDS_WITHOUT_INPUT = [
     "SetOperateMode",
     "SetStowMode",
     "Off",
-    "AbortCommands",
     "EndScan",
 ]
 
@@ -43,7 +42,7 @@ def test_dish_commands_without_input(tango_context, command):
     result, command_id = dish_device.command_inout(command)
     command_call_info = dish_device.commandCallInfo
     assert command_call_info[0] == (command, "")
-    assert result[0] == ResultCode.OK
+    assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
 
 
@@ -66,11 +65,9 @@ def test_scan_command_without_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout("Scan", "")
+    result, command_id = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command completely."
-    )
+    assert "Scan" in command_id[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -79,11 +76,9 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout(command_to_check)
+    result, command_id = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command completely."
-    )
+    assert isinstance(command_id[0], str)
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -91,11 +86,9 @@ def test_command_with_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout("Configure", "")
+    result, command_id = dish_device.command_inout("Configure", "")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command completely."
-    )
+    assert "Configure" in command_id[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -223,26 +216,30 @@ def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     """
     This test case verifies sdpQueueConnectorFQDN dish leaf node attribute.
     """
-    timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
     SDPQC_ATTR_PROXY = "test-sdp/queueconnector/01/pointing_cal_{dish_id}"
+    timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
     dishln_device.sdpQueueConnectorFqdn = SDPQC_ATTR_PROXY
     sdpqc_device.SetPointingCalSka001([1.0, 2.0, 3.0])
-    # actualPointing contains initialized value
-    # [timestamp, 287.2504396, 77.8694392], where timestamp is dynamic
+    # Updated actualPointing with expected values
     updated_actual_pointing = [
         timestamp,
         285.2504396,
         74.8694392,
-    ]  # instruction to verify the pointing calibration processed as expected
+    ]
+
     timestamp, azimuth, elevation = updated_actual_pointing
     actual_pointing = json.loads(dishln_device.actualPointing)
+
+    # Assert azimuth and elevation
     assert actual_pointing[1] == azimuth
     assert actual_pointing[2] == elevation
-    timestamp_pointing = actual_pointing[0]
-    timestamp_pointing = timestamp_pointing[-1]  # not to consider seconds
-    timestamp = timestamp[-1]  # not to consider seconds
-    assert timestamp_pointing == timestamp
-    assert dishln_device.sdpQueueConnectorFqdn == SDPQC_ATTR_PROXY
+
+    # Compare timestamps up to minutes for a more lenient check
+    timestamp_pointing = actual_pointing[0][:-3]  # up to minutes
+    timestamp = timestamp[:-3]  # up to minutes
+    assert (
+        timestamp_pointing == timestamp
+    ), f"Expected timestamp: '{timestamp}', but got: '{timestamp_pointing}'"

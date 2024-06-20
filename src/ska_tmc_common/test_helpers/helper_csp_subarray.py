@@ -57,6 +57,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "AssignResources",
+                command_id,
             )
 
         if self._raise_exception:
@@ -68,7 +69,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 args=["AssignResources"],
             )
             self.thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
@@ -91,7 +92,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -131,11 +132,12 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "ReleaseResources",
+                command_id,
             )
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -157,6 +159,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "ReleaseAllResources",
+                command_id,
             )
 
         if self._raise_exception:
@@ -168,7 +171,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
                 args=["ReleaseAllResources"],
             )
             self.thread.start()
-            return [ResultCode.QUEUED], command_id
+            return [ResultCode.QUEUED], [command_id]
 
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
@@ -191,7 +194,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             + "EMPTY, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_in=("str"),
@@ -213,6 +216,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Configure",
+                command_id,
             )
 
         if self._state_duration_info:
@@ -236,7 +240,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             thread.start()
         self.logger.info("Configure command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_in=("str"),
@@ -257,6 +261,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Scan",
+                command_id,
             )
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
@@ -271,7 +276,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
         self.logger.debug(
             "Scan command invoked current obsState is %s", self._obs_state
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -290,6 +295,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "EndScan",
+                command_id,
             )
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
@@ -302,7 +308,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             command_result_thread.start()
         self.logger.info("EndScan command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -321,6 +327,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "GoToIdle",
+                command_id,
             )
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
@@ -333,7 +340,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
 
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("GoToIdle command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -347,6 +354,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "ObsReset",
+                command_id,
             )
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
@@ -360,7 +368,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
 
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("ObsReset command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -379,6 +387,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Abort",
+                command_id,
             )
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
@@ -398,7 +407,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             thread.start()
         self.logger.info("Abort command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -417,6 +426,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Restart",
+                command_id,
             )
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
@@ -436,7 +446,7 @@ class HelperCspSubarray(HelperSubArrayDevice):
             )
             thread.start()
         self.logger.info("Restart command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
 
 # ----------

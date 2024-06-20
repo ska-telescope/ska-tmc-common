@@ -595,19 +595,18 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
+                command_id,
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(
-            ResultCode.OK, "Off", "Off command completed successfully"
-        )
+        self.push_command_result(ResultCode.OK, "Off")
 
         self.logger.info("Off command completed.")
         return (
-            [ResultCode.OK],
+            [ResultCode.QUEUED],
             command_id,
         )
 
@@ -642,12 +641,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
-        command_id = f"{time.time()}_On"
+        command_id = f"{time.time()}_SetStandbyFPMode"
         self.logger.info("Processing SetStandbyFPMode Command")
         self.update_command_info(SET_STANDBY_FP_MODE, "")
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("SetStandbyFPMode")
+            return self.induce_fault("SetStandbyFPMode", command_id)
 
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
@@ -655,16 +654,14 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
-        self.push_command_result(
-            ResultCode.OK, "SetStandbyFPMode", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "SetStandbyFPMode")
 
         self.logger.info("SetStandbyFPMode command completed.")
 
         # Return message
         return (
-            [ResultCode.OK],
-            command_id,
+            [ResultCode.QUEUED],
+            [command_id],
         )
 
     def is_SetStandbyLPMode_allowed(self) -> bool:
@@ -704,7 +701,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(SET_STANDBY_LP_MODE, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("SetStandbyLPMode")
+            return self.induce_fault("SetStandbyLPMode", command_id)
         # Set the device state
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
@@ -712,15 +709,13 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish ModeLP
         self.set_dish_mode(DishMode.STANDBY_LP)
-        self.push_command_result(
-            ResultCode.OK, "SetStandbyLPMode", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "SetStandbyLPMode")
 
         self.logger.info("SetStandbyLPMode command completed.")
 
         # Return message
         return (
-            [ResultCode.OK],
+            [ResultCode.QUEUED],
             command_id,
         )
 
@@ -760,7 +755,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(SET_OPERATE_MODE, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("SetOperateMode")
+            return self.induce_fault("SetOperateMode", command_id)
 
         # Set the device state
         if self.dev_state() != DevState.ON:
@@ -773,15 +768,12 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(
-            ResultCode.OK, "SetOperateMode", "Command Completed"
-        )
-
+        self.push_command_result(ResultCode.OK, "SetOperateMode")
         self.logger.info("SetOperateMode command completed.")
 
         # Return message
         return (
-            [ResultCode.OK],
+            [ResultCode.QUEUED],
             command_id,
         )
 
@@ -821,7 +813,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(SET_STOW_MODE, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("SetStowMode")
+            return self.induce_fault("SetStowMode", command_id)
 
         # Set device state
         if self.dev_state() != DevState.DISABLE:
@@ -830,16 +822,14 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set Dish Mode
         self.set_dish_mode(DishMode.STOW)
-        self.push_command_result(
-            ResultCode.OK, "SetStowMode", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "SetStowMode")
 
         self.logger.info("SetStowMode command completed.")
 
         # Return meaningful message
         return (
-            [ResultCode.OK],
-            command_id,
+            [ResultCode.QUEUED],
+            [command_id],
         )
 
     def is_Track_allowed(self) -> bool:
@@ -876,7 +866,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("Track")
+            return self.induce_fault("Track", command_id)
         if self._pointing_state != PointingState.TRACK:
             if self._state_duration_info:
                 self._follow_state_duration()
@@ -889,10 +879,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.push_command_result(
             ResultCode.OK,
             "Track",
-            "Command Completed",
         )
         self.logger.info("Track command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_TrackStop_allowed(self) -> bool:
         """
@@ -931,7 +920,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(TRACK_STOP, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("TrackStop")
+            return self.induce_fault("TrackStop", command_id)
         if self._pointing_state != PointingState.READY:
             if self._state_duration_info:
                 self._follow_state_duration()
@@ -943,11 +932,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
 
-        self.push_command_result(
-            ResultCode.OK, "TrackStop", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "TrackStop")
         self.logger.info("TrackStop command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_AbortCommands_allowed(self) -> bool:
         """
@@ -984,14 +971,10 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke AbortCommands command"
         )
         self.update_command_info(ABORT_COMMANDS, "")
-
-        if self.defective_params["enabled"]:
-            return self.induce_fault("AbortCommands")
-
         self.logger.info("Abort Completed")
         return (
             [ResultCode.OK],
-            command_id,
+            [command_id],
         )
 
     def is_Configure_allowed(self) -> bool:
@@ -1033,7 +1016,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("Configure")
+            return self.induce_fault("Configure", command_id)
         if self._pointing_state != PointingState.TRACK:
             if self._state_duration_info:
                 self._follow_state_duration()
@@ -1058,15 +1041,16 @@ class HelperDishLNDevice(HelperBaseDevice):
         thread = threading.Timer(
             self._delay,
             self.push_command_result,
-            args=[ResultCode.OK, "Configure", "Command Completed"],
+            args=[ResultCode.OK, "Configure"],
             kwargs={"command_id": command_id},
         )
         thread.start()
         self.push_command_result(
-            ResultCode.OK, "Configure", "Command Completed"
+            ResultCode.OK,
+            "Configure",
         )
         self.logger.info("Configure command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
@@ -1111,18 +1095,16 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("TrackLoadStaticOff")
+            return self.induce_fault("TrackLoadStaticOff", command_id)
 
         # Set offsets.
         input_offsets = json.loads(argin)
         cross_elevation = input_offsets[0]
         elevation = input_offsets[1]
         self.set_offset(cross_elevation, elevation)
-        self.push_command_result(
-            ResultCode.OK, "TrackLoadStaticOff", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "TrackLoadStaticOff")
         self.logger.info("TrackLoadStaticOff command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def update_command_info(
         self, command_name: str = "", command_input: str = ""
@@ -1249,10 +1231,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         # to record the command data
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("Scan")
+            return self.induce_fault("Scan", command_id)
 
             # TBD: Add your dish mode change logic here if required
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
@@ -1288,10 +1270,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         # to record the command data
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
-            return self.induce_fault("EndScan")
+            return self.induce_fault("EndScan", command_id)
             # TBD: Add your dish mode change logic here if required
         return (
-            [ResultCode.OK],
+            [ResultCode.QUEUED],
             command_id,
         )
 

@@ -100,11 +100,9 @@ def test_assign_resources_failed_result(tango_context):
         "result": ResultCode.FAILED,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
-    result, message = subarray_leaf_device.AssignResources("")
+    result, command_id = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command.completely."
-    )
+    assert "AssignResources" in command_id[0]
     subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
 

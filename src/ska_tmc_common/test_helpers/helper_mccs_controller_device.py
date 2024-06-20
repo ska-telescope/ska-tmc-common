@@ -53,7 +53,7 @@ class HelperMCCSController(HelperBaseDevice):
     def induce_fault(
         self,
         command_name: str,
-        command_id: str,
+        command_id: str = "",
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -115,7 +115,7 @@ class HelperMCCSController(HelperBaseDevice):
         fault_message = self.defective_params["error_message"]
 
         if fault_type == FaultType.FAILED_RESULT:
-            return [result], [fault_message]
+            return [result], [command_id]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(

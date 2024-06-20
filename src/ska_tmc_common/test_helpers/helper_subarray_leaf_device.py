@@ -293,14 +293,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_On"
         self.update_command_info(ON)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "On",
-            )
+            return self.induce_fault("On", command_id)
 
         self.set_state(DevState.ON)
         self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "On", "Command Completed")
-        return [ResultCode.QUEUED], command_id
+        self.push_command_result(ResultCode.OK, "On")
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Off_allowed(self) -> bool:
         """
@@ -333,14 +331,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Off"
         self.update_command_info(OFF)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Off",
-            )
+            return self.induce_fault("Off", command_id)
 
         self.set_state(DevState.OFF)
         self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Off", "Command Completed")
-        return [ResultCode.QUEUED], command_id
+        self.push_command_result(ResultCode.OK, "Off")
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -373,14 +369,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Standby"
         self.update_command_info(STAND_BY)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Standby",
-            )
+            return self.induce_fault("Standby", command_id)
 
         self.set_state(DevState.STANDBY)
         self.push_change_event("State", self.dev_state())
-        self.push_command_result(ResultCode.OK, "Standby", "Command Completed")
-        return [ResultCode.QUEUED], command_id
+        self.push_command_result(ResultCode.OK, "Standby")
+        return [ResultCode.QUEUED], [command_id]
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -419,6 +413,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "AssignResources",
+                command_id,
             )
 
         if self._state_duration_info:
@@ -433,7 +428,8 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             result_thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[ResultCode.OK, "AssignResources", "Command Completed"],
+                args=[ResultCode.OK, "AssignResources"],
+                kwargs={"command_id": command_id},
             )
             result_thread.start()
             self.logger.debug(
@@ -441,7 +437,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 + "IDLE, current obsState is %s",
                 self._obs_state,
             )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -478,9 +474,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Configure"
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Configure",
-            )
+            return self.induce_fault("Configure", command_id)
         if self._state_duration_info:
             self._follow_state_duration()
         else:
@@ -493,7 +487,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             result_thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=[ResultCode.OK, "Configure", "Command Completed"],
+                args=[
+                    ResultCode.OK,
+                    "Configure",
+                ],
+                kwargs={"command_id": command_id},
             )
             result_thread.start()
             self.logger.info(
@@ -501,7 +499,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
                 + "READY, current obsState is %s",
                 self._obs_state,
             )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -538,13 +536,11 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Scan"
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Scan",
-            )
+            return self.induce_fault("Scan", command_id)
 
         self.update_device_obsstate(ObsState.SCANNING)
         self.logger.info("Scan command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -579,15 +575,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_EndScan"
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "EndScan",
-            )
+            return self.induce_fault("EndScan", command_id)
 
         self._obs_state = ObsState.READY
         self.push_obs_state_event(self._obs_state)
-        self.push_command_result(ResultCode.OK, "EndScan", "Command Completed")
+        self.push_command_result(ResultCode.OK, "EndScan")
         self.logger.info("EndScan command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_End_allowed(self) -> bool:
         """
@@ -622,9 +616,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_End"
         self.update_command_info(END)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "End",
-            )
+            return self.induce_fault("End", command_id)
 
         self._obs_state = ObsState.CONFIGURING
         self.push_obs_state_event(self._obs_state)
@@ -632,13 +624,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "End", "Command Completed")
+        self.push_command_result(ResultCode.OK, "End")
         self.logger.debug(
             "End command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -673,16 +665,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_GoToIdle"
         self.update_command_info(GO_TO_IDLE)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "GoToIdle",
-            )
+            return self.induce_fault("GoToIdle", command_id)
 
         self._obs_state = ObsState.IDLE
         self.push_obs_state_event(self._obs_state)
-        self.push_command_result(
-            ResultCode.OK, "GoToIdle", "Command Completed"
-        )
-        return [ResultCode.QUEUED], command_id
+        self.push_command_result(ResultCode.OK, "GoToIdle")
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -717,9 +705,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Abort"
         self.update_command_info(ABORT)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Abort",
-            )
+            return self.induce_fault("Abort", command_id)
 
         self._obs_state = ObsState.ABORTING
         self.push_obs_state_event(self._obs_state)
@@ -727,13 +713,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.ABORTED]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Abort", "Command Completed")
+        self.push_command_result(ResultCode.OK, "Abort")
         self.logger.debug(
             "Abort command invoked, obsState will transition to"
             + "ABORTED, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Restart_allowed(self) -> bool:
         """
@@ -768,9 +754,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Restart"
         self.update_command_info(RESTART)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Restart",
-            )
+            return self.induce_fault("Restart", command_id)
 
         self._obs_state = ObsState.RESTARTING
         self.push_obs_state_event(self._obs_state)
@@ -778,9 +762,9 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.push_command_result(ResultCode.OK, "Restart", "Command Completed")
+        self.push_command_result(ResultCode.OK, "Restart")
         self.logger.info("Restart command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -815,9 +799,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_ReleaseAllResources"
         self.update_command_info(RELEASE_ALL_RESOURCES)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "ReleaseAllResources",
-            )
+            return self.induce_fault("ReleaseAllResources", command_id)
 
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
@@ -825,15 +807,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.EMPTY]
         )
         thread.start()
-        self.push_command_result(
-            ResultCode.OK, "ReleaseAllResources", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "ReleaseAllResources")
         self.logger.debug(
             "ReleaseAllResources command invoked, obsState will transition to"
             + "EMPTY, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_ReleaseResources_allowed(self) -> bool:
         """
@@ -872,9 +852,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         command_id = f"{time.time()}_ReleaseResources"
         self.update_command_info(RELEASE_RESOURCES)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "ReleaseResources",
-            )
+            return self.induce_fault("ReleaseResources", command_id)
 
         self._obs_state = ObsState.RESOURCING
         self.push_obs_state_event(self._obs_state)
@@ -882,15 +860,13 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._delay, self.update_device_obsstate, args=[ObsState.IDLE]
         )
         thread.start()
-        self.push_command_result(
-            ResultCode.OK, "ReleaseResources", "Command Completed"
-        )
+        self.push_command_result(ResultCode.OK, "ReleaseResources")
         self.logger.debug(
             "ReleaseResources command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
 
 # ----------

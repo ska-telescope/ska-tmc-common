@@ -659,17 +659,16 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode
         :rtype: Tuple
         """
+        command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
         self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "On",
-            )
+            return self.induce_fault("On", command_id)
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-        return [ResultCode.QUEUED], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Off_allowed(self) -> bool:
         """
@@ -693,7 +692,9 @@ class HelperSubArrayDevice(SKASubarray):
         return True
 
     def induce_fault(
-        self, command_name: str
+        self,
+        command_name: str,
+        command_id: str,
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -793,7 +794,7 @@ class HelperSubArrayDevice(SKASubarray):
                 self.push_change_event(
                     "longRunningCommandResult", command_result
                 )
-            return [result], [fault_message]
+            return [result], [command_id]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
@@ -802,13 +803,13 @@ class HelperSubArrayDevice(SKASubarray):
                 args=[result, command_name, fault_message],
             )
             thread.start()
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
             self.logger.info("pushing obsState %s event", intermediate_state)
             self.push_change_event("obsState", intermediate_state)
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
         if fault_type == FaultType.STUCK_IN_OBSTATE:
             self._obs_state = intermediate_state
@@ -829,9 +830,9 @@ class HelperSubArrayDevice(SKASubarray):
                 "pushing longRunningCommandResult %s event", command_result
             )
             self.push_change_event("longRunningCommandResult", command_result)
-            return [ResultCode.QUEUED], [""]
+            return [ResultCode.QUEUED], [command_id]
 
-        return [ResultCode.QUEUED], [""]
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_in=str,
@@ -861,14 +862,12 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke Off command")
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Off",
-            )
+            return self.induce_fault("Off", command_id)
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off completed")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -905,15 +904,13 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke Standby command")
         self.update_command_info(STAND_BY, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Standby",
-            )
+            return self.induce_fault("Standby", command_id)
 
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
         self.logger.info("Standby completed")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_AssignResources_allowed(self) -> bool:
         """
@@ -955,9 +952,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "AssignResources",
-            )
+            return self.induce_fault("AssignResources", command_id)
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
@@ -981,7 +976,7 @@ class HelperSubArrayDevice(SKASubarray):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def wait_and_update_exception(self, command_name):
         """Waits for 5 secs before pushing a longRunningCommandResult event."""
@@ -1032,15 +1027,13 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info(argin)
         self.update_command_info(RELEASE_RESOURCES, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "ReleaseResources",
-            )
+            return self.induce_fault("ReleaseResources", command_id)
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.EMPTY
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("ReleaseResources command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
@@ -1080,9 +1073,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         self.update_command_info(RELEASE_ALL_RESOURCES, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "ReleaseAllResources",
-            )
+            return self.induce_fault("ReleaseAllResources", command_id)
         if self._raise_exception:
             self._obs_state = ObsState.RESOURCING
             self.push_change_event("obsState", self._obs_state)
@@ -1107,7 +1098,7 @@ class HelperSubArrayDevice(SKASubarray):
             + "EMPTY, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Configure_allowed(self) -> bool:
         """
@@ -1145,9 +1136,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke Configure command")
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Configure",
-            )
+            return self.induce_fault("Configure", command_id)
         if self._state_duration_info:
             self._follow_state_duration()
         else:
@@ -1165,7 +1154,7 @@ class HelperSubArrayDevice(SKASubarray):
                 + "READY current obsState is %s",
                 self._obs_state,
             )
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Scan_allowed(self) -> bool:
         """
@@ -1203,14 +1192,12 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke Scan command")
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "Scan",
-            )
+            return self.induce_fault("Scan", command_id)
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("Scan command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> bool:
         """
@@ -1246,14 +1233,12 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke EndScan command")
         self.update_command_info(END_SCAN, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "EndScan",
-            )
+            return self.induce_fault("EndScan", command_id)
         if self._obs_state != ObsState.READY:
             self._obs_state = ObsState.READY
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("EndScan command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_End_allowed(self) -> bool:
         """
@@ -1289,9 +1274,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke End command")
         self.update_command_info(END, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "End",
-            )
+            return self.induce_fault("End", command_id)
         if self._obs_state != ObsState.IDLE:
             if self._state_duration_info:
                 self._follow_state_duration()
@@ -1299,7 +1282,7 @@ class HelperSubArrayDevice(SKASubarray):
                 self._obs_state = ObsState.IDLE
                 self.push_change_event("obsState", self._obs_state)
         self.logger.info("End command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_GoToIdle_allowed(self) -> bool:
         """
@@ -1335,14 +1318,12 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke GoToIdle command")
         self.update_command_info(GO_TO_IDLE, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "GoToIdle",
-            )
+            return self.induce_fault("GoToIdle", command_id)
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("GoToIdle command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_ObsReset_allowed(self) -> bool:
         """
@@ -1374,14 +1355,12 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke ObsReset command")
         self.update_command_info(OBS_RESET, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "ObsReset",
-            )
+            return self.induce_fault("ObsReset", command_id)
         if self._obs_state != ObsState.IDLE:
             self._obs_state = ObsState.IDLE
             self.push_change_event("obsState", self._obs_state)
         self.logger.info("ObsReset command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Abort_allowed(self) -> bool:
         """
@@ -1427,7 +1406,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Abort command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.OK], [command_id]
 
     def is_Restart_allowed(self) -> bool:
         """
@@ -1474,7 +1453,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Restart command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.OK], [command_id]
 
 
 # ----------

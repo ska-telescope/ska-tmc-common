@@ -18,7 +18,7 @@ def test_mccs_master_leaf_node_commands_with_argument(tango_context, command):
         HELPER_MCCS_MASTER_LEAF_NODE_DEVICE
     )
     result, message = mccs_master_leaf_node_device.command_inout(command, "")
-    assert result[0] == ResultCode.OK
+    assert result[0] == ResultCode.QUEUED
 
 
 @pytest.mark.parametrize("command", commands_without_argin)
@@ -29,9 +29,9 @@ def test_mccs_master_leaf_node_commands_without_argument(
     mccs_master_leaf_node_device = dev_factory.get_device(
         HELPER_MCCS_MASTER_LEAF_NODE_DEVICE
     )
-    result, message = mccs_master_leaf_node_device.command_inout(command)
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = mccs_master_leaf_node_device.command_inout(command)
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_assign_resources_failed_result(tango_context):
@@ -48,11 +48,9 @@ def test_assign_resources_failed_result(tango_context):
         "result": ResultCode.FAILED,
     }
     mccs_master_leaf_node_device.SetDefective(json.dumps(defect))
-    result, message = mccs_master_leaf_node_device.AssignResources("")
+    result, command_id = mccs_master_leaf_node_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command.completely."
-    )
+    assert "AssignResources" in command_id[0]
     mccs_master_leaf_node_device.SetDefective(json.dumps({"enabled": False}))
 
 

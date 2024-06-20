@@ -222,7 +222,7 @@ def test_call_adapter_method(tango_context):
         HELPER_SDP_SUBARRAY_DEVICE, subarray_adapter, "AssignResources", ""
     )
     assert result_code[0] == ResultCode.QUEUED
-    assert isinstance(command_id[0], str)
+    assert "AssignResources" in command_id[0]
 
 
 def test_call_adapter_method_exception(tango_context):

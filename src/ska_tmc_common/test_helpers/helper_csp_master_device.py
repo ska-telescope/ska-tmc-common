@@ -100,12 +100,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "On",
+                command_id,
             )
         if self.dev_state() != DevState.ON:
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Off_allowed(self) -> bool:
         """
@@ -144,12 +145,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Off",
+                command_id,
             )
         if self.dev_state() != DevState.OFF:
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Standby_allowed(self) -> bool:
         """
@@ -187,12 +189,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
                 "Standby",
+                command_id,
             )
         if self.dev_state() != DevState.STANDBY:
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standby command completed.")
-        return [ResultCode.QUEUED], command_id
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -255,11 +258,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
 
         }
         """
+        command_id = f"{time.time()}_LoadDishCfg"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            return self.induce_fault(
-                "LoadDishCfg",
-            )
+            return self.induce_fault("LoadDishCfg", command_id)
         json_argument = json.loads(argin)
         sources = json_argument["tm_data_sources"]
         filepath = json_argument["tm_data_filepath"]
@@ -293,7 +295,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             ],
         )
         push_command_result_thread.start()
-        return [ResultCode.QUEUED], [""]
+        return [ResultCode.QUEUED], [command_id]
 
 
 # ----------
