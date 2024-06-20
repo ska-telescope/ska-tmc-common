@@ -11,7 +11,7 @@ import numpy as np
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState, DevString
+from tango import AttrWriteType, DevState, DevString, EnsureOmniThread
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -286,6 +286,23 @@ class HelperDishDevice(HelperDishLNDevice):
         command_status = (command_id, status)
         self.push_change_event("longRunningCommandStatus", command_status)
 
+    def push_command_result(self, result_code, command_name):
+        """Pushing a longRunningCommandResult event."""
+        with EnsureOmniThread():
+            command_id = f"{time.time()}_{command_name}"
+
+            command_result = (
+                command_id,
+                str(
+                    [
+                        result_code.value,
+                        f"{command_name} completed",
+                    ]
+                ),
+            )
+            self.logger.info("Pushing LRCR event %s", command_result)
+            self.push_change_event("longRunningCommandResult", command_result)
+
     def set_achieved_pointing(self) -> None:
         """Sets the achieved pointing for dish."""
         try:
@@ -430,7 +447,7 @@ class HelperDishDevice(HelperDishLNDevice):
             thread = threading.Timer(
                 self._delay,
                 function=self.push_command_result,
-                args=["ResultCode.FAILED", "TrackLoadStaticOff"],
+                args=[ResultCode.FAILED, "TrackLoadStaticOff"],
             )
 
             # Will be un-commented as part of SAH-1530
@@ -443,8 +460,8 @@ class HelperDishDevice(HelperDishLNDevice):
         else:
             thread = threading.Timer(
                 self._delay,
-                function=self.push_command_status,
-                args=["COMPLETED", "TrackLoadStaticOff"],
+                function=self.push_command_result,
+                args=[ResultCode.OK, "TrackLoadStaticOff"],
             )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
@@ -753,17 +770,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand5b command completed.")
         return ([ResultCode.OK], [""])
 
-    def update_lrcr(
-        self, command_name: str = "", command_id: str = ""
-    ) -> None:
+    def update_lrcr(self, command_name: str = "") -> None:
         """Updates the longrunningcommandresult  after a delay."""
-        delay_value = self._delay
         with tango.EnsureOmniThread():
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-            time.sleep(delay_value)
-
             if self._pointing_state != PointingState.TRACK:
                 if self._state_duration_info:
                     self._follow_state_duration()
@@ -775,9 +784,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
                 # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
-            self.push_command_result(
-                ResultCode.OK, command_name, command_id=command_id
-            )
+            self.push_command_result(ResultCode.OK, command_name)
             self.logger.info("Track command completed.")
 
     # Below changes will be un-commented in SAH-1530

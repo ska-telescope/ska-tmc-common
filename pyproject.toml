@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.16.7"
+version = "0.16.8"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -60,6 +60,11 @@ sphinx-autodoc-typehints = "^1.19.3"
 sphinxcontrib-plantuml = "^0.22"
 typing_extensions  = "^4.3.0"
 sphinx-rtd-theme = "^1.2.2"
+attrs = "*"
+jsonschema = "*"
+jsonschema-specifications = "*"
+referencing = "*"
+rpds-py = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
