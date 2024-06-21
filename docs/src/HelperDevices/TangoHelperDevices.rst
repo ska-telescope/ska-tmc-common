@@ -45,16 +45,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-
-2. Helper_CSP_Subarray
-----------------------
-.. automodule:: ska_tmc_common.test_helpers.helper_csp_subarray
-.. autoclass:: ska_tmc_common.test_helpers.helper_csp_subarray.HelperCspSubarray
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-3. Helper_Dish_Device
+2. Helper_Dish_Device
 ---------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_dish_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_dish_device.HelperDishDevice
@@ -62,7 +53,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-4. Helper_SDP_Subarray
+3. Helper_SDP_Subarray
 ----------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_sdp_subarray
 .. autoclass:: ska_tmc_common.test_helpers.helper_sdp_subarray.HelperSdpSubarray
@@ -70,7 +61,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-5. Helper_SDP_Subarray_Leaf_Device
+4. Helper_SDP_Subarray_Leaf_Device
 ----------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_sdp_subarray_leaf_device.HelperSdpSubarrayLeafDevice
@@ -78,7 +69,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-6. Helper_MCCS_Controller
+5. Helper_MCCS_Controller
 --------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_mccs_controller_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_mccs_controller_device.HelperMCCSController
@@ -86,7 +77,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-7. Helper_Subarray_Device
+6. Helper_Subarray_Device
 -------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_subarray_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_subarray_device.HelperSubArrayDevice
@@ -95,7 +86,7 @@ Device List
    :show-inheritance:
 
 
-8. Helper_Subarray_Leaf_Device
+7. Helper_Subarray_Leaf_Device
 ------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_subarray_leaf_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_subarray_leaf_device.HelperSubarrayLeafDevice
@@ -103,7 +94,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-9. Helper_Dish_LN_Device
+8. Helper_Dish_LN_Device
 ------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_dish_ln_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_dish_ln_device.HelperDishLNDevice
@@ -111,7 +102,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-10. Helper_Mccs_Subarray_Device
+9. Helper_Mccs_Subarray_Device
 -------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_mccs_subarray_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_mccs_subarray_device.HelperMccsSubarrayDevice
@@ -119,7 +110,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-11. Helper_MCCS_Master_Leaf_Node
+10. Helper_MCCS_Master_Leaf_Node
 ---------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_mccs_master_leaf_node_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_mccs_master_leaf_node_device.HelperMCCSMasterLeafNode
@@ -127,7 +118,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-12. Helper_Base_Device
+11. Helper_Base_Device
 -----------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_base_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_base_device.HelperBaseDevice
@@ -135,7 +126,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-13. Helper_Csp_Master_Leaf_Device
+12. Helper_Csp_Master_Leaf_Device
 ----------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_csp_master_leaf_node
 .. autoclass:: ska_tmc_common.test_helpers.helper_csp_master_leaf_node.HelperCspMasterLeafDevice
@@ -143,7 +134,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-14. Helper_Csp_Subarray_Leaf_Device
+13. Helper_Csp_Subarray_Leaf_Device
 -----------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_csp_subarray_leaf_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_csp_subarray_leaf_device.HelperCspSubarrayLeafDevice
@@ -151,7 +142,7 @@ Device List
    :undoc-members:
    :show-inheritance:
 
-15. Helper_Sdp_Queue_Connector
+14. Helper_Sdp_Queue_Connector
 -------------------------------
 .. automodule:: ska_tmc_common.test_helpers.helper_sdp_queue_connector_device
 .. autoclass:: ska_tmc_common.test_helpers.helper_sdp_queue_connector_device.HelperSdpQueueConnector

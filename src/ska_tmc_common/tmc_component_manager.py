@@ -96,7 +96,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         _event_receiver: bool = False,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
-        max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
         **kwargs,
@@ -105,10 +104,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             logger,
             communication_state_callback,
             component_state_callback,
-            max_workers=max_workers,
         )
         self.event_receiver = _event_receiver
-        self.max_workers = max_workers
         self.proxy_timeout = proxy_timeout
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
@@ -179,7 +176,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             self.liveliness_probe_object = MultiDeviceLivelinessProbe(
                 self,
                 logger=self.logger,
-                max_workers=self.max_workers,
                 proxy_timeout=self.proxy_timeout,
                 sleep_time=self.sleep_time,
             )
@@ -287,7 +283,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         _event_receiver: bool = True,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
-        max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
         **kwargs,
@@ -304,7 +299,6 @@ class TmcComponentManager(BaseTmcComponentManager):
             _event_receiver,
             communication_state_callback,
             component_state_callback,
-            max_workers,
             proxy_timeout,
             sleep_time,
             *args,
@@ -486,7 +480,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         _event_receiver: bool = False,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
-        max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
         **kwargs,
@@ -501,7 +494,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             _event_receiver,
             communication_state_callback,
             component_state_callback,
-            max_workers,
             proxy_timeout,
             sleep_time,
             args,
