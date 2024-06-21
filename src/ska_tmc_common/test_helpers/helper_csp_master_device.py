@@ -82,7 +82,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
             self.logger.info("On command completed.")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_in="DevVarStringArray",
@@ -105,7 +105,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_in="DevVarStringArray",
@@ -127,7 +127,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standby command completed.")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]
 
     @command(
         dtype_out="DevVarLongStringArray",

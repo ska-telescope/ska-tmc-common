@@ -1400,7 +1400,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Abort command completed.")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]
 
     def is_Restart_allowed(self) -> bool:
         """
@@ -1454,7 +1454,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Restart command completed.")
-        return [ResultCode.OK], [command_id]
+        return [ResultCode.QUEUED], [command_id]
 
 
 # ----------
