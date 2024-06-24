@@ -57,6 +57,9 @@ Added
 Fixed
 -----
 [0.17.0]
+* Fixed change event for dish leaf node and dish device
+
+[0.17.0]
 *********
 * **BaseClasses** version updated to **1.0.0**
 * **PyTango** version updated to **9.5.0**
