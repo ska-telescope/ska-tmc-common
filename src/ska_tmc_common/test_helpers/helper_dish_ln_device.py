@@ -11,7 +11,6 @@ from datetime import datetime as dt
 from typing import List, Tuple, Union
 
 import tango
-from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import (
     ArgType,
