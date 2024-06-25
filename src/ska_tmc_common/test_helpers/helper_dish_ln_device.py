@@ -11,7 +11,6 @@ from datetime import datetime as dt
 from typing import List, Tuple, Union
 
 import tango
-from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import (
     ArgType,
@@ -82,7 +81,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
 
     # pylint: disable=protected-access
-    class InitCommand(SKABaseDevice.InitCommand):
+    class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperDishLNDevice's init_device() command."""
 
         def do(self) -> Tuple[ResultCode, str]:

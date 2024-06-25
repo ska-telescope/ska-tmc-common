@@ -56,6 +56,9 @@ Added
 
 Fixed
 -----
+[0.17.1]
+* Fixed change event for dish leaf node and dish device
+
 [0.17.0]
 *********
 * **BaseClasses** version updated to **1.0.0**

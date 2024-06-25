@@ -155,7 +155,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
 
         }
         """
-        command_id = f"{time.time()}_LoadDishCgf"
+        command_id = f"{time.time()}_LoadDishCfg"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault(
