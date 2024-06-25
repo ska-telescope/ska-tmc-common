@@ -65,6 +65,7 @@ jsonschema = "*"
 jsonschema-specifications = "*"
 referencing = "*"
 rpds-py = "*"
+ska-control-model="*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
