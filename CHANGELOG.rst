@@ -7,6 +7,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.16.9]
+***********
+* Utilised ska-telmodel v.1.17.0 which includes OET-TMC low 
+  Assignresources and low Configure schema.
+
 [0.16.4]
 ***********
 * Added SdpQueueConnectorDeviceInfo class to hold SDP queue connector device information.
