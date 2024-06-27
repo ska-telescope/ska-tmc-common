@@ -349,7 +349,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "fire"
-version = "0.4.0"
+version = "0.5.0"
 description = "A library for automatically generating command line interfaces."
 category = "main"
 optional = false
@@ -1637,7 +1637,7 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "45f82c4ae77178afd7e7092c117d63b960b298406511a3ef8e6a3ee0d7682de0"
+content-hash = "7ebb489f40a16013bba99bb36fd87c94efd4ba8ed84d5f2c5ed2cce2e4e4e7b5"
 
 [metadata.files]
 alabaster = [
@@ -1920,7 +1920,7 @@ execnet = [
     {file = "execnet-2.1.1.tar.gz", hash = "sha256:5189b52c6121c24feae288166ab41b32549c7e2348652736540b9e6e7d4e72e3"},
 ]
 fire = [
-    {file = "fire-0.4.0.tar.gz", hash = "sha256:c5e2b8763699d1142393a46d0e3e790c5eb2f0706082df8f647878842c216a62"},
+    {file = "fire-0.5.0.tar.gz", hash = "sha256:a6b0d49e98c8963910021f92bba66f65ab440da2982b78eb1bbf95a0a34aacc6"},
 ]
 flake8 = [
     {file = "flake8-5.0.4-py2.py3-none-any.whl", hash = "sha256:7a1cf6b73744f5806ab95e526f6f0d8c01c66d7bbe349562d22dfca20610b248"},
