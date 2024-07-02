@@ -7,6 +7,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.17.2]
+*********
+* Utilised ska-telmodel v.1.17.0 which includes OET-TMC low 
+  Assignresources and low Configure schema with base class v.1.0.0 updates.
+
 [0.16.9]
 ***********
 * Utilised ska-telmodel v.1.17.0 which includes OET-TMC low 
