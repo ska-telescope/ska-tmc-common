@@ -93,5 +93,6 @@ def test_command_with_transitional_obsstate(task_callback):
     time.sleep(0.5)
     cm.state = State.CHANGED
     task_callback.assert_against_call(
-        status=TaskStatus.COMPLETED, result=ResultCode.OK
+        status=TaskStatus.COMPLETED,
+        result=(ResultCode.OK, "Command Completed"),
     )

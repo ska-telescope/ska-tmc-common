@@ -24,9 +24,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
-        self._raise_exception = False
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -69,6 +67,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self.logger.info(
             "Pushing change event for CspSubarrayObsState: %s", obs_state
         )
+        self._obs_state = obs_state
         self.push_change_event("cspSubarrayObsState", obs_state)
 
 

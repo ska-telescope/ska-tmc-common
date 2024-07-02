@@ -34,7 +34,6 @@ COMMANDS_WITHOUT_INPUT = [
     "SetStandbyLPMode",
     "SetOperateMode",
     "SetStowMode",
-    "AbortCommands",
     "EndScan",
 ]
 COMMANDS_WITH_INPUT = [
@@ -50,7 +49,7 @@ COMMANDS_WITH_INPUT = [
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    dish_device.SetDelay('{"Configure": 3}')
+    dish_device.SetDelayInfo('{"Configure": 3}')
     command_delay_info = json.loads(dish_device.commandDelayInfo)
     assert command_delay_info["Configure"] == 3
 
@@ -88,39 +87,37 @@ def test_program_track_table(tango_context):
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout(command)
+    result, command_id = dish_device.command_inout(command)
     command_call_info = dish_device.commandCallInfo
     assert command_call_info[0][0] == command
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    assert result[0] == ResultCode.QUEUED
+    assert command in command_id[0]
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITH_INPUT)
 def test_dish_commands_with_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout(command, True)
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = dish_device.command_inout(command, True)
+    assert result[0] == ResultCode.QUEUED
+    assert command in command_id[0]
 
 
 def test_dish_commands_scan(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout("Scan", "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = dish_device.command_inout("Scan", "")
+    assert result[0] == ResultCode.QUEUED
+    assert "Scan" in command_id[0]
 
 
 def test_scan_command_without_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout("Scan", "")
+    result, command_id = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command completely."
-    )
+    assert "Scan" in command_id[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -129,11 +126,9 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout(command_to_check)
+    result, command_id = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command completely."
-    )
+    assert command_to_check in command_id[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -142,20 +137,18 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, message = dish_device.command_inout(command_to_check, True)
+    result, command_id = dish_device.command_inout(command_to_check, True)
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command completely."
-    )
+    assert command_to_check in command_id[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
 def test_Abort_commands(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
-    result, message = dish_device.command_inout("AbortCommands")
+    result, command_id = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    assert "AbortCommands" in command_id[0]
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS)

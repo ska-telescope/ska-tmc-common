@@ -3,7 +3,7 @@ import json
 import pytest
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
-from tango import DevFailed
+from tango import DevFailed, EventType
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import SDP_LEAF_NODE_DEVICE, wait_for_obstate
@@ -26,12 +26,12 @@ commands_without_argin = [
 def test_leaf_node_command_with_argument(tango_context, command):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
-    result, message = subarray_leaf_device.command_inout(command, "")
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = subarray_leaf_device.command_inout(command, "")
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
-def test_obs_state_transition(tango_context):
+def test_set_obs_state_transition(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
     subarray_device.AddTransition('[["CONFIGURING", 0.1]]')
@@ -83,9 +83,9 @@ def test_clear_commandCallInfo(tango_context):
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
-    result, message = subarray_leaf_device.command_inout(command)
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = subarray_leaf_device.command_inout(command)
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_assign_resources_failed_result(tango_context):
@@ -100,10 +100,98 @@ def test_assign_resources_failed_result(tango_context):
         "result": ResultCode.FAILED,
     }
     subarray_leaf_device.SetDefective(json.dumps(defect))
-    result, message = subarray_leaf_device.AssignResources("")
+    result, command_id = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert (
-        message[0] == "Device is defective, cannot process command.completely."
+    assert "AssignResources" in command_id[0]
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_assign_resources_long_running_exception(
+    tango_context, group_callback
+):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.LONG_RUNNING_EXCEPTION,
+        "error_message": "Exception occurred",
+        "result": ResultCode.FAILED,
+    }
+    subarray_leaf_device.SetDefective(json.dumps(defect))
+    subarray_leaf_device.subscribe_event(
+        "longRunningCommandResult",
+        EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = subarray_leaf_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert "AssignResources" in command_id[0]
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (command_id[0], json.dumps((ResultCode.FAILED, "Exception occurred"))),
+        lookahead=3,
+    )
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_assign_resources_command_not_allowed_after_queuing(
+    tango_context, group_callback
+):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED_AFTER_QUEUING,
+    }
+    subarray_leaf_device.SetDefective(json.dumps(defect))
+    subarray_leaf_device.subscribe_event(
+        "longRunningCommandResult",
+        EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = subarray_leaf_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert "AssignResources" in command_id[0]
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (
+            command_id[0],
+            json.dumps((ResultCode.NOT_ALLOWED, "Command is not allowed")),
+        ),
+        lookahead=3,
+    )
+    subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_assign_resources_command_not_allowed_exception_after_queuing(
+    tango_context, group_callback
+):
+    dev_factory = DevFactory()
+    subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING,
+        "error_message": "Exception occurred",
+    }
+    subarray_leaf_device.SetDefective(json.dumps(defect))
+    subarray_leaf_device.subscribe_event(
+        "longRunningCommandResult",
+        EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = subarray_leaf_device.AssignResources("")
+    assert result[0] == ResultCode.QUEUED
+    assert "AssignResources" in command_id[0]
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (
+            command_id[0],
+            json.dumps(
+                (
+                    ResultCode.REJECTED,
+                    "Exception from 'is_cmd_allowed' method: "
+                    + "Exception occurred",
+                )
+            ),
+        ),
+        lookahead=3,
     )
     subarray_leaf_device.SetDefective(json.dumps({"enabled": False}))
 
@@ -131,7 +219,7 @@ def test_assign_resources_command_not_allowed(tango_context):
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
     defect = {
         "enabled": True,
-        "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+        "fault_type": FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING,
         "error_message": "Device is stuck in Resourcing state",
         "result": ResultCode.FAILED,
     }

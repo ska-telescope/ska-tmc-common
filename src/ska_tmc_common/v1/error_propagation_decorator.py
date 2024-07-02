@@ -28,7 +28,9 @@ def process_result_and_start_tracker(
     :rtype: None
     """
     if result == ResultCode.FAILED:
-        class_instance.update_task_status(result=result, message=message)
+        class_instance.update_task_status(
+            result=(result, message), exception=message
+        )
 
         # Check if Timeout is considered for the particular command, default:
         # True
