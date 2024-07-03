@@ -2501,13 +2501,8 @@ ska-tango-testing = [
     {file = "ska_tango_testing-0.6.0.tar.gz", hash = "sha256:fdc1d807dc1cad2ddc1d754cb5ee9debe846db667de12e412474388c3fff97d6"},
 ]
 ska-telmodel = [
-<<<<<<< HEAD
     {file = "ska_telmodel-1.17.1-py3-none-any.whl", hash = "sha256:6ce98c91ff52d05e7438e43782338f3ac7c62f4ce2f193682f37d25683bcd2c3"},
     {file = "ska_telmodel-1.17.1.tar.gz", hash = "sha256:6c68ea6cd46d48b2b5fdef9afb4d0109332fbad85550e075fe14e13b711df265"},
-=======
-    {file = "ska_telmodel-1.17.0-py3-none-any.whl", hash = "sha256:396c14b6397f70358e50c0aabb53df12e9179682c62b1d9d1675a0b724f6d549"},
-    {file = "ska_telmodel-1.17.0.tar.gz", hash = "sha256:507d439682925b280fee74481f91cb616ee93233279cfd37e111fd591b0e3016"},
->>>>>>> e0ab17f2955da4f03e33c2f34a082899266c7617
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
