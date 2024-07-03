@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.3]
+* Fixed helper mccs controller device timeout for allocate command.
+
 [0.17.1]
 * Fixed change event for dish leaf node and dish device
 
