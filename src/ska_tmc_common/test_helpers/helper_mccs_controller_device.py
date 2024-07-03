@@ -105,9 +105,6 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Allocate"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
-            fault_type = self.defective_params.get("fault_type")
-            if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-                return [ResultCode.QUEUED], [command_id]
             return self.induce_fault("Allocate", command_id)
 
         argin_json = json.loads(argin)
@@ -239,6 +236,36 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("RestartSubarray command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
+
+    def induce_fault(
+        self, command_name: str, command_id: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Induces a fault into the device based on the given parameters.
+
+        :param command_name: The name of the command for which a fault is
+            being induced.
+        :type command_name: str
+        :param command_id: The command id over which the LRCR event is to be
+            pushed.
+        :type command_id: str
+
+        Explanation:
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
+        Overrided to fix time out issue on MCCS Master Leaf node.
+
+        - STUCK_IN_INTERMEDIATE_STATE:
+            This fault type makes it such that the device is stuck in the given
+            Observation state.
+
+        """
+
+        fault_type = self.defective_params.get("fault_type")
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            return [ResultCode.QUEUED], [command_id]
+
+        return super().induce_fault(command_name, command_id)
 
 
 def main(args=None, **kwargs):
