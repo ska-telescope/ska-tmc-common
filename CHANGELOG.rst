@@ -7,6 +7,17 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.17.2]
+*********
+* Updated ska-telmodel v.1.17.0 which includes OET-TMC low
+  Assignresources and low Configure schema
+* Included Base class v.1.0.0 updates.
+
+[0.16.9]
+***********
+* Utilised ska-telmodel v.1.17.0 which includes OET-TMC low
+  Assignresources and low Configure schema.
+
 [0.16.4]
 ***********
 * Added SdpQueueConnectorDeviceInfo class to hold SDP queue connector device information.
@@ -56,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.3]
+* TelModel version now can be anywhere between **1.17.1** and **2.0.0**
+
 [0.17.1]
 * Fixed change event for dish leaf node and dish device
 
