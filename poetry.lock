@@ -73,7 +73,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "astropy-iers-data"
-version = "0.2024.6.24.0.31.11"
+version = "0.2024.7.1.0.34.3"
 description = "IERS Earth Rotation and Leap Second tables for the astropy core package"
 category = "main"
 optional = false
@@ -839,7 +839,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "pylint"
-version = "3.2.4"
+version = "3.2.5"
 description = "python code static checker"
 category = "dev"
 optional = false
@@ -1264,20 +1264,22 @@ version = "1.17.1"
 description = "SKA telescope model library"
 category = "main"
 optional = false
-python-versions = ">=3.10.0,<4.0.0"
+python-versions = "^3.10.0"
+develop = false
 
 [package.dependencies]
-appdirs = ">=1.4.4,<2.0.0"
-docopt = ">=0.6.2,<0.7.0"
-python-gitlab = ">=3.8.0,<4.0.0"
-pyyaml = ">=6.0,<7.0"
-schema = ">=0.7.5,<0.8.0"
-toolz = ">=0.12.0,<0.13.0"
+appdirs = "^1.4.4"
+docopt = "^0.6.2"
+python-gitlab = "^3.8.0"
+pyyaml = "^6.0"
+schema = "^0.7.5"
+toolz = "^0.12.0"
 
 [package.source]
-type = "legacy"
-url = "https://artefact.skao.int/repository/pypi-internal/simple"
-reference = 'ska-nexus'
+type = "git"
+url = "https://gitlab.com/ska-telescope/ska-telmodel.git"
+reference = "skb-355"
+resolved_reference = "57c194c7aa785dbc4bb85ea2f463aa89432eebae"
 
 [[package]]
 name = "snowballstemmer"
@@ -1637,7 +1639,7 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "7ebb489f40a16013bba99bb36fd87c94efd4ba8ed84d5f2c5ed2cce2e4e4e7b5"
+content-hash = "b679e9a06a3d29669977cf6d5da962dd60a2169838c674f73835c1b4bef34d2c"
 
 [metadata.files]
 alabaster = [
@@ -1677,8 +1679,8 @@ astropy = [
     {file = "astropy-6.1.1.tar.gz", hash = "sha256:e5c6f45d911c30acb8d556c7f8ed994aec71b108e61eee5067f00af1e4e36138"},
 ]
 astropy-iers-data = [
-    {file = "astropy_iers_data-0.2024.6.24.0.31.11-py3-none-any.whl", hash = "sha256:0b3799034b0b76af8f915ef822d38cc90e00e235db0cb688018e4f567a8babb9"},
-    {file = "astropy_iers_data-0.2024.6.24.0.31.11.tar.gz", hash = "sha256:ef0197b7b84dea248031e553687ea1dc58d7ac9473043693b2d33b46d81a9a12"},
+    {file = "astropy_iers_data-0.2024.7.1.0.34.3-py3-none-any.whl", hash = "sha256:195053a2b198f964ad89440b419fa4e506d9db6a8e1cc18a387bc9c3b480a09e"},
+    {file = "astropy_iers_data-0.2024.7.1.0.34.3.tar.gz", hash = "sha256:0e3b47ae2ed44a03c3bea40a2b73bfce1858cf4059b4612c677a5e4a90f86003"},
 ]
 attrs = [
     {file = "attrs-23.2.0-py3-none-any.whl", hash = "sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1"},
@@ -2162,8 +2164,8 @@ pygments = [
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
 ]
 pylint = [
-    {file = "pylint-3.2.4-py3-none-any.whl", hash = "sha256:43b8ffdf1578e4e4439fa1f6ace402281f5dd61999192280fa12fe411bef2999"},
-    {file = "pylint-3.2.4.tar.gz", hash = "sha256:5753d27e49a658b12a48c2883452751a2ecfc7f38594e0980beb03a6e77e6f86"},
+    {file = "pylint-3.2.5-py3-none-any.whl", hash = "sha256:32cd6c042b5004b8e857d727708720c54a676d1e22917cf1a2df9b4d4868abd6"},
+    {file = "pylint-3.2.5.tar.gz", hash = "sha256:e9b7171e242dcc6ebd0aaa7540481d1a72860748a0a7816b8fe6cf6c80a6fe7e"},
 ]
 pylint-junit = [
     {file = "pylint_junit-0.3.4-py2.py3-none-any.whl", hash = "sha256:006f8e793a1b64f1e0c8a29c6ee531b8af971deddafbc605c3076270f36c88f0"},
@@ -2462,10 +2464,7 @@ ska-tango-testing = [
     {file = "ska_tango_testing-0.6.0-py3-none-any.whl", hash = "sha256:3a96b090998b445df013cba33721d110298a946b277a7de6fe312f3da1219504"},
     {file = "ska_tango_testing-0.6.0.tar.gz", hash = "sha256:fdc1d807dc1cad2ddc1d754cb5ee9debe846db667de12e412474388c3fff97d6"},
 ]
-ska-telmodel = [
-    {file = "ska_telmodel-1.17.1-py3-none-any.whl", hash = "sha256:6ce98c91ff52d05e7438e43782338f3ac7c62f4ce2f193682f37d25683bcd2c3"},
-    {file = "ska_telmodel-1.17.1.tar.gz", hash = "sha256:6c68ea6cd46d48b2b5fdef9afb4d0109332fbad85550e075fe14e13b711df265"},
-]
+ska-telmodel = []
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
     {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
