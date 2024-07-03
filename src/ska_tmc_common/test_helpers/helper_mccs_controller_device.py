@@ -9,12 +9,19 @@ from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango.server import command
+from tango import DevState
+from tango.server import command, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.test_helpers.constants import (
+    ABORT,
+    ALLOCATE,
+    CONFIGURE,
+    END,
+    RELEASE,
+    RESTART,
+)
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-
-from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
 
 
 # pylint: disable=attribute-defined-outside-init,invalid-name
@@ -24,6 +31,7 @@ class HelperMCCSController(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
+        self.set_state(DevState.UNKNOWN)
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -97,6 +105,9 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Allocate"
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
+            fault_type = self.defective_params.get("fault_type")
+            if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+                return [ResultCode.QUEUED], [command_id]
             return self.induce_fault("Allocate", command_id)
 
         argin_json = json.loads(argin)
@@ -228,3 +239,19 @@ class HelperMCCSController(HelperBaseDevice):
         thread.start()
         self.logger.info("RestartSubarray command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperMccsController Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperMCCSController,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()
