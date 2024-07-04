@@ -9,13 +9,13 @@ Added
 -----
 [0.17.2]
 *********
-* Updated ska-telmodel v.1.17.0 which includes OET-TMC low 
-  Assignresources and low Configure schema 
+* Updated ska-telmodel v.1.17.0 which includes OET-TMC low
+  Assignresources and low Configure schema
 * Included Base class v.1.0.0 updates.
 
 [0.16.9]
 ***********
-* Utilised ska-telmodel v.1.17.0 which includes OET-TMC low 
+* Utilised ska-telmodel v.1.17.0 which includes OET-TMC low
   Assignresources and low Configure schema.
 
 [0.16.4]
@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.4]
+* TelModel version now can be anywhere between **1.17.1** and **2.0.0**
+
 [0.17.3]
 * Fixed helper mccs controller device timeout for allocate command.
 
