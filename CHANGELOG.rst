@@ -67,8 +67,11 @@ Added
 
 Fixed
 -----
-[0.17.3]
+[0.17.4]
 * TelModel version now can be anywhere between **1.17.1** and **2.0.0**
+
+[0.17.3]
+* Fixed helper mccs controller device timeout for allocate command.
 
 [0.17.1]
 * Fixed change event for dish leaf node and dish device
