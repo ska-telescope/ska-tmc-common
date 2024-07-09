@@ -1,14 +1,18 @@
 """
 This module implements the Helper Mccs subarray device
 """
-import json
+import threading
+import time
 
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=unused-argument
-import time
+from typing import List, Tuple
 
+from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
+from tango.server import command, run
 
+from ska_tmc_common.test_helpers.constants import RELEASE_RESOURCES
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
@@ -19,28 +23,64 @@ class HelperMccsSubarrayDevice(HelperSubArrayDevice):
     A device exposing commands and attributes of the Mccs Subarray Device.
     """
 
-    def push_command_result(
-        self, result: ResultCode, command_name: str, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
-        :param result: The result code to be pushed as an event
-        :type: ResultCode
-        :param command_name: The command name for which event is being pushed
-        :type: str
-        :param exception: Exception message to be pushed as an event
-        :type: str
+    @command(
+        dtype_in="str",
+        doc_in="The input string in JSON format consists of receptorIDList.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
-        command_id = f"{time.time()}-{command_name}"
+        This method simulates ReleaseResources command on MCCS subarray device
+        :return: ResultCode and message
+        """
+        command_id = f"{time.time()}_ReleaseResources"
         self.logger.info(
-            "The command_id is %s and the ResultCode is %s", command_id, result
+            "Instructed simulator to invoke ReleaseResources command"
         )
-        if exception:
-            command_result = (
-                command_id,
-                json.dumps([ResultCode.FAILED, exception]),
-            )
-            self.logger.info("Sending Event %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps([result, ""]))
-        self.logger.info("Sending Event %s", command_result)
-        self.push_change_event("longRunningCommandResult", command_result)
+        self.logger.info(argin)
+        self.update_command_info(RELEASE_RESOURCES, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ReleaseResources", command_id)
+
+        self.update_device_obsstate(ObsState.RESOURCING, RELEASE_RESOURCES)
+        thread = threading.Timer(
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_RESOURCES],
+        )
+        thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, RELEASE_RESOURCES],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
+        self.logger.debug(
+            "ReleaseResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
+        )
+        return [ResultCode.QUEUED], [command_id]
+
+
+# ----------
+# Run server
+# ----------
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperMccsSubarrayDevice Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperMccsSubarrayDevice,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()

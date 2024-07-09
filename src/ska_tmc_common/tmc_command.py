@@ -31,7 +31,6 @@ from ska_tmc_common.enum import TimeoutState
 from ska_tmc_common.lrcr_callback import LRCRCallback
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
-from ska_tmc_common.tmc_component_manager import BaseTmcComponentManager
 
 
 class BaseTMCCommand:
@@ -41,7 +40,7 @@ class BaseTMCCommand:
 
     def __init__(
         self,
-        component_manager: BaseTmcComponentManager,
+        component_manager,
         logger: Logger,
         *args,
         **kwargs,
@@ -252,21 +251,31 @@ class BaseTMCCommand:
                     ):
                         self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
-                            result=ResultCode.FAILED,
-                            message="Timeout has occurred, command failed",
+                            result=(
+                                ResultCode.FAILED,
+                                "Timeout has occurred, command failed",
+                            ),
+                            exception="Timeout has occurred, command failed",
                         )
 
                     if self.check_device_state(
                         state_function, state_to_achieve, expected_state
                     ):
                         self.stop_tracker_thread(timeout_id)
-                        self.update_task_status(result=ResultCode.OK)
+                        self.update_task_status(
+                            result=(ResultCode.OK, "Command Completed")
+                        )
 
                     if self.check_command_exception(command_id, lrcr_callback):
                         self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
-                            result=ResultCode.FAILED,
-                            message=lrcr_callback.command_data[command_id][
+                            result=(
+                                ResultCode.FAILED,
+                                lrcr_callback.command_data[command_id][
+                                    "exception_message"
+                                ],
+                            ),
+                            exception=lrcr_callback.command_data[command_id][
                                 "exception_message"
                             ],
                         )
@@ -277,8 +286,11 @@ class BaseTMCCommand:
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
-                        result=ResultCode.FAILED,
-                        message=f"Thread error occurred: {thread_error}",
+                        result=(
+                            ResultCode.FAILED,
+                            f"Thread error occurred: {thread_error}",
+                        ),
+                        exception=f"Thread error occurred: {thread_error}",
                     )
 
                 except TimeoutError as timeout_error:
@@ -287,8 +299,11 @@ class BaseTMCCommand:
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
-                        result=ResultCode.FAILED,
-                        message=f"Timeout error occurred: {timeout_error}",
+                        result=(
+                            ResultCode.FAILED,
+                            f"Timeout error occurred: {timeout_error}",
+                        ),
+                        exception=f"Timeout error occurred: {timeout_error}",
                     )
                 except Exception as exp:
                     self.logger.error(
@@ -296,8 +311,12 @@ class BaseTMCCommand:
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
-                        result=ResultCode.FAILED,
-                        message="Exception occurred in track transitions "
+                        result=(
+                            ResultCode.FAILED,
+                            "Exception occurred in track transitions "
+                            + f"thread: {exp}",
+                        ),
+                        exception="Exception occurred in track transitions "
                         + f"thread: {exp}",
                     )
                 # pylint: enable=broad-exception-caught
@@ -401,7 +420,7 @@ class BaseTMCCommand:
             return True
         return False
 
-    def stop_tracker_thread(self, timeout_id: str) -> None:
+    def stop_tracker_thread(self, timeout_id: Optional[str]) -> None:
         """External stop method for stopping the timer thread as well as the
         tracker thread.
         :param timeout_id: Timeout id

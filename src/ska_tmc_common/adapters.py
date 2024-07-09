@@ -89,6 +89,13 @@ class BaseAdapter:
         """
         return self.proxy.Disable()
 
+    def State(self) -> tango.DevState:
+        """
+        Gives the current device state.
+        :return: Device state.
+        """
+        return self.proxy.State()
+
 
 class CspMasterLeafNodeAdapter(BaseAdapter):
     """

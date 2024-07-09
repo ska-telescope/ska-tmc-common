@@ -66,56 +66,37 @@ def test_mccs_controller_allocate_command(tango_context):
 def test_mccs_controller_commands_without_argument(tango_context, command):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    result, message = mccs_controller_device.command_inout(command)
-    assert result[0] == ResultCode.OK
-    assert message[0] == ""
+    result, command_id = mccs_controller_device.command_inout(command)
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
 
 
 def test_mccs_controller_allocate_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, message = mccs_controller_device.command_inout(
+    result, command_id = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Default exception."
+    assert "Allocate" in command_id[0]
 
 
 def test_mccs_controller_release_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, message = mccs_controller_device.command_inout(
+    result, command_id = mccs_controller_device.command_inout(
         "Release", release_argin_string
     )
     assert result[0] == ResultCode.FAILED
-    assert message[0] == "Default exception."
-
-
-def test_mccs_controller_allocate_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetRaiseException(True)
-    result, message = mccs_controller_device.command_inout(
-        "Allocate", allocate_argin_string
-    )
-    assert result[0] == ResultCode.QUEUED
-
-
-def test_mccs_controller_command_raise_exception(tango_context):
-    dev_factory = DevFactory()
-    mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
-    mccs_controller_device.SetRaiseException(True)
-    result, message = mccs_controller_device.command_inout(
-        "Release", release_argin_string
-    )
-    assert result[0] == ResultCode.QUEUED
+    assert "Release" in command_id[0]
 
 
 def test_allocate_stuck_in_intermediate_state(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
     defect = {
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
@@ -123,11 +104,20 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
         "error_message": "Device is stuck in Resourcing state",
         "intermediate_state": ObsState.RESOURCING,
     }
-    mccs_controller_device.SetDefective(json.dumps(defect))
+    mccs_subarray_device.SetDefective(json.dumps(defect))
     result, _ = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
     assert result[0] == ResultCode.QUEUED
+    with pytest.raises(Exception) as exception:
+        wait_for_obstate(mccs_subarray_device, ObsState.IDLE)
+
+    message_to_assert = (
+        f"Timeout occured while waiting for {MCCS_SUBARRAY_DEVICE} ObsState to"
+        + f" transition to {ObsState.IDLE}. Current obsState is "
+        + f"{ObsState.RESOURCING}"
+    )
+    assert message_to_assert == str(exception.value)
     mccs_controller_device.SetDefective(json.dumps({"enabled": False}))
 
 
