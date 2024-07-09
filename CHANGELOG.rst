@@ -7,6 +7,12 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+[0.17.2]
+*********
+* Updated ska-telmodel v.1.17.0 which includes OET-TMC low
+  Assignresources and low Configure schema
+* Included Base class v.1.0.0 updates.
+
 [0.16.9]
 ***********
 * Utilised ska-telmodel v.1.17.0 which includes OET-TMC low
@@ -61,6 +67,38 @@ Added
 
 Fixed
 -----
+[0.17.5]
+***********
+* Utilised ska-telmodel v.1.181. which includes fix for jones key in low configure schema
+* Includes base classes upgrade changes.
+
+[0.16.10]
+***********
+* Utilised latest ska-telmodel which includes fix for jones key in low configure schema
+
+[0.17.4]
+* TelModel version now can be anywhere between **1.17.1** and **2.0.0**
+
+[0.17.3]
+* Fixed helper mccs controller device timeout for allocate command.
+
+[0.17.1]
+* Fixed change event for dish leaf node and dish device
+
+[0.17.0]
+*********
+* **BaseClasses** version updated to **1.0.0**
+* **PyTango** version updated to **9.5.0**
+* Helper Devices updated to send the correct format of **LongRunningCommandResult** events - **(unique_id, (ResultCode.OK, message))**
+* The result sent through **update_task_status** method from **track_and_update_command_status** thread is now a **Tuple(ResultCode, Message)**
+* **SetDelay** command is renamed to **SetDelayInfo** for HelperSubarrayDevice and HelperDishDevice
+* SetException is removed from Helper Devices
+* **Decorators** are updated to support the new **update_task_status** calls.
+* **HelperCspSubarrayDevice** is removed.
+* **COMMAND_NOT_ALLOWED** fault type is changed to **COMMAND_NOT_ALLOWED_BEFORE_QUEUING**
+* New fault types **COMMAND_NOT_ALLOWED_AFTER_QUEUING** and **COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING** introduced
+* **max_workers** parameter removed from component manager
+
 [0.16.8]
 *********
 * Update in the way the helper dish device sends the resultcode and message
