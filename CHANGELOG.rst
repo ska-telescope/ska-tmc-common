@@ -69,7 +69,7 @@ Fixed
 -----
 [0.17.5]
 ***********
-* Utilised ska-telmodel v.1.181. which includes fix for jones key in low configure schema
+* Utilised ska-telmodel v.1.18.1. which includes fix for jones key in low configure schema
 * Includes base classes upgrade changes.
 
 [0.16.10]
