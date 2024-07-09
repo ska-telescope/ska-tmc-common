@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.5]
+* Added delay for LongRunningCommandResult attribute in mccs master leaf node.
+
 [0.17.4]
 * TelModel version now can be anywhere between **1.17.1** and **2.0.0**
 
