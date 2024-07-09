@@ -67,8 +67,17 @@ Added
 
 Fixed
 -----
-[0.17.5]
+[0.17.6]
 * Added delay for LongRunningCommandResult attribute in mccs master leaf node.
+  
+[0.17.5]
+***********
+* Utilised ska-telmodel v.1.18.1. which includes fix for jones key in low configure schema
+* Includes base classes upgrade changes.
+
+[0.16.10]
+***********
+* Utilised latest ska-telmodel which includes fix for jones key in low configure schema
 
 [0.17.4]
 * TelModel version now can be anywhere between **1.17.1** and **2.0.0**
