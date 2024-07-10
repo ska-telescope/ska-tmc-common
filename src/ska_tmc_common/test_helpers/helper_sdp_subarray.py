@@ -45,6 +45,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         super().init_device()
         self._state = DevState.OFF
         # pylint: disable=line-too-long
+        self.timers = []
         self._receive_addresses = json.dumps(
             {
                 "science_A": {
@@ -215,6 +216,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
+        self.timer.append(thread)
         thread.start()
 
     @command()
@@ -229,6 +231,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.IDLE, RELEASE_RESOURCES],
         )
+        self.timer.append(thread)
         thread.start()
         self.logger.debug(
             "ReleaseResources command invoked, obsState will transition to"
@@ -248,6 +251,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
+        self.timer.append(thread)
         thread.start()
 
     @command(
@@ -319,6 +323,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate,
                 args=[ObsState.READY, CONFIGURE],
             )
+            self.timer.append(thread)
             thread.start()
 
     @command(
@@ -362,6 +367,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate,
                 args=[ObsState.IDLE, END],
             )
+            self.timer.append(thread)
             thread.start()
             self.logger.debug(
                 "End command invoked, obsState will transition to IDLE,"
@@ -375,11 +381,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(ABORT)
         self._obs_state = ObsState.ABORTING
         self.update_device_obsstate(self._obs_state, ABORT)
+        for timer in self.timers:
+            timer.cancel()
         thread = threading.Timer(
             self._command_delay_info[ABORT],
             self.update_device_obsstate,
             args=[ObsState.ABORTED, ABORT],
         )
+
         thread.start()
 
     @command()
