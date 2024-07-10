@@ -184,7 +184,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
         eb_id = input_json["execution_block"]["eb_id"]
-        invalid_eb_id = "eb-xxx"
+        invalid_eb_id = ("eb-xxx", "eb-test-000")
         if eb_id.startswith(invalid_eb_id):
             self.logger.info("eb_id is invalid")
 
