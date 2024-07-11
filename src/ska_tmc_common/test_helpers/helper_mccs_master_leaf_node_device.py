@@ -2,6 +2,7 @@
 This module implements the Helper MCCS master leaf node devices for testing
 an integrated TMC
 """
+import threading
 import time
 from typing import List, Tuple
 
@@ -76,9 +77,15 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         command_id = f"{time.time()}-AssignResources"
         if self.defective_params["enabled"]:
             return self.induce_fault("AssignResources", command_id)
-        self.push_command_result(
-            ResultCode.OK, "AssignResources", command_id=command_id
+
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "AssignResources"],
+            kwargs={"command_id": command_id},
         )
+        thread.start()
+
         self.logger.info(
             "AssignResourses command complete with argin: %s", argin
         )
@@ -124,9 +131,13 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         command_id = f"{time.time()}-ReleaseAllResources"
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseAllResources", command_id)
-        self.push_command_result(
-            ResultCode.OK, "ReleaseAllResources", command_id=command_id
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "ReleaseAllResources"],
+            kwargs={"command_id": command_id},
         )
+        thread.start()
         self.logger.info(
             "ReleaseAllResources command complete with argin: %s", argin
         )

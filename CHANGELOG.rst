@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.6]
+* Added delay for LongRunningCommandResult attribute in mccs master leaf node.
+  
 [0.17.5]
 ***********
 * Utilised ska-telmodel v.1.18.1. which includes fix for jones key in low configure schema

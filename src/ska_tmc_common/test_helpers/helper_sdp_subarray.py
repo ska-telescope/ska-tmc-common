@@ -45,6 +45,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         super().init_device()
         self._state = DevState.OFF
         # pylint: disable=line-too-long
+        self.timers = []
         self._receive_addresses = json.dumps(
             {
                 "science_A": {
@@ -184,7 +185,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
         eb_id = input_json["execution_block"]["eb_id"]
-        invalid_eb_id = "eb-xxx"
+        invalid_eb_id = ("eb-xxx", "eb-test-000")
         if eb_id.startswith(invalid_eb_id):
             self.logger.info("eb_id is invalid")
 
@@ -215,6 +216,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
+        self.timers.append(thread)
         thread.start()
 
     @command()
@@ -229,6 +231,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.IDLE, RELEASE_RESOURCES],
         )
+        self.timers.append(thread)
         thread.start()
         self.logger.debug(
             "ReleaseResources command invoked, obsState will transition to"
@@ -248,6 +251,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
+        self.timers.append(thread)
         thread.start()
 
     @command(
@@ -319,6 +323,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate,
                 args=[ObsState.READY, CONFIGURE],
             )
+            self.timers.append(thread)
             thread.start()
 
     @command(
@@ -362,6 +367,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate,
                 args=[ObsState.IDLE, END],
             )
+            self.timers.append(thread)
             thread.start()
             self.logger.debug(
                 "End command invoked, obsState will transition to IDLE,"
@@ -375,11 +381,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(ABORT)
         self._obs_state = ObsState.ABORTING
         self.update_device_obsstate(self._obs_state, ABORT)
+        for timer in self.timers:
+            timer.cancel()
         thread = threading.Timer(
             self._command_delay_info[ABORT],
             self.update_device_obsstate,
             args=[ObsState.ABORTED, ABORT],
         )
+
         thread.start()
 
     @command()
