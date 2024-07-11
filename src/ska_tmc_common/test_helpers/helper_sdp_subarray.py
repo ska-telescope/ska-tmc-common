@@ -216,7 +216,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
-        self.timer.append(thread)
+        self.timers.append(thread)
         thread.start()
 
     @command()
@@ -231,7 +231,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.IDLE, RELEASE_RESOURCES],
         )
-        self.timer.append(thread)
+        self.timers.append(thread)
         thread.start()
         self.logger.debug(
             "ReleaseResources command invoked, obsState will transition to"
@@ -251,7 +251,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self.update_device_obsstate,
             args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
         )
-        self.timer.append(thread)
+        self.timers.append(thread)
         thread.start()
 
     @command(
@@ -323,7 +323,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate,
                 args=[ObsState.READY, CONFIGURE],
             )
-            self.timer.append(thread)
+            self.timers.append(thread)
             thread.start()
 
     @command(
@@ -367,7 +367,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate,
                 args=[ObsState.IDLE, END],
             )
-            self.timer.append(thread)
+            self.timers.append(thread)
             thread.start()
             self.logger.debug(
                 "End command invoked, obsState will transition to IDLE,"
