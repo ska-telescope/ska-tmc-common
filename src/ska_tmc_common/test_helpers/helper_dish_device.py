@@ -9,7 +9,6 @@ from datetime import datetime
 from typing import List, Tuple, Union
 
 import numpy as np
-import tango
 from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
