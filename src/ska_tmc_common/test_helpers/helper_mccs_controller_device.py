@@ -7,17 +7,21 @@ import threading
 import time
 from typing import List, Tuple
 
-# pylint: disable=unused-argument
-import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import EnsureOmniThread
-from tango.server import command
+from tango import DevState
+from tango.server import command, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.test_helpers.constants import (
+    ABORT,
+    ALLOCATE,
+    CONFIGURE,
+    END,
+    RELEASE,
+    RESTART,
+)
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-
-from .constants import ABORT, ALLOCATE, CONFIGURE, END, RELEASE, RESTART
 
 
 # pylint: disable=attribute-defined-outside-init,invalid-name
@@ -27,8 +31,7 @@ class HelperMCCSController(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
-        self.dev_name = self.get_name()
-        self._raise_exception = False
+        self.set_state(DevState.UNKNOWN)
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -50,87 +53,6 @@ class HelperMCCSController(HelperBaseDevice):
             super().do()
             return (ResultCode.OK, "")
 
-    def induce_fault(
-        self,
-        command_name: str,
-        command_id: str,
-    ) -> Tuple[List[ResultCode], List[str]]:
-        """
-        Induces a fault into the device based on the given parameters.
-
-        :param command_name: The name of the
-         command for which a fault is being induced.
-        :type command_name: str
-        :param command_id: command id
-        :type command_id: str
-        :return: ResultCode and command id
-        :rtype: Tuple[List[ResultCode], List[str]]
-
-        Example:
-        defective = json.dumps(
-        {
-        "enabled": False,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Default exception.",
-        "result": ResultCode.FAILED,
-        }
-        )
-        defective_params = json.loads(defective)
-
-        Detailed Explanation:
-        This method simulates inducing various types of faults into a device
-        to test its robustness and error-handling capabilities.
-
-        - FAILED_RESULT:
-          A fault type that triggers a failed result code
-          for the command. The device will return a result code of 'FAILED'
-          along with a custom error message, indicating that
-          the command execution has failed.
-
-        - LONG_RUNNING_EXCEPTION:
-          A fault type that simulates a command getting stuck in an
-          intermediate state for an extended period.
-          This could simulate a situation where a command execution
-          hangs due to some internal processing issue.
-
-        - STUCK_IN_INTERMEDIATE_STATE:
-          This fault type represents a scenario where the
-          device gets stuck in an intermediate state between two
-          well-defined states. This can help test the device's state
-          recovery and error handling mechanisms.
-
-        - COMMAND_NOT_ALLOWED:
-          This fault type represents a situation where the
-          given command is not allowed to be executed due to some
-          authorization or permission issues. The device
-          should respond with an appropriate error code and message.
-
-          New method is explicitly introduced since MCCS Master Leaf Node
-          does not have Obs State.
-
-        :raises: None
-        """
-        fault_type = self.defective_params["fault_type"]
-        result = self.defective_params["result"]
-        fault_message = self.defective_params["error_message"]
-
-        if fault_type == FaultType.FAILED_RESULT:
-            return [result], [fault_message]
-
-        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[result, command_id, fault_message],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [command_id]
-
-        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            return [ResultCode.QUEUED], [command_id]
-
-        return [ResultCode.OK], [command_id]
-
     @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
@@ -145,45 +67,6 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         self.defective_params = input_dict
 
-    @command(
-        dtype_in=bool,
-        doc_in="Raise Exception",
-    )
-    def SetRaiseException(self, value: bool) -> None:
-        """Set Raise Exception"""
-        self.logger.info("Setting the raise exception value to : %s", value)
-        self._raise_exception = value
-
-    def wait_and_update_exception(self, command_id):
-        """Waits for 5 secs before pushing a longRunningCommandResult event."""
-        with EnsureOmniThread():
-            command_result = (
-                command_id,
-                json.dumps(
-                    [
-                        ResultCode.FAILED,
-                        f"Exception occured on device: {self.get_name()}",
-                    ]
-                ),
-            )
-            self.logger.info("exception will be raised as %s", command_result)
-            self.push_change_event("longRunningCommandResult", command_result)
-
-    def update_lrcr(
-        self, command_name: str = "", command_id: str = ""
-    ) -> None:
-        """Updates the longrunningcommandresult  after a delay."""
-        delay_value = 0
-        with tango.EnsureOmniThread():
-            if command_name in self._command_delay_info:
-                delay_value = self._command_delay_info[command_name]
-            time.sleep(delay_value)
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
-
-        self.push_command_result(ResultCode.OK, command_id)
-
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
@@ -196,7 +79,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -223,15 +106,6 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Allocate", command_id)
-        if self._raise_exception:
-            self.logger.info("exception thread")
-            thread = threading.Timer(
-                interval=self.exception_delay,
-                function=self.wait_and_update_exception,
-                args=[command_id],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [command_id]
 
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
@@ -241,7 +115,11 @@ class HelperMCCSController(HelperBaseDevice):
         mccs_subarray_proxy.AssignResources(argin)
 
         thread = threading.Thread(
-            target=self.update_lrcr, args=["Allocate", command_id]
+            target=self.push_command_result,
+            args=[ResultCode.OK, "Allocate"],
+            kwargs={
+                "command_id": command_id,
+            },
         )
         thread.start()
         self.logger.info("Allocate invoked on MCCS Controller")
@@ -259,7 +137,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -287,16 +165,6 @@ class HelperMCCSController(HelperBaseDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Release", command_id)
 
-        if self._raise_exception:
-            self.logger.info("exception thread")
-            thread = threading.Timer(
-                interval=self.exception_delay,
-                function=self.wait_and_update_exception,
-                args=[command_id],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [command_id]
-
         argin_json = json.loads(argin)
         subarray_id = int(argin_json["subarray_id"])
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{subarray_id:02}"
@@ -304,7 +172,11 @@ class HelperMCCSController(HelperBaseDevice):
         mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
         mccs_subarray_proxy.ReleaseResources(argin)
         thread = threading.Thread(
-            target=self.update_lrcr, args=["Release", command_id]
+            target=self.push_command_result,
+            args=[ResultCode.OK, "Release"],
+            kwargs={
+                "command_id": command_id,
+            },
         )
         thread.start()
         self.logger.info("Release command invoked on MCCS Controller")
@@ -321,7 +193,7 @@ class HelperMCCSController(HelperBaseDevice):
         if self.defective_params["enabled"]:
             if (
                 self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
             ):
                 self.logger.info(
                     "Device is defective, cannot process command."
@@ -349,55 +221,64 @@ class HelperMCCSController(HelperBaseDevice):
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("RestartSubarray", command_id)
 
-        if self._raise_exception:
-            self.logger.info("exception thread")
-            thread = threading.Timer(
-                interval=self.exception_delay,
-                function=self.wait_and_update_exception,
-                args=[command_id],
-            )
-            thread.start()
-            return [ResultCode.QUEUED], [command_id]
-
         mccs_subarray_device_name = "low-mccs/subarray/" + f"{argin:02}"
         dev_factory = DevFactory()
         mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
         mccs_subarray_proxy.Restart()
 
         thread = threading.Thread(
-            target=self.update_lrcr, args=["RestartSubarray", command_id]
+            target=self.push_command_result,
+            args=[ResultCode.OK, "RestartSubarray"],
+            kwargs={
+                "command_id": command_id,
+            },
         )
         thread.start()
         self.logger.info("RestartSubarray command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
-    # pylint: disable=arguments-renamed
-    def push_command_result(
-        self, result: ResultCode, command_id: str, exception: str = ""
-    ) -> None:
-        """Push long running command result event for given command.
+    def induce_fault(
+        self, command_name: str, command_id: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Induces a fault into the device based on the given parameters.
 
-        :params:
+        :param command_name: The name of the command for which a fault is
+            being induced.
+        :type command_name: str
+        :param command_id: The command id over which the LRCR event is to be
+            pushed.
+        :type command_id: str
 
-        result: The result code to be pushed as an event
-        dtype: ResultCode
+        Explanation:
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
+        Overrided to fix time out issue on MCCS Master Leaf node.
 
-        command_id: The command_id for which the event is being pushed
-        dtype: str
+        - STUCK_IN_INTERMEDIATE_STATE:
+            This fault type makes it such that the device is stuck in the given
+            Observation state.
 
-        exception: Exception message to be pushed as an event
-        dtype: str
         """
 
-        if exception:
-            command_result = (
-                command_id,
-                json.dumps([ResultCode.FAILED, exception]),
-            )
-            self.push_change_event("longRunningCommandResult", command_result)
-        command_result = (command_id, json.dumps([result, ""]))
+        fault_type = self.defective_params.get("fault_type")
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            return [ResultCode.QUEUED], [command_id]
 
-        self.push_change_event("longRunningCommandResult", command_result)
-        self.logger.info(
-            "command_result has been pushed as %s", command_result
-        )
+        return super().induce_fault(command_name, command_id)
+
+
+def main(args=None, **kwargs):
+    """
+    Runs the HelperMccsController Tango device.
+    :param args: Arguments internal to TANGO
+
+    :param kwargs: Arguments internal to TANGO
+
+    :return: integer. Exit code of the run method.
+    """
+    return run((HelperMCCSController,), args=args, **kwargs)
+
+
+if __name__ == "__main__":
+    main()

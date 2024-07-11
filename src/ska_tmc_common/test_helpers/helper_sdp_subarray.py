@@ -13,7 +13,9 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
-from ska_tmc_common import HelperSubArrayDevice
+from ska_tmc_common.test_helpers.helper_subarray_device import (
+    HelperSubArrayDevice,
+)
 
 from .constants import (
     ABORT,
@@ -41,10 +43,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     def init_device(self):
         super().init_device()
-        self._delay = 2
-        self._obs_state = ObsState.EMPTY
         self._state = DevState.OFF
         # pylint: disable=line-too-long
+        self.timers = []
         self._receive_addresses = json.dumps(
             {
                 "science_A": {
@@ -135,27 +136,21 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     @command()
     def On(self):
+        """
+        This method simulates On command on SDP Subarray
+        """
         self.update_command_info(ON, "")
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "On",
-            )
-        else:
-            self.set_state(DevState.ON)
-            self.push_change_event("State", self.dev_state())
-            self.push_command_result(ResultCode.OK, "On")
+        self.set_state(DevState.ON)
+        self.push_change_event("State", self.dev_state())
 
     @command()
     def Off(self):
+        """
+        This method simulates OFF command on SDP Subarray
+        """
         self.update_command_info(OFF, "")
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Off",
-            )
-        else:
-            self.set_state(DevState.OFF)
-            self.push_change_event("State", self.dev_state())
-            self.push_command_result(ResultCode.OK, "Off")
+        self.set_state(DevState.OFF)
+        self.push_change_event("State", self.dev_state())
 
     @command(
         dtype_in=("str"),
@@ -163,9 +158,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     )
     def AssignResources(self, argin):
         """
-        This method invokes AssignResources command on SdpSubarray
+        This method simulates AssignResources command on SdpSubarray
         device.
-        :return: None
         :raises throw_exception: when input json is wrong
         """
         initial_obstate = self._obs_state
@@ -191,7 +185,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         # if eb_id in JSON is invalid, SDP Subarray
         # remains in obsState=RESOURCING and raises exception
         eb_id = input_json["execution_block"]["eb_id"]
-        invalid_eb_id = "eb-xxx"
+        invalid_eb_id = ("eb-xxx", "eb-test-000")
         if eb_id.startswith(invalid_eb_id):
             self.logger.info("eb_id is invalid")
 
@@ -217,69 +211,48 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
-
-        # TODO: Keeping below condition for now as many repositories are
-        # using it. However this method should not be used for inducing fault
-        # on SDP Subarray. Need to remove it once all the instances in other
-        # repositories are updated
-        if self.defective_params["enabled"]:
-            return self.induce_fault(
-                "AssignResources",
-            )
-
         thread = threading.Timer(
             self._command_delay_info[ASSIGN_RESOURCES],
             self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
+        self.timers.append(thread)
         thread.start()
-        self.push_command_result(ResultCode.OK, "AssignResources")
-        return None
 
     @command()
     def ReleaseResources(self):
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_RESOURCES)
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseResources",
-            )
-        else:
-            self._obs_state = ObsState.RESOURCING
-            self.update_device_obsstate(self._obs_state, RELEASE_RESOURCES)
-            thread = threading.Timer(
-                self._command_delay_info[RELEASE_RESOURCES],
-                self.update_device_obsstate,
-                args=[ObsState.IDLE, RELEASE_RESOURCES],
-            )
-            thread.start()
-            self.logger.debug(
-                "ReleaseResources command invoked, obsState will transition to"
-                + "IDLE, current obsState is %s",
-                self._obs_state,
-            )
-            self.push_command_result(ResultCode.OK, "ReleaseResources")
+        self._obs_state = ObsState.RESOURCING
+        self.update_device_obsstate(self._obs_state, RELEASE_RESOURCES)
+        thread = threading.Timer(
+            self._command_delay_info[RELEASE_RESOURCES],
+            self.update_device_obsstate,
+            args=[ObsState.IDLE, RELEASE_RESOURCES],
+        )
+        self.timers.append(thread)
+        thread.start()
+        self.logger.debug(
+            "ReleaseResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
+        )
 
     @command()
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "ReleaseAllResources",
-            )
-        else:
-            self._obs_state = ObsState.RESOURCING
-            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
-            thread = threading.Timer(
-                self._command_delay_info[RELEASE_ALL_RESOURCES],
-                self.update_device_obsstate,
-                args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
-            )
-            thread.start()
-            self.push_command_result(ResultCode.OK, "ReleaseAllResources")
+        self._obs_state = ObsState.RESOURCING
+        self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
+        thread = threading.Timer(
+            self._command_delay_info[RELEASE_ALL_RESOURCES],
+            self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+        )
+        self.timers.append(thread)
+        thread.start()
 
     @command(
         dtype_in=("str"),
@@ -340,24 +313,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
-
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Configure",
-            )
+        if self._state_duration_info:
+            self._follow_state_duration()
         else:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._obs_state = ObsState.CONFIGURING
-                self.update_device_obsstate(self._obs_state, CONFIGURE)
-                thread = threading.Timer(
-                    self._command_delay_info[CONFIGURE],
-                    self.update_device_obsstate,
-                    args=[ObsState.READY, CONFIGURE],
-                )
-                thread.start()
-                self.push_command_result(ResultCode.OK, "Configure")
+            self._obs_state = ObsState.CONFIGURING
+            self.update_device_obsstate(self._obs_state, CONFIGURE)
+            thread = threading.Timer(
+                self._command_delay_info[CONFIGURE],
+                self.update_device_obsstate,
+                args=[ObsState.READY, CONFIGURE],
+            )
+            self.timers.append(thread)
+            thread.start()
 
     @command(
         dtype_in=("str"),
@@ -378,95 +345,69 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Scan",
-            )
-        else:
-            self._obs_state = ObsState.SCANNING
-            self.update_device_obsstate(self._obs_state, SCAN)
-            self.push_command_result(ResultCode.OK, "Scan")
+        self._obs_state = ObsState.SCANNING
+        self.update_device_obsstate(self._obs_state, SCAN)
 
     @command()
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         self.update_command_info(END_SCAN)
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "EndScan",
-            )
-        else:
-            self._obs_state = ObsState.READY
-            self.update_device_obsstate(self._obs_state, END_SCAN)
-            self.push_command_result(ResultCode.OK, "EndScan")
+        self._obs_state = ObsState.READY
+        self.update_device_obsstate(self._obs_state, END_SCAN)
 
     @command()
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "End",
-            )
+        if self._state_duration_info:
+            self._follow_state_duration()
         else:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                thread = threading.Timer(
-                    self._command_delay_info[END],
-                    self.update_device_obsstate,
-                    args=[ObsState.IDLE, END],
-                )
-                thread.start()
-                self.logger.debug(
-                    "End command invoked, obsState will transition to IDLE,"
-                    + "current obsState is %s",
-                    self._obs_state,
-                )
-                self.push_command_result(ResultCode.OK, "End")
+            thread = threading.Timer(
+                self._command_delay_info[END],
+                self.update_device_obsstate,
+                args=[ObsState.IDLE, END],
+            )
+            self.timers.append(thread)
+            thread.start()
+            self.logger.debug(
+                "End command invoked, obsState will transition to IDLE,"
+                + "current obsState is %s",
+                self._obs_state,
+            )
 
     @command()
     def Abort(self):
         """This method invokes Abort command on SdpSubarray device."""
         self.update_command_info(ABORT)
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Abort",
-            )
-        else:
-            self._obs_state = ObsState.ABORTING
-            self.update_device_obsstate(self._obs_state, ABORT)
-            thread = threading.Timer(
-                self._command_delay_info[ABORT],
-                self.update_device_obsstate,
-                args=[ObsState.ABORTED, ABORT],
-            )
-            thread.start()
-            self.push_command_result(ResultCode.OK, "Abort")
+        self._obs_state = ObsState.ABORTING
+        self.update_device_obsstate(self._obs_state, ABORT)
+        for timer in self.timers:
+            timer.cancel()
+        thread = threading.Timer(
+            self._command_delay_info[ABORT],
+            self.update_device_obsstate,
+            args=[ObsState.ABORTED, ABORT],
+        )
+
+        thread.start()
 
     @command()
     def Restart(self):
         """This method invokes Restart command on SdpSubarray device."""
         self.update_command_info(RESTART)
-        if self.defective_params["enabled"]:
-            self.induce_fault(
-                "Restart",
-            )
-        else:
-            self._obs_state = ObsState.RESTARTING
-            self.update_device_obsstate(self._obs_state, RESTART)
-            thread = threading.Timer(
-                self._command_delay_info[RESTART],
-                self.update_device_obsstate,
-                args=[ObsState.EMPTY, RESTART],
-            )
-            thread.start()
-            self.logger.debug(
-                "Restart command invoked, obsState will transition to EMPTY,"
-                + "current obsState is %s",
-                self._obs_state,
-            )
-            self.push_command_result(ResultCode.OK, "Restart")
+        self._obs_state = ObsState.RESTARTING
+        self.update_device_obsstate(self._obs_state, RESTART)
+        thread = threading.Timer(
+            self._command_delay_info[RESTART],
+            self.update_device_obsstate,
+            args=[ObsState.EMPTY, RESTART],
+        )
+        thread.start()
+        self.logger.debug(
+            "Restart command invoked, obsState will transition to EMPTY,"
+            + "current obsState is %s",
+            self._obs_state,
+        )
 
 
 def main(args=None, **kwargs):

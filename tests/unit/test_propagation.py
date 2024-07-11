@@ -104,7 +104,7 @@ def test_command_propogation_success(task_callback):
     )
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
-        result=ResultCode.FAILED,
+        result=(ResultCode.FAILED, "Exception has occured"),
         exception="Exception has occured",
     )
     time.sleep(0.5)
@@ -128,7 +128,7 @@ def test_command_propogation_success_without_timeout(task_callback):
     )
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
-        result=ResultCode.FAILED,
+        result=(ResultCode.FAILED, "Exception has occured"),
         exception="Exception has occured",
     )
     time.sleep(0.5)

@@ -102,7 +102,8 @@ def test_command_timeout_success(task_callback):
     task_callback.assert_against_call(status=TaskStatus.QUEUED)
     cm.state = State.CHANGED
     task_callback.assert_against_call(
-        status=TaskStatus.COMPLETED, result=ResultCode.OK
+        status=TaskStatus.COMPLETED,
+        result=(ResultCode.OK, "Command Completed"),
     )
     time.sleep(0.5)
     assert not cm.timer_object.is_alive()
@@ -116,6 +117,6 @@ def test_command_timeout_failure(task_callback):
     task_callback.assert_against_call(status=TaskStatus.QUEUED)
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
-        result=ResultCode.FAILED,
+        result=(ResultCode.FAILED, "Timeout has occurred, command failed"),
         exception="Timeout has occurred, command failed",
     )
