@@ -45,7 +45,9 @@ def process_result_and_start_tracker(
     :rtype: None
     """
     if result == ResultCode.FAILED:
-        class_instance.update_task_status(result=result, message=message)
+        class_instance.update_task_status(
+            result=(result, message), exception=message
+        )
 
         # Close the timer if timeout is considered
         if is_timeout_considered:

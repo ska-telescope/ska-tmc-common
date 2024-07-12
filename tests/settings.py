@@ -82,7 +82,7 @@ DEFAULT_DEFECT_SETTINGS = {
 
 COMMAND_NOT_ALLOWED_DEFECT = {
     "enabled": True,
-    "fault_type": FaultType.COMMAND_NOT_ALLOWED,
+    "fault_type": FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING,
     "error_message": "Device is stuck in Resourcing state",
     "result": ResultCode.FAILED,
 }
@@ -141,7 +141,6 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         transitional_obsstate: bool = False,
         communication_state_callback: Callable[..., Any] | None = None,
         component_state_callback: Callable[..., Any] | None = None,
-        max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
         **kwargs,
@@ -152,7 +151,6 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
             _event_receiver,
             communication_state_callback,
             component_state_callback,
-            max_workers,
             proxy_timeout,
             sleep_time,
             *args,
@@ -297,7 +295,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.logger.error("Command Failed")
             if self._timeout_id:
                 self.component_manager.stop_timer()
-            self.update_task_status(result=result, msg=msg)
+            self.update_task_status(result=(result, msg), exception=msg)
 
     # pylint: disable=signature-differs
     def do(self, argin: bool) -> Tuple[ResultCode, str]:
@@ -317,7 +315,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         """Method to update the task status."""
         result = kwargs.get("result")
         status = kwargs.get("status", TaskStatus.COMPLETED)
-        message = kwargs.get("message")
+        exception = kwargs.get("exception")
 
         if result == ResultCode.OK:
             self.task_callback(result=result, status=status)
@@ -325,7 +323,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.task_callback(
                 result=result,
                 status=status,
-                exception=message,
+                exception=exception,
             )
 
 
@@ -376,8 +374,9 @@ def wait_for_obstate(device: tango.DeviceProxy, expected_obsstate: ObsState):
                 expected_obsstate,
             )
             raise Exception(
-                f"Timeout occured while waiting for {device} ObsState to \
-                    transition to {expected_obsstate}"
+                f"Timeout occured while waiting for {device.dev_name()} "
+                + f"ObsState to transition to {expected_obsstate}. Current "
+                + f"obsState is {device_obsstate}"
             )
     logger.info("ObsState of %s transitioned to %s", device, expected_obsstate)
     assert device.read_attribute("obsState").value == expected_obsstate

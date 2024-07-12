@@ -118,7 +118,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         time.sleep(1)
         if argin:
             return ResultCode.OK, ""
-        return ResultCode.FAILED, ""
+        return ResultCode.FAILED, "Invalid argin"
 
     @error_propagation_decorator(
         "get_state", [State.CHANGED], cleanup_function="clear_state"
@@ -136,7 +136,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
         """Method to update the task status."""
         result = kwargs.get("result")
         status = kwargs.get("status", TaskStatus.COMPLETED)
-        message = kwargs.get("message")
+        exception = kwargs.get("exception")
 
         if result == ResultCode.OK:
             self.task_callback(result=result, status=status)
@@ -144,7 +144,7 @@ class DummyCommandClass(TmcLeafNodeCommand):
             self.task_callback(
                 result=result,
                 status=status,
-                exception=message,
+                exception=exception,
             )
 
 
@@ -154,7 +154,7 @@ def test_timeout(task_callback):
     cm.invoke_command("True", task_callback)
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
-        result=ResultCode.FAILED,
+        result=(ResultCode.FAILED, "Timeout has occurred, command failed"),
         exception="Timeout has occurred, command failed",
         lookahead=3,
     )
@@ -166,8 +166,8 @@ def test_error_propagation_failed_result(task_callback):
     cm.invoke_command("", task_callback)
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
-        result=ResultCode.FAILED,
-        exception="",
+        result=(ResultCode.FAILED, "Invalid argin"),
+        exception="Invalid argin",
         lookahead=3,
     )
 
@@ -179,6 +179,6 @@ def test_error_propagation_no_input(task_callback):
     cm.state = State.CHANGED
     task_callback.assert_against_call(
         status=TaskStatus.COMPLETED,
-        result=ResultCode.OK,
+        result=(ResultCode.OK, "Command Completed"),
         lookahead=3,
     )
