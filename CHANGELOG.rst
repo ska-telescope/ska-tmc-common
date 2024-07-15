@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.7]
+* Fixed the helper dish device achievedPointing attribute to give timestamp in TAI with SKA Epoch.
+
 [0.17.6]
 * Added delay for LongRunningCommandResult attribute in mccs master leaf node.
   

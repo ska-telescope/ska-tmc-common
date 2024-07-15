@@ -5,9 +5,11 @@ This module implements the Helper Dish Device for testing an integrated TMC
 import json
 import threading
 import time
+from datetime import datetime
 from typing import List, Tuple, Union
 
 import numpy as np
+from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
 from tango import AttrWriteType, DevState, DevString
@@ -22,6 +24,7 @@ from ska_tmc_common.test_helpers.constants import (
     END_SCAN,
     SCAN,
     SET_OPERATE_MODE,
+    SKA_EPOCH,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -37,7 +40,10 @@ class HelperDishDevice(HelperDishLNDevice):
         super().init_device()
         self._configured_band = Band.NONE
         self._achieved_pointing = [
-            1707388147149.508,
+            (
+                Time(datetime.today(), scale="utc").unix_tai
+                - Time(SKA_EPOCH, scale="utc").unix_tai
+            ),
             179.880204193508,
             31.877024524259,
         ]
