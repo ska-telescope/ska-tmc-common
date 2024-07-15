@@ -15,7 +15,7 @@
 autodoc_mock_imports = ["PyTango", "tango", "tango.server", "run", "command", "numpy",
                         "future", "future.utils", "ska.logging", "ska.logging.configuration",
                         "ska_tango_base","marshmallow","mock",
-                        "katpoint","ska_telmodel","transitions",'ska_ser_logging',
+                        "katpoint","ska_telmodel","transitions",'ska_ser_logging',"astropy",
                         ]
 
 import sys
