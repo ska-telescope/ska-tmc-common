@@ -24,6 +24,7 @@ from ska_tmc_common.test_helpers.constants import (
     END_SCAN,
     SCAN,
     SET_OPERATE_MODE,
+    SKA_EPOCH,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -894,7 +895,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
     def get_timestamp_in_tai(self):
         """Method to get timestamp in TAI format with SKA epoch"""
-        SKA_EPOCH = "1999-12-31T23:59:28Z"
+
         return (
             Time(datetime.today(), scale="utc").unix_tai
             - Time(SKA_EPOCH, scale="utc").unix_tai
