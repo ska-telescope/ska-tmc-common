@@ -40,7 +40,10 @@ class HelperDishDevice(HelperDishLNDevice):
         super().init_device()
         self._configured_band = Band.NONE
         self._achieved_pointing = [
-            self.get_timestamp_in_tai(),
+            (
+                Time(datetime.today(), scale="utc").unix_tai
+                - Time(SKA_EPOCH, scale="utc").unix_tai
+            ),
             179.880204193508,
             31.877024524259,
         ]
@@ -891,14 +894,6 @@ class HelperDishDevice(HelperDishLNDevice):
         return (
             [ResultCode.QUEUED],
             [command_id],
-        )
-
-    def get_timestamp_in_tai(self):
-        """Method to get timestamp in TAI format with SKA epoch"""
-
-        return (
-            Time(datetime.today(), scale="utc").unix_tai
-            - Time(SKA_EPOCH, scale="utc").unix_tai
         )
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
