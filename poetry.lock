@@ -2039,13 +2039,13 @@ reference = "ska-nexus"
 
 [[package]]
 name = "ska-telmodel"
-version = "1.18.1"
+version = "1.18.2"
 description = "SKA telescope model library"
 optional = false
 python-versions = ">=3.10.0,<4.0.0"
 files = [
-    {file = "ska_telmodel-1.18.1-py3-none-any.whl", hash = "sha256:2b8e75d65b71482e7223211717edd88bbf8f93a1a0345b7d43c79eae86afd341"},
-    {file = "ska_telmodel-1.18.1.tar.gz", hash = "sha256:4faa53d696de5f70a451bc9f541af96d0b33320b0a3d918e3ea105e718f6da6b"},
+    {file = "ska_telmodel-1.18.2-py3-none-any.whl", hash = "sha256:6b02b10c0648972625c84920bc45e1e5cafeb7146ca29166117e454afb1e1493"},
+    {file = "ska_telmodel-1.18.2.tar.gz", hash = "sha256:ac9d1e49fa9b6d26f49a1c283ececd4ba4e5b497d989b86174d72b7c42738599"},
 ]
 
 [package.dependencies]
@@ -2484,4 +2484,4 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "96f83a8ed81ba8dbc41fef26c869d4acacb993ece152fa69a85c6cc511f6147d"
+content-hash = "b38c0b70d099eac5e1b3e04a9364b4acec2184909fdd3cd59e2de587c468cf7f"
