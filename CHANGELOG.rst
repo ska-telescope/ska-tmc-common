@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.8]
+* Fixed the logger statements.
+
 [0.17.7]
 * Fixed the helper dish device achievedPointing attribute to give timestamp in TAI with SKA Epoch.
 
