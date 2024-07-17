@@ -67,6 +67,9 @@ Added
 
 Fixed
 -----
+[0.17.9]
+* Update TelModel version to 1.18.2 
+
 [0.17.8]
 * Allows any version of katpoint above **1.0a2**
 
