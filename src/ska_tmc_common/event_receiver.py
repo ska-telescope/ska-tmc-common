@@ -173,7 +173,7 @@ class EventReceiver:
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
-            self._logger.error("%s %s", error.reason, error.desc)
+            self._logger.error("%s \n %s", error.reason, error.desc)
             self._component_manager.update_event_failure(
                 event.device.dev_name()
             )
@@ -191,7 +191,7 @@ class EventReceiver:
         # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
-            self._logger.error("%s %s", error.reason, error.desc)
+            self._logger.error("%s\n %s", error.reason, error.desc)
             self._component_manager.update_event_failure(
                 event.device.dev_name()
             )
