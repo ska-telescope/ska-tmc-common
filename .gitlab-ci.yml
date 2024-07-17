@@ -1,14 +1,14 @@
 # GitLab CI in conjunction with GitLab Runner can use Docker Engine to test and build any application.
 # Docker, when used with GitLab CI, runs each job in a separate and isolated container using the predefined image that is set up in .gitlab-ci.yml.
 # In this case we use the latest python docker image to build and test this project.
-image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.10
+image: artefact.skao.int/ska-tango-images-pytango-builder:9.4.3
 
 # Pinning versions for faster pipeline runs
 python-test:
-  image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
+  image: artefact.skao.int/ska-tango-images-pytango-builder:9.4.3
 
 python-lint:
-  image: artefact.skao.int/ska-tango-images-pytango-builder:9.3.32
+  image: artefact.skao.int/ska-tango-images-pytango-builder:9.4.3
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
