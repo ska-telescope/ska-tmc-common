@@ -2058,7 +2058,7 @@ toolz = "^0.12.0"
 type = "git"
 url = "https://gitlab.com/ska-telescope/ska-telmodel.git"
 reference = "sah-1560"
-resolved_reference = "879f2a64a2a0023997973daace1050743655f96c"
+resolved_reference = "dcc16bf790f42c83966b692d479a5080a2dc7344"
 
 [[package]]
 name = "snowballstemmer"
