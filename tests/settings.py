@@ -87,6 +87,12 @@ COMMAND_NOT_ALLOWED_DEFECT = {
     "result": ResultCode.FAILED,
 }
 
+OBS_RESULTCODE_FAILED = [
+    ResultCode.FAILED,
+    ResultCode.REJECTED,
+    ResultCode.NOT_ALLOWED,
+]
+
 
 @unique
 class State(IntEnum):
