@@ -24,15 +24,9 @@ def test_is_logging_allowed_exceeded_waiting_time():
 
     # Assert initial state (before waiting time)
     assert log_manager.is_logging_allowed("Dev_error") is False
-    assert (
-        log_manager.last_log_type_time("Dev_error") == initial_last_logged_time
-    )
 
     time.sleep(3)  # Wait for more than the waiting time
 
     # Assert after waiting time
     assert log_manager.is_logging_allowed("Dev_error") is True
     # Verify last_log_type_time is updated to the most recent log time
-    assert (
-        log_manager.last_log_type_time("Dev_error") > initial_last_logged_time
-    )

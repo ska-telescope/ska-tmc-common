@@ -30,6 +30,7 @@ class BaseLivelinessProbe:
         logger: Logger,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
+        max_logging_time: int = 5,
     ):
         self._thread = threading.Thread(target=self.run)
         self._stop = False
@@ -39,7 +40,7 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
-        self.log_manager = LogManager()
+        self.log_manager = LogManager(max_logging_time)
 
     def start(self) -> None:
         """
@@ -74,7 +75,6 @@ class BaseLivelinessProbe:
             )
         except tango.CommunicationFailed as exception:
             if "Timeout (500 mS) exceeded on device" not in exception:
-                # this log will print only once in span of 5 seconds
                 if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
                         "Error on %s: %s", dev_info.dev_name, exception
@@ -108,12 +108,14 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
+        max_logging_time: int = 5,
     ):
         super().__init__(
             component_manager,
             logger,
             proxy_timeout,
             sleep_time,
+            max_logging_time,
         )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
