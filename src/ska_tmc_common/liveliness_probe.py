@@ -3,6 +3,7 @@ This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
 import threading
+import time
 from logging import Logger
 from time import sleep
 from typing import List
@@ -72,9 +73,14 @@ class BaseLivelinessProbe:
             )
         except tango.CommunicationFailed as exception:
             if "Timeout (500 mS) exceeded on device" not in exception:
-                self._logger.exception(
-                    "Error on %s: %s", dev_info.dev_name, exception
-                )
+                # this log will print only once in span of 5 seconds
+                last_log_time = time.time()
+                current_time = time.time()
+                if current_time - last_log_time >= 5:
+                    self._logger.exception(
+                        "Error on %s: %s", dev_info.dev_name, exception
+                    )
+                    last_log_time = current_time
                 self._component_manager.update_device_ping_failure(
                     dev_info, f"Unable to ping device {dev_info.dev_name}"
                 )
