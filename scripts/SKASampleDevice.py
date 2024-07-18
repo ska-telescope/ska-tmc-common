@@ -194,7 +194,7 @@ class PropertyAccessCommand(BaseCommand):
 
         # # read property value
         property_value = this_tango_device.read_property("TestProperty")
-        self.logger.info("property_value: %s", property_value)
+        self.logger.info("Test Property value: %s", property_value)
 
 
 
