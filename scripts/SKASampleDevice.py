@@ -156,11 +156,11 @@ class AttributeAccessCommand(BaseCommand):
 
         # read attribute value
         double_data = this_tango_device.read_attr("DoubleAttrib")
-        self.logger.info("DoubleAttrib: %s", double_data)
+        self.logger.info("Double type attribute value is: %s", double_data)
 
 
         string_data = this_tango_device.read_attr("StrAttrib")
-        self.logger.info("string_data read: %s", string_data)
+        self.logger.info("String type attribute value is:: %s", string_data)
 
 
         ## perform business operations
