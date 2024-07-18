@@ -407,7 +407,7 @@ class BaseTMCCommand:
             else:
                 self.logger.info(
                     f"Command with id {command_id} has completed "
-                    + f"successfully with state: {expected_state}"
+                    + f"successfully with state: {state_to_achieve}"
                 )
 
                 return True
