@@ -107,7 +107,11 @@ def error_propagation_decorator(
             """Wrapper method"""
             # Extract the class instance from the input arguments
             class_instance = args[0]
-
+            class_instance.logger.debug(
+                "Executing the error propagation decorator with: %s, %s",
+                args,
+                kwargs,
+            )
             # Extract input argin if present
             argin = kwargs.get("argin", None)
 
