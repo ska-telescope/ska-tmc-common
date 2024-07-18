@@ -27,7 +27,7 @@ class LogManager:
         )
         return last_logged_time
 
-    def is_loging_allowed(self, log_type: str) -> bool:
+    def is_logging_allowed(self, log_type: str) -> bool:
         """checks if log of log_type is allowed i.e waited sufficient before
         repititive logging
 

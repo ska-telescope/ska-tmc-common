@@ -15,9 +15,7 @@ def test_is_logging_allowed_within_waiting_time():
 
 
 def test_is_logging_allowed_exceeded_waiting_time():
-    """Tests that is_logging_allowed returns True if enough time passed since last
-    log,and verifies last_log_type_time reflects the most recent log.
-    """
+    """Tests that is_logging_allowed returns True if enough time passed"""
     log_manager = LogManager(max_waiting_time=2)  # Set lower wait time
     initial_last_logged_time = time.time()
     log_manager.log_type_to_last_logged_time[
