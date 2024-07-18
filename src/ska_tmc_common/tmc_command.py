@@ -249,7 +249,7 @@ class BaseTMCCommand:
                         self.update_task_status(status=TaskStatus.ABORTED)
 
                     if self.check_command_timeout(
-                        timeout_id, timeout_callback, command_id
+                        timeout_id, timeout_callback
                     ):
                         self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
@@ -349,7 +349,9 @@ class BaseTMCCommand:
         return False
 
     def check_command_timeout(
-        self, timeout_id, timeout_callback, command_id: str
+        self,
+        timeout_id,
+        timeout_callback,
     ) -> bool:
         """Checks for command timeout. On timeout, it sets ResultCode
         to FAILED and stops the tracker thread.
@@ -365,7 +367,7 @@ class BaseTMCCommand:
                 timeout_id, TimeoutState.OCCURED
             ):
                 self.logger.error(
-                    "Timeout has occured for command with id %s", command_id
+                    "Timeout has occured for command with id %s", timeout_id
                 )
                 return True
         return False
