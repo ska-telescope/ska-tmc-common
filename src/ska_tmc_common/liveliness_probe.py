@@ -3,7 +3,6 @@ This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
 import threading
-import time
 from logging import Logger
 from time import sleep
 from typing import List
@@ -12,6 +11,7 @@ import tango
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
+from ska_tmc_common.log_manager import LogManager
 
 
 class BaseLivelinessProbe:
@@ -39,7 +39,7 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
-        self._last_error_time = time.time() - 5
+        self.log_manager = LogManager()
 
     def start(self) -> None:
         """
@@ -66,7 +66,6 @@ class BaseLivelinessProbe:
         """
         Checks device status and logs error messages on state change
         """
-        current_time = time.time()
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
@@ -76,26 +75,24 @@ class BaseLivelinessProbe:
         except tango.CommunicationFailed as exception:
             if "Timeout (500 mS) exceeded on device" not in exception:
                 # this log will print only once in span of 5 seconds
-                if current_time - self._last_error_time >= 5:
+                if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
                         "Error on %s: %s", dev_info.dev_name, exception
                     )
-                    self._last_error_time = current_time
-                self._component_manager.update_device_ping_failure(
-                    dev_info, f"Unable to ping device {dev_info.dev_name}"
-                )
-        except (AttributeError, tango.DevFailed) as exception:
-            self._logger.exception(
-                "Error on %s: %s", dev_info.dev_name, exception
-            )
 
+        except (AttributeError, tango.DevFailed) as exception:
+            if self.log_manager.is_logging_allowed("attribute_error"):
+                self._logger.exception(
+                    "Error on %s: %s", dev_info.dev_name, exception
+                )
             self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
         except BaseException as exception:
-            self._logger.exception(
-                "Error on %s: %s", dev_info.dev_name, exception
-            )
+            if self.log_manager.is_logging_allowed("base_exception"):
+                self._logger.exception(
+                    "Error on %s: %s", dev_info.dev_name, exception
+                )
             self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
@@ -112,7 +109,12 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         sleep_time: int = 1,
     ):
-        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
+        super().__init__(
+            component_manager,
+            logger,
+            proxy_timeout,
+            sleep_time,
+        )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
 
