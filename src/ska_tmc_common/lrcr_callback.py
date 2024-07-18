@@ -88,4 +88,6 @@ class LRCRCallback:
 
     def remove_data(self, command_id: str) -> None:
         """Remove command id from command data"""
-        self.command_data.pop(command_id, None)
+        removed_data = self.command_data.pop(command_id, None)
+        self.logger.debug(f"Removed command data {removed_data}")
+

@@ -201,7 +201,7 @@ class BaseTMCCommand:
         self._stop = False
         self.tracker_thread.start()
         self.logger.debug(
-            "Started command tracker thread for: %s ", command_id
+            "Started command tracker thread for: %s ", timeout_id
         )
 
     #  pylint: disable=broad-exception-caught
