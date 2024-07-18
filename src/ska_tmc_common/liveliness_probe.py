@@ -39,6 +39,7 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
+        self._last_error_time = time.time() - 5
 
     def start(self) -> None:
         """
@@ -65,6 +66,7 @@ class BaseLivelinessProbe:
         """
         Checks device status and logs error messages on state change
         """
+        current_time = time.time()
         try:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.set_timeout_millis(self._proxy_timeout)
@@ -74,13 +76,11 @@ class BaseLivelinessProbe:
         except tango.CommunicationFailed as exception:
             if "Timeout (500 mS) exceeded on device" not in exception:
                 # this log will print only once in span of 5 seconds
-                last_log_time = time.time()
-                current_time = time.time()
-                if current_time - last_log_time >= 5:
+                if current_time - self._last_error_time >= 5:
                     self._logger.exception(
                         "Error on %s: %s", dev_info.dev_name, exception
                     )
-                    last_log_time = current_time
+                    self._last_error_time = current_time
                 self._component_manager.update_device_ping_failure(
                     dev_info, f"Unable to ping device {dev_info.dev_name}"
                 )
@@ -88,6 +88,7 @@ class BaseLivelinessProbe:
             self._logger.exception(
                 "Error on %s: %s", dev_info.dev_name, exception
             )
+
             self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
