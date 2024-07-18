@@ -8,11 +8,7 @@
 """Release information for ska-tmc-common Python Package"""
 # pylint: disable=redefined-builtin
 name = """ska-tmc-common"""
-<<<<<<< HEAD
-version = "0.17.9"
-=======
-version = "0.17.8"
->>>>>>> eb9d339375f47e603dc991ef0f193b28b01feae6
+version = "0.17.10"
 version_info = version.split(".")
 description = """A set of common classes for TMC devices."""
 author = "Team Himalaya, Team Sahyadri"

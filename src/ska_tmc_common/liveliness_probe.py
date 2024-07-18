@@ -75,7 +75,6 @@ class BaseLivelinessProbe:
                 self._logger.exception(
                     "Error on %s: %s", dev_info.dev_name, exception
                 )
-
                 self._component_manager.update_device_ping_failure(
                     dev_info, f"Unable to ping device {dev_info.dev_name}"
                 )
@@ -83,7 +82,6 @@ class BaseLivelinessProbe:
             self._logger.exception(
                 "Error on %s: %s", dev_info.dev_name, exception
             )
-
             self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )

@@ -321,7 +321,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._offset["off_xel"] = cross_elevation
         self._offset["off_el"] = elevation
         self.logger.info(
-            "cross elevation and elevation set to : (%s , %s)",
+            "Cross elevation and elevation set to : (%s , %s)",
             cross_elevation,
             elevation,
         )
