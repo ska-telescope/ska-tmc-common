@@ -165,7 +165,7 @@ class AttributeAccessCommand(BaseCommand):
 
         ## perform business operations
         double_data += device_data.double_common_data
-        self.logger.info("double_data new value: %s", double_data)
+        self.logger.info("Double type attribute new value: %s", double_data)
 
 
         # write attribute value
@@ -183,7 +183,7 @@ class PropertyAccessCommand(BaseCommand):
 
         # read property value
         property_value = this_tango_device.read_property("TestProperty")
-        self.logger.info("property_value: %s", property_value)
+        self.logger.info("Test Property value: %s", property_value)
 
 
         # # perform business operations
