@@ -199,8 +199,10 @@ class BaseTMCCommand:
             ],
         )
         self._stop = False
-        self.logger.info("Starting tracker thread")
         self.tracker_thread.start()
+        self.logger.debug(
+            "Started command tracker thread for: %s ", command_id
+        )
 
     #  pylint: disable=broad-exception-caught
     def track_and_update_command_status(
@@ -247,7 +249,7 @@ class BaseTMCCommand:
                         self.update_task_status(status=TaskStatus.ABORTED)
 
                     if self.check_command_timeout(
-                        timeout_id, timeout_callback
+                        timeout_id, timeout_callback, command_id
                     ):
                         self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
@@ -259,7 +261,10 @@ class BaseTMCCommand:
                         )
 
                     if self.check_device_state(
-                        state_function, state_to_achieve, expected_state
+                        state_function,
+                        state_to_achieve,
+                        expected_state,
+                        command_id,
                     ):
                         self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
@@ -343,7 +348,9 @@ class BaseTMCCommand:
             return True
         return False
 
-    def check_command_timeout(self, timeout_id, timeout_callback) -> bool:
+    def check_command_timeout(
+        self, timeout_id, timeout_callback, command_id: str
+    ) -> bool:
         """Checks for command timeout. On timeout, it sets ResultCode
         to FAILED and stops the tracker thread.
 
@@ -357,7 +364,9 @@ class BaseTMCCommand:
             if timeout_callback.assert_against_call(
                 timeout_id, TimeoutState.OCCURED
             ):
-                self.logger.error("Timeout has occurred, command failed")
+                self.logger.error(
+                    "Timeout has occured for command with id %s", command_id
+                )
                 return True
         return False
 
@@ -366,6 +375,7 @@ class BaseTMCCommand:
         state_function: str,
         state_to_achieve: Any,
         expected_state: list,
+        command_id: str,
     ) -> bool:
         """Waits for expected state with or without
         transitional state. On expected state occurrence,
@@ -387,8 +397,8 @@ class BaseTMCCommand:
             methodcaller(state_function)(self.component_manager)
             == state_to_achieve
         ):
-            self.logger.info(
-                "State change has occurred, current state is %s",
+            self.logger.debug(
+                "State has changed to: %s",
                 state_to_achieve,
             )
             if len(expected_state) > self.index + 1:
@@ -396,8 +406,10 @@ class BaseTMCCommand:
                 state_to_achieve = expected_state[self.index]
             else:
                 self.logger.info(
-                    "State change has occurred, command successful"
+                    f"Command with id {command_id} has completed "
+                    + f"successfully with state: {expected_state}"
                 )
+
                 return True
         return False
 
@@ -416,7 +428,9 @@ class BaseTMCCommand:
         if command_id and lrcr_callback.assert_against_call(
             command_id, ResultCode.FAILED
         ):
-            self.logger.error("Exception has occurred, command failed")
+            self.logger.error(
+                "Command with command id %s failed with exception.", command_id
+            )
             return True
         return False
 

@@ -305,7 +305,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         self._dish_mode = dishMode
         self.push_change_event("dishMode", self._dish_mode)
-        self.logger.info("Dish Mode: %s", self._dish_mode)
+        self.logger.info("Dish Mode is set to : %s", self._dish_mode)
 
     def set_pointing_state(self, pointingState: PointingState) -> None:
         """
@@ -314,12 +314,17 @@ class HelperDishLNDevice(HelperBaseDevice):
         """
         self._pointing_state = pointingState
         self.push_change_event("pointingState", self._pointing_state)
-        self.logger.info("Pointing State: %s", self._pointing_state)
+        self.logger.info("Pointing State is set to: %s", self._pointing_state)
 
     def set_offset(self, cross_elevation: float, elevation: float) -> None:
         """Sets the offset for Dish."""
         self._offset["off_xel"] = cross_elevation
         self._offset["off_el"] = elevation
+        self.logger.info(
+            "cross elevation and elevation set to : (%s , %s)",
+            cross_elevation,
+            elevation,
+        )
 
     def _follow_state_duration(self):
         """This method will update pointing state as per state duration"""

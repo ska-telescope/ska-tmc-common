@@ -86,16 +86,19 @@ class TangoClient:
         :throws: DevFailed in case of error.
         """
         try:
-            log_msg = (
-                f"Invoking {command_name} on {self.device_fqdn} synchronously."
+            self.logger.debug(
+                "Invoking %s on %s synchronously.",
+                command_name,
+                self.device_fqdn,
             )
-            self.logger.debug(log_msg)
+
             return self.deviceproxy.command_inout(command_name, command_data)
         except DevFailed as dev_failed:
             log_msg = (
-                "Error in invoking command " + command_name + str(dev_failed)
+                f"Error in invoking command {command_name} {str(dev_failed)}"
             )
             self.logger.debug(log_msg)
+
             tango.Except.throw_exception(
                 "Error in invoking command " + command_name,
                 log_msg,
@@ -126,19 +129,19 @@ class TangoClient:
             DevFailed in case of error.
         """
         try:
-            log_msg = (
-                f"Invoking {command_name}on{self.device_fqdn}asynchronously"
+            self.logger.debug(
+                f"Invoking {command_name} on {self.device_fqdn} asynchronously"
             )
 
-            self.logger.debug(log_msg)
             return self.deviceproxy.command_inout_asynch(
                 command_name, command_data, callback_method
             )
         except DevFailed as dev_failed:
             log_msg = (
-                "Error in invoking command " + command_name + str(dev_failed)
+                f"Error in invoking command {command_name} : {str(dev_failed)}"
             )
             self.logger.debug(log_msg)
+
             tango.Except.throw_exception(
                 "Error in invoking command " + command_name,
                 log_msg,
@@ -167,9 +170,10 @@ class TangoClient:
             return self.deviceproxy.read_attribute(attribute_name)
         except AttributeError as attribute_error:
             log_msg = (
-                attribute_name + "Attribute not found" + str(attribute_error)
+                f"{attribute_name} Attribute not found {str(attribute_error)}"
             )
             self.logger.debug(log_msg)
+
             tango.Except.throw_exception(
                 f"{attribute_name} attribute not found",
                 log_msg,
