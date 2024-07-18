@@ -67,12 +67,18 @@ Added
 
 Fixed
 -----
+[0.17.9]
+* Update TelModel version to 1.18.2 
+
+[0.17.8]
+* Allows any version of katpoint above **1.0a2**
+
 [0.17.7]
 * Fixed the helper dish device achievedPointing attribute to give timestamp in TAI with SKA Epoch.
 
 [0.17.6]
 * Added delay for LongRunningCommandResult attribute in mccs master leaf node.
-  
+
 [0.17.5]
 ***********
 * Utilised ska-telmodel v.1.18.1. which includes fix for jones key in low configure schema
