@@ -13,7 +13,7 @@ class LogManager:
 
     def is_logging_allowed(self, log_type: str) -> bool:
         """checks if log of log_type is allowed i.e waited sufficient before
-        repititive logging
+        repitetive logging
 
         :param log_type : The type of log.
         :type log_type : str
@@ -25,11 +25,11 @@ class LogManager:
         last_logged_time = self.log_type_to_last_logged_time.get(
             log_type, None
         )
-        if last_logged_time is None:
-            self.log_type_to_last_logged_time[log_type] = current_time
-            return True
 
-        if current_time - last_logged_time >= self.max_waiting_time:
+        if (
+            current_time - last_logged_time >= self.max_waiting_time
+            or last_logged_time is None
+        ):
             self.log_type_to_last_logged_time[log_type] = current_time
             return True
 
