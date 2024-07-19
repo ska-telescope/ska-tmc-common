@@ -6,8 +6,6 @@ from typing import Callable
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 
-from tests.settings import OBS_RESULTCODE_FAILED
-
 
 def process_result_and_start_tracker(
     class_instance,
@@ -46,7 +44,11 @@ def process_result_and_start_tracker(
 
     :rtype: None
     """
-    if result in OBS_RESULTCODE_FAILED:
+    if result in [
+        ResultCode.FAILED,
+        ResultCode.REJECTED,
+        ResultCode.NOT_ALLOWED,
+    ]:
         class_instance.update_task_status(
             result=(result, message), exception=message
         )
