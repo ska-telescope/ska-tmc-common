@@ -21,9 +21,6 @@ def timeout_decorator(function: Callable) -> Callable:
         """
         # Extract class instance from the input arguments
         class_instance = args[0]
-        class_instance.logger.debug(
-            "Executing the timeout decorator with: %s, %s", args, kwargs
-        )
 
         # Start timer for the command
         if hasattr(class_instance, "timekeeper"):

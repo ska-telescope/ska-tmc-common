@@ -44,7 +44,11 @@ def process_result_and_start_tracker(
 
     :rtype: None
     """
-    if result == ResultCode.FAILED:
+    if result in [
+        ResultCode.FAILED,
+        ResultCode.REJECTED,
+        ResultCode.NOT_ALLOWED,
+    ]:
         class_instance.update_task_status(
             result=(result, message), exception=message
         )
@@ -112,7 +116,6 @@ def error_propagation_decorator(
                 args,
                 kwargs,
             )
-
             # Extract input argin if present
             argin = kwargs.get("argin", None)
 

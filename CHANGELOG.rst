@@ -67,6 +67,11 @@ Added
 
 Fixed
 -----
+
+[0.17.10]
+* Update logger statements
+* Added new class logManager for managing repetitive logs
+
 [0.17.9]
 * Update TelModel version to 1.18.2 
 
