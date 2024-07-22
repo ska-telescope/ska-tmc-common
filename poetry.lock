@@ -26,7 +26,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "astroid"
-version = "3.2.3"
+version = "3.2.4"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -73,7 +73,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "astropy-iers-data"
-version = "0.2024.7.15.0.31.42"
+version = "0.2024.7.22.0.34.13"
 description = "IERS Earth Rotation and Leap Second tables for the astropy core package"
 category = "main"
 optional = false
@@ -92,7 +92,7 @@ reference = "PyPI-public"
 name = "attrs"
 version = "23.2.0"
 description = "Classes Without Boilerplate"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -337,13 +337,10 @@ reference = "PyPI-public"
 [[package]]
 name = "execnet"
 version = "2.1.1"
-description = "execnet: rapid multi-Python deployment"
+description = ""
 category = "dev"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-testing = ["hatch", "pre-commit", "pytest", "tox"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -513,20 +510,10 @@ reference = "PyPI-public"
 [[package]]
 name = "jsonschema"
 version = "4.23.0"
-description = "An implementation of JSON Schema validation for Python"
+description = ""
 category = "main"
 optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-attrs = ">=22.2.0"
-jsonschema-specifications = ">=2023.03.6"
-referencing = ">=0.28.4"
-rpds-py = ">=0.7.1"
-
-[package.extras]
-format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
-format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=24.6.0)"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -537,7 +524,7 @@ reference = "PyPI-public"
 name = "jsonschema-specifications"
 version = "2023.12.1"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 
@@ -735,15 +722,10 @@ reference = "PyPI-public"
 [[package]]
 name = "platformdirs"
 version = "4.2.2"
-description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
+description = ""
 category = "main"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-docs = ["furo (>=2023.9.10)", "proselint (>=0.13)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1.25.2)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)"]
-type = ["mypy (>=1.8)"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -845,13 +827,10 @@ reference = "PyPI-public"
 [[package]]
 name = "pygments"
 version = "2.18.0"
-description = "Pygments is a syntax highlighting package written in Python."
+description = ""
 category = "dev"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-windows-terminal = ["colorama (>=0.4.6)"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -860,14 +839,14 @@ reference = "PyPI-public"
 
 [[package]]
 name = "pylint"
-version = "3.2.5"
+version = "3.2.6"
 description = "python code static checker"
 category = "dev"
 optional = false
 python-versions = ">=3.8.0"
 
 [package.dependencies]
-astroid = ">=3.2.2,<=3.3.0-dev0"
+astroid = ">=3.2.4,<=3.3.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = {version = ">=0.2", markers = "python_version < \"3.11\""}
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
@@ -1076,14 +1055,10 @@ reference = "PyPI-public"
 [[package]]
 name = "referencing"
 version = "0.35.1"
-description = "JSON Referencing + Python"
-category = "main"
+description = ""
+category = "dev"
 optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-attrs = ">=22.2.0"
-rpds-py = ">=0.7.0"
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -1148,10 +1123,10 @@ reference = "PyPI-public"
 [[package]]
 name = "rpds-py"
 version = "0.19.0"
-description = "Python bindings to Rust's persistent data structures (rpds)"
-category = "main"
+description = ""
+category = "dev"
 optional = false
-python-versions = ">=3.8"
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -1433,7 +1408,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "sphinxcontrib-htmlhelp"
-version = "2.0.5"
+version = "2.0.6"
 description = "sphinxcontrib-htmlhelp is a sphinx extension which renders HTML help files"
 category = "dev"
 optional = false
@@ -1502,7 +1477,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "sphinxcontrib-qthelp"
-version = "1.0.7"
+version = "1.0.8"
 description = "sphinxcontrib-qthelp is a sphinx extension which outputs QtHelp documents"
 category = "dev"
 optional = false
@@ -1511,7 +1486,7 @@ python-versions = ">=3.9"
 [package.extras]
 lint = ["docutils-stubs", "flake8", "mypy"]
 standalone = ["Sphinx (>=5)"]
-test = ["pytest"]
+test = ["defusedxml (>=0.7.1)", "pytest"]
 
 [package.source]
 type = "legacy"
@@ -1649,16 +1624,10 @@ reference = "PyPI-public"
 [[package]]
 name = "urllib3"
 version = "2.2.2"
-description = "HTTP library with thread-safe connection pooling, file post, and more."
+description = ""
 category = "main"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
-h2 = ["h2 (>=4,<5)"]
-socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
-zstd = ["zstandard (>=0.18.0)"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -1680,8 +1649,8 @@ appdirs = [
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 astroid = [
-    {file = "astroid-3.2.3-py3-none-any.whl", hash = "sha256:3eae9ea67c11c858cdd2c91337d2e816bd019ac897ca07d7b346ac10105fceb3"},
-    {file = "astroid-3.2.3.tar.gz", hash = "sha256:7099b5a60985529d8d46858befa103b82d0d05a5a5e8b816b5303ed96075e1d9"},
+    {file = "astroid-3.2.4-py3-none-any.whl", hash = "sha256:413658a61eeca6202a59231abb473f932038fbcbf1666587f66d482083413a25"},
+    {file = "astroid-3.2.4.tar.gz", hash = "sha256:0e14202810b30da1b735827f78f5157be2bbd4a7a59b7707ca0bfc2fb4c0063a"},
 ]
 astropy = [
     {file = "astropy-6.1.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9abc70977a863f5b7432a20af378d27429dc0bc0dc8b49cde558cc64f56af51c"},
@@ -1708,8 +1677,8 @@ astropy = [
     {file = "astropy-6.1.1.tar.gz", hash = "sha256:e5c6f45d911c30acb8d556c7f8ed994aec71b108e61eee5067f00af1e4e36138"},
 ]
 astropy-iers-data = [
-    {file = "astropy_iers_data-0.2024.7.15.0.31.42-py3-none-any.whl", hash = "sha256:82fd179c37212ad6e1a717d77f14609bfd28863db50d0c325643b9e2d0c7f888"},
-    {file = "astropy_iers_data-0.2024.7.15.0.31.42.tar.gz", hash = "sha256:703024d6cabe01281dff802fce97ae4ab8582bee2dc09c7ab8b05f2cbdc497a3"},
+    {file = "astropy_iers_data-0.2024.7.22.0.34.13-py3-none-any.whl", hash = "sha256:567a6cb261dd62f60862ee8d38e70fb2c88dfad03e962bc8138397a22e33003d"},
+    {file = "astropy_iers_data-0.2024.7.22.0.34.13.tar.gz", hash = "sha256:9bbb4bfc28bc8e834a6b3946a312ce3490c285abeab8fd9b1e98b11fdee6f92c"},
 ]
 attrs = [
     {file = "attrs-23.2.0-py3-none-any.whl", hash = "sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1"},
@@ -2193,8 +2162,8 @@ pygments = [
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
 ]
 pylint = [
-    {file = "pylint-3.2.5-py3-none-any.whl", hash = "sha256:32cd6c042b5004b8e857d727708720c54a676d1e22917cf1a2df9b4d4868abd6"},
-    {file = "pylint-3.2.5.tar.gz", hash = "sha256:e9b7171e242dcc6ebd0aaa7540481d1a72860748a0a7816b8fe6cf6c80a6fe7e"},
+    {file = "pylint-3.2.6-py3-none-any.whl", hash = "sha256:03c8e3baa1d9fb995b12c1dbe00aa6c4bcef210c2a2634374aedeb22fb4a8f8f"},
+    {file = "pylint-3.2.6.tar.gz", hash = "sha256:a5d01678349454806cff6d886fb072294f56a58c4761278c97fb557d708e1eb3"},
 ]
 pylint-junit = [
     {file = "pylint_junit-0.3.4-py2.py3-none-any.whl", hash = "sha256:006f8e793a1b64f1e0c8a29c6ee531b8af971deddafbc605c3076270f36c88f0"},
@@ -2529,8 +2498,8 @@ sphinxcontrib-devhelp = [
     {file = "sphinxcontrib_devhelp-1.0.6.tar.gz", hash = "sha256:9893fd3f90506bc4b97bdb977ceb8fbd823989f4316b28c3841ec128544372d3"},
 ]
 sphinxcontrib-htmlhelp = [
-    {file = "sphinxcontrib_htmlhelp-2.0.5-py3-none-any.whl", hash = "sha256:393f04f112b4d2f53d93448d4bce35842f62b307ccdc549ec1585e950bc35e04"},
-    {file = "sphinxcontrib_htmlhelp-2.0.5.tar.gz", hash = "sha256:0dc87637d5de53dd5eec3a6a01753b1ccf99494bd756aafecd74b4fa9e729015"},
+    {file = "sphinxcontrib_htmlhelp-2.0.6-py3-none-any.whl", hash = "sha256:1b9af5a2671a61410a868fce050cab7ca393c218e6205cbc7f590136f207395c"},
+    {file = "sphinxcontrib_htmlhelp-2.0.6.tar.gz", hash = "sha256:c6597da06185f0e3b4dc952777a04200611ef563882e0c244d27a15ee22afa73"},
 ]
 sphinxcontrib-jquery = [
     {file = "sphinxcontrib-jquery-4.1.tar.gz", hash = "sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a"},
@@ -2544,8 +2513,8 @@ sphinxcontrib-plantuml = [
     {file = "sphinxcontrib-plantuml-0.22.tar.gz", hash = "sha256:a42c7a13ab1ae9ed18e8e8b0f76b8d35dc476fdebe6e634354fe6fd0f261f686"},
 ]
 sphinxcontrib-qthelp = [
-    {file = "sphinxcontrib_qthelp-1.0.7-py3-none-any.whl", hash = "sha256:e2ae3b5c492d58fcbd73281fbd27e34b8393ec34a073c792642cd8e529288182"},
-    {file = "sphinxcontrib_qthelp-1.0.7.tar.gz", hash = "sha256:053dedc38823a80a7209a80860b16b722e9e0209e32fea98c90e4e6624588ed6"},
+    {file = "sphinxcontrib_qthelp-1.0.8-py3-none-any.whl", hash = "sha256:323d6acc4189af76dfe94edd2a27d458902319b60fcca2aeef3b2180c106a75f"},
+    {file = "sphinxcontrib_qthelp-1.0.8.tar.gz", hash = "sha256:db3f8fa10789c7a8e76d173c23364bdf0ebcd9449969a9e6a3dd31b8b7469f03"},
 ]
 sphinxcontrib-serializinghtml = [
     {file = "sphinxcontrib_serializinghtml-1.1.10-py3-none-any.whl", hash = "sha256:326369b8df80a7d2d8d7f99aa5ac577f51ea51556ed974e7716cfd4fca3f6cb7"},

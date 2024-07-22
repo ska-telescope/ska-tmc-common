@@ -2,9 +2,10 @@
 This module defines classes/methods that manage
 the adapters required to communicate with various devices.
 """
+import logging
 from typing import Any, Optional, Union
 
-import mock
+from ska_ser_logging.configuration import configure_logging
 from tango import DeviceProxy
 
 from ska_tmc_common.adapters import (
@@ -22,6 +23,9 @@ from ska_tmc_common.adapters import (
     SubarrayAdapter,
 )
 
+configure_logging()
+logger = logging.getLogger(__name__)
+
 
 class HelperAdapterFactory(AdapterFactory):
     """
@@ -32,6 +36,7 @@ class HelperAdapterFactory(AdapterFactory):
         super().__init__()
         self.adapters = []
 
+    # pylint: disable=unused-argument
     def get_or_create_adapter(
         self,
         dev_name: str,
@@ -60,10 +65,14 @@ class HelperAdapterFactory(AdapterFactory):
         :rtype: Union
         """
         if proxy is None:
-            proxy = mock.Mock(attrs)
-
+            proxy = self._dev_factory.get_device(dev_name)
+            logger.debug("The proxy for device %s is created", dev_name)
         for adapter in self.adapters:
             if adapter.dev_name == dev_name:
+                logger.debug(
+                    "The adapter is created for device name %s",
+                    adapter.dev_name,
+                )
                 return adapter
 
         new_adapter = None

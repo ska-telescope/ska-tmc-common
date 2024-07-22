@@ -67,6 +67,8 @@ Added
 
 Fixed
 -----
+[0.17.11]
+* Fixed the issue of mock objects getting created in HelperAdapterFactory for every device in unittest cases
 
 [0.17.10]
 * Update logger statements
