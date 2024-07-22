@@ -3,7 +3,7 @@ This module defines classes/methods that manage
 the adapters required to communicate with various devices.
 """
 import logging
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 from ska_ser_logging.configuration import configure_logging
 from tango import DeviceProxy
@@ -36,13 +36,11 @@ class HelperAdapterFactory(AdapterFactory):
         super().__init__()
         self.adapters = []
 
-    # pylint: disable=unused-argument
     def get_or_create_adapter(
         self,
         dev_name: str,
         adapter_type: AdapterType = AdapterType.BASE,
         proxy: Optional[DeviceProxy] = None,
-        attrs: Any = None,
     ) -> Union[
         DishAdapter,
         DishLeafAdapter,
@@ -70,7 +68,7 @@ class HelperAdapterFactory(AdapterFactory):
         for adapter in self.adapters:
             if adapter.dev_name == dev_name:
                 logger.debug(
-                    "The adapter is created for device name %s",
+                    "An existing adapter is being returned for device %s",
                     adapter.dev_name,
                 )
                 return adapter
