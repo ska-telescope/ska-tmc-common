@@ -68,6 +68,9 @@ Added
 Fixed
 -----
 
+[0.17.11]
+* Fixed the issue of mock devices getting created in HelperAdapterFactory
+
 [0.17.10]
 * Update logger statements
 * Added new class logManager for managing repetitive logs

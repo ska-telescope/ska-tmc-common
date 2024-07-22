@@ -50,7 +50,7 @@ def test_check_allowed(command_object, value, result):
     assert return_value == result
 
 
-def test_adapter_creation(command_object: DummyCommand):
+def test_adapter_creation(tango_context, command_object: DummyCommand):
     device = "src/tmc/common"
     start_time = time.time()
     command_object.adapter_factory = HelperAdapterFactory()
