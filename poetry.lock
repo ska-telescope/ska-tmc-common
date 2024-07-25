@@ -2083,7 +2083,7 @@ reference = "ska-nexus"
 
 [[package]]
 name = "ska-telmodel"
-version = "1.18.2"
+version = "1.19.0"
 description = "SKA telescope model library"
 optional = false
 python-versions = "^3.10.0"
@@ -2103,8 +2103,8 @@ toolz = "^0.12.0"
 [package.source]
 type = "git"
 url = "https://gitlab.com/ska-telescope/ska-telmodel.git"
-reference = "sah-1560"
-resolved_reference = "9a8265594e6e70f21a78e7d6401b03f58a42de50"
+reference = "sah-1560-from-master"
+resolved_reference = "f7e9e70cda344a528394272646702ac81cf4593c"
 
 [[package]]
 name = "smmap"
@@ -2545,4 +2545,4 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "92e866ccd100e8b99a64939ab4296189d090bfbadf080074f6e1afced8695e22"
+content-hash = "4f964d699e4f209d6e5732dec8b9edbbd9797d44f569b65f8f15132d112fdd2a"
