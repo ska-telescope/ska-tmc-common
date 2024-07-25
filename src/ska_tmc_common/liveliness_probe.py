@@ -11,6 +11,7 @@ import tango
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
+from ska_tmc_common.log_manager import LogManager
 
 
 class BaseLivelinessProbe:
@@ -29,6 +30,7 @@ class BaseLivelinessProbe:
         logger: Logger,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
+        max_logging_time: int = 5,
     ):
         self._thread = threading.Thread(target=self.run)
         self._stop = False
@@ -38,6 +40,7 @@ class BaseLivelinessProbe:
         self._proxy_timeout = proxy_timeout
         self._sleep_time = sleep_time
         self._dev_factory = DevFactory()
+        self.log_manager = LogManager(max_logging_time)
 
     def start(self) -> None:
         """
@@ -70,6 +73,29 @@ class BaseLivelinessProbe:
             self._component_manager.update_ping_info(
                 proxy.ping(), dev_info.dev_name
             )
+        # except tango.CommunicationFailed as exception:
+        #     if "Timeout (500 mS) exceeded on device" not in exception:
+        #     if self.log_manager.is_logging_allowed("communication_failed"):
+        #             self._logger.exception(
+        #                 "Error on %s: %s", dev_info.dev_name, exception
+        #             )
+        #
+        # except (AttributeError, tango.DevFailed) as exception:
+        #     if self.log_manager.is_logging_allowed("attribute_error"):
+        #         self._logger.exception(
+        #             "Error on %s: %s", dev_info.dev_name, exception
+        #         )
+        #     self._component_manager.update_device_ping_failure(
+        #         dev_info, f"Unable to ping device {dev_info.dev_name}"
+        #     )
+        # except BaseException as exception:
+        #     if self.log_manager.is_logging_allowed("base_exception"):
+        #         self._logger.exception(
+        #             "Error on %s: %s", dev_info.dev_name, exception
+        #         )
+        #     self._component_manager.update_device_ping_failure(
+        #         dev_info, f"Unable to ping device {dev_info.dev_name}"
+        #     )
         except tango.CommunicationFailed as exception:
             if "Timeout (500 mS) exceeded on device" not in exception:
                 self._logger.exception(
@@ -104,8 +130,15 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
+        max_logging_time: int = 5,
     ):
-        super().__init__(component_manager, logger, proxy_timeout, sleep_time)
+        super().__init__(
+            component_manager,
+            logger,
+            proxy_timeout,
+            sleep_time,
+            max_logging_time,
+        )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
 
