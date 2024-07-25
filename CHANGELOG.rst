@@ -68,6 +68,9 @@ Added
 Fixed
 -----
 
+[0.18.0]
+* Utilise SKA Tel Model with OSO-TMC Configure schema v4.0 for ADR-99 changes
+
 [0.17.11]
 * Fixed the issue of mock devices getting created in HelperAdapterFactory
 
