@@ -14,7 +14,7 @@ python-pre-publish:
 #DAR401 Missing exception(s) in Raises section: -r Exception
 PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR103,DAR301,W503,DAR003
 MARK ?=
-PYTHON_VARS_AFTER_PYTEST ?= --count=50 -m '$(MARK)' $(ADD_ARGS) $(FILE) -x 
+PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE) -x 
 
 # include makefile to pick up the standard Make targets, e.g., 'make build'
 # build, 'make push' docker push procedure, etc. The other Make targets

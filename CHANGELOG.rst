@@ -7,6 +7,11 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 -----
+
+[0.18.0]
+*********
+* Added StaticPmSetup command in helper dish device to handle global pointing json.
+
 [0.17.2]
 *********
 * Updated ska-telmodel v.1.17.0 which includes OET-TMC low
