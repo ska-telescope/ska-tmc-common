@@ -156,17 +156,17 @@ class AttributeAccessCommand(BaseCommand):
 
         # read attribute value
         double_data = this_tango_device.read_attr("DoubleAttrib")
-        log_message = f"double_data read: {double_data}"
-        self.logger.info(log_message)
+        self.logger.info("Double type attribute value is: %s", double_data)
+
 
         string_data = this_tango_device.read_attr("StrAttrib")
-        log_message = f"string_data read: {string_data}"
-        self.logger.info(log_message)
+        self.logger.info("String type attribute value is:: %s", string_data)
+
 
         ## perform business operations
         double_data += device_data.double_common_data
-        log_message = f"double_data new value: {double_data}"
-        self.logger.info(log_message)
+        self.logger.info("Double type attribute new value: %s", double_data)
+
 
         # write attribute value
         this_tango_device.write_attr("DoubleAttrib", double_data)
@@ -183,8 +183,8 @@ class PropertyAccessCommand(BaseCommand):
 
         # read property value
         property_value = this_tango_device.read_property("TestProperty")
-        log_message = f"property_value: {property_value}"
-        self.logger.info(log_message)
+        self.logger.info("Test Property value: %s", property_value)
+
 
         # # perform business operations
         new_value = device_data.string_common_data + " " + argin
@@ -194,8 +194,8 @@ class PropertyAccessCommand(BaseCommand):
 
         # # read property value
         property_value = this_tango_device.read_property("TestProperty")
-        log_message = f"property_value: {property_value}"
-        self.logger.info(log_message)
+        self.logger.info("Test Property value: %s", property_value)
+
 
 
 class DeviceData:
@@ -218,6 +218,7 @@ class DeviceData:
 
     @staticmethod
     def get_instance():
+        """Returns instance of DeviceData class"""
         if DeviceData.__instance is None:
             DeviceData()
         return DeviceData.__instance
