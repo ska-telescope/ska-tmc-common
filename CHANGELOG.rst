@@ -67,6 +67,8 @@ Added
 
 Fixed
 -----
+[0.17.12]
+* Fixed the issue in logManager
 
 [0.17.11]
 * Fixed the issue of mock devices getting created in HelperAdapterFactory

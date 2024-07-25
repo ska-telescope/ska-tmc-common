@@ -1,19 +1,27 @@
 import time
 
+import pytest
+
 from ska_tmc_common.log_manager import LogManager
 
 
+@pytest.mark.ska5
 def test_is_logging_allowed_within_waiting_time():
     """Tests that is_logging_allowed returns False if logged recently."""
-    log_manager = LogManager(max_waiting_time=2)
-    log_manager.log_type_to_last_logged_time["log_type"] = time.time()
-    assert log_manager.is_logging_allowed("log_type") is False
+    log_manager = LogManager(max_waiting_time=5)
+    # log_manager.log_type_to_last_logged_time["log_type"] = time.time()
+    assert log_manager.is_logging_allowed("log_type") is True
 
     time.sleep(2)
+
+    assert log_manager.is_logging_allowed("log_type") is False
+
+    time.sleep(6)
 
     assert log_manager.is_logging_allowed("log_type") is True
 
 
+@pytest.mark.ska5
 def test_is_logging_allowed_exceeded_waiting_time():
     """Tests that is_logging_allowed returns True if enough time passed"""
     log_manager = LogManager(max_waiting_time=2)  # Set lower wait time

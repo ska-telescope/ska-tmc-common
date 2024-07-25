@@ -75,51 +75,27 @@ class BaseLivelinessProbe:
             )
         except tango.CommunicationFailed as exception:
             if "Timeout (500 mS) exceeded on device" not in exception:
-                # if self.log_manager.is_logging_allowed
-                # ("communication_failed"):
-                self._logger.exception(
-                    f"Error on {dev_info.dev_name}: {exception} "
-                )
+                if self.log_manager.is_logging_allowed("communication_failed"):
+                    self._logger.exception(
+                        "Error on %s: %s", dev_info.dev_name, exception
+                    )
 
         except (AttributeError, tango.DevFailed) as exception:
-            # if self.log_manager.is_logging_allowed("attribute_error"):
-            self._logger.exception(
-                f"Error on {dev_info.dev_name}: {exception} "
-            )
+            if self.log_manager.is_logging_allowed("attribute_error"):
+                self._logger.exception(
+                    "Error on %s: %s", dev_info.dev_name, exception
+                )
             self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
         except BaseException as exception:
-            #  if self.log_manager.is_logging_allowed("base_exception"):
-            self._logger.exception(
-                f"Error on {dev_info.dev_name}: {exception} "
-            )
+            if self.log_manager.is_logging_allowed("base_exception"):
+                self._logger.exception(
+                    "Error on %s: %s", dev_info.dev_name, exception
+                )
             self._component_manager.update_device_ping_failure(
                 dev_info, f"Unable to ping device {dev_info.dev_name}"
             )
-
-        # except tango.CommunicationFailed as exception:
-        #     if "Timeout (500 mS) exceeded on device" not in exception:
-        #         self._logger.exception(
-        #             f"Error on {dev_info.dev_name}: {exception} "
-        #         )
-        #         self._component_manager.update_device_ping_failure(
-        #             dev_info, f"Unable to ping device {dev_info.dev_name}"
-        #         )
-        # except (AttributeError, tango.DevFailed) as exception:
-        #     self._logger.exception(
-        #         f"Error on {dev_info.dev_name}: {exception} "
-        #     )
-        #     self._component_manager.update_device_ping_failure(
-        #         dev_info, f"Unable to ping device {dev_info.dev_name}"
-        #     )
-        # except BaseException as exception:
-        #     self._logger.exception(
-        #         f"Error on {dev_info.dev_name}: {exception} "
-        #     )
-        #     self._component_manager.update_device_ping_failure(
-        #         dev_info, f"Unable to ping device {dev_info.dev_name}"
-        #     )
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
