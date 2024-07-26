@@ -177,7 +177,7 @@ class HelperBaseDevice(SKABaseDevice):
         )
 
         if fault_type == FaultType.FAILED_RESULT:
-            return [result], [command_id]
+            return [result], [fault_message]
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
