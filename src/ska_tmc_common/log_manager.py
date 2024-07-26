@@ -27,8 +27,8 @@ class LogManager:
         )
 
         if (
-            current_time - last_logged_time >= self.max_waiting_time
-            or last_logged_time is None
+            last_logged_time is None
+            or current_time - last_logged_time >= self.max_waiting_time
         ):
             self.log_type_to_last_logged_time[log_type] = current_time
             return True
