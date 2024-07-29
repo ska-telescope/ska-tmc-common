@@ -198,7 +198,7 @@ def test_achived_pointing(tango_context):
 
 
 def test_static_pm_setup_command(tango_context, json_factory):
-    """This test verifies the functioning of StaticPmSetup commands"""
+    """This test verifies the functioning of StaticPmSetup command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
     global_pointing_data = json_factory("global_pointing_model")
@@ -208,7 +208,7 @@ def test_static_pm_setup_command(tango_context, json_factory):
 
 
 def test_static_pm_setup_command_with_faulty_json(tango_context, json_factory):
-    """This test verifies the JSONDecodeError of StaticPmSetup commands"""
+    """This test verifies the JSONDecodeError of StaticPmSetup command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
 

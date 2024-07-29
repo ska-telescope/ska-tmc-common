@@ -6,11 +6,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
------
-
+--------
 [0.18.0]
-*********
-* Added StaticPmSetup command in helper dish device to handle global pointing json.
+**********
+* Utilise SKA Tel Model with OSO-TMC Configure schema v4.0 for ADR-99 changes
 
 [0.17.2]
 *********
@@ -71,7 +70,10 @@ Added
 
 
 Fixed
------
+-------
+
+[0.17.12]
+* Fixed the issue in logManager
 
 [0.17.11]
 * Fixed the issue of mock devices getting created in HelperAdapterFactory
