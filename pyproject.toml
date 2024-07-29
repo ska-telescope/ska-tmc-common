@@ -28,8 +28,8 @@ black = "^23.3.0"
 ska-ser-logging = "^0.4.1"
 ska-tango-base = "1.0.0"
 ska-tango-testing = "0.6.0"
-katpoint = "1.0a2"
-ska-telmodel = "1.19.0"
+katpoint = "^1.0a2"
+ska-telmodel = "^1.19.0"
 mock = "^4.0.3"
 
 [tool.poetry.dev-dependencies]
