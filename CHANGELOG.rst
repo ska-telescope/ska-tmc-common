@@ -6,7 +6,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
------
+--------
+[0.18.0]
+**********
+* Utilise SKA Tel Model with OSO-TMC Configure schema v4.0 for ADR-99 changes
+
 [0.17.2]
 *********
 * Updated ska-telmodel v.1.17.0 which includes OET-TMC low
@@ -66,7 +70,8 @@ Added
 
 
 Fixed
------
+-------
+
 [0.17.12]
 * Fixed the issue in logManager
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.17.12"
+version = "0.18.0"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -29,7 +29,7 @@ ska-ser-logging = "^0.4.1"
 ska-tango-base = "1.0.0"
 ska-tango-testing = "0.6.0"
 katpoint = "^1.0a2"
-ska-telmodel = "1.18.2"
+ska-telmodel = "^1.19.0"
 mock = "^4.0.3"
 
 [tool.poetry.dev-dependencies]
