@@ -29,7 +29,7 @@ ska-ser-logging = "^0.4.1"
 ska-tango-base = "1.0.0"
 ska-tango-testing = "0.6.0"
 katpoint = "1.0a2"
-ska-telmodel = { git = "https://gitlab.com/ska-telescope/ska-telmodel.git", branch = "sah-1560-from-master" }
+ska-telmodel = "1.19.0"
 mock = "^4.0.3"
 
 [tool.poetry.dev-dependencies]
