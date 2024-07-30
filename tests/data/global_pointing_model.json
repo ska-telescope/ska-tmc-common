@@ -1,0 +1,136 @@
+{
+"JSON_version": "V0.7",
+    "Antenna": "SKA001",
+    "Feed": "Band_2",
+    "Attrs": {
+      "Obs_date_time": "2021-03-11T12:34:56Z",
+      "eb_id": "eb-t0001-20231018-00004",
+      "Source": "SKAO SysSci pointing fit v0.3",
+      "Analysis_date_time": "2024-07-17T13:09:10Z",
+      "Comment": "perhaps a comment from the operator?"
+    },
+    "Coefficients": {
+      "IA": {
+        "value": -490.4139911342723,
+        "units": "arcsec",
+        "stderr": 33.82722286885928,
+        "used": true
+      },
+      "CA": {
+        "value": -48.856993577220535,
+        "units": "arcsec",
+        "stderr": 50.29775870582012,
+        "used": true
+      },
+      "NPAE": {
+        "value": 2.0968290502897826,
+        "units": "arcsec",
+        "stderr": 40.44823286608538,
+        "used": true
+      },
+      "AN": {
+        "value": 4.7931609425833335,
+        "units": "arcsec",
+        "stderr": 2.2746045648435325,
+        "used": true
+      },
+      "AN0": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "AW": {
+        "value": 12.250730784549765,
+        "units": "arcsec",
+        "stderr": 2.2169460313351315,
+        "used": true
+      },
+      "AW0": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "ACEC": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "ACES": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "ABA": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "ABphi": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "IE": {
+        "value": 1466.1575921441813,
+        "units": "arcsec",
+        "stderr": 6.2885757464092205,
+        "used": true
+      },
+      "ECEC": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "ECES": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "HECE4": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "HESE4": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "HECE8": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      },
+      "HESE8": {
+        "value": 0.0,
+        "units": "arcsec",
+        "stderr": null,
+        "used": false
+      }
+    },
+    "RMS_fit": {
+      "Xel_rms": {
+        "value": 9.77310151996097,
+        "units": "arcsec"
+      },
+      "El_rms": {
+        "value": 10.902673945910625,
+        "units": "arcsec"
+      },
+      "Sky_rms": {
+        "value": 14.641783104878375,
+        "units": "arcsec"
+      }
+    }
+  }

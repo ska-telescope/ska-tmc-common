@@ -548,6 +548,18 @@ class DishLeafAdapter(BaseAdapter):
         """
         return self._proxy.SetKValue(kvalue)
 
+    def StaticPmSetup(
+        self, argin: List[float]
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes StaticPmSetup on device proxy.
+        Its a dummy command at present.
+        Will be renamed, once Dish ICD gets updated.
+
+        :return: command invocation on Dish device proxy
+        """
+        return self._proxy.StaticPmSetup(argin)
+
 
 class DishAdapter(DishLeafAdapter):
     """This class is used as an Adapter for Dish Master Devices."""

@@ -51,6 +51,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._program_track_table = []
         self._program_track_table_lock = threading.Lock()
         self._scan_id = ""
+        self._global_pointing_data: str = ""
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -895,6 +896,53 @@ class HelperDishDevice(HelperDishLNDevice):
             [ResultCode.QUEUED],
             [command_id],
         )
+
+    @command(dtype_in="str", dtype_out="DevVarLongStringArray")
+    def StaticPmSetup(
+        self, global_pointing_data: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method applies the received global pointing model data.
+        Its a dummy command at present.
+        Will be renamed, once Dish ICD gets updated.
+
+        :param global_pointing_data: Global pointing data
+        :type global_pointing_data: str
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+
+        command_id = f"{time.time()}_StaticPmSetup"
+        try:
+            if self.defective_params[
+                "enabled"
+            ]:  # Temporary change to set status as failed.
+                thread = threading.Timer(
+                    self._delay,
+                    function=self.push_command_result,
+                    args=[ResultCode.FAILED, "StaticPmSetup"],
+                    kwargs={
+                        "message": "Failed to execute StaticPmSetup",
+                        "command_id": command_id,
+                    },
+                )
+            else:
+                thread = threading.Timer(
+                    self._delay,
+                    function=self.push_command_result,
+                    args=[ResultCode.OK, "StaticPmSetup"],
+                    kwargs={"command_id": command_id},
+                )
+            thread.start()
+            self._global_pointing_data = json.loads(global_pointing_data)
+            self.logger.info(
+                "Processed Global pointing data successfully. Data is: %s",
+                self._global_pointing_data,
+            )
+            return [ResultCode.QUEUED], [command_id]
+        except json.JSONDecodeError as e:
+            self.logger.exception("Failed to decode JSON: %s", e)
+            return [ResultCode.FAILED], ["Failed to decode JSON"]
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Reset_allowed(self) -> bool:
