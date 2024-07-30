@@ -555,7 +555,7 @@ class DishLeafAdapter(BaseAdapter):
         Invokes StaticPmSetup on device proxy.
         Its a dummy command at present.
         Will be renamed, once Dish ICD gets updated.
-        
+
         :return: command invocation on Dish device proxy
         """
         return self._proxy.StaticPmSetup(argin)
