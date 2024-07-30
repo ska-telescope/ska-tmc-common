@@ -6,6 +6,7 @@ from ska_tango_base.control_model import ObsState
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import (
+    DEFAULT_DEFECT_EXCEPTION,
     DEFAULT_DEFECT_SETTINGS,
     HELPER_MCCS_CONTROLLER,
     MCCS_SUBARRAY_DEVICE,
@@ -75,22 +76,22 @@ def test_mccs_controller_allocate_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, command_id = mccs_controller_device.command_inout(
+    result, message = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
     assert result[0] == ResultCode.FAILED
-    assert "Allocate" in command_id[0]
+    assert DEFAULT_DEFECT_EXCEPTION in message[0]
 
 
 def test_mccs_controller_release_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, command_id = mccs_controller_device.command_inout(
+    result, message = mccs_controller_device.command_inout(
         "Release", release_argin_string
     )
     assert result[0] == ResultCode.FAILED
-    assert "Release" in command_id[0]
+    assert DEFAULT_DEFECT_EXCEPTION in message[0]
 
 
 def test_allocate_stuck_in_intermediate_state(tango_context):

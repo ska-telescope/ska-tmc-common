@@ -126,6 +126,10 @@ reference = "PyPI-public"
 name = "attrs"
 version = "23.2.0"
 description = "Classes Without Boilerplate"
+<<<<<<< Updated upstream
+=======
+category = "main"
+>>>>>>> Stashed changes
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -577,12 +581,18 @@ reference = "PyPI-public"
 name = "execnet"
 version = "2.1.1"
 description = "execnet: rapid multi-Python deployment"
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
     {file = "execnet-2.1.1-py3-none-any.whl", hash = "sha256:26dee51f1b80cebd6d0ca8e74dd8745419761d3bef34163928cbebbdc4749fdc"},
     {file = "execnet-2.1.1.tar.gz", hash = "sha256:5189b52c6121c24feae288166ab41b32549c7e2348652736540b9e6e7d4e72e3"},
 ]
+=======
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.extras]
 testing = ["hatch", "pre-commit", "pytest", "tox"]
@@ -827,12 +837,18 @@ reference = "PyPI-public"
 name = "jsonschema"
 version = "4.23.0"
 description = "An implementation of JSON Schema validation for Python"
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
     {file = "jsonschema-4.23.0-py3-none-any.whl", hash = "sha256:fbadb6f8b144a8f8cf9f0b89ba94501d143e50411a1278633f56a7acf7fd5566"},
     {file = "jsonschema-4.23.0.tar.gz", hash = "sha256:d71497fef26351a33265337fa77ffeb82423f3ea21283cd9467bb03999266bc4"},
 ]
+=======
+category = "main"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.dependencies]
 attrs = ">=22.2.0"
@@ -853,6 +869,10 @@ reference = "PyPI-public"
 name = "jsonschema-specifications"
 version = "2023.12.1"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
+<<<<<<< Updated upstream
+=======
+category = "main"
+>>>>>>> Stashed changes
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -1198,12 +1218,18 @@ reference = "PyPI-public"
 name = "platformdirs"
 version = "4.2.2"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
     {file = "platformdirs-4.2.2-py3-none-any.whl", hash = "sha256:2d7a1657e36a80ea911db832a8a6ece5ee53d8de21edd5cc5879af6530b1bfee"},
     {file = "platformdirs-4.2.2.tar.gz", hash = "sha256:38b7b51f512eed9e84a22788b4bce1de17c0adb134d6becb09836e37d8654cd3"},
 ]
+=======
+category = "main"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.extras]
 docs = ["furo (>=2023.9.10)", "proselint (>=0.13)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1.25.2)"]
@@ -1353,12 +1379,18 @@ reference = "PyPI-public"
 name = "pygments"
 version = "2.18.0"
 description = "Pygments is a syntax highlighting package written in Python."
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
     {file = "pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a"},
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
 ]
+=======
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
@@ -1694,12 +1726,18 @@ reference = "PyPI-public"
 name = "referencing"
 version = "0.35.1"
 description = "JSON Referencing + Python"
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
     {file = "referencing-0.35.1-py3-none-any.whl", hash = "sha256:eda6d3234d62814d1c64e305c1331c9a3a6132da475ab6382eaa997b21ee75de"},
     {file = "referencing-0.35.1.tar.gz", hash = "sha256:25b42124a6c8b632a425174f24087783efb348a6f1e0008e63cd4466fedf703c"},
 ]
+=======
+category = "main"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.dependencies]
 attrs = ">=22.2.0"
@@ -1777,6 +1815,7 @@ reference = "PyPI-public"
 name = "rpds-py"
 version = "0.19.1"
 description = "Python bindings to Rust's persistent data structures (rpds)"
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -1884,6 +1923,11 @@ files = [
     {file = "rpds_py-0.19.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:2ddd50f18ebc05ec29a0d9271e9dbe93997536da3546677f8ca00b76d477680c"},
     {file = "rpds_py-0.19.1.tar.gz", hash = "sha256:31dd5794837f00b46f4096aa8ccaa5972f73a938982e32ed817bb520c465e520"},
 ]
+=======
+category = "main"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.source]
 type = "legacy"
@@ -2525,12 +2569,18 @@ reference = "PyPI-public"
 name = "urllib3"
 version = "2.2.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
+<<<<<<< Updated upstream
 optional = false
 python-versions = ">=3.8"
 files = [
     {file = "urllib3-2.2.2-py3-none-any.whl", hash = "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472"},
     {file = "urllib3-2.2.2.tar.gz", hash = "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"},
 ]
+=======
+category = "main"
+optional = false
+python-versions = ">=3.8"
+>>>>>>> Stashed changes
 
 [package.extras]
 brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
