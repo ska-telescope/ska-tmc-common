@@ -903,6 +903,8 @@ class HelperDishDevice(HelperDishLNDevice):
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         This method applies the received global pointing model data.
+        Its a dummy command at present.
+        Will be renamed, once Dish ICD gets updated.
 
         :param global_pointing_data: Global pointing data
         :type global_pointing_data: str
