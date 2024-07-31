@@ -76,6 +76,10 @@ Added
 Fixed
 -------
 
+[0.19.1]
+**********
+* Updating commandCallInfo attribute in TrackLoadStaticOff command
+
 [0.17.12]
 * Fixed the issue in logManager
 
