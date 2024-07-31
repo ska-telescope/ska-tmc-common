@@ -374,6 +374,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
+        self.update_command_info(CONFIGURE_BAND_1, json.dumps(argin))
 
         # Will be uncommented as a part of SAH-1530
         # command_id = f"{time.time()}-TrackLoadStaticOff"
