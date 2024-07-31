@@ -7,6 +7,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
+[0.19.0]
+**********
+* Added StaticPmSetup command in helper dish device to handle global pointing json.
+
 [0.18.0]
 **********
 * Utilise SKA Tel Model with OSO-TMC Configure schema v4.0 for ADR-99 changes
@@ -71,6 +75,10 @@ Added
 
 Fixed
 -------
+
+[0.19.1]
+**********
+* Updating commandCallInfo attribute in TrackLoadStaticOff command
 
 [0.17.12]
 * Fixed the issue in logManager
