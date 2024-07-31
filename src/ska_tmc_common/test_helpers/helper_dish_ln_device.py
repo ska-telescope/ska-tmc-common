@@ -1194,6 +1194,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id)
             # TBD: Add your dish mode change logic here if required
+        self.push_command_result(
+            ResultCode.OK, "EndScan", command_id=command_id
+        )
         return (
             [ResultCode.QUEUED],
             [command_id],
