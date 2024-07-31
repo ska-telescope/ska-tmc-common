@@ -896,6 +896,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(ABORT_COMMANDS, "")
         self.logger.info("Abort Completed")
+        self._pointing_state = PointingState.READY
+        self.push_change_event("pointingState", self._pointing_state)
+        self.logger.info("Pointing State: %s", self._pointing_state)
         return (
             [ResultCode.OK],
             [command_id],
