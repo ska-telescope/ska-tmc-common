@@ -7,6 +7,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
+[0.19.1]
+**********
+* Updated EndScan command for dish leaf node to push LRCR.
+
 [0.19.0]
 **********
 * Added StaticPmSetup command in helper dish device to handle global pointing json.
