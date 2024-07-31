@@ -4,6 +4,7 @@
 import json
 import logging
 import threading
+import time
 from typing import Tuple
 
 import tango
@@ -13,6 +14,7 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
@@ -239,20 +241,128 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state,
         )
 
+    def push_command_result(
+        self,
+        result_code: ResultCode,
+        command_name: str,
+        message: str = "Command Completed",
+        command_id: str = "",
+    ) -> None:
+        """
+        Push long running command result event for given command.
+
+        :param result_code: The result code to be pushed as an event
+        :type result_code: ResultCode
+        :param command_name: The command name for which event is being pushed
+        :type command_name: str
+        :param message: The message associated with the command result
+        :type message: str
+        :param command_id: The unique command id
+        :type command_id: str
+        """
+
+        if not command_id:
+            command_id = f"{time.time()}-{command_name}"
+        command_result = (
+            command_id,
+            json.dumps((result_code, message)),
+        )
+        self.logger.info(
+            "Pushing longRunningCommandResult Event with data: %s",
+            command_result,
+        )
+        self.push_change_event("longRunningCommandResult", command_result)
+
+    def error_message(self, command_name: str):
+        self.logger.info("Inducing fault for command %s", command_name)
+        fault_type = self.defective_params.get("fault_type")
+        fault_message = self.defective_params.get(
+            "error_message", "Exception occurred"
+        )
+        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            raise tango.Except.throw_exception(
+                fault_message,
+                "Long running exception induced",
+                "HelperSdpSubarray.induce_fault()",
+                tango.ErrSeverity.ERR,
+            )
+
+    def induce_fault(self, command_name: str, command_id: str):
+        """
+        Induces a fault into the device based on the given parameters.
+
+        :param command_name: The name of the command for which a fault is
+            being induced.
+        :type command_name: str
+        :param command_id: The command id over which the LRCR event is to be
+            pushed.
+        :type command_id: str
+
+
+        Example:
+            defective_params = json.dumps({"enabled": False,"fault_type":
+            FaultType.FAILED_RESULT,"error_message": "Default exception.",
+            "result": ResultCode.FAILED,})
+            proxy.SetDefective(defective_params)
+
+        Explanation:
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
+
+        - LONG_RUNNING_EXCEPTION:
+            A fault type where a failed result will be sent over the
+            LongRunningCommandResult attribute in 'delay' amount of time.
+
+        - STUCK_IN_INTERMEDIATE_STATE:
+            This fault type makes it such that the device is stuck in the given
+            Observation state.
+        """
+
+        fault_type = self.defective_params.get("fault_type")
+        result = self.defective_params.get("result", ResultCode.FAILED)
+        fault_message = self.defective_params.get(
+            "error_message", "Exception occurred"
+        )
+        intermediate_state = (
+            self.defective_params.get("intermediate_state")
+            or ObsState.RESOURCING
+        )
+
+        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            thread = threading.Timer(
+                self._delay,
+                function=self.error_message,
+                args=[result, command_name],
+                kwargs={"message": fault_message, "command_id": command_id},
+            )
+            thread.start()
+
+        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            self._obs_state = intermediate_state
+            self.push_obs_state_event(intermediate_state)
+
     @command()
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
+        command_id = f"{time.time()}_ReleaseAllResources"
         self.update_command_info(RELEASE_ALL_RESOURCES)
+        # need to call induce fault here with some condition
         self._obs_state = ObsState.RESOURCING
-        self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
-        thread = threading.Timer(
-            self._command_delay_info[RELEASE_ALL_RESOURCES],
-            self.update_device_obsstate,
-            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
-        )
-        self.timers.append(thread)
-        thread.start()
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ReleaseAllResources", command_id)
+        if self._state_duration_info:
+            self._follow_state_duration()
+        else:
+            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
+            thread = threading.Timer(
+                self._command_delay_info[RELEASE_ALL_RESOURCES],
+                self.update_device_obsstate,
+                args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+            )
+            self.timers.append(thread)
+            thread.start()
+        return None
 
     @command(
         dtype_in=("str"),
