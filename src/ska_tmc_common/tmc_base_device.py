@@ -5,7 +5,7 @@ import json
 
 from ska_tango_base import SKABaseDevice
 from tango.server import attribute, device_property
-
+from typing import Any
 
 # pylint: disable=invalid-name
 class TMCBaseDevice(SKABaseDevice):
@@ -115,3 +115,16 @@ class TMCBaseDevice(SKABaseDevice):
             "'create_component_manager` method in "
             "a subclass."
         )
+
+    def push_change_archive_events(
+        self, attribute_name: str, value: Any
+    ) -> None:
+        """Method to push change event and archive event
+        of the given attribute.
+
+        Args:
+            attribute_name (str): Attribute name
+            value (Any): Attribute value need to be pushed
+        """
+        self.push_change_event(attribute_name, value)
+        self.push_archive_event(attribute_name, value)
