@@ -75,7 +75,14 @@ Added
 
 Fixed
 -------
-
+[0.19.3]
+**********
+* Added TMCBaseLeafDevice 
+  
+[0.19.2]
+**********
+* Add method in TMC base device to push change and archive events
+  
 [0.19.1]
 **********
 * Updating commandCallInfo attribute in TrackLoadStaticOff command
