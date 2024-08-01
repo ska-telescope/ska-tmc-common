@@ -241,39 +241,25 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state,
         )
 
-    def push_command_result(
-        self,
-        result_code: ResultCode,
-        command_name: str,
-        message: str = "Command Completed",
-        command_id: str = "",
-    ) -> None:
-        """
-        Push long running command result event for given command.
-
-        :param result_code: The result code to be pushed as an event
-        :type result_code: ResultCode
-        :param command_name: The command name for which event is being pushed
-        :type command_name: str
-        :param message: The message associated with the command result
-        :type message: str
-        :param command_id: The unique command id
-        :type command_id: str
-        """
-
-        if not command_id:
-            command_id = f"{time.time()}-{command_name}"
-        command_result = (
-            command_id,
-            json.dumps((result_code, message)),
-        )
-        self.logger.info(
-            "Pushing longRunningCommandResult Event with data: %s",
-            command_result,
-        )
-        self.push_change_event("longRunningCommandResult", command_result)
-
     def error_message(self, command_name: str):
+        """
+        Induces a fault for a given command by raising a Tango exception based
+        on the specified fault type.
+
+        This method logs the induction of a fault for the provided command and
+        raises an exception if the fault type is `LONG_RUNNING_EXCEPTION`.
+        The exception message and fault type are
+        retrieved from the `defective_params` attribute.
+
+        Parameters:
+        command_name (str): The name of the command for
+        which the fault is being induced.
+
+        Raises:
+        tango.DevFailed: If the fault type is `LONG_RUNNING_EXCEPTION`,
+        an exception is raised with
+        a specified error message and fault details.
+        """
         self.logger.info("Inducing fault for command %s", command_name)
         fault_type = self.defective_params.get("fault_type")
         fault_message = self.defective_params.get(
@@ -323,10 +309,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-        intermediate_state = (
-            self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
-        )
+        intermediate_state = self.defective_params.get("intermediate_state")
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
@@ -339,7 +322,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
-            self.push_obs_state_event(intermediate_state)
 
     @command()
     def ReleaseAllResources(self):
