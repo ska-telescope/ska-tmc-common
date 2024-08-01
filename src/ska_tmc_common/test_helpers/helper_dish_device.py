@@ -66,6 +66,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self._device.set_change_event("achievedPointing", True, False)
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
+            self._device.set_change_event("programTrackTable", True, False)
 
             return (ResultCode.OK, "")
 
