@@ -75,6 +75,10 @@ Added
 
 Fixed
 -------
+[0.19.4]
+**********
+* Fixed prograTrackTable write operation
+
 [0.19.3]
 **********
 * Added TMCBaseLeafDevice 

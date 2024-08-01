@@ -180,6 +180,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 self._program_track_table,
             )
             self.set_achieved_pointing()
+        self.push_change_event("programTrackTable", self._program_track_table)
 
     def read_achievedPointing(self) -> np.ndarray:
         """
