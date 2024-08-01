@@ -2,10 +2,11 @@
 This module includes methods for common attributes.
 """
 import json
+from typing import Any
 
 from ska_tango_base import SKABaseDevice
 from tango.server import attribute, device_property
-from typing import Any
+
 
 # pylint: disable=invalid-name
 class TMCBaseDevice(SKABaseDevice):
