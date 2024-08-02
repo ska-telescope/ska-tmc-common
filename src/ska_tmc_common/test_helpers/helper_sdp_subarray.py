@@ -4,7 +4,6 @@
 import json
 import logging
 import threading
-import time
 from typing import Tuple
 
 import tango
@@ -241,28 +240,32 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state,
         )
 
-    def error_message(self, command_name: str):
+    def throw_exception(self, command_name: str):
         """
-        Induces a fault for a given command by raising a Tango exception based
-        on the specified fault type.
+        Throws an exception for the specified command.
 
-        This method logs the induction of a fault for the provided command and
-        raises an exception if the fault type is `LONG_RUNNING_EXCEPTION`.
-        The exception message and fault type are
-        retrieved from the `defective_params` attribute.
+        This method raises a TANGO `DevFailed` exception with a specified fault
+        message and fault type. The exception details are retrieved from the
+        `defective_params` dictionary, which contains the parameters necessary
+        to simulate the fault.
 
-        Parameters:
-        command_name (str): The name of the command for
-        which the fault is being induced.
+        :param command_name:  The name of the command for which
+            the exception is being thrown.
 
-        :throws: DevFailed in case of error.
+        Raises:
+            DevFailed: Raises a TANGO `DevFailed`
+            exception with the specified error message and fault type.
         """
-        self.logger.info("Inducing fault for command %s", command_name)
 
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-
+        fault_type = self.defective_params.get(
+            "fault_type",
+        )
+        self.logger.info(
+            "Inducing fault for command %s %s", command_name, fault_type
+        )
         raise tango.Except.throw_exception(
             fault_message,
             "Long running exception induced",
@@ -270,25 +273,23 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             tango.ErrSeverity.ERR,
         )
 
-    def induce_fault(self, command_name: str, command_id: str):
+    def induce_fault(self, command_name: str):
         """
         Induces a fault into the device based on the given parameters.
 
         :param command_name: The name of the command for which a fault is
             being induced.
         :type command_name: str
-        :param command_id: The command id over which the LRCR event is to be
-            pushed.
-        :type command_id: str
-
 
         Example:
-            defective_params = json.dumps({"enabled": False,"fault_type":
-            FaultType.FAILED_RESULT,"error_message": "Default exception.",
+
+            defective_params = json.dumps({"enabled": False, "fault_type":
+            FaultType.FAILED_RESULT, "error_message": "Default exception.",
             "result": ResultCode.FAILED,})
             proxy.SetDefective(defective_params)
 
         Explanation:
+
         This method induces various types of faults into a device to test its
         robustness and error-handling capabilities.
 
@@ -311,9 +312,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
             thread = threading.Timer(
                 self._delay,
-                function=self.error_message,
+                function=self.throw_exception,
                 args=[result, command_name],
-                kwargs={"message": fault_message, "command_id": command_id},
+                kwargs={"message": fault_message},
             )
             thread.start()
 
@@ -324,12 +325,11 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
-        command_id = f"{time.time()}_ReleaseAllResources"
         self.update_command_info(RELEASE_ALL_RESOURCES)
-        # need to call induce fault here with some condition
+
         if self.defective_params["enabled"]:
             logger.info("in induce fault condition")
-            return self.induce_fault("ReleaseAllResources", command_id)
+            return self.induce_fault("ReleaseAllResources")
         if self._state_duration_info:
             self._follow_state_duration()
         else:
