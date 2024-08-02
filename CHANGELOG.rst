@@ -75,6 +75,9 @@ Added
 
 Fixed
 -------
+[0.19.4]
+* Fixed the issue in HelperBaseDevice to return faultmessage instead of command_id for FaultType.FAILED_RESULT .
+
 [0.19.3]
 **********
 * Added TMCBaseLeafDevice 
