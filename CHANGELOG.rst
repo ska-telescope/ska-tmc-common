@@ -7,6 +7,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
+[0.19.1]
+**********
+* Push lrcr command result for Helper Dish Device End Scan command
+
 [0.19.0]
 **********
 * Added StaticPmSetup command in helper dish device to handle global pointing json.
