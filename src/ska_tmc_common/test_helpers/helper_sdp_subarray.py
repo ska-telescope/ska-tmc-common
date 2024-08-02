@@ -255,23 +255,20 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         command_name (str): The name of the command for
         which the fault is being induced.
 
-        Raises:
-        tango.DevFailed: If the fault type is `LONG_RUNNING_EXCEPTION`,
-        an exception is raised with
-        a specified error message and fault details.
+        :throws: DevFailed in case of error.
         """
         self.logger.info("Inducing fault for command %s", command_name)
-        fault_type = self.defective_params.get("fault_type")
+
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            raise tango.Except.throw_exception(
-                fault_message,
-                "Long running exception induced",
-                "HelperSdpSubarray.induce_fault()",
-                tango.ErrSeverity.ERR,
-            )
+
+        raise tango.Except.throw_exception(
+            fault_message,
+            "Long running exception induced",
+            "HelperSdpSubarray.induce_fault()",
+            tango.ErrSeverity.ERR,
+        )
 
     def induce_fault(self, command_name: str, command_id: str):
         """
@@ -303,7 +300,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             This fault type makes it such that the device is stuck in the given
             Observation state.
         """
-
+        logger.info("in induce fault method")
         fault_type = self.defective_params.get("fault_type")
         result = self.defective_params.get("result", ResultCode.FAILED)
         fault_message = self.defective_params.get(
@@ -330,12 +327,13 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         command_id = f"{time.time()}_ReleaseAllResources"
         self.update_command_info(RELEASE_ALL_RESOURCES)
         # need to call induce fault here with some condition
-        self._obs_state = ObsState.RESOURCING
         if self.defective_params["enabled"]:
+            logger.info("in induce fault condition")
             return self.induce_fault("ReleaseAllResources", command_id)
         if self._state_duration_info:
             self._follow_state_duration()
         else:
+            self._obs_state = ObsState.RESOURCING
             self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
             thread = threading.Timer(
                 self._command_delay_info[RELEASE_ALL_RESOURCES],
