@@ -25,6 +25,7 @@ from ska_tmc_common.test_helpers.constants import (
     SCAN,
     SET_OPERATE_MODE,
     SKA_EPOCH,
+    TRACK,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -511,7 +512,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self.push_command_result(
                 ResultCode.REJECTED,
                 "ConfigureBand2",
-                exception="Already in band 2",
+                message="Already in band 2",
             )
             return ([ResultCode.REJECTED], ["Already in band 2"])
 
@@ -744,7 +745,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("Track")
+            return self.induce_fault("Track", command_id)
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["Track", command_id]
