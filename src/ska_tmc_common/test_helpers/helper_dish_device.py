@@ -747,10 +747,7 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id)
 
-        thread = threading.Thread(
-            target=self.update_lrcr, args=["Track", command_id]
-        )
-        thread.start()
+        self.push_command_result(ResultCode.OK, "Track", command_id=command_id)
 
         return ([ResultCode.QUEUED], [command_id])
 
