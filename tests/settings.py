@@ -69,7 +69,7 @@ HELPER_SDP_QUEUE_CONNECTOR_DEVICE = "test-sdp/queueconnector/01"
 FAILED_RESULT_DEFECT = {
     "enabled": True,
     "fault_type": FaultType.FAILED_RESULT,
-    "error_message": "Device is defective, cannot process command completely.",
+    "error_message": "Device is defective, cannot process command",
     "result": ResultCode.FAILED,
 }
 
@@ -86,6 +86,9 @@ COMMAND_NOT_ALLOWED_DEFECT = {
     "error_message": "Device is stuck in Resourcing state",
     "result": ResultCode.FAILED,
 }
+
+DEFAULT_DEFECT_EXCEPTION = "Default exception."
+FAILED_RESULT_DEFECT_EXCEPTION = "Device is defective, cannot process command"
 
 
 @unique
