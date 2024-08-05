@@ -309,6 +309,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         intermediate_state = self.defective_params.get("intermediate_state")
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
+            logger.info("inside raise condition1")
             raise tango.Except.throw_exception(
                 fault_message,
                 "Long running exception induced",
@@ -317,6 +318,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
+            logger.info("inside raise condition2")
+            logger.info("intermediate state is %s", intermediate_state)
             self._obs_state = intermediate_state
 
     @command()
