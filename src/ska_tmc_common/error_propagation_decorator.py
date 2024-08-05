@@ -49,6 +49,7 @@ def process_result_and_start_tracker(
         ResultCode.REJECTED,
         ResultCode.NOT_ALLOWED,
     ]:
+        result = ResultCode(result)
         class_instance.update_task_status(
             result=(result, message), exception=message
         )
