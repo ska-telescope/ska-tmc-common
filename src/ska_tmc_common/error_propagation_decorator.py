@@ -7,6 +7,7 @@ from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 
 
+# pylint: disable=broad-exception-caught
 def process_result_and_start_tracker(
     class_instance,
     result: ResultCode,
@@ -130,10 +131,15 @@ def error_propagation_decorator(
             setup_data(class_instance)
 
             # Execute the function according to the presence of input argument
-            if argin is not None:
-                result, message = function(class_instance, argin)
-            else:
-                result, message = function(class_instance)
+            try:
+                if argin:
+                    result, message = function(class_instance, argin)
+                else:
+                    result, message = function(class_instance, argin)
+            except Exception as e:
+                class_instance.update_task_status(
+                    result=(ResultCode.FAILED, str(e)), exception=str(e)
+                )
 
             # Process the command execution result and start the tracker thread
             # if necessary.
