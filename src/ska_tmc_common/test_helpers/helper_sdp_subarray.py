@@ -241,41 +241,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state,
         )
 
-    # def throw_exception(self, command_name: str):
-    #     """
-    #     Throws an exception for the specified command.
-
-    #     This method raises a TANGO `DevFailed` exception with
-    # a specified fault
-    #     message and fault type. The exception details are retrieved from the
-    #     `defective_params` dictionary, which contains the
-    # parameters necessary
-    #     to simulate the fault.
-
-    #     :param command_name:  The name of the command for which
-    #         the exception is being thrown.
-
-    #     Raises:
-    #         DevFailed: Raises a TANGO `DevFailed`
-    #         exception with the specified error message and fault type.
-    #     """
-
-    #     fault_message = self.defective_params.get(
-    #         "error_message", "Exception occurred"
-    #     )
-    #     fault_type = self.defective_params.get(
-    #         "fault_type",
-    #     )
-    #     self.logger.info(
-    #         "Inducing fault for command %s %s", command_name, fault_type
-    #     )
-    #     raise tango.Except.throw_exception(
-    #         fault_message,
-    #         "Long running exception induced",
-    #         "HelperSdpSubarray.induce_fault()",
-    #         tango.ErrSeverity.ERR,
-    #     )
-
     def induce_fault(self):
         """
         Induces a fault into the device based on the given parameters.
@@ -301,7 +266,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             This fault type makes it such that the device is stuck in the given
             Observation state.
         """
-        logger.info("in induce fault method")
         fault_type = self.defective_params.get("fault_type")
         # result = self.defective_params.get("result", ResultCode.FAILED)
         fault_message = self.defective_params.get(
