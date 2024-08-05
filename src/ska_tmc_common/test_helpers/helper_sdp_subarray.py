@@ -4,6 +4,7 @@
 import json
 import logging
 import threading
+import time
 from typing import Tuple
 
 import tango
@@ -320,6 +321,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             logger.info("inside raise condition2")
             logger.info("intermediate state is %s", intermediate_state)
+
+            time.sleep(20)
             self._obs_state = intermediate_state
 
     @command()
