@@ -327,23 +327,19 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
-
         if self.defective_params["enabled"]:
             logger.info("in induce fault condition")
-            return self.induce_fault()
-        if self._state_duration_info:
-            self._follow_state_duration()
-        else:
-            self._obs_state = ObsState.RESOURCING
-            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
-            thread = threading.Timer(
-                self._command_delay_info[RELEASE_ALL_RESOURCES],
-                self.update_device_obsstate,
-                args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
-            )
-            self.timers.append(thread)
-            thread.start()
-        return None
+            self.induce_fault()
+
+        self._obs_state = ObsState.RESOURCING
+        self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
+        thread = threading.Timer(
+            self._command_delay_info[RELEASE_ALL_RESOURCES],
+            self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+        )
+        self.timers.append(thread)
+        thread.start()
 
     @command(
         dtype_in=("str"),
