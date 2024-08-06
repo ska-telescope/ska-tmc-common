@@ -140,6 +140,7 @@ def error_propagation_decorator(
                 class_instance.update_task_status(
                     result=(ResultCode.FAILED, str(e)), exception=str(e)
                 )
+                class_instance.component_manager.stop_timer()
 
             # Process the command execution result and start the tracker thread
             # if necessary.
