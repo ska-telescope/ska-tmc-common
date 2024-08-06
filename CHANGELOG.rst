@@ -84,12 +84,12 @@ Fixed
 
 [0.19.3]
 **********
-* Added TMCBaseLeafDevice 
-  
+* Added TMCBaseLeafDevice
+
 [0.19.2]
 **********
 * Add method in TMC base device to push change and archive events
-  
+
 [0.19.1]
 **********
 * Updating commandCallInfo attribute in TrackLoadStaticOff command
@@ -105,7 +105,7 @@ Fixed
 * Added new class logManager for managing repetitive logs
 
 [0.17.9]
-* Update TelModel version to 1.18.2 
+* Update TelModel version to 1.18.2
 
 [0.17.8]
 * Allows any version of katpoint above **1.0a2**
