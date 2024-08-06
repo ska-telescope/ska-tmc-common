@@ -49,6 +49,7 @@ def process_result_and_start_tracker(
         ResultCode.REJECTED,
         ResultCode.NOT_ALLOWED,
     ]:
+        result = ResultCode(result)
         class_instance.update_task_status(
             result=(result, message), exception=message
         )
@@ -126,7 +127,7 @@ def error_propagation_decorator(
             # Set the command in progress and setup the data required for the
             # error propagation functionality
             class_instance.task_callback(status=TaskStatus.IN_PROGRESS)
-            setup_data(class_instance)
+            setup_data(class_instance, task_abort_event)
 
             # Execute the function according to the presence of input argument
             if argin is not None:
@@ -152,7 +153,7 @@ def error_propagation_decorator(
     return error_propagation
 
 
-def setup_data(class_instance) -> None:
+def setup_data(class_instance, task_abort_event) -> None:
     """Sets up the data required for error propagation.
 
     :param class_instance: Instance of command class
@@ -162,3 +163,5 @@ def setup_data(class_instance) -> None:
     class_name = class_instance.__class__.__name__
     class_instance.component_manager.command_in_progress = class_name
     class_instance.set_command_id(class_name)
+    if hasattr(class_instance.component_manager, "abort_event"):
+        class_instance.component_manager.abort_event = task_abort_event

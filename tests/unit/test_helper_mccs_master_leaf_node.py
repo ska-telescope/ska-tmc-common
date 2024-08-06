@@ -5,7 +5,11 @@ from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory, FaultType
-from tests.settings import HELPER_MCCS_MASTER_LEAF_NODE_DEVICE
+from tests.settings import (
+    FAILED_RESULT_DEFECT,
+    FAILED_RESULT_DEFECT_EXCEPTION,
+    HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
+)
 
 commands_with_argin = ["AssignResources", "ReleaseAllResources"]
 commands_without_argin = ["On", "Off"]
@@ -39,18 +43,11 @@ def test_assign_resources_failed_result(tango_context):
     mccs_master_leaf_node_device = dev_factory.get_device(
         HELPER_MCCS_MASTER_LEAF_NODE_DEVICE
     )
-    defect = {
-        "enabled": True,
-        "fault_type": FaultType.FAILED_RESULT,
-        "error_message": (
-            "Device is defective, cannot process command." "completely."
-        ),
-        "result": ResultCode.FAILED,
-    }
-    mccs_master_leaf_node_device.SetDefective(json.dumps(defect))
-    result, command_id = mccs_master_leaf_node_device.AssignResources("")
+
+    mccs_master_leaf_node_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
+    result, message = mccs_master_leaf_node_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
-    assert "AssignResources" in command_id[0]
+    assert FAILED_RESULT_DEFECT_EXCEPTION in message[0]
     mccs_master_leaf_node_device.SetDefective(json.dumps({"enabled": False}))
 
 

@@ -13,6 +13,7 @@ from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_DEVICE,
     FAILED_RESULT_DEFECT,
+    FAILED_RESULT_DEFECT_EXCEPTION,
 )
 
 logger = logging.getLogger(__name__)
@@ -117,9 +118,9 @@ def test_scan_command_without_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, command_id = dish_device.command_inout("Scan", "")
+    result, message = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.FAILED
-    assert "Scan" in command_id[0]
+    assert FAILED_RESULT_DEFECT_EXCEPTION in message[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -128,9 +129,9 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, command_id = dish_device.command_inout(command_to_check)
+    result, message = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
-    assert command_to_check in command_id[0]
+    assert FAILED_RESULT_DEFECT_EXCEPTION in message[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 
@@ -139,9 +140,9 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
-    result, command_id = dish_device.command_inout(command_to_check, True)
+    result, message = dish_device.command_inout(command_to_check, True)
     assert result[0] == ResultCode.FAILED
-    assert command_to_check in command_id[0]
+    assert FAILED_RESULT_DEFECT_EXCEPTION in message[0]
     dish_device.SetDefective(json.dumps({"enabled": False}))
 
 

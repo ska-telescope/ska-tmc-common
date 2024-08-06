@@ -4,7 +4,11 @@ import pytest
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import DevFactory
-from tests.settings import CSP_DEVICE, DEFAULT_DEFECT_SETTINGS
+from tests.settings import (
+    CSP_DEVICE,
+    DEFAULT_DEFECT_EXCEPTION,
+    DEFAULT_DEFECT_SETTINGS,
+)
 
 commands = ["On", "Off", "Standby"]
 
@@ -23,9 +27,9 @@ def test_csp_command_defective(tango_context, command):
     dev_factory = DevFactory()
     csp_device = dev_factory.get_device(CSP_DEVICE)
     csp_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    result, command_id = csp_device.command_inout(command, "")
+    result, message = csp_device.command_inout(command, "")
     assert result[0] == ResultCode.FAILED
-    assert command in command_id[0]
+    assert DEFAULT_DEFECT_EXCEPTION in message[0]
 
 
 def test_csp_loadDishConfig_command(tango_context, json_factory):
