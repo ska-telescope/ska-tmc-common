@@ -7,7 +7,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
-[0.19.1]
+[0.19.5]
 **********
 * Push lrcr command result for Helper Dish Device End Scan command
 
