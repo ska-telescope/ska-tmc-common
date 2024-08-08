@@ -285,12 +285,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             logger.info("inside raise condition2")
             logger.info("intermediate state is %s", intermediate_state)
             self._obs_state = intermediate_state
-            raise tango.Except.throw_exception(
-                fault_message,
-                "Timeout occurred",
-                "HelperSdpSubarray.induce_fault()",
-                tango.ErrSeverity.ERR,
-            )
 
     @command()
     def ReleaseAllResources(self):
@@ -300,17 +294,16 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             logger.info("in induce fault condition")
             self.induce_fault()
-
-        self._obs_state = ObsState.RESOURCING
-        self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
-        self.logger.info("release resources command proceeds...........")
-        thread = threading.Timer(
-            self._command_delay_info[RELEASE_ALL_RESOURCES],
-            self.update_device_obsstate,
-            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
-        )
-        self.timers.append(thread)
-        thread.start()
+        else:
+            self._obs_state = ObsState.RESOURCING
+            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
+            thread = threading.Timer(
+                self._command_delay_info[RELEASE_ALL_RESOURCES],
+                self.update_device_obsstate,
+                args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+            )
+            self.timers.append(thread)
+            thread.start()
 
     @command(
         dtype_in=("str"),
