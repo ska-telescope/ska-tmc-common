@@ -294,6 +294,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             logger.info("in induce fault condition")
             self.induce_fault()
+        
+            self._obs_state = ObsState.RESOURCING
+            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
         else:
             self._obs_state = ObsState.RESOURCING
             self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
