@@ -200,6 +200,8 @@ class BaseTMCCommand:
         )
         self._stop = False
         self.tracker_thread.start()
+        if hasattr(self, "component_manager"):
+            self.component_manager.tracker_thread = self.tracker_thread
         self.logger.debug(
             "Started command tracker thread for: %s ", timeout_id
         )
@@ -246,6 +248,7 @@ class BaseTMCCommand:
                 try:
                     if self.check_abort_event(abort_event):
                         self.stop_tracker_thread(timeout_id)
+                        abort_event.clear()
                         self.update_task_status(status=TaskStatus.ABORTED)
 
                     if self.check_command_timeout(
