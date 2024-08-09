@@ -325,7 +325,9 @@ class BaseTMCCommand:
                         + f"thread: {exp}",
                     )
                 # pylint: enable=broad-exception-caught
+                self.logger.info("Feeling sleepy")
                 time.sleep(0.5)
+                self.logger.info("I am awake now")
 
             if command_id:
                 lrcr_callback.remove_data(command_id)
