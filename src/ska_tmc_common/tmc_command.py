@@ -330,6 +330,7 @@ class BaseTMCCommand:
                     )
                 # pylint: enable=broad-exception-caught
                 self.logger.info("Feeling sleepy")
+                self.logger.info("Working with ID - %s", timeout_id)
                 time.sleep(0.5)
                 self.logger.info("I am awake now")
 
