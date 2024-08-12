@@ -521,9 +521,12 @@ class HelperDishDevice(HelperDishLNDevice):
             self.push_command_result(
                 ResultCode.REJECTED,
                 "ConfigureBand2",
-                message="Already in band 2",
+                message="Dish is already configured for BAND2 ",
             )
-            return ([ResultCode.REJECTED], ["Already in band 2"])
+            return (
+                [ResultCode.REJECTED],
+                ["Dish is already configured for BAND2 "],
+            )
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
