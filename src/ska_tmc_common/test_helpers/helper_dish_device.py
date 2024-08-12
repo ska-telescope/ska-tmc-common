@@ -589,7 +589,13 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("ConfigureBand3", command_id)
 
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B3)
         self.push_command_result(
@@ -637,7 +643,13 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("ConfigureBand4", command_id)
 
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B4)
         self.push_command_result(
@@ -684,7 +696,13 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand5a", command_id)
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B5a)
         self.push_command_result(
@@ -732,7 +750,13 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand5b", command_id)
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B5b)
         self.push_command_result(
