@@ -815,7 +815,7 @@ class HelperDishDevice(HelperDishLNDevice):
         )
         thread.start()
 
-        return ([ResultCode.REJECTED], [command_id])
+        return ([ResultCode.QUEUED], [command_id])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Slew_allowed(self) -> bool:
