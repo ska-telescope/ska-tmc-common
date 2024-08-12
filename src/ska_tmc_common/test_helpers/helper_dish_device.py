@@ -83,19 +83,14 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
 
-    # @property
-    # def configure_band(self):
-    #     """Gets the currently configured band.
-
-    #     This property returns the band that has been configured for instance.
-
-    #     Returns:
-    #         Band: The currently configured band."""
-    #     return self._configured_band
-
-    # @configure_band.setter
-    # def configure_band(self, conf_band):
-    #     self._configured_band = conf_band
+    @property
+    def configured_band(self):
+        """Gets the currently configured band.
+            This property returns the band that has been configured for
+            instance.
+        Returns:
+            Band: The currently configured band."""
+        return self._configured_band
 
     def read_scanID(self) -> str:
         """
@@ -159,7 +154,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: configure band for dishes
         :rtype: Band
         """
-        return self._configured_band
+        return self.configured_band
 
     def read_offset(self) -> str:
         """
@@ -214,11 +209,11 @@ class HelperDishDevice(HelperDishLNDevice):
         Trigger a ConfiguredBand change
         """
         value = Band(argin)
-        if self._configured_band != value:
+        if self.configured_band != value:
             self._configured_band = Band(argin)
-            self.push_change_event("configuredBand", self._configured_band)
+            self.push_change_event("configuredBand", self.configured_band)
             self.logger.info(
-                "Dish configuredBand %s event is pushed", self._configured_band
+                "Dish configuredBand %s event is pushed", self.configured_band
             )
 
     @command(
@@ -249,8 +244,8 @@ class HelperDishDevice(HelperDishLNDevice):
         This method set the Configured Band
         """
         self._configured_band = configured_band
-        self.push_change_event("configuredBand", self._configured_band)
-        self.logger.info("Configured Band: %s", self._configured_band)
+        self.push_change_event("configuredBand", self.configured_band)
+        self.logger.info("Configured Band: %s", self.configured_band)
 
     def update_command_info(
         self, command_name: str = "", command_input: str | bool | None = None
@@ -519,10 +514,10 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}_ConfigureBand2"
-        self.logger.info("Current band - %s", self._configured_band)
+        self.logger.info("Current band - %s", self.configured_band)
 
         # Below changes will be un-commented in SAH-1530
-        if self._configured_band == Band.B2:
+        if self.configured_band == Band.B2:
             self.push_command_result(
                 ResultCode.REJECTED,
                 "ConfigureBand2",
