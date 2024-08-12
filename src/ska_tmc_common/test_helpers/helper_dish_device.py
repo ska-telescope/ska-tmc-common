@@ -382,7 +382,6 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}-TrackLoadStaticOff"
 
         # Set offsets.
-        command_id = f"{time.time()}_TrackLoadStaticOff"
         cross_elevation = argin[0]
         elevation = argin[1]
         self.set_offset(cross_elevation, elevation)
