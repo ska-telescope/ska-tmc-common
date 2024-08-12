@@ -330,7 +330,8 @@ class BaseTMCCommand:
                     )
                 # pylint: enable=broad-exception-caught
                 self.logger.info("Feeling sleepy")
-                time.sleep(0.5)
+                if not self._stop:
+                    time.sleep(0.5)
                 self.logger.info("I am awake now")
 
             if command_id:
@@ -450,8 +451,6 @@ class BaseTMCCommand:
         """
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
-            if hasattr(self, "component_manager"):
-                self.component_manager.tracker_thread = None
             self._stop = True
         if timeout_id:
             # The if else block is to keep backwards compatibility. Once all
