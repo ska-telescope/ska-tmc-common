@@ -249,6 +249,7 @@ class BaseTMCCommand:
                     if self.check_abort_event(abort_event):
                         self.stop_tracker_thread(timeout_id)
                         abort_event.clear()
+                        self.logger.info(f"{abort_event} is cleared")
                         self.update_task_status(status=TaskStatus.ABORTED)
 
                     if self.check_command_timeout(
