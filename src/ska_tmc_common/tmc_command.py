@@ -364,6 +364,8 @@ class BaseTMCCommand:
                     as a callable function to call in the event of timeout.
         :return: boolean value if timeout occurred or not
         """
+
+        self.logger.info("Time out check for %s", timeout_id)
         if timeout_id:
             if timeout_callback.assert_against_call(
                 timeout_id, TimeoutState.OCCURED
@@ -397,6 +399,9 @@ class BaseTMCCommand:
                     transitional obsState if exists for a command.
         :return: boolean value if state change occurred or not
         """
+
+        self.logger.info("State change check")
+        self.logger.info(methodcaller(state_function)(self.component_manager))
         if (
             methodcaller(state_function)(self.component_manager)
             == state_to_achieve
@@ -414,7 +419,10 @@ class BaseTMCCommand:
                     + f"successfully with state: {state_to_achieve}"
                 )
 
+                self.logger.info("Sending True")
                 return True
+
+        self.logger.info("Sending False")
         return False
 
     def check_command_exception(self, command_id, lrcr_callback) -> bool:
