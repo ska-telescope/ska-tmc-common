@@ -458,6 +458,8 @@ class BaseTMCCommand:
         """
         if self.tracker_thread.is_alive():
             self.logger.info("Stopping tracker thread")
+            if hasattr(self, "component_manager"):
+                self.component_manager.tracker_thread = None
             self._stop = True
         if timeout_id:
             # The if else block is to keep backwards compatibility. Once all
