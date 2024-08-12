@@ -83,6 +83,20 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
 
+    # @property
+    # def configure_band(self):
+    #     """Gets the currently configured band.
+
+    #     This property returns the band that has been configured for instance.
+
+    #     Returns:
+    #         Band: The currently configured band."""
+    #     return self._configured_band
+
+    # @configure_band.setter
+    # def configure_band(self, conf_band):
+    #     self._configured_band = conf_band
+
     def read_scanID(self) -> str:
         """
         This method reads the scanID attribute of a dish.
@@ -731,10 +745,6 @@ class HelperDishDevice(HelperDishLNDevice):
 
     # Below changes will be un-commented in SAH-1530
 
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
     def update_lrcr(
         self, command_name: str = "", command_id: str = ""
     ) -> None:
