@@ -141,6 +141,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         This method simulates On command on SDP Subarray
         """
         self.update_command_info(ON, "")
+
         self.set_state(DevState.ON)
         self.push_change_event("State", self.dev_state())
 
@@ -170,6 +171,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             initial_obstate,
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
+
         input_json = json.loads(argin)
         if "eb_id" not in input_json["execution_block"]:
             self.logger.info("Missing eb_id in the AssignResources input json")
@@ -226,6 +231,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         self.update_command_info(RELEASE_RESOURCES)
         self._obs_state = ObsState.RESOURCING
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
+
         self.update_device_obsstate(self._obs_state, RELEASE_RESOURCES)
         thread = threading.Timer(
             self._command_delay_info[RELEASE_RESOURCES],
@@ -270,10 +279,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-        intermediate_state = self.defective_params.get("intermediate_state")
+        intermediate_state = self.defective_params.get("Intermediate_state")
 
         if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            logger.info("inside raise condition1")
+            logger.info("Inside raise condition")
             raise tango.Except.throw_exception(
                 fault_message,
                 "Long running exception induced",
@@ -282,8 +291,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            logger.info("inside raise condition2")
-            logger.info("intermediate state is %s", intermediate_state)
+            logger.info("Inside raise condition")
+            logger.info("Intermediate state is %s", intermediate_state)
             self._obs_state = intermediate_state
 
     @command()
@@ -292,21 +301,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
         if self.defective_params["enabled"]:
-            logger.info("in induce fault condition")
+            logger.info("In induce fault condition")
             self.induce_fault()
-        
-            self._obs_state = ObsState.RESOURCING
-            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
-        else:
-            self._obs_state = ObsState.RESOURCING
-            self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
-            thread = threading.Timer(
-                self._command_delay_info[RELEASE_ALL_RESOURCES],
-                self.update_device_obsstate,
-                args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
-            )
-            self.timers.append(thread)
-            thread.start()
+
+        self._obs_state = ObsState.RESOURCING
+        self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
+        thread = threading.Timer(
+            self._command_delay_info[RELEASE_ALL_RESOURCES],
+            self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+        )
+        self.timers.append(thread)
+        thread.start()
 
     @command(
         dtype_in=("str"),
@@ -319,6 +325,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         self.update_command_info(CONFIGURE, argin)
         input_json = json.loads(argin)
+
         if "scan_type" not in input_json:
             self.logger.info("Missing scan_type in the Configure input json")
             raise tango.Except.throw_exception(
@@ -330,6 +337,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         self._obs_state = ObsState.CONFIGURING
         self.update_device_obsstate(self._obs_state, CONFIGURE)
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
 
         # if scan_type in JSON is invalid , SDP Subarray moves to
         # obsState=IDLE and raises exception
@@ -400,12 +410,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
         self._obs_state = ObsState.SCANNING
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
         self.update_device_obsstate(self._obs_state, SCAN)
 
     @command()
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         self.update_command_info(END_SCAN)
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
         self._obs_state = ObsState.READY
         self.update_device_obsstate(self._obs_state, END_SCAN)
 
@@ -413,6 +429,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
+
         if self._state_duration_info:
             self._follow_state_duration()
         else:
@@ -434,6 +454,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Abort command on SdpSubarray device."""
         self.update_command_info(ABORT)
         self._obs_state = ObsState.ABORTING
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
         self.update_device_obsstate(self._obs_state, ABORT)
         for timer in self.timers:
             timer.cancel()
@@ -450,6 +473,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Restart command on SdpSubarray device."""
         self.update_command_info(RESTART)
         self._obs_state = ObsState.RESTARTING
+        if self.defective_params["enabled"]:
+            logger.info("In induce fault condition")
+            self.induce_fault()
         self.update_device_obsstate(self._obs_state, RESTART)
         thread = threading.Timer(
             self._command_delay_info[RESTART],
