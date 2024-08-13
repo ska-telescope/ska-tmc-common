@@ -9,8 +9,7 @@ from datetime import datetime
 from typing import List, Tuple, Union
 
 import numpy as np
-
-# import tango
+import tango
 from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -768,32 +767,32 @@ class HelperDishDevice(HelperDishLNDevice):
 
     # Below changes will be un-commented in SAH-1530
 
-    # def update_lrcr(
-    #     self, command_name: str = "", command_id: str = ""
-    # ) -> None:
-    #     """Updates the longrunningcommandresult  after a delay."""
-    #     delay_value = self._delay
-    #     with tango.EnsureOmniThread():
-    #         self.logger.info(
-    #             "Sleep %s for command %s ", delay_value, command_name
-    #         )
-    #         time.sleep(delay_value)
+    def update_lrcr(
+        self, command_name: str = "", command_id: str = ""
+    ) -> None:
+        """Updates the longrunningcommandresult  after a delay."""
+        delay_value = self._delay
+        with tango.EnsureOmniThread():
+            self.logger.info(
+                "Sleep %s for command %s ", delay_value, command_name
+            )
+            time.sleep(delay_value)
 
-    #         if self._pointing_state != PointingState.TRACK:
-    #             if self._state_duration_info:
-    #                 self._follow_state_duration()
-    #             else:
-    #                 self._pointing_state = PointingState.TRACK
-    #                 self.push_change_event(
-    #                     "pointingState", self._pointing_state
-    #                 )
+            if self._pointing_state != PointingState.TRACK:
+                if self._state_duration_info:
+                    self._follow_state_duration()
+                else:
+                    self._pointing_state = PointingState.TRACK
+                    self.push_change_event(
+                        "pointingState", self._pointing_state
+                    )
 
-    #             # Set dish mode
-    #         self.set_dish_mode(DishMode.OPERATE)
-    #         self.push_command_result(
-    #             ResultCode.REJECTED, command_name, command_id=command_id
-    #         )
-    #         self.logger.info("Track command failed.")
+                # Set dish mode
+            self.set_dish_mode(DishMode.OPERATE)
+            self.push_command_result(
+                ResultCode.REJECTED, command_name, command_id=command_id
+            )
+            self.logger.info("Track command failed.")
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -811,10 +810,10 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id)
 
-        # thread = threading.Thread(
-        #     target=self.update_lrcr, args=["Track", command_id]
-        # )
-        # thread.start()
+        thread = threading.Thread(
+            target=self.update_lrcr, args=["Track", command_id]
+        )
+        thread.start()
 
         return ([ResultCode.REJECTED], [command_id])
 
