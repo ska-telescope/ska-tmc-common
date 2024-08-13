@@ -801,12 +801,8 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(
-            ResultCode.REJECTED, "Track", command_id=command_id
-        )
-        # self.push_command_result(ResultCode.OK, "Track",
-        # command_id=command_id)
-        self.logger.info("Track command failed.")
+        self.push_command_result(ResultCode.OK, "Track", command_id=command_id)
+        self.logger.info("Track command completed.")
         return [ResultCode.QUEUED], [command_id]
 
     def is_TrackStop_allowed(self) -> bool:
@@ -976,9 +972,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             kwargs={"command_id": command_id},
         )
         thread.start()
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand1", command_id=command_id
-        )
         self.logger.info("Configure command completed.")
         return [ResultCode.QUEUED], [command_id]
 
