@@ -777,7 +777,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 "Sleep %s for command %s ", delay_value, command_name
             )
             time.sleep(delay_value)
-
+            self.logger.info("in update lrcr %s", self._pointing_state)
             if self._pointing_state != PointingState.TRACK:
                 if self._state_duration_info:
                     self._follow_state_duration()
@@ -789,6 +789,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
                 # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
+            self.logger.info("pushing result code")
             self.push_command_result(
                 ResultCode.REJECTED, command_name, command_id=command_id
             )
@@ -814,7 +815,7 @@ class HelperDishDevice(HelperDishLNDevice):
             target=self.update_lrcr, args=["Track", command_id]
         )
         thread.start()
-
+        # self.update_lrcr("Track", command_id)
         return ([ResultCode.REJECTED], [command_id])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
