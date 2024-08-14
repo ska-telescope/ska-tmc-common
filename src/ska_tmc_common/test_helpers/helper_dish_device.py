@@ -789,13 +789,10 @@ class HelperDishDevice(HelperDishLNDevice):
 
                 # Set dish mode
             self.set_dish_mode(DishMode.OPERATE)
-            self.logger.info(
-                "pushing result code FAILED -------%s", ResultCode.FAILED
-            )
             self.push_command_result(
-                ResultCode.FAILED, command_name, command_id=command_id
+                ResultCode.OK, command_name, command_id=command_id
             )
-            self.logger.info("Track command failed.")
+            self.logger.info("Track command completed.")
 
     @command(
         dtype_out="DevVarLongStringArray",
