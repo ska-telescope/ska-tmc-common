@@ -791,7 +791,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self.set_dish_mode(DishMode.OPERATE)
             self.logger.info("pushing result code")
             self.push_command_result(
-                ResultCode.REJECTED, command_name, command_id=command_id
+                ResultCode.FAILED, command_name, command_id=command_id
             )
             self.logger.info("Track command failed.")
 
