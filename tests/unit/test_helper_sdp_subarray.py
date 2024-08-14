@@ -208,7 +208,7 @@ def test_release_resources_defective(tango_context):
     defect = {
         "enabled": True,
         "fault_type": FaultType.FAILED_RESULT,
-        "error_message": "Device stuck in intermediate state",
+        "error_message": "Device failed with exception",
         "result": ResultCode.FAILED,
     }
 
