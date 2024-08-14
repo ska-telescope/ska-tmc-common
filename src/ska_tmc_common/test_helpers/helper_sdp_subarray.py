@@ -172,9 +172,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             initial_obstate,
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
-        self.previous_obsstate = ObsState.EMPTY
-        self._obs_state = ObsState.RESOURCING
+
         if self.defective_params["enabled"]:
+            self.previous_obsstate = ObsState.EMPTY
+            self._obs_state = ObsState.RESOURCING
             self.induce_fault()
 
         input_json = json.loads(argin)
@@ -186,7 +187,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
-
+        self._obs_state = ObsState.RESOURCING
         self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
 
         # if eb_id in JSON is invalid, SDP Subarray
@@ -231,11 +232,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_RESOURCES)
-        self._obs_state = ObsState.RESOURCING
-        self.previous_obsstate = ObsState.IDLE
-        if self.defective_params["enabled"]:
-            self.induce_fault()
 
+        if self.defective_params["enabled"]:
+            self._obs_state = ObsState.RESOURCING
+            self.previous_obsstate = ObsState.IDLE
+            self.induce_fault()
+        self.previous_obsstate = ObsState.EMPTY
         self.update_device_obsstate(self._obs_state, RELEASE_RESOURCES)
         thread = threading.Timer(
             self._command_delay_info[RELEASE_RESOURCES],
@@ -291,11 +293,13 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
-        self.previous_obsstate = ObsState.IDLE
-        self._obs_state = ObsState.RESOURCING
+
         if self.defective_params["enabled"]:
+            self.previous_obsstate = ObsState.IDLE
+            self._obs_state = ObsState.RESOURCING
             self.induce_fault()
 
+        self._obs_state = ObsState.RESOURCING
         self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
         thread = threading.Timer(
             self._command_delay_info[RELEASE_ALL_RESOURCES],
@@ -409,8 +413,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         self.update_command_info(END_SCAN)
-        self.previous_obsstate = ObsState.READY
+
         if self.defective_params["enabled"]:
+            self.previous_obsstate = ObsState.SCANNING
             self.induce_fault()
         self._obs_state = ObsState.READY
         self.update_device_obsstate(self._obs_state, END_SCAN)
@@ -419,8 +424,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
-        self.previous_obsstate = ObsState.READY
         if self.defective_params["enabled"]:
+            self.previous_obsstate = ObsState.READY
             self.induce_fault()
 
         if self._state_duration_info:
