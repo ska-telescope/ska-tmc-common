@@ -201,20 +201,19 @@ def test_scan_invalid_input(tango_context):
         sdp_subarray_device.Scan(json.dumps(input_string))
     assert sdp_subarray_device.obsState == ObsState.READY
 
-
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     # Check ReleaseAllResources Defective
     defect = {
         "enabled": True,
-        "fault_type": FaultType.LONG_RUNNING_EXCEPTION,
+        "fault_type": FaultType.FAILED_RESULT,
         "error_message": "Device stuck in intermediate state",
         "result": ResultCode.FAILED,
     }
 
     sdp_subarray_device.SetDefective(json.dumps(defect))
-    with pytest.raises(DevFailed, match="Long running exception induced"):
+    with pytest.raises(DevFailed, match="Exception occurred, command failed"):
         sdp_subarray_device.ReleaseAllResources()
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
