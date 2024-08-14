@@ -5,7 +5,7 @@ import json
 import logging
 import threading
 from typing import Tuple
-
+from ska_tmc_common import  FaultType
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
@@ -13,7 +13,6 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
-from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
@@ -45,7 +44,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def init_device(self):
         super().init_device()
         self._state = DevState.OFF
-        self.previous_obsstate = ObsState.EMPTY
         # pylint: disable=line-too-long
         self.timers = []
         self._receive_addresses = json.dumps(
@@ -142,7 +140,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         This method simulates On command on SDP Subarray
         """
         self.update_command_info(ON, "")
-
         self.set_state(DevState.ON)
         self.push_change_event("State", self.dev_state())
 
@@ -172,12 +169,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             initial_obstate,
         )
         self.update_command_info(ASSIGN_RESOURCES, argin)
-
-        if self.defective_params["enabled"]:
-            self.previous_obsstate = ObsState.EMPTY
-            self._obs_state = ObsState.RESOURCING
-            self.induce_fault()
-
         input_json = json.loads(argin)
         if "eb_id" not in input_json["execution_block"]:
             self.logger.info("Missing eb_id in the AssignResources input json")
@@ -187,6 +178,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
+
         self._obs_state = ObsState.RESOURCING
         self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
 
@@ -232,12 +224,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_RESOURCES)
-
-        if self.defective_params["enabled"]:
-            self._obs_state = ObsState.RESOURCING
-            self.previous_obsstate = ObsState.IDLE
-            self.induce_fault()
-        self.previous_obsstate = ObsState.EMPTY
+        self._obs_state = ObsState.RESOURCING
         self.update_device_obsstate(self._obs_state, RELEASE_RESOURCES)
         thread = threading.Timer(
             self._command_delay_info[RELEASE_RESOURCES],
@@ -252,54 +239,15 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state,
         )
 
-    def induce_fault(self):
-        """
-        Induces a fault into the device based on the given parameters.
-
-
-        Example:
-
-            defective_params = json.dumps({"enabled": False, "fault_type":
-            FaultType.FAILED_RESULT, "error_message": "Default exception.",
-            "result": ResultCode.FAILED,})
-            proxy.SetDefective(defective_params)
-
-        Explanation:
-
-        This method induces various types of faults into a device to test its
-        robustness and error-handling capabilities.
-
-        - FAILED_RESULT:
-            A fault type where an exception will be raised when command
-            invoked with induce fault.
-
-        """
-        fault_type = self.defective_params.get("fault_type")
-        fault_message = self.defective_params.get(
-            "error_message", "Exception occurred"
-        )
-        self._obs_state = self.previous_obsstate
-
-        if fault_type == FaultType.FAILED_RESULT:
-            raise tango.Except.throw_exception(
-                fault_message,
-                "Exception occurred, command failed",
-                "HelperSdpSubarray.induce_fault()",
-                tango.ErrSeverity.ERR,
-            )
-
     @command()
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
-
+        self._obs_state = ObsState.RESOURCING
         if self.defective_params["enabled"]:
-            self.previous_obsstate = ObsState.IDLE
             self._obs_state = ObsState.RESOURCING
             self.induce_fault()
-
-        self._obs_state = ObsState.RESOURCING
         self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
         thread = threading.Timer(
             self._command_delay_info[RELEASE_ALL_RESOURCES],
@@ -320,7 +268,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """
         self.update_command_info(CONFIGURE, argin)
         input_json = json.loads(argin)
-
         if "scan_type" not in input_json:
             self.logger.info("Missing scan_type in the Configure input json")
             raise tango.Except.throw_exception(
@@ -331,10 +278,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
         self._obs_state = ObsState.CONFIGURING
-        self.previous_obsstate = ObsState.IDLE
-        if self.defective_params["enabled"]:
-            self.induce_fault()
         self.update_device_obsstate(self._obs_state, CONFIGURE)
+
         # if scan_type in JSON is invalid , SDP Subarray moves to
         # obsState=IDLE and raises exception
         scan_type = input_json["scan_type"]
@@ -404,19 +349,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
         self._obs_state = ObsState.SCANNING
-        self.previous_obsstate = ObsState.READY
-        if self.defective_params["enabled"]:
-            self.induce_fault()
         self.update_device_obsstate(self._obs_state, SCAN)
 
     @command()
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
         self.update_command_info(END_SCAN)
-
-        if self.defective_params["enabled"]:
-            self.previous_obsstate = ObsState.SCANNING
-            self.induce_fault()
         self._obs_state = ObsState.READY
         self.update_device_obsstate(self._obs_state, END_SCAN)
 
@@ -424,10 +362,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
-        if self.defective_params["enabled"]:
-            self.previous_obsstate = ObsState.READY
-            self.induce_fault()
-
         if self._state_duration_info:
             self._follow_state_duration()
         else:
@@ -449,9 +383,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Abort command on SdpSubarray device."""
         self.update_command_info(ABORT)
         self._obs_state = ObsState.ABORTING
-        self.previous_obsstate = ObsState.FAULT
-        if self.defective_params["enabled"]:
-            self.induce_fault()
         self.update_device_obsstate(self._obs_state, ABORT)
         for timer in self.timers:
             timer.cancel()
@@ -468,9 +399,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Restart command on SdpSubarray device."""
         self.update_command_info(RESTART)
         self._obs_state = ObsState.RESTARTING
-        self.previous_obsstate = ObsState.FAULT
-        if self.defective_params["enabled"]:
-            self.induce_fault()
         self.update_device_obsstate(self._obs_state, RESTART)
         thread = threading.Timer(
             self._command_delay_info[RESTART],
@@ -483,6 +411,44 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             + "current obsState is %s",
             self._obs_state,
         )
+    #Note: induce fault mechanism only applicable for releaseAllResoruces
+    #if ReleaseAllResources have fault induce enabled it will set obsstate 
+    # back to Obsstate.IDLE
+    def induce_fault(self):
+        """
+        Induces a fault into the device based on the given parameters.
+        
+
+        Example:
+
+            defective_params = json.dumps({"enabled": False, "fault_type":
+            FaultType.FAILED_RESULT, "error_message": "Default exception.",
+            "result": ResultCode.FAILED,})
+            proxy.SetDefective(defective_params)
+
+        Explanation:
+
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
+
+        - FAILED_RESULT:
+            A fault type where an exception will be raised when command
+            invoked with induce fault.
+
+        """
+        fault_type = self.defective_params.get("fault_type")
+        fault_message = self.defective_params.get(
+            "error_message", "Exception occurred"
+        )
+        self._obs_state = ObsState.IDLE
+
+        if fault_type == FaultType.FAILED_RESULT:
+            raise tango.Except.throw_exception(
+                fault_message,
+                "Exception occurred, command failed",
+                "HelperSdpSubarray.induce_fault()",
+                tango.ErrSeverity.ERR,
+            )
 
 
 def main(args=None, **kwargs):
