@@ -272,7 +272,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         """
         fault_type = self.defective_params.get("fault_type")
-        # result = self.defective_params.get("result", ResultCode.FAILED)
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
