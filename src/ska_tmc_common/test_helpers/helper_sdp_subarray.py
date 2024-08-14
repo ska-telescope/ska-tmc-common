@@ -266,34 +266,24 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         This method induces various types of faults into a device to test its
         robustness and error-handling capabilities.
 
-        - LONG_RUNNING_EXCEPTION:
-            A fault type where a failed result will be sent over the
-            LongRunningCommandResult attribute in 'delay' amount of time.
+        - FAILED_RESULT:
+            A fault type where an exception will be raised when command
+            invoked with induce fault.
 
-        - STUCK_IN_INTERMEDIATE_STATE:
-            This fault type makes it such that the device is stuck in the given
-            Observation state.
         """
         fault_type = self.defective_params.get("fault_type")
         # result = self.defective_params.get("result", ResultCode.FAILED)
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-        intermediate_state = self.defective_params.get("Intermediate_state")
 
-        if fault_type == FaultType.LONG_RUNNING_EXCEPTION:
-            logger.info("Inside raise condition")
+        if fault_type == FaultType.FAILED_RESULT:
             raise tango.Except.throw_exception(
                 fault_message,
-                "Long running exception induced",
+                "Exception occurred, command failed",
                 "HelperSdpSubarray.induce_fault()",
                 tango.ErrSeverity.ERR,
             )
-
-        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            logger.info("Inside raise condition")
-            logger.info("Intermediate state is %s", intermediate_state)
-            self._obs_state = intermediate_state
 
     @command()
     def ReleaseAllResources(self):
@@ -301,7 +291,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
         if self.defective_params["enabled"]:
-            logger.info("In induce fault condition")
             self.induce_fault()
 
         self._obs_state = ObsState.RESOURCING
