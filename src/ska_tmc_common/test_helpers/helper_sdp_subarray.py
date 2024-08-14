@@ -5,7 +5,7 @@ import json
 import logging
 import threading
 from typing import Tuple
-from ska_tmc_common import  FaultType
+
 import tango
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import ObsState
@@ -13,6 +13,7 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
@@ -411,13 +412,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             + "current obsState is %s",
             self._obs_state,
         )
-    #Note: induce fault mechanism only applicable for releaseAllResoruces
-    #if ReleaseAllResources have fault induce enabled it will set obsstate 
+
+    # Note: induce fault mechanism only applicable for releaseAllResoruces
+    # if ReleaseAllResources have fault induce enabled it will set obsstate
     # back to Obsstate.IDLE
     def induce_fault(self):
         """
         Induces a fault into the device based on the given parameters.
-        
+
 
         Example:
 
