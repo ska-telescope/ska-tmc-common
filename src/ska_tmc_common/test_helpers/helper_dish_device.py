@@ -531,7 +531,9 @@ class HelperDishDevice(HelperDishLNDevice):
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand2", command_id)
+            return self.induce_fault(
+                "ConfigureBand2", command_id, is_dish=True
+            )
 
         # Set the Dish Mode
         current_dish_mode = self._dish_mode
