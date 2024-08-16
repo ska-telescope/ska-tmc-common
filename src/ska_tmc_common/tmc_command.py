@@ -406,7 +406,6 @@ class BaseTMCCommand:
         """
 
         self.logger.info("State change check")
-        self.logger.info(methodcaller(state_function)(self.component_manager))
         if (
             methodcaller(state_function)(self.component_manager)
             == state_to_achieve
@@ -423,11 +422,7 @@ class BaseTMCCommand:
                     f"Command with id {command_id} has completed "
                     + f"successfully with state: {state_to_achieve}"
                 )
-
-                self.logger.info("Sending True")
                 return True
-
-        self.logger.info("Sending False")
         return False
 
     def check_command_exception(self, command_id, lrcr_callback) -> bool:
