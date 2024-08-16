@@ -208,16 +208,14 @@ def test_release_resources_defective(tango_context):
     # Check ReleaseAllResources Defective
     defect = {
         "enabled": True,
-        "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
-        "error_message": "Device stuck in intermediate state",
+        "fault_type": FaultType.FAILED_RESULT,
+        "error_message": "Device failed with exception",
         "result": ResultCode.FAILED,
-        "intermediate_state": ObsState.RESOURCING,
     }
 
     sdp_subarray_device.SetDefective(json.dumps(defect))
-    sdp_subarray_device.ReleaseAllResources()
-    assert sdp_subarray_device.defective
-    assert sdp_subarray_device.obsState == ObsState.RESOURCING
+    with pytest.raises(DevFailed, match="Exception occurred, command failed"):
+        sdp_subarray_device.ReleaseAllResources()
     sdp_subarray_device.SetDefective(json.dumps({"enabled": False}))
 
 

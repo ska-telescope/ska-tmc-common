@@ -13,6 +13,7 @@ from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
+from ska_tmc_common import FaultType
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
@@ -245,6 +246,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         device."""
         self.update_command_info(RELEASE_ALL_RESOURCES)
         self._obs_state = ObsState.RESOURCING
+        if self.defective_params["enabled"]:
+            self._obs_state = ObsState.RESOURCING
+            self.induce_fault()
         self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
         thread = threading.Timer(
             self._command_delay_info[RELEASE_ALL_RESOURCES],
@@ -408,6 +412,45 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             + "current obsState is %s",
             self._obs_state,
         )
+
+    # Note: induce fault mechanism only applicable for releaseAllResoruces
+    # if ReleaseAllResources have fault induce enabled it will set obsstate
+    # back to Obsstate.IDLE
+    def induce_fault(self):
+        """
+        Induces a fault into the device based on the given parameters.
+
+
+        Example:
+
+            defective_params = json.dumps({"enabled": False, "fault_type":
+            FaultType.FAILED_RESULT, "error_message": "Default exception.",
+            "result": ResultCode.FAILED,})
+            proxy.SetDefective(defective_params)
+
+        Explanation:
+
+        This method induces various types of faults into a device to test its
+        robustness and error-handling capabilities.
+
+        - FAILED_RESULT:
+            A fault type where an exception will be raised when command
+            invoked with induce fault.
+
+        """
+        fault_type = self.defective_params.get("fault_type")
+        fault_message = self.defective_params.get(
+            "error_message", "Exception occurred"
+        )
+        self._obs_state = ObsState.IDLE
+
+        if fault_type == FaultType.FAILED_RESULT:
+            raise tango.Except.throw_exception(
+                fault_message,
+                "Exception occurred, command failed",
+                "HelperSdpSubarray.induce_fault()",
+                tango.ErrSeverity.ERR,
+            )
 
 
 def main(args=None, **kwargs):
