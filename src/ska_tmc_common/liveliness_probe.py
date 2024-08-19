@@ -68,6 +68,7 @@ class BaseLivelinessProbe:
         Checks device status and logs error messages on state change
         """
         try:
+            exception_message: str = ""
             db = tango.Database()
             if "tango://" in dev_info.dev_name:  # check full trl
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
@@ -87,33 +88,41 @@ class BaseLivelinessProbe:
                 return
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.state()
-            self._component_manager.update_responsiveness_info(
-                dev_info.dev_name
-            )
-
+            if dev_info.unresponsive:
+                self._component_manager.update_responsiveness_info(
+                    dev_info.dev_name
+                )
         except tango.CommunicationFailed as exception:
             # ignoring in case of device server is busy
             if "Timeout (3000 mS) exceeded on device" not in exception:
                 if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
-                        "Error on %s: %s", dev_info.dev_name, exception
+                        "Communication Failed on %s: %s",
+                        dev_info.dev_name,
+                        exception,
                     )
+                    exception_message = "Communication Failed on %s: %s"
 
         except tango.DevFailed as exception:
             if self.log_manager.is_logging_allowed("dev_failed"):
                 self._logger.exception(
                     "Error on %s: %s", dev_info.dev_name, exception
                 )
-            self._component_manager.update_device_responsiveness_failure(
-                dev_info, f"Unable to reach device {dev_info.dev_name}"
-            )
+                exception_message = (
+                    f"Unable to reach device {dev_info.dev_name}"
+                )
         except BaseException as exception:
             if self.log_manager.is_logging_allowed("base_exception"):
                 self._logger.exception(
                     "Error on %s: %s", dev_info.dev_name, exception
                 )
+                exception_message = (
+                    f"Unable to reach device {dev_info.dev_name}"
+                )
+
+        if not dev_info.unresponsive and exception_message:
             self._component_manager.update_device_responsiveness_failure(
-                dev_info, f"Unable to reach device {dev_info.dev_name}"
+                dev_info, exception_message
             )
 
 
