@@ -88,7 +88,7 @@ K8S_TEST_RUNNER = test-runner-$(HELM_RELEASE)
 ADDMARK ?= #additional markers
 # override for python-test - must not have the above --true-context
 ifeq ($(MAKECMDGOALS),python-test)
-ADD_ARGS +=  --forked --count=$(PYTHON_TEST_COUNT)
+ADD_ARGS +=  --forked
 MARK = not post_deployment and not acceptance $(ADDMARK)
 endif
 ifeq ($(MAKECMDGOALS),k8s-test)

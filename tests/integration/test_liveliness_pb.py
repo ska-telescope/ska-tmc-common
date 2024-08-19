@@ -17,7 +17,7 @@ TANGO_HOST = os.getenv("TANGO_HOST")
 
 
 @pytest.mark.post_deployment
-def test_new_component():
+def test_liveliness_probe():
     cm = TmcComponentManager(
         _component=TestTMCComponent(logger=logger),
         _input_parameter=InputParameter(None),
