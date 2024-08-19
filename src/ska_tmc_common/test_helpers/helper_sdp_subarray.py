@@ -437,6 +437,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             A fault type where an exception will be raised when command
             invoked with induce fault.
 
+        :raises throw_exception: Raises error to mimic the real device
+                                    behavior.
         """
         fault_type = self.defective_params.get("fault_type")
         fault_message = self.defective_params.get(
