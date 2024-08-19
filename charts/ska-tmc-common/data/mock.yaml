@@ -1,0 +1,24 @@
+name: "mocks-{{.Release.Name}}"
+function: testing
+domain: test_device
+instances: ["01"]
+
+entrypoints:
+  - name: "ska_tmc_common.test_helpers.helper_subarray_device.HelperSubArrayDevice"
+
+server:
+  name: "test_device"
+  instances:
+    - name: "01"
+      classes:
+      - name: "HelperSubArrayDevice"
+        devices:
+        - name: "mid-csp/subarray/01"
+
+depends_on:
+  - device: sys/database/2
+image:
+  registry: "{{.Values.test_device.image.registry}}"
+  image: "{{.Values.test_device.image.image}}"
+  tag: "{{.Values.test_device.image.tag}}"
+  pullPolicy: "{{.Values.test_device.image.pullPolicy}}"
