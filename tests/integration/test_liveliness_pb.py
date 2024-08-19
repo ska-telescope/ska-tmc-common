@@ -32,7 +32,7 @@ def test_liveliness_probe():
 
     # device not in the database
     full_trl = "tango://" + TANGO_HOST + "/" + SDP_SUBARRAY_DEVICE
-    dev_info = DeviceInfo(full_trl, True)
+    dev_info = DeviceInfo(full_trl, False)
     cm._component.update_device(dev_info)
     lp = cm.liveliness_probe_object
     lp.add_device(full_trl)
