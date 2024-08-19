@@ -28,7 +28,6 @@ TANGO_HOST ?= tango-databaseds:10000 ## TANGO_HOST connection to the Tango DS
 PYTHON_LINE_LENGTH ?= 79
 CI_PROJECT_PATH_SLUG ?= ska-tmc-common
 CI_ENVIRONMENT_SLUG ?= ska-tmc-common
-$(shell echo 'global:\n  annotations:\n    app.gitlab.com/app: $(CI_PROJECT_PATH_SLUG)\n    app.gitlab.com/env: $(CI_ENVIRONMENT_SLUG)' > gilab_values.yaml)
 CLUSTER_DOMAIN ?= cluster.local
 XRAY_TEST_RESULT_FILE = "build/cucumber.json"
 ## override so that this picks up setup.cfg from the project root
