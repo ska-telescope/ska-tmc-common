@@ -48,3 +48,5 @@ unit-tests.xml
 # Miscellaneous
 .DS_Store
 venv
+
+charts/ska-tmc-common/charts
