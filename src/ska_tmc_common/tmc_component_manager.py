@@ -427,6 +427,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             dev_info: DeviceInfo = self._component.get_device(device_name)
             dev_info.update_unresponsive(False)
+            dev_info.exception = ""
 
     def update_device_health_state(
         self, device_name: str, health_state: HealthState

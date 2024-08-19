@@ -13,7 +13,7 @@ server:
       classes:
       - name: "HelperSubArrayDevice"
         devices:
-        - name: "mid-csp/subarray/01"
+        - name: "helper/cspsubarray/device"
 
 depends_on:
   - device: sys/database/2

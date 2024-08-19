@@ -19,8 +19,7 @@ class TestTMCComponent(TmcComponent):
         Base method for update_device_exception method for different nodes
         """
         self.logger.error("error %s %s", device_info, exception)
-        device_info.exception = exception
-        device_info._unresposnive = True
+        device_info.update_unresponsive(True, exception)
 
     def to_dict(self):
         """

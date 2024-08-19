@@ -70,15 +70,16 @@ class BaseLivelinessProbe:
         try:
             db = tango.Database()
             if "tango://" in dev_info.dev_name:  # check full trl
-                print(dev_info.dev_name.split("/"))
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
                 db = tango.Database(db_name, port)
             if not db.get_device_info(dev_info.dev_name).exported:
-                self._logger.debug(
-                    "Device is not yet exported, "
-                    + "liveliness probe will retry: %s",
-                    dev_info.dev_name,
-                )
+                if self.log_manager.is_logging_allowed("device_unexported"):
+                    self._logger.debug(
+                        "Device is not yet exported, "
+                        + "liveliness probe will retry "
+                        + "to connect with device: %s",
+                        dev_info.dev_name,
+                    )
                 self._component_manager.update_device_responsiveness_failure(
                     dev_info,
                     f"Device is not yet exported: {dev_info.dev_name}",
@@ -91,14 +92,15 @@ class BaseLivelinessProbe:
             )
 
         except tango.CommunicationFailed as exception:
-            if "Timeout (500 mS) exceeded on device" not in exception:
+            # ignoring in case of device server is busy
+            if "Timeout (3000 mS) exceeded on device" not in exception:
                 if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
                         "Error on %s: %s", dev_info.dev_name, exception
                     )
 
-        except (AttributeError, tango.DevFailed) as exception:
-            if self.log_manager.is_logging_allowed("attribute_error"):
+        except tango.DevFailed as exception:
+            if self.log_manager.is_logging_allowed("dev_failed"):
                 self._logger.exception(
                     "Error on %s: %s", dev_info.dev_name, exception
                 )
