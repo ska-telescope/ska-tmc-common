@@ -173,6 +173,7 @@ def devices_to_load():
     )
 
 
+@pytest.fixture
 def tango_context(devices_to_load, request):
     """
     It provides the tango context to invoke any command.
