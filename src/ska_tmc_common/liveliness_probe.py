@@ -69,6 +69,9 @@ class BaseLivelinessProbe:
         """
         try:
             exception_message: str = ""
+            update_failure = (
+                self._component_manager.update_device_responsiveness_failure
+            )
             db = tango.Database()
             if "tango://" in dev_info.dev_name:  # check full trl
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
@@ -81,10 +84,11 @@ class BaseLivelinessProbe:
                         + "to connect with device: %s",
                         dev_info.dev_name,
                     )
-                self._component_manager.update_device_responsiveness_failure(
-                    dev_info,
-                    f"Device is not yet exported: {dev_info.dev_name}",
-                )
+                    if not dev_info.unresponsive:
+                        update_failure(
+                            dev_info,
+                            f"Device is not yet exported: {dev_info.dev_name}",
+                        )
                 return
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.state()
@@ -121,9 +125,7 @@ class BaseLivelinessProbe:
                 )
 
         if not dev_info.unresponsive and exception_message:
-            self._component_manager.update_device_responsiveness_failure(
-                dev_info, exception_message
-            )
+            update_failure(dev_info, exception_message)
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
