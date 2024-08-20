@@ -516,17 +516,18 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_ConfigureBand2"
         self.logger.info("Current band - %s", self.configured_band)
 
-        # Below changes will be un-commented in SAH-1530
-        if self.configured_band == Band.B2:
-            self.push_command_result(
-                ResultCode.REJECTED,
-                "ConfigureBand2",
-                message="Dish is already configured for BAND2 ",
-            )
-            return (
-                [ResultCode.REJECTED],
-                ["Dish is already configured for BAND2 "],
-            )
+        # TODO: The scenario of duplicate band is under discussion. Need to
+        # enable below statements once the behaviour is fixed.
+        # if self.configured_band == Band.B2:
+        #     self.push_command_result(
+        #         ResultCode.REJECTED,
+        #         "ConfigureBand2",
+        #         message="Dish is already configured for BAND2 ",
+        #     )
+        #     return (
+        #         [ResultCode.REJECTED],
+        #         ["Dish is already configured for BAND2 "],
+        #     )
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
@@ -816,7 +817,6 @@ class HelperDishDevice(HelperDishLNDevice):
             target=self.update_lrcr, args=["Track", command_id]
         )
         thread.start()
-        # self.update_lrcr("Track", command_id)
         return ([ResultCode.QUEUED], [command_id])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
