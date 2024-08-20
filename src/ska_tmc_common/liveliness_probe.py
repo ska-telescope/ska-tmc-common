@@ -84,11 +84,11 @@ class BaseLivelinessProbe:
                         + "to connect with device: %s",
                         dev_info.dev_name,
                     )
-                    if not dev_info.unresponsive:
-                        update_failure(
-                            dev_info,
-                            f"Device is not yet exported: {dev_info.dev_name}",
-                        )
+                if not dev_info.unresponsive:
+                    update_failure(
+                        dev_info,
+                        f"Device is not yet exported: {dev_info.dev_name}",
+                    )
                 return
             proxy = self._dev_factory.get_device(dev_info.dev_name)
             proxy.state()
@@ -98,7 +98,7 @@ class BaseLivelinessProbe:
                 )
         except tango.CommunicationFailed as exception:
             # ignoring in case of device server is busy
-            if "Timeout (3000 mS) exceeded on device" not in exception:
+            if "API_DeviceTimedOut" not in exception:
                 if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
                         "Communication Failed on %s: %s",
