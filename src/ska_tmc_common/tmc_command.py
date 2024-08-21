@@ -276,6 +276,13 @@ class BaseTMCCommand:
                         )
 
                     if self.check_command_exception(command_id, lrcr_callback):
+                        self.logger.info(
+                            "LRCR callback: %s", lrcr_callback.command_data
+                        )
+                        self.logger.info(
+                            "LRCR callback: %s",
+                            lrcr_callback.command_data[command_id],
+                        )
                         self.stop_tracker_thread(timeout_id)
                         self.update_task_status(
                             result=(
