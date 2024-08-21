@@ -165,3 +165,4 @@ def setup_data(class_instance, task_abort_event) -> None:
     class_instance.set_command_id(class_name)
     if hasattr(class_instance.component_manager, "abort_event"):
         class_instance.component_manager.abort_event = task_abort_event
+        class_instance.logger.info("Abort Event set")

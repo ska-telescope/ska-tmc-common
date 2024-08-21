@@ -200,6 +200,8 @@ class BaseTMCCommand:
         )
         self._stop = False
         self.tracker_thread.start()
+        if hasattr(self, "component_manager"):
+            self.component_manager.tracker_thread = self.tracker_thread
         self.logger.debug(
             "Started command tracker thread for: %s ", timeout_id
         )
@@ -246,6 +248,8 @@ class BaseTMCCommand:
                 try:
                     if self.check_abort_event(abort_event):
                         self.stop_tracker_thread(timeout_id)
+                        abort_event.clear()
+                        self.logger.info(f"{abort_event} is cleared")
                         self.update_task_status(status=TaskStatus.ABORTED)
 
                     if self.check_command_timeout(
@@ -325,7 +329,12 @@ class BaseTMCCommand:
                         + f"thread: {exp}",
                     )
                 # pylint: enable=broad-exception-caught
-                time.sleep(0.5)
+
+                self.logger.info("Working with ID - %s", timeout_id)
+                self.logger.info("Command Id - %s", command_id)
+
+                if not self._stop:
+                    time.sleep(0.5)
 
             if command_id:
                 lrcr_callback.remove_data(command_id)
@@ -362,6 +371,8 @@ class BaseTMCCommand:
                     as a callable function to call in the event of timeout.
         :return: boolean value if timeout occurred or not
         """
+
+        self.logger.info("Time out check for %s", timeout_id)
         if timeout_id:
             if timeout_callback.assert_against_call(
                 timeout_id, TimeoutState.OCCURED
@@ -395,6 +406,8 @@ class BaseTMCCommand:
                     transitional obsState if exists for a command.
         :return: boolean value if state change occurred or not
         """
+
+        self.logger.info("State change check")
         if (
             methodcaller(state_function)(self.component_manager)
             == state_to_achieve
@@ -411,7 +424,6 @@ class BaseTMCCommand:
                     f"Command with id {command_id} has completed "
                     + f"successfully with state: {state_to_achieve}"
                 )
-
                 return True
         return False
 

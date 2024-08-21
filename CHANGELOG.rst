@@ -7,6 +7,15 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
+
+[0.19.7]
+**********
+*  Abort event cleared in tracker thread
+
+[0.19.6]
+**********
+* Include induce fault mechanism in sdp helper device
+
 [0.19.5]
 **********
 * Push lrcr command result for Helper Dish Device End Scan command
