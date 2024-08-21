@@ -398,22 +398,14 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params[
             "enabled"
         ]:  # Temporary change to set status as failed.
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[ResultCode.FAILED, "TrackLoadStaticOff"],
-                kwargs={
-                    "message": "Failed to execute TrackLoadStaticOff",
-                    "command_id": command_id,
-                },
-            )
-        else:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[ResultCode.OK, "TrackLoadStaticOff"],
-                kwargs={"command_id": command_id},
-            )
+            self.logger.info("inducing fault -------")
+            return self.induce_fault("TrackLoadStaticOff", command_id)
+        thread = threading.Timer(
+            self._delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "TrackLoadStaticOff"],
+            kwargs={"command_id": command_id},
+        )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return [ResultCode.QUEUED], [command_id]

@@ -166,12 +166,16 @@ class HelperBaseDevice(SKABaseDevice):
             LongRunningCommandResult attribute.
 
         """
-
+        self.logger.info("command name: %s", command_name)
+        self.logger.info("command id: %s", command_id)
         fault_type = self.defective_params.get("fault_type")
+        self.logger.info("fault_type: %s", fault_type)
         result = self.defective_params.get("result", ResultCode.FAILED)
+        self.logger.info("result: %s", result)
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
+        self.logger.info("fault_message: %s", fault_message)
         if not is_dish:
             intermediate_state = (
                 self.defective_params.get("intermediate_state")
