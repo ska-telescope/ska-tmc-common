@@ -106,7 +106,33 @@ class BaseLivelinessProbe:
                         exception,
                     )
                     exception_message = "Communication Failed on %s: %s"
-
+        except tango.ConnectionFailed as connection_failed:
+            if "DB_DeviceNotDefined" in connection_failed:
+                exception_message = (
+                    "Device is not defined in database: "
+                    + f"{dev_info.dev_name}"
+                )
+            elif "API_CantConnectToDevice" in connection_failed:
+                exception_message = (
+                    "Not able to connect to device: " + f"{dev_info.dev_name}"
+                )
+            elif "API_CantConnectToDatabase" in connection_failed:
+                exception_message = (
+                    "Failed to connect to database, "
+                    + "please check the database host and port"
+                )
+            else:
+                exception_message = (
+                    "Connection Failed on %s: %s",
+                    dev_info.dev_name,
+                    connection_failed,
+                )
+            if self.log_manager.is_logging_allowed("connection_failed"):
+                self._logger.exception(
+                    "Connection Failed on %s: %s",
+                    dev_info.dev_name,
+                    connection_failed,
+                )
         except tango.DevFailed as exception:
             if self.log_manager.is_logging_allowed("dev_failed"):
                 self._logger.exception(
