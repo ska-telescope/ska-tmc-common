@@ -98,7 +98,7 @@ class BaseLivelinessProbe:
                 )
         except tango.CommunicationFailed as exception:
             # ignoring in case of device server is busy
-            if "API_DeviceTimedOut" not in exception:
+            if "API_DeviceTimedOut" == exception.args[0].reason:
                 if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
                         "Communication Failed on %s: %s",
@@ -106,27 +106,30 @@ class BaseLivelinessProbe:
                         exception,
                     )
                     exception_message = "Communication Failed on %s: %s"
+
         except tango.ConnectionFailed as connection_failed:
-            if "DB_DeviceNotDefined" in connection_failed:
-                exception_message = (
-                    "Device is not defined in database: "
-                    + f"{dev_info.dev_name}"
-                )
-            elif "API_CantConnectToDevice" in connection_failed:
-                exception_message = (
-                    "Not able to connect to device: " + f"{dev_info.dev_name}"
-                )
-            elif "API_CantConnectToDatabase" in connection_failed:
-                exception_message = (
-                    "Failed to connect to database, "
-                    + "please check the database host and port"
-                )
-            else:
-                exception_message = (
-                    "Connection Failed on %s: %s",
-                    dev_info.dev_name,
-                    connection_failed,
-                )
+            exception_message = (
+                "Connection Failed on %s: %s",
+                dev_info.dev_name,
+                connection_failed,
+            )
+            match connection_failed.args[0].reason:
+                case "DB_DeviceNotDefined":
+                    exception_message = (
+                        "Device is not defined in database: "
+                        + f"{dev_info.dev_name}"
+                    )
+                case "API_CantConnectToDevice":
+                    exception_message = (
+                        "Not able to connect to device: "
+                        + f"{dev_info.dev_name}"
+                    )
+                case "API_CantConnectToDatabase":
+                    exception_message = (
+                        "Failed to connect to database, "
+                        + "please check the database host and port"
+                    )
+
             if self.log_manager.is_logging_allowed("connection_failed"):
                 self._logger.exception(
                     "Connection Failed on %s: %s",
