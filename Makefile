@@ -22,7 +22,6 @@ TELESCOPE ?= SKA-mid
 #DAR201 Missing "Returns" in Docstring: - return
 #DAR301 Missing "Yields" in Docstring: - yield
 #DAR401 Missing exception(s) in Raises section: -r Exception
-<<<<<<< HEAD
 PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR103,DAR301,W503,DAR003
 PYTHON_SWITCHES_FOR_PYLINT=--disable=W0612
 TANGO_HOST ?= tango-databaseds:10000 ## TANGO_HOST connection to the Tango DS
@@ -121,11 +120,6 @@ K8S_TEST_TEST_COMMAND = $(PYTHON_VARS_BEFORE_PYTEST) $(PYTHON_RUNNER) \
 
 
 PYTHON_BUILD_TYPE = non_tag_setup
-=======
-PYTHON_SWITCHES_FOR_FLAKE8=--ignore=DAR101,DAR201,DAR103,DAR301,W503,DAR003,DAR401
-MARK ?=
-PYTHON_VARS_AFTER_PYTEST ?= -m '$(MARK)' $(ADD_ARGS) $(FILE) -x 
->>>>>>> 0c9d08e (HM-523:test pipeline)
 
 -include .make/base.mk
 -include .make/python.mk
