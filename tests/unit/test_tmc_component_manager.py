@@ -110,7 +110,7 @@ def test_start_liveliness_probe_single_device(component_manager):
     assert component_manager.liveliness_probe_object is not None
 
 
-def test_update_device_ping_failure(component_manager):
+def test_update_device_responsiveness_failure(component_manager):
     # Test if update_device_ping_failure sets the
     # device's exception and does not raise an exception
     exception = "test exception"
