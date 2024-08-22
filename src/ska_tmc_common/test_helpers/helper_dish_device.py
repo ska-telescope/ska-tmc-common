@@ -398,7 +398,6 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params[
             "enabled"
         ]:  # Temporary change to set status as failed.
-            self.logger.info("inducing fault -------")
             return self.induce_fault("TrackLoadStaticOff", command_id)
         thread = threading.Timer(
             self._delay,
@@ -769,11 +768,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """Updates the longrunningcommandresult  after a delay."""
         delay_value = self._delay
         with tango.EnsureOmniThread():
-            self.logger.info(
-                "Sleep %s for command %s ", delay_value, command_name
-            )
             time.sleep(delay_value)
-            self.logger.info("in update lrcr %s", self._pointing_state)
             if self._pointing_state != PointingState.TRACK:
                 if self._state_duration_info:
                     self._follow_state_duration()
@@ -788,7 +783,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self.push_command_result(
                 ResultCode.OK, command_name, command_id=command_id
             )
-            self.logger.info("Track command completed.")
+            self.logger.info("%s command completed.", command_name)
 
     @command(
         dtype_out="DevVarLongStringArray",
