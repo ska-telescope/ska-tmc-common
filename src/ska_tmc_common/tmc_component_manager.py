@@ -390,19 +390,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device(device_info)
 
-    def update_ping_info(self, ping: int, device_name: str) -> None:
-        """
-        Update a device with correct ping information(depricated).
-
-        :param device_name: name of the device
-        :type device_name: str
-        :param ping: device response time
-        :type ping: int
-        """
-        with self.lock:
-            dev_info = self._component.get_device(device_name)
-            dev_info.ping = ping
-
     def update_device_responsiveness_failure(
         self, device_info: DeviceInfo, exception: str
     ) -> None:
@@ -539,16 +526,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         :rtype: DeviceInfo
         """
         return self._device
-
-    def update_device_ping_failure(self, exception: str) -> None:
-        """
-        Set a device to failed and call the relative callback if available
-
-        :param exception: an exception
-        :type: Exception
-        """
-        with self.lock:
-            self._device.exception = exception
 
     def update_device_info(self, device_info: DeviceInfo) -> None:
         """
