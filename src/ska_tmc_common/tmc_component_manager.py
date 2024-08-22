@@ -356,20 +356,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         return self._component.get_device(device_name)
 
-    def update_device_ping_failure(
-        self, device_info: DeviceInfo, exception: str
-    ) -> None:
-        """
-        Set a device to failed and call the relative callback if available
-
-        :param device_info: a device info
-        :type device_info: DeviceInfo
-        :param exception: an exception
-        :type: Exception
-        """
-        with self.lock:
-            self._component.update_device_exception(device_info, exception)
-
     def update_event_failure(self, device_name: str) -> None:
         """
         Update the failure status of an event for a specific device.
@@ -406,15 +392,14 @@ class TmcComponentManager(BaseTmcComponentManager):
 
     def update_responsiveness_info(self, device_name: str) -> None:
         """
-        Update a device with correct ping information(depricated).
+        Update a device with correct responsiveness information.
 
         :param device_name: name of the device
         :type device_name: str
         """
         with self.lock:
             dev_info: DeviceInfo = self._component.get_device(device_name)
-            dev_info.update_unresponsive(False)
-            dev_info.exception = ""
+            dev_info.update_unresponsive(False, "")
 
     def update_device_health_state(
         self, device_name: str, health_state: HealthState
@@ -538,18 +523,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device = device_info
 
-    def update_ping_info(self, ping: int, device_name: str) -> None:
-        """
-        Update a device with the correct ping information.
-
-        :param device_name: name of the device
-        :type device_name: str
-        :param ping: device response time
-        :type ping: int
-        """
-        with self.lock:
-            self._device.ping = ping
-
     def update_event_failure(self, device_name: str) -> None:
         """
         Update a monitored device failure status
@@ -612,3 +585,28 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.obs_state = obs_state
             self._device.last_event_arrived = time.time()
             self._device.update_unresponsive(False)
+
+    def update_device_responsiveness_failure(
+        self, device_info: DeviceInfo, exception: str
+    ) -> None:
+        """
+        Set a device to failed and call the relative callback if available
+
+        :param device_info: a device info
+        :type device_info: DeviceInfo
+        :param exception: an exception
+        :type: Exception
+        """
+        with self.lock:
+            device_info.update_unresponsive(True, exception)
+
+    def update_responsiveness_info(self, device_name: str = "") -> None:
+        """
+        Update a device with correct responsiveness information.
+
+        :param device_name: name of the device
+        :type device_name: str
+        """
+        with self.lock:
+            dev_info: DeviceInfo = self.get_device()
+            dev_info.update_unresponsive(False, "")
