@@ -11,6 +11,10 @@ Added
 **********
 * Updated liveliness probe to utilize state command and consider exported flag for device availability.
 
+[0.19.8]
+**********
+*  Update HelperDishDevice to support Dish error propgation
+
 [0.19.7]
 **********
 *  Abort event cleared in tracker thread
