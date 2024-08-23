@@ -7,6 +7,9 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
+[0.19.8]
+**********
+*  Update HelperDishDevice to support Dish error propgation
 
 [0.19.7]
 **********

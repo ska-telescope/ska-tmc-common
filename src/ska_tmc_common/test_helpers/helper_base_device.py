@@ -14,6 +14,7 @@ from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.enum import PointingState
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
@@ -117,7 +118,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.defective_params = input_dict
 
     def induce_fault(
-        self, command_name: str, command_id: str
+        self, command_name: str, command_id: str, is_dish: bool = False
     ) -> Tuple[List[ResultCode], List[str]]:
         """
         Induces a fault into the device based on the given parameters.
@@ -165,16 +166,22 @@ class HelperBaseDevice(SKABaseDevice):
             LongRunningCommandResult attribute.
 
         """
-
         fault_type = self.defective_params.get("fault_type")
         result = self.defective_params.get("result", ResultCode.FAILED)
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-        intermediate_state = (
-            self.defective_params.get("intermediate_state")
-            or ObsState.RESOURCING
-        )
+
+        if not is_dish:
+            intermediate_state = (
+                self.defective_params.get("intermediate_state")
+                or ObsState.RESOURCING
+            )
+        else:
+            intermediate_state = (
+                self.defective_params.get("intermediate_state")
+                or PointingState.READY
+            )
 
         if fault_type == FaultType.FAILED_RESULT:
             return [result], [fault_message]
@@ -191,7 +198,10 @@ class HelperBaseDevice(SKABaseDevice):
 
         if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
             self._obs_state = intermediate_state
-            self.push_obs_state_event(intermediate_state)
+            if not is_dish:
+                self.push_obs_state_event(intermediate_state)
+            else:
+                self.push_pointing_state_event(intermediate_state)
             return [ResultCode.QUEUED], [command_id]
 
         if fault_type == FaultType.COMMAND_NOT_ALLOWED_AFTER_QUEUING:
@@ -230,6 +240,17 @@ class HelperBaseDevice(SKABaseDevice):
             return [ResultCode.QUEUED], [command_id]
 
         return [ResultCode.OK], [command_id]
+
+    def push_pointing_state_event(self, pointing_state: PointingState) -> None:
+        """Push Pointing State Change Event"""
+        with tango.EnsureOmniThread():
+            self.logger.info(
+                "Pushing change event for %s: %s",
+                self.dev_name,
+                pointing_state,
+            )
+            self._pointing_state = pointing_state
+            self.push_change_event("pointingState", self._pointing_state)
 
     def push_command_result(
         self,

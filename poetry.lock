@@ -70,7 +70,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "astropy-iers-data"
-version = "0.2024.8.12.0.32.58"
+version = "0.2024.8.19.0.32.16"
 description = "IERS Earth Rotation and Leap Second tables for the astropy core package"
 category = "main"
 optional = false
@@ -321,13 +321,10 @@ reference = "PyPI-public"
 [[package]]
 name = "execnet"
 version = "2.1.1"
-description = "execnet: rapid multi-Python deployment"
+description = ""
 category = "dev"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-testing = ["hatch", "pre-commit", "pytest", "tox"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -768,15 +765,10 @@ reference = "PyPI-public"
 [[package]]
 name = "platformdirs"
 version = "4.2.2"
-description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
+description = ""
 category = "main"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-docs = ["furo (>=2023.9.10)", "proselint (>=0.13)", "sphinx (>=7.2.6)", "sphinx-autodoc-typehints (>=1.25.2)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-cov (>=4.1)", "pytest-mock (>=3.12)"]
-type = ["mypy (>=1.8)"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -878,13 +870,10 @@ reference = "PyPI-public"
 [[package]]
 name = "pygments"
 version = "2.18.0"
-description = "Pygments is a syntax highlighting package written in Python."
+description = ""
 category = "dev"
 optional = false
-python-versions = ">=3.8"
-
-[package.extras]
-windows-terminal = ["colorama (>=0.4.6)"]
+python-versions = "*"
 
 [package.source]
 type = "legacy"
@@ -1139,7 +1128,7 @@ urllib3 = ">=1.21.1,<3"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
+use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
 
 [package.source]
 type = "legacy"
@@ -1756,8 +1745,8 @@ astropy = [
     {file = "astropy-6.1.2.tar.gz", hash = "sha256:a2103d4e24e90389a820cfcdaaf4ca2d1ab22e5fd72978d147ff5cace54f1d3a"},
 ]
 astropy-iers-data = [
-    {file = "astropy_iers_data-0.2024.8.12.0.32.58-py3-none-any.whl", hash = "sha256:a4c96a046f8027ae7c7a4ec2c56fe675f90a0774bfd5ffc15f00114e97ff27dd"},
-    {file = "astropy_iers_data-0.2024.8.12.0.32.58.tar.gz", hash = "sha256:e095f5c53c769ce08e80950ee5ebaf2c070959f4d40fbd188b3509eab7d184f7"},
+    {file = "astropy_iers_data-0.2024.8.19.0.32.16-py3-none-any.whl", hash = "sha256:c39d920dfff92c82ef501df066692eb0d546e4885370bd8010ce2ddcc3252d46"},
+    {file = "astropy_iers_data-0.2024.8.19.0.32.16.tar.gz", hash = "sha256:f8bea6abbdc8a3076b67a0941e3c1e6c89e5dffb5582a92c1a6e43e4a2e51c4a"},
 ]
 attrs = [
     {file = "attrs-24.2.0-py3-none-any.whl", hash = "sha256:81921eb96de3191c8258c199618104dd27ac608d9366f5e35d011eae1867ede2"},

@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import List, Tuple, Union
 
 import numpy as np
+import tango
 from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
@@ -25,6 +26,7 @@ from ska_tmc_common.test_helpers.constants import (
     SCAN,
     SET_OPERATE_MODE,
     SKA_EPOCH,
+    TRACK,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -81,6 +83,15 @@ class HelperDishDevice(HelperDishLNDevice):
         max_dim_x=150,
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
+
+    @property
+    def configured_band(self):
+        """Gets the currently configured band.
+            This property returns the band that has been configured for
+            instance.
+        Returns:
+            Band: The currently configured band."""
+        return self._configured_band
 
     def read_scanID(self) -> str:
         """
@@ -144,7 +155,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: configure band for dishes
         :rtype: Band
         """
-        return self._configured_band
+        return self.configured_band
 
     def read_offset(self) -> str:
         """
@@ -199,11 +210,11 @@ class HelperDishDevice(HelperDishLNDevice):
         Trigger a ConfiguredBand change
         """
         value = Band(argin)
-        if self._configured_band != value:
+        if self.configured_band != value:
             self._configured_band = Band(argin)
-            self.push_change_event("configuredBand", self._configured_band)
+            self.push_change_event("configuredBand", self.configured_band)
             self.logger.info(
-                "Dish configuredBand %s event is pushed", self._configured_band
+                "Dish configuredBand %s event is pushed", self.configured_band
             )
 
     @command(
@@ -234,8 +245,8 @@ class HelperDishDevice(HelperDishLNDevice):
         This method set the Configured Band
         """
         self._configured_band = configured_band
-        self.push_change_event("configuredBand", self._configured_band)
-        self.logger.info("Configured Band: %s", self._configured_band)
+        self.push_change_event("configuredBand", self.configured_band)
+        self.logger.info("Configured Band: %s", self.configured_band)
 
     def update_command_info(
         self, command_name: str = "", command_input: str | bool | None = None
@@ -378,32 +389,22 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info("TrackLoadStaticOff", str(argin))
 
         # Will be uncommented as a part of SAH-1530
-        # command_id = f"{time.time()}-TrackLoadStaticOff"
+        command_id = f"{time.time()}-TrackLoadStaticOff"
 
         # Set offsets.
-        command_id = f"{time.time()}_TrackLoadStaticOff"
         cross_elevation = argin[0]
         elevation = argin[1]
         self.set_offset(cross_elevation, elevation)
         if self.defective_params[
             "enabled"
         ]:  # Temporary change to set status as failed.
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[ResultCode.FAILED, "TrackLoadStaticOff"],
-                kwargs={
-                    "message": "Failed to execute TrackLoadStaticOff",
-                    "command_id": command_id,
-                },
-            )
-        else:
-            thread = threading.Timer(
-                self._delay,
-                function=self.push_command_result,
-                args=[ResultCode.OK, "TrackLoadStaticOff"],
-                kwargs={"command_id": command_id},
-            )
+            return self.induce_fault("TrackLoadStaticOff", command_id)
+        thread = threading.Timer(
+            self._delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "TrackLoadStaticOff"],
+            kwargs={"command_id": command_id},
+        )
         thread.start()
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return [ResultCode.QUEUED], [command_id]
@@ -505,21 +506,27 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}_ConfigureBand2"
-        self.logger.info("Current band - %s", self._configured_band)
+        self.logger.info("Current band - %s", self.configured_band)
 
-        # Below changes will be un-commented in SAH-1530
-        # if self._configured_band == Band.B2:
+        # TODO: The scenario of duplicate band is under discussion. Need to
+        # enable below statements once the behaviour is fixed.
+        # if self.configured_band == Band.B2:
         #     self.push_command_result(
         #         ResultCode.REJECTED,
         #         "ConfigureBand2",
-        #         exception="Already in band 2",
+        #         message="Dish is already configured for BAND2 ",
         #     )
-        #     return ([ResultCode.REJECTED], ["Already in band 2"])
+        #     return (
+        #         [ResultCode.REJECTED],
+        #         ["Dish is already configured for BAND2 "],
+        #     )
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand2", command_id)
+            return self.induce_fault(
+                "ConfigureBand2", command_id, is_dish=True
+            )
 
         # Set the Dish Mode
         current_dish_mode = self._dish_mode
@@ -577,7 +584,13 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("ConfigureBand3", command_id)
 
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B3)
         self.push_command_result(
@@ -625,7 +638,13 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("ConfigureBand4", command_id)
 
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B4)
         self.push_command_result(
@@ -672,7 +691,13 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand5a", command_id)
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B5a)
         self.push_command_result(
@@ -720,7 +745,13 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("ConfigureBand5b", command_id)
         # Set dish mode
+        current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
+        thread = threading.Thread(
+            target=self.set_dish_mode,
+            args=[current_dish_mode],
+        )
+        thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B5b)
         self.push_command_result(
@@ -731,28 +762,50 @@ class HelperDishDevice(HelperDishLNDevice):
 
     # Below changes will be un-commented in SAH-1530
 
-    # @command(
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def Track(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes Track command on  Dish Master
-    #     :return: ResultCode and message
-    #     :rtype: tuple
-    #     """
-    #     command_id = f"{time.time()}-Track"
-    #     self.logger.info("Instructed Dish simulator to invoke Track command")
-    #     self.update_command_info(TRACK, "")
-    #     if self.defective_params["enabled"]:
-    #         return self.induce_fault("Track")
+    def update_lrcr(
+        self, command_name: str = "", command_id: str = ""
+    ) -> None:
+        """Updates the longrunningcommandresult  after a delay."""
+        delay_value = self._delay
+        with tango.EnsureOmniThread():
+            time.sleep(delay_value)
+            if self._pointing_state != PointingState.TRACK:
+                if self._state_duration_info:
+                    self._follow_state_duration()
+                else:
+                    self._pointing_state = PointingState.TRACK
+                    self.push_change_event(
+                        "pointingState", self._pointing_state
+                    )
 
-    #     thread = threading.Thread(
-    #         target=self.update_lrcr, args=["Track", command_id]
-    #     )
-    #     thread.start()
+                # Set dish mode
+            self.set_dish_mode(DishMode.OPERATE)
+            self.push_command_result(
+                ResultCode.OK, command_name, command_id=command_id
+            )
+            self.logger.info("%s command completed.", command_name)
 
-    #     return ([ResultCode.QUEUED], [command_id])
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Track(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Track command on  Dish Master
+        :return: ResultCode and message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}-Track"
+        self.logger.info("Instructed Dish simulator to invoke Track command")
+        self.update_command_info(TRACK, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Track", command_id)
+
+        thread = threading.Thread(
+            target=self.update_lrcr, args=["Track", command_id]
+        )
+        thread.start()
+        return ([ResultCode.QUEUED], [command_id])
 
     # TODO: Enable below commands when Dish Leaf Node implements them.
     # def is_Slew_allowed(self) -> bool:
