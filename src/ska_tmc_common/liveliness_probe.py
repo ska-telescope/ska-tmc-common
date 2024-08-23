@@ -63,6 +63,7 @@ class BaseLivelinessProbe:
         """
         raise NotImplementedError("This method must be inherited")
 
+    # pylint: disable=too-many-branches
     def device_task(self, dev_info: DeviceInfo) -> None:
         """
         Checks device status and logs error messages on state change
@@ -89,13 +90,13 @@ class BaseLivelinessProbe:
                         dev_info,
                         f"Device is not yet exported: {dev_info.dev_name}",
                     )
-                return
-            proxy = self._dev_factory.get_device(dev_info.dev_name)
-            proxy.state()
-            if dev_info.unresponsive:
-                self._component_manager.update_responsiveness_info(
-                    dev_info.dev_name
-                )
+            else:
+                proxy = self._dev_factory.get_device(dev_info.dev_name)
+                proxy.state()
+                if dev_info.unresponsive:
+                    self._component_manager.update_responsiveness_info(
+                        dev_info.dev_name
+                    )
         except tango.CommunicationFailed as exception:
             # ignoring in case of device server is busy
             if "API_DeviceTimedOut" == exception.args[0].reason:
