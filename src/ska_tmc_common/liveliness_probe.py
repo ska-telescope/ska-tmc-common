@@ -73,10 +73,11 @@ class BaseLivelinessProbe:
             update_failure = (
                 self._component_manager.update_device_responsiveness_failure
             )
-            db = tango.Database()
             if "tango://" in dev_info.dev_name:  # check full trl
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
                 db = tango.Database(db_name, port)
+            else:
+                db = tango.Database()
             if not db.get_device_info(dev_info.dev_name).exported:
                 if self.log_manager.is_logging_allowed("device_unexported"):
                     self._logger.debug(
@@ -99,7 +100,7 @@ class BaseLivelinessProbe:
                     )
         except tango.CommunicationFailed as exception:
             # ignoring in case of device server is busy
-            if "API_DeviceTimedOut" == exception.args[0].reason:
+            if "API_DeviceTimedOut" != exception.args[0].reason:
                 if self.log_manager.is_logging_allowed("communication_failed"):
                     self._logger.exception(
                         "Communication Failed on %s: %s",
