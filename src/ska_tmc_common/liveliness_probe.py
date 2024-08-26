@@ -155,7 +155,7 @@ class BaseLivelinessProbe:
                     f"Unable to reach device {dev_info.dev_name}"
                 )
 
-        if not dev_info.unresponsive and exception_message:
+        if dev_info.exception != exception_message:
             update_failure(dev_info, exception_message)
 
 
