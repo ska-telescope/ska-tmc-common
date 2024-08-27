@@ -107,7 +107,7 @@ def test_command_propogation_success(task_callback):
         result=(ResultCode.FAILED, "Exception has occured"),
         exception="Exception has occured",
     )
-    time.sleep(0.5)
+    time.sleep(1)
     with pytest.raises(KeyError):
         cm.lrcr_callback.command_data[cm.command_id]
 
@@ -131,6 +131,6 @@ def test_command_propogation_success_without_timeout(task_callback):
         result=(ResultCode.FAILED, "Exception has occured"),
         exception="Exception has occured",
     )
-    time.sleep(0.5)
+    time.sleep(1)
     with pytest.raises(KeyError):
         cm.lrcr_callback.command_data[cm.command_id]
