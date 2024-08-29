@@ -329,6 +329,8 @@ class BaseTMCCommand:
                         + f"thread: {exp}",
                     )
                 # pylint: enable=broad-exception-caught
+                if self._stop:
+                    break
                 self.logger.info("Feeling sleepy")
                 self.logger.info("Working with ID - %s", timeout_id)
                 time.sleep(0.5)
