@@ -50,3 +50,5 @@ unit-tests.xml
 venv
 
 charts/ska-tmc-common/charts
+charts/ska-tmc-common/Chart.lock
+tests/requirements.txt
