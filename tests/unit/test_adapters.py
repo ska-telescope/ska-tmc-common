@@ -193,9 +193,10 @@ def test_csp_master_leaf_node(tango_context):
     csp_master_leaf_node_adapter = factory.get_or_create_adapter(
         HELPER_CSP_MASTER_LEAF_DEVICE, AdapterType.CSP_MASTER_LEAF_NODE
     )
-    csp_master_leaf_node_adapter._proxy = mock.Mock().configure_mock(
-        {"LoadDishCfg.return_value": (ResultCode.OK, ["Command Completed"])}
-    )
+    attrs = {
+        "LoadDishCfg.return_value": (ResultCode.OK, ["Command Completed"])
+    }
+    csp_master_leaf_node_adapter._proxy = mock.Mock().configure_mock(**attrs)
 
     return_code, message = csp_master_leaf_node_adapter.LoadDishCfg()
     assert return_code == ResultCode.OK
