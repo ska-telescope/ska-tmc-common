@@ -28,7 +28,6 @@ def test_stop():
     assert lp._stop
 
 
-@pytest.mark.new
 def test_stop_ln(dev_name):
     device = DishDeviceInfo(dev_name)
     cm = TmcLeafNodeComponentManager(
@@ -47,7 +46,10 @@ def test_stop_ln(dev_name):
 
 
 def test_base_not_implemented_exception():
-    base_probe = BaseLivelinessProbe()
+    cm = TmcLeafNodeComponentManager(
+        logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
+    )
+    base_probe = BaseLivelinessProbe(cm, logger)
     with pytest.raises(NotImplementedError):
         base_probe.run()
 
