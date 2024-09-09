@@ -164,21 +164,24 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         :param liveliness_probe_type: enum of class LivelinessProbeType
         """
         if liveliness_probe_type == LivelinessProbeType.SINGLE_DEVICE:
-            self.liveliness_probe_object = SingleDeviceLivelinessProbe(
-                self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
+            if not self.liveliness_probe_object:
+                self.liveliness_probe_object = SingleDeviceLivelinessProbe(
+                    self,
+                    logger=self.logger,
+                    proxy_timeout=self.proxy_timeout,
+                    sleep_time=self.sleep_time,
+                )
+
             self.liveliness_probe_object.start()
 
         elif liveliness_probe_type == LivelinessProbeType.MULTI_DEVICE:
-            self.liveliness_probe_object = MultiDeviceLivelinessProbe(
-                self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
+            if not self.liveliness_probe_object:
+                self.liveliness_probe_object = MultiDeviceLivelinessProbe(
+                    self,
+                    logger=self.logger,
+                    proxy_timeout=self.proxy_timeout,
+                    sleep_time=self.sleep_time,
+                )
             self.liveliness_probe_object.start()
         else:
             self.logger.warning("Liveliness Probe is not running")
