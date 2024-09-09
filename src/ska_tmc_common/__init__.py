@@ -63,9 +63,6 @@ from .liveliness_probe import (
 )
 from .lrcr_callback import LRCRCallback
 from .op_state_model import TMCOpStateMachine, TMCOpStateModel
-from .tango_client import TangoClient
-from .tango_group_client import TangoGroupClient
-from .tango_server_helper import TangoServerHelper
 from .test_helpers.empty_component_manager import EmptyComponentManager
 from .test_helpers.helper_adapter_factory import HelperAdapterFactory
 from .test_helpers.helper_base_device import HelperBaseDevice
@@ -154,9 +151,6 @@ __all__ = [
     "SingleDeviceLivelinessProbe",
     "TMCOpStateMachine",
     "TMCOpStateModel",
-    "TangoClient",
-    "TangoGroupClient",
-    "TangoServerHelper",
     "TimeoutCallback",
     "LRCRCallback",
     "TMCBaseDevice",

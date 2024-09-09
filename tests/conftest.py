@@ -35,6 +35,7 @@ from ska_tmc_common import (
     HelperSubArrayDevice,
     TmcLeafNodeComponentManager,
 )
+from ska_tmc_common.tmc_base_leaf_device import TMCBaseLeafDevice
 from tests.settings import (
     CSP_DEVICE,
     CSP_LEAF_NODE_DEVICE,
@@ -94,6 +95,10 @@ def devices_to_load():
                 {"name": TMC_COMMON_DEVICE},
                 {"name": DEVICE_LIST[0]},
             ],
+        },
+        {
+            "class": TMCBaseLeafDevice,
+            "devices": [{"name": DEVICE_LIST[3]}],
         },
         {
             "class": HelperBaseDevice,

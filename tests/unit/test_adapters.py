@@ -1,8 +1,10 @@
 import json
 import logging
 
+import mock
 import pytest
 from ska_tango_base.commands import ResultCode
+from tango import DevState
 
 from ska_tmc_common import (
     AdapterFactory,
@@ -96,6 +98,46 @@ def test_get_or_create_subarray_adapter(tango_context):
     assert isinstance(subarray_adapter, SubarrayAdapter)
 
 
+def test_base_adapter(tango_context):
+    factory = AdapterFactory()
+
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+
+    assert subarray_adapter.proxy is not None
+    result_code, unique_id = subarray_adapter.On()
+    assert result_code == ResultCode.QUEUED
+    assert unique_id[0].endswith("On")
+
+    result_code, unique_id = subarray_adapter.Off()
+    assert result_code == ResultCode.QUEUED
+    assert unique_id[0].endswith("Off")
+
+    result_code, unique_id = subarray_adapter.Standby()
+    assert result_code == ResultCode.QUEUED
+    assert unique_id[0].endswith("Standby")
+    assert subarray_adapter.State() in [
+        DevState.DISABLE,
+        DevState.UNKNOWN,
+        DevState.OFF,
+        DevState.STANDBY,
+        DevState.ON,
+    ]
+
+    # Mocking behaviour as this commands are not implemented
+    subarray_adapter._proxy = mock.Mock()
+    attrs = {
+        "Disable.return_value": (ResultCode.OK, ["Command Completed"]),
+        "Reset.return_value": (ResultCode.OK, ["Command Completed"]),
+    }
+    subarray_adapter._proxy.configure_mock(**attrs)
+    result_code, message = subarray_adapter.Disable()
+    assert result_code == ResultCode.OK
+    result_code, message = subarray_adapter.Reset()
+    assert result_code == ResultCode.OK
+
+
 def test_get_or_create_dish_adapter(tango_context):
     factory = AdapterFactory()
     dish_adapter = factory.get_or_create_adapter(
@@ -143,6 +185,20 @@ def test_csp_master_leaf_node_memorized_dish_vcc_attribute(tango_context):
     assert csp_master_leaf_node_adapter.memorizedDishVccMap == json.dumps(
         {"uri": "dummy_url"}
     )
+
+
+def test_csp_master_leaf_node(tango_context):
+    """Validate dish vcc map memorized attribute set using adapter"""
+    factory = AdapterFactory()
+    csp_master_leaf_node_adapter = factory.get_or_create_adapter(
+        HELPER_CSP_MASTER_LEAF_DEVICE, AdapterType.CSP_MASTER_LEAF_NODE
+    )
+    csp_master_leaf_node_adapter._proxy = mock.Mock().configure_mock(
+        {"LoadDishCfg.return_value": (ResultCode.OK, ["Command Completed"])}
+    )
+
+    return_code, message = csp_master_leaf_node_adapter.LoadDishCfg()
+    assert return_code == ResultCode.OK
 
 
 def test_dish_adapter_program_track_table(tango_context):

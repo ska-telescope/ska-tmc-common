@@ -99,15 +99,13 @@ class BaseLivelinessProbe:
                         dev_info.dev_name
                     )
         except tango.CommunicationFailed as exception:
-            # ignoring in case of device server is busy
-            if "API_DeviceTimedOut" != exception.args[0].reason:
-                if self.log_manager.is_logging_allowed("communication_failed"):
-                    self._logger.exception(
-                        "Communication Failed on %s: %s",
-                        dev_info.dev_name,
-                        exception,
-                    )
-                    exception_message = "Communication Failed on %s: %s"
+            if self.log_manager.is_logging_allowed("communication_failed"):
+                self._logger.exception(
+                    "Communication Failed on %s: %s",
+                    dev_info.dev_name,
+                    exception,
+                )
+                exception_message = "Communication Failed on %s: %s"
 
         except tango.ConnectionFailed as connection_failed:
             exception_message = (
