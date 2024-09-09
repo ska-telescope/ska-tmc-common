@@ -33,7 +33,7 @@ def test_stop_ln(dev_name):
     cm = TmcLeafNodeComponentManager(
         logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
-    cm.start_liveliness_probe(cm._liveliness_probe)
+    cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     cm._device = device
     assert cm._device.dev_name == dev_name
     assert cm.liveliness_probe_object._thread.is_alive()
