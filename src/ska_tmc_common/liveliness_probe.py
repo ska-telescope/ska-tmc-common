@@ -77,7 +77,7 @@ class BaseLivelinessProbe:
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
                 db = tango.Database(db_name, port)
             else:
-                db = tango.Database() 
+                db = tango.Database()
             if not db.get_device_info(dev_info.dev_name).exported:
                 if self.log_manager.is_logging_allowed("device_unexported"):
                     self._logger.debug(
