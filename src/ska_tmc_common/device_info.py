@@ -52,7 +52,7 @@ class DeviceInfo:
     Such as HealthState, DevState, availability
     """
 
-    def __init__(self, dev_name: str, _unresponsive: bool = True) -> None:
+    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         self.dev_name = dev_name
         self._state: DevState = DevState.UNKNOWN
         self._health_state: HealthState = HealthState.UNKNOWN
@@ -230,7 +230,7 @@ class SubArrayDeviceInfo(DeviceInfo):
     Gives subarray devices information
     """
 
-    def __init__(self, dev_name: str, _unresponsive: bool = True) -> None:
+    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
         self.device_id = -1
         self.resources = []
@@ -284,7 +284,7 @@ class SdpSubarrayDeviceInfo(SubArrayDeviceInfo):
     Gives SDP subarray device information
     """
 
-    def __init__(self, dev_name: str, _unresponsive: bool = True) -> None:
+    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
         self.receive_addresses = ""
 
@@ -312,7 +312,7 @@ class DishDeviceInfo(DeviceInfo):
     Gives Dishes device information
     """
 
-    def __init__(self, dev_name: str, _unresponsive: bool = True) -> None:
+    def __init__(self, dev_name: str, _unresponsive: bool = False) -> None:
         super().__init__(dev_name, _unresponsive)
         self.device_id = -1
         self._pointing_state = PointingState.NONE
@@ -414,7 +414,7 @@ class SdpQueueConnectorDeviceInfo:
         self._exception = None
         self._pointing_data: list = [0.0, 0.0, 0.0]
         self._subscribed_to_attribute = False
-        self._unresponsive = True
+        self._unresponsive = False
         self._attribute_name: str = ""
 
     @property
