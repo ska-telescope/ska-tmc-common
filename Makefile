@@ -80,7 +80,7 @@ MINIKUBE ?= false ## Minikube or not
 FAKE_DEVICES ?= true ## Install fake devices or not
 COUNT ?= 1 ## Number of times the tests should run
 PYTHON_TEST_COUNT ?=1
-ITANGO_DOCKER_IMAGE = $(CAR_OCI_REGISTRY_HOST)/ska-tango-images-tango-itango:9.5.0
+ITANGO_DOCKER_IMAGE = $(CAR_OCI_REGISTRY_HOST)/ska-tango-images-tango-itango:9.3.9
 
 # Test runner - run to completion job in K8s
 # name of the pod running the k8s_tests
