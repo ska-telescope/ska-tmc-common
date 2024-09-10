@@ -77,7 +77,7 @@ class BaseLivelinessProbe:
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
                 db = tango.Database(db_name, port)
             else:
-                db = tango.Database()
+                db = tango.Database() 
             if not db.get_device_info(dev_info.dev_name).exported:
                 if self.log_manager.is_logging_allowed("device_unexported"):
                     self._logger.debug(
@@ -94,10 +94,9 @@ class BaseLivelinessProbe:
             else:
                 proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.state()
-                if dev_info.unresponsive:
-                    self._component_manager.update_responsiveness_info(
-                        dev_info.dev_name
-                    )
+                self._component_manager.update_responsiveness_info(
+                    dev_info.dev_name
+                )
         except tango.CommunicationFailed as exception:
             if self.log_manager.is_logging_allowed("communication_failed"):
                 self._logger.exception(
