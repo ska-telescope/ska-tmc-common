@@ -5,11 +5,6 @@
 PROJECT = ska-tmc-common
 CI_REGISTRY ?= gitlab.com
 
-
-
-
-
-
 # include makefile to pick up the standard Make targets, e.g., 'make build'
 # build, 'make push' docker push procedure, etc. The other Make targets
 # ('make interactive', 'make test', etc.) are defined in this file.
@@ -30,8 +25,7 @@ CI_PROJECT_PATH_SLUG ?= ska-tmc-common
 CI_ENVIRONMENT_SLUG ?= ska-tmc-common
 CLUSTER_DOMAIN ?= cluster.local
 XRAY_TEST_RESULT_FILE = "build/cucumber.json"
-## override so that this picks up setup.cfg from the project root
-PYTHON_TEST_FILE ?=
+
 
 SKA_TANGO_OPERATOR = true
 # Set the specific environment variables required for pytest
