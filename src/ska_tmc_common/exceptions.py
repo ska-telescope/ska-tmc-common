@@ -2,6 +2,7 @@
 Has different types of exceptions
 that may aries during the execution
 """
+
 from marshmallow import ValidationError
 
 

@@ -4,6 +4,7 @@ This module provided a reference implementation of a BaseComponentManager.
 It is provided for explanatory purposes, and to support testing of this
 package.
 """
+
 # pylint: disable=unused-argument
 
 import json
@@ -119,9 +120,10 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 sleep_time=sleep_time,
             )
         self.timer_object = None
-        self.liveliness_probe_object: Union[
-            SingleDeviceLivelinessProbe, MultiDeviceLivelinessProbe
-        ] | None = None
+        self.liveliness_probe_object: (
+            Union[SingleDeviceLivelinessProbe, MultiDeviceLivelinessProbe]
+            | None
+        ) = None
         self._command_id: str = ""
 
     @property
@@ -439,7 +441,7 @@ class TmcComponentManager(BaseTmcComponentManager):
             dev_info = self._component.get_device(device_name)
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
-            dev_info.update_unresponsive(False)
+            # dev_info.update_unresponsive(False)
 
     def is_command_allowed(self, command_name: str):
         """
@@ -535,7 +537,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_health_state(
         self, device_name: str, health_state: HealthState
@@ -552,7 +554,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.health_state = health_state
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_state(
         self, device_name: str, state: tango.DevState
@@ -570,7 +572,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.state = state
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_obs_state(
         self, device_name: str, obs_state: ObsState
@@ -587,7 +589,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.obs_state = obs_state
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_responsiveness_failure(
         self, device_info: DeviceInfo, exception: str

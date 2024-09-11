@@ -1,4 +1,5 @@
 """A module implementing a decorator for Error Propagation."""
+
 from operator import methodcaller
 from threading import Event
 from typing import Callable

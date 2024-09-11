@@ -1,4 +1,5 @@
 """A module to test the timeout and error propagation decorators"""
+
 import time
 from enum import IntEnum
 from logging import Logger

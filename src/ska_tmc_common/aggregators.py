@@ -1,6 +1,7 @@
 """
 Abstract class for Aggregators
 """
+
 from logging import Logger
 
 

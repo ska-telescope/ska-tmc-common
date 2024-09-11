@@ -2,6 +2,7 @@
 This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
+
 import threading
 from logging import Logger
 from time import sleep

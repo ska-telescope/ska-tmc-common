@@ -1,4 +1,5 @@
 """A module to test the Event Receiver class"""
+
 import time
 
 import pytest

@@ -1,4 +1,5 @@
 """ Class for managing logs."""
+
 from __future__ import annotations
 
 import time

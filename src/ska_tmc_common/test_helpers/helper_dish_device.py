@@ -49,7 +49,7 @@ class HelperDishDevice(HelperDishLNDevice):
             179.880204193508,
             31.877024524259,
         ]
-        self._state_duration_info = []
+        self._state_duration_info: dict = {}
         self._program_track_table = []
         self._program_track_table_lock = threading.Lock()
         self._scan_id = ""
@@ -238,7 +238,7 @@ class HelperDishDevice(HelperDishLNDevice):
     def ResetTransitions(self) -> None:
         """This command will reset PointingState duration which is set"""
         self.logger.info("Resetting Pointing State Duration")
-        self._state_duration_info = []
+        self._state_duration_info = {}
 
     def set_configured_band(self, configured_band: Band) -> None:
         """

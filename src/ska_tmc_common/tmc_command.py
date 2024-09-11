@@ -2,6 +2,7 @@
 This module manages all the base classes and methods
 required for TMC commands
 """
+
 # pylint: disable=unused-argument
 
 import threading

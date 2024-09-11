@@ -1,6 +1,7 @@
 """
 This module contains the fixtures, methods and variables required for testing.
 """
+
 import logging
 import os
 import threading
