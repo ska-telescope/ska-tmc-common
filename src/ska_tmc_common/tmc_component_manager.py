@@ -441,7 +441,7 @@ class TmcComponentManager(BaseTmcComponentManager):
             dev_info = self._component.get_device(device_name)
             dev_info.state = state
             dev_info.last_event_arrived = time.time()
-            # dev_info.update_unresponsive(False)
+            dev_info.update_unresponsive(False)
 
     def is_command_allowed(self, command_name: str):
         """
