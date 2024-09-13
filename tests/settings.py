@@ -400,3 +400,17 @@ def wait_for_obstate(device: tango.DeviceProxy, expected_obsstate: ObsState):
             )
     logger.info("ObsState of %s transitioned to %s", device, expected_obsstate)
     assert device.read_attribute("obsState").value == expected_obsstate
+
+
+def check_if_device_responsive(cm, device_name):
+
+    cm._component.get_device(device_name).unresponsive
+
+    start_time = time.time()
+    elapsed_time = 0
+    while not cm._component.get_device(device_name).unresponsive:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > TIMEOUT:
+            return False
+
+    return True

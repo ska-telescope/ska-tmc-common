@@ -8,6 +8,7 @@ from ska_tmc_common import DeviceInfo, InputParameter, TmcComponentManager
 from tests.settings import (
     CSP_SUBARRAY_DEVICE,
     SDP_SUBARRAY_DEVICE,
+    check_if_device_responsive,
     export_device,
     logger,
 )
@@ -27,8 +28,7 @@ def test_liveliness_probe():
     cm._component.update_device(dev_info)
     lp = cm.liveliness_probe_object
     lp.add_device(CSP_SUBARRAY_DEVICE)
-    time.sleep(2)
-    assert not cm._component.get_device(CSP_SUBARRAY_DEVICE).unresponsive
+    assert check_if_device_responsive(cm, CSP_SUBARRAY_DEVICE)
 
     # device not in the database
     full_trl = "tango://" + TANGO_HOST + "/" + SDP_SUBARRAY_DEVICE
@@ -36,8 +36,7 @@ def test_liveliness_probe():
     cm._component.update_device(dev_info)
     lp = cm.liveliness_probe_object
     lp.add_device(full_trl)
-    time.sleep(2)
-    assert cm._component.get_device(full_trl).unresponsive
+    assert check_if_device_responsive(cm, full_trl)
     assert (
         f"Unable to reach device {full_trl}"
         == cm._component.get_device(full_trl).exception
@@ -46,8 +45,7 @@ def test_liveliness_probe():
     # check unexported
     db = tango.Database()
     db_device_info = db.get_device_info(CSP_SUBARRAY_DEVICE)
-    db.unexport_device(CSP_SUBARRAY_DEVICE)
-
+    db.unexport_device(cm, CSP_SUBARRAY_DEVICE)
     time.sleep(2)
     assert cm._component.get_device(CSP_SUBARRAY_DEVICE).unresponsive
     assert (
@@ -57,6 +55,5 @@ def test_liveliness_probe():
 
     # exported device again
     export_device(db, db_device_info)
-    time.sleep(2)
-    assert not cm._component.get_device(CSP_SUBARRAY_DEVICE).unresponsive
+    assert check_if_device_responsive(cm, CSP_SUBARRAY_DEVICE)
     assert "" == cm._component.get_device(CSP_SUBARRAY_DEVICE).exception
