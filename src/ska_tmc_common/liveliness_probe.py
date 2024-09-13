@@ -105,7 +105,9 @@ class BaseLivelinessProbe:
                     dev_info.dev_name,
                     exception,
                 )
-                exception_message = "Communication Failed on %s: %s"
+                exception_message = (
+                    f"Communication Failed on {dev_info.dev_name}: {exception}"
+                )
 
         except tango.ConnectionFailed as connection_failed:
             exception_message = (
