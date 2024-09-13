@@ -45,7 +45,7 @@ def test_liveliness_probe():
     # check unexported
     db = tango.Database()
     db_device_info = db.get_device_info(CSP_SUBARRAY_DEVICE)
-    db.unexport_device(cm, CSP_SUBARRAY_DEVICE)
+    db.unexport_device(CSP_SUBARRAY_DEVICE)
     time.sleep(2)
     assert cm._component.get_device(CSP_SUBARRAY_DEVICE).unresponsive
     assert (
