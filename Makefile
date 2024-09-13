@@ -16,6 +16,7 @@ CI_PROJECT_PATH_SLUG ?= ska-tmc-common
 CI_ENVIRONMENT_SLUG ?= ska-tmc-common
 CLUSTER_DOMAIN ?= cluster.local
 K8S_TIMEOUT = 600s
+ITANGO_DOCKER_IMAGE = $(CAR_OCI_REGISTRY_HOST)/ska-tango-images-tango-itango:9.5.0
 SKA_TANGO_OPERATOR = true
 # Set the specific environment variables required for pytest
 PYTHON_VARS_BEFORE_PYTEST ?= PYTHONPATH=.:./src TANGO_HOST=$(TANGO_HOST) CLUSTER_DOMAIN=$(CLUSTER_DOMAIN)
