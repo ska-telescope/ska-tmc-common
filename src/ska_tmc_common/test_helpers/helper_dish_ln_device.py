@@ -64,7 +64,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         }
         self._command_call_info: list = []
         self._command_info: Tuple = ("", "")
-        self._state_duration_info: dict = {}
+        self._state_duration_info: list = []
         self._offset: dict = {"off_xel": 0.0, "off_el": 0.0}
         self._actual_pointing: list = [
             dt.now().strftime("%Y-%m-%d %H:%M:%S"),
