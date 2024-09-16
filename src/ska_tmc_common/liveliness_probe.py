@@ -72,7 +72,7 @@ class BaseLivelinessProbe:
         try:
             exception_message: str = ""
             update_failure = (
-                self._component_manager.update_device_responsiveness_failure
+                self._component_manager.update_exception_for_unresponsiveness
             )
             if "tango://" in dev_info.dev_name:  # check full trl
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")

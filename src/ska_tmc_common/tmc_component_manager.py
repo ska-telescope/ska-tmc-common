@@ -381,7 +381,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device(device_info)
 
-    def update_device_responsiveness_failure(
+    def update_exception_for_unresponsiveness(
         self, device_info: DeviceInfo, exception: str
     ) -> None:
         """
@@ -591,7 +591,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             self._device.last_event_arrived = time.time()
             # self._device.update_unresponsive(False)
 
-    def update_device_responsiveness_failure(
+    def update_exception_for_unresponsiveness(
         self, device_info: DeviceInfo, exception: str
     ) -> None:
         """
