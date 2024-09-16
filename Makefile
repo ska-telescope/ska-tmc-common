@@ -104,6 +104,7 @@ PYTHON_BUILD_TYPE = non_tag_setup
 -include PrivateRules.mak
 -include .make/oci.mk
 -include .make/k8s.mk
+-include .make/helm.mk
 
 # Issue resolution with twine during publish
 python-pre-publish:
