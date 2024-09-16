@@ -7,6 +7,10 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
+[0.20.0]
+**********
+* Updated liveliness probe to utilize state command and consider exported flag for device availability.
+
 [0.19.8]
 **********
 *  Update HelperDishDevice to support Dish error propgation

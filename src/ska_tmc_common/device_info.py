@@ -1,6 +1,7 @@
 """
 This module provdevice_id es us the information about the devices
 """
+
 import json
 import threading
 from typing import Any

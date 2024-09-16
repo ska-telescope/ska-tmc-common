@@ -1,6 +1,7 @@
 """
 This module keeps tracks of timeouts during command executions.
 """
+
 from logging import Logger
 from typing import Any, Optional
 

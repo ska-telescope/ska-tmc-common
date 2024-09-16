@@ -3,6 +3,7 @@ This module contains the fixtures, methods and variables required for testing.
 """
 
 import logging
+import os
 import threading
 import time
 from enum import IntEnum, unique
@@ -32,7 +33,7 @@ from ska_tmc_common import (
 
 configure_logging()
 logger = logging.getLogger(__name__)
-
+TANGO_HOST = os.getenv("TANGO_HOST")
 SLEEP_TIME = 0.5
 TIMEOUT = 10
 
@@ -40,7 +41,12 @@ DishLeafNodePrefix = "ska_mid/tm_leaf_node/d0"
 NumDishes = 10
 DUMMY_MONITORED_DEVICE = "dummy/monitored/device"
 DUMMY_SUBARRAY_DEVICE = "dummy/subarray/device"
-DEVICE_LIST = ["dummy/tmc/device", "test/device/1", "test/device/2"]
+DEVICE_LIST = [
+    "dummy/tmc/device",
+    "test/device/1",
+    "test/device/2",
+    "dummy/tmc/leaf_device",
+]
 SUBARRAY_DEVICE = "helper/subarray/device"
 MCCS_SUBARRAY_DEVICE = "low-mccs/subarray/01"
 SDP_SUBARRAY_DEVICE = "helper/sdpsubarray/device"
@@ -130,6 +136,17 @@ def create_cm(
 
     start_time = time.time()
     return cm, start_time
+
+
+def export_device(db, db_info):
+    dev_export = tango.DbDevExportInfo()
+    dev_export.name = db_info.name
+    dev_export.ior = db_info.ior
+    dev_export.host = TANGO_HOST
+    dev_export.version = db_info.version
+    dev_export.pid = db_info.pid
+
+    db.export_device(dev_export)
 
 
 class DummyComponentManager(TmcLeafNodeComponentManager):

@@ -1,6 +1,7 @@
 """
 This module contains a dummy TMC device for testing the integrated TMC.
 """
+
 # pylint: disable=unused-argument
 
 import logging

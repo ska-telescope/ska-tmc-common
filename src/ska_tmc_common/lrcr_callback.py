@@ -1,5 +1,6 @@
 """This module provides a callback to keep track of the
 longRunningCommandResult events."""
+
 from logging import Logger
 from typing import Any, Optional
 

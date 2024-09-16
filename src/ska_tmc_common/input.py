@@ -1,6 +1,7 @@
 """
 Module has abstract methods for different nodes
 """
+
 from typing import Callable, Optional
 
 

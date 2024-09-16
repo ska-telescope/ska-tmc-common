@@ -1,6 +1,7 @@
 """
 This module includes methods for common attributes.
 """
+
 import json
 from typing import Any
 

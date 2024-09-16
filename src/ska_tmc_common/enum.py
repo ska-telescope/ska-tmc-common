@@ -2,6 +2,7 @@
 This module assigns the enum values to PointingState,
 DishMode, Number of devices LivelinessProbeType, TimeoutState
 """
+
 from enum import IntEnum, unique
 
 

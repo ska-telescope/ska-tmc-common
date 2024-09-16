@@ -35,6 +35,7 @@ from ska_tmc_common import (
     HelperSubArrayDevice,
     TmcLeafNodeComponentManager,
 )
+from ska_tmc_common.tmc_base_leaf_device import TMCBaseLeafDevice
 from tests.settings import (
     CSP_DEVICE,
     CSP_LEAF_NODE_DEVICE,
@@ -94,6 +95,10 @@ def devices_to_load():
                 {"name": TMC_COMMON_DEVICE},
                 {"name": DEVICE_LIST[0]},
             ],
+        },
+        {
+            "class": TMCBaseLeafDevice,
+            "devices": [{"name": DEVICE_LIST[3]}],
         },
         {
             "class": HelperBaseDevice,
@@ -173,7 +178,7 @@ def devices_to_load():
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def tango_context(devices_to_load, request):
     """
     It provides the tango context to invoke any command.
@@ -182,7 +187,7 @@ def tango_context(devices_to_load, request):
     true_context = request.config.getoption("--true-context")
     if not true_context:
         with MultiDeviceTestContext(
-            devices_to_load, process=False, timeout=50
+            devices_to_load, process=True, timeout=50
         ) as context:
             DevFactory._test_context = context
             logging.info("test context set")

@@ -1,4 +1,5 @@
 """A module implementing a decorator for Timeout."""
+
 from typing import Callable
 
 from ska_tango_base.commands import ResultCode

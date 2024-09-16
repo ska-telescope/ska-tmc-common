@@ -10,6 +10,7 @@ It consists of:
   `tango.DevState` enum value, and reported using the tango
   device's special ``state()`` method.
 """
+
 from logging import Logger
 from typing import Callable, List, Optional
 

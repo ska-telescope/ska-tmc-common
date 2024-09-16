@@ -1,6 +1,7 @@
 import pytest
 
 from ska_tmc_common import (
+    BaseLivelinessProbe,
     DishDeviceInfo,
     InputParameter,
     LivelinessProbeType,
@@ -27,20 +28,30 @@ def test_stop():
     assert lp._stop
 
 
-@pytest.mark.skip(
-    reason="This test fails intermittently, will be fixes as a part of HM-349"
-)
 def test_stop_ln(dev_name):
     device = DishDeviceInfo(dev_name)
     cm = TmcLeafNodeComponentManager(
         logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
+    cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     cm._device = device
     assert cm._device.dev_name == dev_name
     assert cm.liveliness_probe_object._thread.is_alive()
-
+    prev_obj_id = id(cm.liveliness_probe_object)
+    cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
+    # does not start again
+    assert prev_obj_id == id(cm.liveliness_probe_object)
     cm.stop_liveliness_probe()
     assert cm.liveliness_probe_object._stop
+
+
+def test_base_not_implemented_exception():
+    cm = TmcLeafNodeComponentManager(
+        logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
+    )
+    base_probe = BaseLivelinessProbe(cm, logger)
+    with pytest.raises(NotImplementedError):
+        base_probe.run()
 
 
 def test_add_and_remove_device(dev_name):

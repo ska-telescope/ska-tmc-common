@@ -1,6 +1,7 @@
 """
 This Module contains Empty Component Manager Class for helper subarray devices.
 """
+
 from logging import Logger
 
 from ska_tango_base.base.base_component_manager import BaseComponentManager

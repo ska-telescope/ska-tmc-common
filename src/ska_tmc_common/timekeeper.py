@@ -1,4 +1,5 @@
 """A module that implements the timekeeper class"""
+
 import threading
 from logging import Logger
 

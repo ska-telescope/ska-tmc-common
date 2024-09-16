@@ -110,11 +110,14 @@ def test_start_liveliness_probe_single_device(component_manager):
     assert component_manager.liveliness_probe_object is not None
 
 
-def test_update_device_ping_failure(component_manager):
-    # Test if update_device_ping_failure sets the
+def test_update_exception_for_unresponsiveness(component_manager):
+    # Test if update_exception_for_unresponsiveness sets the
     # device's exception and does not raise an exception
     exception = "test exception"
-    component_manager.update_device_ping_failure(exception)
+    dev_info = component_manager.get_device()
+    component_manager.update_exception_for_unresponsiveness(
+        dev_info, exception
+    )
     assert component_manager.get_device().exception == exception
 
 
@@ -126,13 +129,13 @@ def test_update_device_info(component_manager):
     assert component_manager.get_device() == device_info
 
 
-def test_update_ping_info(component_manager):
+def test_update_responsiveness_info(component_manager):
     # Test if update_ping_info sets the
     # device's ping and does not raise an exception
-    ping = 123
+
     dev_name = DUMMY_MONITORED_DEVICE
-    component_manager.update_ping_info(ping, dev_name)
-    assert component_manager.get_device().ping == ping
+    component_manager.update_responsiveness_info(dev_name)
+    assert not component_manager.get_device().unresponsive
 
 
 def test_update_device_health_state(component_manager):

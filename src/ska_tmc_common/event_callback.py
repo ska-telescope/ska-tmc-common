@@ -1,4 +1,5 @@
 """Event callback class"""
+
 # pylint: disable=broad-exception-caught
 import logging
 from typing import Any

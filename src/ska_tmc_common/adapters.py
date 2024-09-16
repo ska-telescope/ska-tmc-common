@@ -2,6 +2,7 @@
 This module creates and manages different
 functions of adapters by creating proxy for devices.
 """
+
 import enum
 from typing import List, Tuple, Union
 

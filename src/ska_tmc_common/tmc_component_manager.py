@@ -4,6 +4,7 @@ This module provided a reference implementation of a BaseComponentManager.
 It is provided for explanatory purposes, and to support testing of this
 package.
 """
+
 # pylint: disable=unused-argument
 
 import json
@@ -119,9 +120,10 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 sleep_time=sleep_time,
             )
         self.timer_object = None
-        self.liveliness_probe_object: Union[
-            SingleDeviceLivelinessProbe, MultiDeviceLivelinessProbe
-        ] | None = None
+        self.liveliness_probe_object: (
+            Union[SingleDeviceLivelinessProbe, MultiDeviceLivelinessProbe]
+            | None
+        ) = None
         self._command_id: str = ""
 
     @property
@@ -164,21 +166,24 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         :param liveliness_probe_type: enum of class LivelinessProbeType
         """
         if liveliness_probe_type == LivelinessProbeType.SINGLE_DEVICE:
-            self.liveliness_probe_object = SingleDeviceLivelinessProbe(
-                self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
+            if not self.liveliness_probe_object:
+                self.liveliness_probe_object = SingleDeviceLivelinessProbe(
+                    self,
+                    logger=self.logger,
+                    proxy_timeout=self.proxy_timeout,
+                    sleep_time=self.sleep_time,
+                )
+
             self.liveliness_probe_object.start()
 
         elif liveliness_probe_type == LivelinessProbeType.MULTI_DEVICE:
-            self.liveliness_probe_object = MultiDeviceLivelinessProbe(
-                self,
-                logger=self.logger,
-                proxy_timeout=self.proxy_timeout,
-                sleep_time=self.sleep_time,
-            )
+            if not self.liveliness_probe_object:
+                self.liveliness_probe_object = MultiDeviceLivelinessProbe(
+                    self,
+                    logger=self.logger,
+                    proxy_timeout=self.proxy_timeout,
+                    sleep_time=self.sleep_time,
+                )
             self.liveliness_probe_object.start()
         else:
             self.logger.warning("Liveliness Probe is not running")
@@ -356,20 +361,6 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         return self._component.get_device(device_name)
 
-    def update_device_ping_failure(
-        self, device_info: DeviceInfo, exception: str
-    ) -> None:
-        """
-        Set a device to failed and call the relative callback if available
-
-        :param device_info: a device info
-        :type device_info: DeviceInfo
-        :param exception: an exception
-        :type: Exception
-        """
-        with self.lock:
-            self._component.update_device_exception(device_info, exception)
-
     def update_event_failure(self, device_name: str) -> None:
         """
         Update the failure status of an event for a specific device.
@@ -390,18 +381,30 @@ class TmcComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._component.update_device(device_info)
 
-    def update_ping_info(self, ping: int, device_name: str) -> None:
+    def update_exception_for_unresponsiveness(
+        self, device_info: DeviceInfo, exception: str
+    ) -> None:
         """
-        Update a device with correct ping information.
+        Set a device to failed and call the relative callback if available
+
+        :param device_info: a device info
+        :type device_info: DeviceInfo
+        :param exception: an exception
+        :type: Exception
+        """
+        with self.lock:
+            self._component.update_device_exception(device_info, exception)
+
+    def update_responsiveness_info(self, device_name: str) -> None:
+        """
+        Update a device with correct responsiveness information.
 
         :param device_name: name of the device
         :type device_name: str
-        :param ping: device response time
-        :type ping: int
         """
         with self.lock:
-            dev_info = self._component.get_device(device_name)
-            dev_info.ping = ping
+            dev_info: DeviceInfo = self._component.get_device(device_name)
+            dev_info.update_unresponsive(False, "")
 
     def update_device_health_state(
         self, device_name: str, health_state: HealthState
@@ -514,16 +517,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         return self._device
 
-    def update_device_ping_failure(self, exception: str) -> None:
-        """
-        Set a device to failed and call the relative callback if available
-
-        :param exception: an exception
-        :type: Exception
-        """
-        with self.lock:
-            self._device.exception = exception
-
     def update_device_info(self, device_info: DeviceInfo) -> None:
         """
         Update a device with correct monitoring information
@@ -535,18 +528,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device = device_info
 
-    def update_ping_info(self, ping: int, device_name: str) -> None:
-        """
-        Update a device with the correct ping information.
-
-        :param device_name: name of the device
-        :type device_name: str
-        :param ping: device response time
-        :type ping: int
-        """
-        with self.lock:
-            self._device.ping = ping
-
     def update_event_failure(self, device_name: str) -> None:
         """
         Update a monitored device failure status
@@ -556,7 +537,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_health_state(
         self, device_name: str, health_state: HealthState
@@ -573,7 +554,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.health_state = health_state
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_state(
         self, device_name: str, state: tango.DevState
@@ -591,7 +572,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.state = state
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
 
     def update_device_obs_state(
         self, device_name: str, obs_state: ObsState
@@ -608,4 +589,29 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             self._device.obs_state = obs_state
             self._device.last_event_arrived = time.time()
-            self._device.update_unresponsive(False)
+            # self._device.update_unresponsive(False)
+
+    def update_exception_for_unresponsiveness(
+        self, device_info: DeviceInfo, exception: str
+    ) -> None:
+        """
+        Set a device to failed and call the relative callback if available
+
+        :param device_info: a device info
+        :type device_info: DeviceInfo
+        :param exception: an exception
+        :type: Exception
+        """
+        with self.lock:
+            device_info.update_unresponsive(True, exception)
+
+    def update_responsiveness_info(self, device_name: str = "") -> None:
+        """
+        Update a device with correct responsiveness information.
+
+        :param device_name: name of the device
+        :type device_name: str
+        """
+        with self.lock:
+            dev_info: DeviceInfo = self.get_device()
+            dev_info.update_unresponsive(False, "")

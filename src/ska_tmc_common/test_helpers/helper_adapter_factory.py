@@ -2,6 +2,7 @@
 This module defines classes/methods that manage
 the adapters required to communicate with various devices.
 """
+
 import logging
 from typing import Optional, Union
 

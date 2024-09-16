@@ -2,6 +2,7 @@
 This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
+
 import threading
 from logging import Logger
 from time import sleep
@@ -63,39 +64,99 @@ class BaseLivelinessProbe:
         """
         raise NotImplementedError("This method must be inherited")
 
+    # pylint: disable=too-many-branches
     def device_task(self, dev_info: DeviceInfo) -> None:
         """
         Checks device status and logs error messages on state change
         """
         try:
-            proxy = self._dev_factory.get_device(dev_info.dev_name)
-            proxy.set_timeout_millis(self._proxy_timeout)
-            self._component_manager.update_ping_info(
-                proxy.ping(), dev_info.dev_name
+            exception_message: str = ""
+            update_failure = (
+                self._component_manager.update_exception_for_unresponsiveness
             )
+            if "tango://" in dev_info.dev_name:  # check full trl
+                db_name, port = dev_info.dev_name.split("/")[2].split(":")
+                db = tango.Database(db_name, port)
+            else:
+                db = tango.Database()
+            if not db.get_device_info(dev_info.dev_name).exported:
+                if self.log_manager.is_logging_allowed("device_unexported"):
+                    self._logger.debug(
+                        "Device is not yet exported, "
+                        + "liveliness probe will retry "
+                        + "to connect with device: %s",
+                        dev_info.dev_name,
+                    )
+                if not dev_info.unresponsive:
+                    update_failure(
+                        dev_info,
+                        f"Device is not yet exported: {dev_info.dev_name}",
+                    )
+            else:
+                proxy = self._dev_factory.get_device(dev_info.dev_name)
+                proxy.state()
+                self._component_manager.update_responsiveness_info(
+                    dev_info.dev_name
+                )
         except tango.CommunicationFailed as exception:
-            if "Timeout (500 mS) exceeded on device" not in exception:
-                if self.log_manager.is_logging_allowed("communication_failed"):
-                    self._logger.exception(
-                        "Error on %s: %s", dev_info.dev_name, exception
+            if self.log_manager.is_logging_allowed("communication_failed"):
+                self._logger.exception(
+                    "Communication Failed on %s: %s",
+                    dev_info.dev_name,
+                    exception,
+                )
+                exception_message = (
+                    f"Communication Failed on {dev_info.dev_name}: {exception}"
+                )
+
+        except tango.ConnectionFailed as connection_failed:
+            exception_message = (
+                "Connection Failed on %s: %s",
+                dev_info.dev_name,
+                connection_failed,
+            )
+            match connection_failed.args[0].reason:
+                case "DB_DeviceNotDefined":
+                    exception_message = (
+                        "Device is not defined in database: "
+                        + f"{dev_info.dev_name}"
+                    )
+                case "API_CantConnectToDevice":
+                    exception_message = (
+                        "Not able to connect to device: "
+                        + f"{dev_info.dev_name}"
+                    )
+                case "API_CantConnectToDatabase":
+                    exception_message = (
+                        "Failed to connect to database, "
+                        + "please check the database host and port"
                     )
 
-        except (AttributeError, tango.DevFailed) as exception:
-            if self.log_manager.is_logging_allowed("attribute_error"):
+            if self.log_manager.is_logging_allowed("connection_failed"):
+                self._logger.exception(
+                    "Connection Failed on %s: %s",
+                    dev_info.dev_name,
+                    connection_failed,
+                )
+        except tango.DevFailed as exception:
+            if self.log_manager.is_logging_allowed("dev_failed"):
                 self._logger.exception(
                     "Error on %s: %s", dev_info.dev_name, exception
                 )
-            self._component_manager.update_device_ping_failure(
-                dev_info, f"Unable to ping device {dev_info.dev_name}"
-            )
+                exception_message = (
+                    f"Unable to reach device {dev_info.dev_name}"
+                )
         except BaseException as exception:
             if self.log_manager.is_logging_allowed("base_exception"):
                 self._logger.exception(
                     "Error on %s: %s", dev_info.dev_name, exception
                 )
-            self._component_manager.update_device_ping_failure(
-                dev_info, f"Unable to ping device {dev_info.dev_name}"
-            )
+                exception_message = (
+                    f"Unable to reach device {dev_info.dev_name}"
+                )
+
+        if exception_message and dev_info.exception != exception_message:
+            update_failure(dev_info, exception_message)
 
 
 class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
