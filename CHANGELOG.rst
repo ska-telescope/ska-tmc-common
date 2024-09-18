@@ -9,6 +9,10 @@ Added
 --------
 [0.20.0]
 **********
+* Utilise ska-telmodel version 
+
+[0.20.0]
+**********
 * Updated liveliness probe to utilize state command and consider exported flag for device availability.
 
 [0.19.8]
