@@ -7,7 +7,7 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 --------
-[0.20.0]
+[0.20.1]
 **********
 * Utilise ska-telmodel version 
 
