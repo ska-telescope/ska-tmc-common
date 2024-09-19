@@ -7,7 +7,8 @@ import pytest
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
-from ska_tmc_common import DevFactory
+from ska_tmc_common import DevFactory, DishMode, FaultType, PointingState
+from ska_tmc_common.test_helpers.constants import ABORT, CONFIGURE, RESTART
 from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_LN_DEVICE,
@@ -34,6 +35,32 @@ COMMANDS_WITHOUT_INPUT = [
     "Off",
     "EndScan",
 ]
+
+
+def test_attribute_on_helper_dish_ln_device(tango_context):
+    dish_ln_device = DevFactory().get_device(DISH_LN_DEVICE)
+    assert dish_ln_device.defective == json.dumps(
+        {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
+    )
+    assert isinstance(dish_ln_device.actualPointing, str)
+    assert dish_ln_device.kValueValidationResult == str(
+        int(ResultCode.STARTED)
+    )
+    assert dish_ln_device.pointingState == PointingState.NONE
+    assert dish_ln_device.dishMode == DishMode.STANDBY_LP
+    assert dish_ln_device.commandDelayInfo == json.dumps(
+        {
+            CONFIGURE: 2,
+            ABORT: 2,
+            RESTART: 2,
+        }
+    )
+    assert not dish_ln_device.commandCallInfo
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
