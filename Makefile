@@ -70,7 +70,7 @@ ADD_ARGS += --forked
 MARK = not post_deployment and not acceptance $(ADDMARK)
 endif
 ifeq ($(MAKECMDGOALS),k8s-test)
-ADD_ARGS +=  --true-context 
+ADD_ARGS +=  --true-context
 MARK = (post_deployment or acceptance) $(ADDMARK)
 endif
 
@@ -94,7 +94,7 @@ K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) \
 K8S_TEST_TEST_COMMAND = $(PYTHON_VARS_BEFORE_PYTEST) $(PYTHON_RUNNER) \
 						pytest \
 						$(PYTHON_VARS_AFTER_PYTEST) ./tests \
-						| tee pytest.stdout	
+						| tee pytest.stdout
 
 
 PYTHON_BUILD_TYPE = non_tag_setup
