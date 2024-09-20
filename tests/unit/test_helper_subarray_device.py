@@ -1,11 +1,24 @@
 import json
+from operator import methodcaller
 
 import pytest
 from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
 
-from ska_tmc_common import DevFactory
-from tests.settings import DEFAULT_DEFECT_SETTINGS, SUBARRAY_DEVICE
+from ska_tmc_common import DevFactory, FaultType
+from ska_tmc_common.test_helpers.constants import (
+    ABORT,
+    ASSIGN_RESOURCES,
+    CONFIGURE,
+    END,
+    RELEASE_ALL_RESOURCES,
+    RELEASE_RESOURCES,
+    RESTART,
+)
+from ska_tmc_common.test_helpers.helper_subarray_device import (
+    EmptySubArrayComponentManager,
+)
+from tests.settings import DEFAULT_DEFECT_SETTINGS, SUBARRAY_DEVICE, logger
 
 commands_with_argin = [
     "AssignResources",
@@ -23,6 +36,68 @@ commands_without_argin = [
     "End",
     "GoToIdle",
 ]
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "assign",
+        "release",
+        "release_all",
+        "configure",
+        "end",
+        "scan",
+        "end_scan",
+        "abort",
+        "obsreset",
+        "restart",
+    ],
+)
+def test_empty_subarray_component_manager(command):
+    cm = EmptySubArrayComponentManager(logger)
+    match command:
+        case "assign" | "configure" | "release" | "scan":
+            command = methodcaller(command, "")
+        case _:
+            command = methodcaller(command)
+    result, message = command(cm)
+
+    if command == "assign":
+        assert cm.assigned_resources == ["0001"]
+    elif command == "release_all":
+        assert not cm.assigned_resources
+    assert result == ResultCode.OK
+    assert message == ""
+
+
+def test_helper_subarray_device_attributes(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    assert subarray_device.commandInProgress == ""
+    assert subarray_device.receiveAddresses == ""
+    assert subarray_device.defective == json.dumps(
+        {
+            "enabled": False,
+            "fault_type": FaultType.FAILED_RESULT,
+            "error_message": "Default exception.",
+            "result": ResultCode.FAILED,
+        }
+    )
+    assert subarray_device.commandDelayInfo == json.dumps(
+        {
+            ASSIGN_RESOURCES: 2,
+            CONFIGURE: 2,
+            RELEASE_RESOURCES: 2,
+            ABORT: 2,
+            RESTART: 2,
+            RELEASE_ALL_RESOURCES: 2,
+            END: 2,
+        }
+    )
+    assert not subarray_device.commandCallInfo
+    assert subarray_device.obsStateTransitionDuration == json.dumps([])
+    assert subarray_device.scanId == 0
+    assert subarray_device.isSubsystemAvailable is True
 
 
 def test_command_call_info(tango_context):

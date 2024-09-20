@@ -47,6 +47,8 @@ include:
 # OCI images build and publish
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
+
+
 # k8s steps
 - project: 'ska-telescope/templates-repository'
   file: 'gitlab-ci/includes/k8s.gitlab-ci.yml'

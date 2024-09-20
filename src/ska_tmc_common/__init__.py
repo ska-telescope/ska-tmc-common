@@ -43,6 +43,7 @@ from .enum import (
     TimeoutState,
 )
 from .error_propagation_decorator import error_propagation_decorator
+from .event_callback import EventCallback
 from .event_receiver import EventReceiver
 from .exceptions import (
     CommandNotAllowed,
@@ -153,6 +154,7 @@ __all__ = [
     "TMCOpStateModel",
     "TimeoutCallback",
     "LRCRCallback",
+    "EventCallback",
     "TMCBaseDevice",
     "BaseTMCCommand",
     "TMCCommand",

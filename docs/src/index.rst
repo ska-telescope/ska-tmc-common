@@ -13,12 +13,6 @@ Welcome to ska-tmc-common documentation!
    Introduction<Introduction>
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Tango Classes[deprecated]
-
-   TangoClasses/index
-
-.. toctree::
    :maxdepth: 1
    :caption: Helper Devices
 

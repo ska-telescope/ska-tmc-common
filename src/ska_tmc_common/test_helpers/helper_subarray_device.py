@@ -52,8 +52,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     def __init__(
         self,
         logger: Logger,
-        communication_state_callback: Optional[Callable],
-        component_state_callback: Optional[Callable],
+        communication_state_callback: Optional[Callable] = None,
+        component_state_callback: Optional[Callable] = None,
         **kwargs,
     ) -> None:
         self.logger = logger
@@ -194,7 +194,7 @@ class HelperSubArrayDevice(SKASubarray):
             END: 2,
         }
         self.dev_name = self.get_name()
-        self._scan_id = None
+        self._scan_id = 0
         self._assigned_resources = "{ }"
         # tuple of list
         self._command_call_info = []
@@ -207,6 +207,7 @@ class HelperSubArrayDevice(SKASubarray):
             "error_message": "Default exception.",
             "result": ResultCode.FAILED,
         }
+        self._receive_addresses = ""
 
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
