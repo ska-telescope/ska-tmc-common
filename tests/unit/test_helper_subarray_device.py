@@ -58,10 +58,9 @@ def test_empty_subarray_component_manager(command):
     match command:
         case "assign" | "configure" | "release" | "scan":
             command = methodcaller(command, "")
-            result, message = command(cm)
         case _:
             command = methodcaller(command)
-            result, message = command(cm)
+    result, message = command(cm)
 
     if command == "assign":
         assert cm.assigned_resources == ["0001"]
