@@ -339,8 +339,12 @@ class HelperDishDevice(HelperDishLNDevice):
 
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands", command_id)
-        self.logger.info("Abort Completed")
-        # Dish Mode Not Applicable.
+
+        self._pointing_state = PointingState.READY
+        self.push_change_event("pointingState", self._pointing_state)
+        # Set the Dish Mode
+        self.set_dish_mode(DishMode.STANDBY_FP)
+        self.logger.info("AbortCommands Completed")
         return (
             [ResultCode.OK],
             [command_id],
