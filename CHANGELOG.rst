@@ -100,6 +100,9 @@ Added
 
 Fixed
 -------
+[0.20.1]
+* Fixed dish and dish leaf node helper devices to push change event for dishMode.STANDBY_FP when AbortCommands() command is invoked.
+
 [0.19.4]
 * Fixed the issue in HelperBaseDevice to return faultmessage instead of command_id for FaultType.FAILED_RESULT .
 

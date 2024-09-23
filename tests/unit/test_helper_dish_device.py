@@ -9,6 +9,7 @@ from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory
+from ska_tmc_common.enum import DishMode, PointingState
 from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_DEVICE,
@@ -152,6 +153,8 @@ def test_Abort_commands(tango_context):
     result, command_id = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
     assert "AbortCommands" in command_id[0]
+    assert dish_device.pointingState == PointingState.READY
+    assert dish_device.dishMode == DishMode.STANDBY_FP
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS)

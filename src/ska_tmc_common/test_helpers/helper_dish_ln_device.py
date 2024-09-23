@@ -898,6 +898,8 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Abort Completed")
         self._pointing_state = PointingState.READY
         self.push_change_event("pointingState", self._pointing_state)
+        # Set Dish Mode
+        self.set_dish_mode(DishMode.STANDBY_FP)
         self.logger.info("Pointing State: %s", self._pointing_state)
         return (
             [ResultCode.OK],
