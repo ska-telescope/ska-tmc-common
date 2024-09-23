@@ -122,10 +122,12 @@ def test_command_with_argin_failed_result(tango_context):
 
 def test_Abort_commands(tango_context):
     dev_factory = DevFactory()
-    dish_device = dev_factory.get_device(DISH_LN_DEVICE)
-    result, command_id = dish_device.command_inout("AbortCommands")
+    dish_ln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    result, command_id = dish_ln_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
     assert isinstance(command_id[0], str)
+    assert dish_ln_device.pointingState == PointingState.READY
+    assert dish_ln_device.dishMode == DishMode.STANDBY_FP
 
 
 @pytest.mark.parametrize("command_to_check", COMMANDS)
