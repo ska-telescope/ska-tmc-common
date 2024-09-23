@@ -1,7 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-version="0.20.0"
+version="0.20.1"
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -10,5 +10,5 @@ license="""BSD-3-Clause"""
 url="""https://www.skao.int/"""
 copyright=""""""
 
-release=0.20.0
-tag=0.20.0
+release=0.20.1
+tag=0.20.1
