@@ -62,7 +62,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                                 "192.168.0.1",
                             ]
                         ],
-                        "port": [[0, 9000, 1]],
+                        "port": [[0, 9000]],
                     }
                 },
                 "calibration:b": {
@@ -74,7 +74,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                                 "192.168.0.1",
                             ]
                         ],
-                        "port": [[0, 9000, 1]],
+                        "port": [[0, 9000]],
                     }
                 },
             }
