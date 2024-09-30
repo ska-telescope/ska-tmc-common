@@ -59,8 +59,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                         "host": [
                             [
                                 0,
-                                "proc-pb-test-20220916-00000-test-"
-                                + "receive-0.receive.test-sdp",
+                                "192.168.0.1",
                             ]
                         ],
                         "port": [[0, 9000, 1]],
@@ -72,8 +71,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                         "host": [
                             [
                                 0,
-                                "proc-pb-test-20220916-00000-test-"
-                                + "receive-0.receive.test-sdp",
+                                "192.168.0.1",
                             ]
                         ],
                         "port": [[0, 9000, 1]],
