@@ -77,7 +77,7 @@ class BaseLivelinessProbe:
             if "tango://" in dev_info.dev_name:  # check full trl
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
                 db = tango.Database(db_name, port)
-                splitted_data = dev_info.dev_name.split("/")[2]
+                splitted_data = dev_info.dev_name.split("/")
                 device_name = "/".join(splitted_data[-3:])
             else:
                 db = tango.Database()
