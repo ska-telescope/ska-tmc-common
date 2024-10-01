@@ -77,9 +77,12 @@ class BaseLivelinessProbe:
             if "tango://" in dev_info.dev_name:  # check full trl
                 db_name, port = dev_info.dev_name.split("/")[2].split(":")
                 db = tango.Database(db_name, port)
+                splitted_data = dev_info.dev_name.split("/")[2]
+                device_name = "/".join(splitted_data[-3:])
             else:
                 db = tango.Database()
-            if not db.get_device_info(dev_info.dev_name).exported:
+                device_name = dev_info.dev_name
+            if not db.get_device_info(device_name).exported:
                 if self.log_manager.is_logging_allowed("device_unexported"):
                     self._logger.debug(
                         "Device is not yet exported, "
