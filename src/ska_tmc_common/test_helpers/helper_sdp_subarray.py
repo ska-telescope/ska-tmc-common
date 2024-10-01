@@ -247,7 +247,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(RELEASE_ALL_RESOURCES)
         self._obs_state = ObsState.RESOURCING
         if self.defective_params["enabled"]:
-            self._obs_state = ObsState.RESOURCING
+            self._obs_state = ObsState.IDLE
             self.induce_fault()
         self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
         thread = threading.Timer(
@@ -355,8 +355,12 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     @command()
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
+
         self.update_command_info(END_SCAN)
         self._obs_state = ObsState.READY
+        if self.defective_params["enabled"]:
+            self._obs_state = ObsState.FAULT
+            self.induce_fault()
         self.update_device_obsstate(self._obs_state, END_SCAN)
 
     @command()
@@ -444,7 +448,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         fault_message = self.defective_params.get(
             "error_message", "Exception occurred"
         )
-        self._obs_state = ObsState.IDLE
 
         if fault_type == FaultType.FAILED_RESULT:
             raise tango.Except.throw_exception(
