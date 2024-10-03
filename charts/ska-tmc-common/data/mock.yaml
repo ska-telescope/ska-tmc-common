@@ -14,6 +14,7 @@ server:
       - name: "HelperSubArrayDevice"
         devices:
         - name: "helper/cspsubarray/device"
+        - name: "helper/subarrayleaf/device"
 
 depends_on:
   - device: sys/database/2
