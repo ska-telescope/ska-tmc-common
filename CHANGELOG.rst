@@ -100,6 +100,9 @@ Added
 
 Fixed
 -------
+[0.20.2]
+* Fixed bug related to full trl usage in liveliness probe.
+
 [0.20.1]
 * Fixed dish and dish leaf node helper devices to push change event for dishMode.STANDBY_FP when AbortCommands() command is invoked.
 

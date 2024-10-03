@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.20.1"
+version = "0.20.2"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -42,7 +42,7 @@ pytest-cov = "^5.0.0"
 pytest-mock = "^3.10.0"
 pytest-xdist = "^2.4.0"
 coverage = "^6.2"
-pylint = "^3.1.0"
+pylint = "3.2.7"
 pylint2junit = "^1.0.1"
 junitparser = "^2.2.0"
 flake8-formatter-junit-xml = "^0.0.6"

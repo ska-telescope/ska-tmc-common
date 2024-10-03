@@ -244,6 +244,7 @@ class BaseTMCCommand:
         """
         with EnsureOmniThread():
             self.index = 0
+            self.logger.info("Timeout id in progress - %s", timeout_id)
             while not self._stop:
                 state_to_achieve = expected_state[self.index]
                 try:
@@ -332,10 +333,7 @@ class BaseTMCCommand:
                 # pylint: enable=broad-exception-caught
                 if self._stop:
                     break
-                self.logger.info("Feeling sleepy")
-                self.logger.info("Working with ID - %s", timeout_id)
                 time.sleep(0.5)
-                self.logger.info("I am awake now")
 
             if command_id:
                 lrcr_callback.remove_data(command_id)

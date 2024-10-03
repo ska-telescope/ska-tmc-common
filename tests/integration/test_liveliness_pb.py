@@ -8,6 +8,7 @@ from ska_tmc_common import DeviceInfo, InputParameter, TmcComponentManager
 from tests.settings import (
     CSP_SUBARRAY_DEVICE,
     SDP_SUBARRAY_DEVICE,
+    SUBARRAY_LEAF_DEVICE,
     export_device,
     logger,
 )
@@ -29,6 +30,15 @@ def test_liveliness_probe():
     lp.add_device(CSP_SUBARRAY_DEVICE)
     time.sleep(2)
     assert not cm._component.get_device(CSP_SUBARRAY_DEVICE).unresponsive
+
+    # full_trl
+    full_trl = "tango://" + TANGO_HOST + "/" + SUBARRAY_LEAF_DEVICE
+    dev_info = DeviceInfo(full_trl, True)
+    cm._component.update_device(dev_info)
+    lp = cm.liveliness_probe_object
+    lp.add_device(full_trl)
+    time.sleep(2)
+    assert not cm._component.get_device(full_trl).unresponsive
 
     # device not in the database
     full_trl = "tango://" + TANGO_HOST + "/" + SDP_SUBARRAY_DEVICE
