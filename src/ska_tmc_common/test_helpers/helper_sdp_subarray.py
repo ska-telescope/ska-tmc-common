@@ -247,7 +247,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(RELEASE_ALL_RESOURCES)
         self._obs_state = ObsState.RESOURCING
         if self.defective_params["enabled"]:
-            self._obs_state = ObsState.IDLE
+            self._obs_state = ObsState.RESOURCING
             self.induce_fault()
         self.update_device_obsstate(self._obs_state, RELEASE_ALL_RESOURCES)
         thread = threading.Timer(
@@ -357,10 +357,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes EndScan command on SdpSubarray device."""
 
         self.update_command_info(END_SCAN)
-        self._obs_state = ObsState.READY
+
+        # Allowing stuck in intermediate state defect.
         if self.defective_params["enabled"]:
-            self._obs_state = ObsState.FAULT
-            self.induce_fault()
+            self._obs_state = self.defective_params.get(
+                "intermediate_state", ObsState.FAULT
+            )
+        else:
+            self._obs_state = ObsState.READY
         self.update_device_obsstate(self._obs_state, END_SCAN)
 
     @command()
