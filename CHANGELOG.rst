@@ -100,6 +100,9 @@ Added
 
 Fixed
 -------
+[0.20.3]
+* Update output_host and output_port values in receive addresses.
+
 [0.20.2]
 * Fixed bug related to full trl usage in liveliness probe.
 
