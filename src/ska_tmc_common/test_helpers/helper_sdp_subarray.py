@@ -50,33 +50,41 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._receive_addresses = json.dumps(
             {
                 "science_A": {
-                    "host": [[0, "192.168.0.1"], [2000, "192.168.0.1"]],
-                    "port": [[0, 9000, 1], [2000, 9000, 1]],
+                    "vis0": {
+                        "function": "visibilities",
+                        "host": [
+                            [0,"192.168.0.1"],
+                            [2000,"192.168.0.1"]
+                        ],
+                        "port": [
+                            [0,9000],
+                            [2000,9000]
+                        ],                    
+                    }
                 },
                 "target:a": {
                     "vis0": {
                         "function": "visibilities",
                         "host": [
-                            [
-                                0,
-                                "192.168.0.1",
-                            ]
+                            [0,"192.168.0.1"]
                         ],
-                        "port": [[0, 9000]],
+                        "port": [
+                            [0,9000]
+                        ],                    
                     }
                 },
                 "calibration:b": {
                     "vis0": {
                         "function": "visibilities",
                         "host": [
-                            [
-                                0,
-                                "192.168.0.1",
-                            ]
+                            [0,"192.168.0.1"]
                         ],
-                        "port": [[0, 9000]],
+                        "port": [
+                            [0,9000]
+                        ],                    
                     }
                 },
+                
             }
         )
 
