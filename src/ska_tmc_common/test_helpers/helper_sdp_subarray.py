@@ -52,39 +52,24 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "science_A": {
                     "vis0": {
                         "function": "visibilities",
-                        "host": [
-                            [0,"192.168.0.1"],
-                            [2000,"192.168.0.1"]
-                        ],
-                        "port": [
-                            [0,9000],
-                            [2000,9000]
-                        ],                    
+                        "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                        "port": [[0, 9000], [2000, 9000]],
                     }
                 },
                 "target:a": {
                     "vis0": {
                         "function": "visibilities",
-                        "host": [
-                            [0,"192.168.0.1"]
-                        ],
-                        "port": [
-                            [0,9000]
-                        ],                    
+                        "host": [[0, "192.168.0.1"]],
+                        "port": [[0, 9000]],
                     }
                 },
                 "calibration:b": {
                     "vis0": {
                         "function": "visibilities",
-                        "host": [
-                            [0,"192.168.0.1"]
-                        ],
-                        "port": [
-                            [0,9000]
-                        ],                    
+                        "host": [[0, "192.168.0.1"]],
+                        "port": [[0, 9000]],
                     }
                 },
-                
             }
         )
 
