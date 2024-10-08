@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tmc-common"
-version = "0.20.3"
+version = "0.20.4"
 description = "SKA TMC common contains common classes required for Telescope Monitoring and Control(TMC)."
 authors = ["Team Himalaya", "Team Sahyadri"]
 license = "BSD-3-Clause"
@@ -35,6 +35,11 @@ katpoint = "^1.0a2"
 ska-telmodel = "^1.19.0"
 mock = "^4.0.3"
 typing_extensions = "*"
+attrs = "*"
+jsonschema-specifications = "*"
+referencing = "*"
+rpds-py = "*"
+ska-control-model="*"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.1.1"
