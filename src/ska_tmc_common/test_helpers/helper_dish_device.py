@@ -299,7 +299,9 @@ class HelperDishDevice(HelperDishLNDevice):
         )
         self.update_command_info(SET_OPERATE_MODE, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("SetOperateMode", command_id)
+            return self.induce_fault(
+                "SetOperateMode", command_id, is_dish=True
+            )
 
         # Set the device state
         if self.dev_state() != DevState.ON:
@@ -338,7 +340,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(ABORT_COMMANDS, "")
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("AbortCommands", command_id)
+            return self.induce_fault("AbortCommands", command_id, is_dish=True)
 
         self._pointing_state = PointingState.READY
         self.push_change_event("pointingState", self._pointing_state)
@@ -402,7 +404,9 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params[
             "enabled"
         ]:  # Temporary change to set status as failed.
-            return self.induce_fault("TrackLoadStaticOff", command_id)
+            return self.induce_fault(
+                "TrackLoadStaticOff", command_id, is_dish=True
+            )
         thread = threading.Timer(
             self._delay,
             function=self.push_command_result,
@@ -454,7 +458,9 @@ class HelperDishDevice(HelperDishLNDevice):
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_1, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand1", command_id)
+            return self.induce_fault(
+                "ConfigureBand1", command_id, is_dish=True
+            )
 
         # Set the Dish Mode
         current_dish_mode = self._dish_mode
@@ -585,7 +591,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand3 Command")
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand3", command_id)
+            return self.induce_fault(
+                "ConfigureBand3", command_id, is_dish=True
+            )
 
         # Set dish mode
         current_dish_mode = self._dish_mode
@@ -639,7 +647,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand4 Command")
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand4", command_id)
+            return self.induce_fault(
+                "ConfigureBand4", command_id, is_dish=True
+            )
 
         # Set dish mode
         current_dish_mode = self._dish_mode
@@ -693,7 +703,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand5a Command")
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand5a", command_id)
+            return self.induce_fault(
+                "ConfigureBand5a", command_id, is_dish=True
+            )
         # Set dish mode
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
@@ -747,7 +759,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand5b Command")
 
         if self.defective_params["enabled"]:
-            return self.induce_fault("ConfigureBand5b", command_id)
+            return self.induce_fault(
+                "ConfigureBand5b", command_id, is_dish=True
+            )
         # Set dish mode
         current_dish_mode = self._dish_mode
         self.set_dish_mode(DishMode.CONFIG)
@@ -803,7 +817,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("Track", command_id)
+            return self.induce_fault("Track", command_id, is_dish=True)
 
         thread = threading.Thread(
             target=self.update_lrcr, args=["Track", command_id]
@@ -910,7 +924,7 @@ class HelperDishDevice(HelperDishLNDevice):
         # to record the command data
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("Scan", command_id)
+            return self.induce_fault("Scan", command_id, is_dish=True)
         self._scan_id = argin
         self.push_command_result(ResultCode.OK, "Scan", command_id=command_id)
         return [ResultCode.QUEUED], [command_id]
@@ -949,7 +963,7 @@ class HelperDishDevice(HelperDishLNDevice):
         # to record the command data
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
-            return self.induce_fault("EndScan", command_id)
+            return self.induce_fault("EndScan", command_id, is_dish=True)
         self._scan_id = ""
         return (
             [ResultCode.QUEUED],

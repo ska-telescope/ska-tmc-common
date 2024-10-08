@@ -12,6 +12,9 @@ Main
 
 Added
 --------
+[0.20.3]
+* Enable error propagation and timeout simulation for helper dish commands
+
 [0.20.0]
 **********
 * Updated liveliness probe to utilize state command and consider exported flag for device availability.
