@@ -384,15 +384,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(ABORT)
         self._obs_state = ObsState.ABORTING
         self.update_device_obsstate(self._obs_state, ABORT)
-        for timer in self.timers:
-            timer.cancel()
-        thread = threading.Timer(
-            self._command_delay_info[ABORT],
-            self.update_device_obsstate,
-            args=[ObsState.ABORTED, ABORT],
-        )
-
-        thread.start()
 
     @command()
     def Restart(self):
