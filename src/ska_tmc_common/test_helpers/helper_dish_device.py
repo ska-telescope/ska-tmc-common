@@ -965,6 +965,9 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id, is_dish=True)
         self._scan_id = ""
+        self.push_command_result(
+            ResultCode.OK, "EndScan", command_id=command_id
+        )
         return (
             [ResultCode.QUEUED],
             [command_id],
