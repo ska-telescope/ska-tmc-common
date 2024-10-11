@@ -5,12 +5,14 @@ required for TMC commands
 
 # pylint: disable=unused-argument
 
+from __future__ import annotations
+
 import threading
 import time
 from enum import IntEnum
 from logging import Logger
 from operator import methodcaller
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
@@ -53,6 +55,20 @@ class BaseTMCCommand:
         self.tracker_thread: Optional[threading.Thread] = None
         self._stop: bool = False
         self.index: int = 0
+        self.timeout_callback = None
+        self.timeout_id: str = ""
+
+    def set_timer_parameters(self: BaseTMCCommand):
+        """Set variables required for the TimeKeeper class"""
+        self.timeout_id = f"{time.time()}_{__class__.__name__}"
+        self.timeout_callback: Callable[
+            [str, TimeoutState], Optional[ValueError]
+        ] = TimeoutCallback(self.timeout_id, self.logger)
+        self.logger.info(
+            "Timeout id and callback: %s, %s",
+            self.timeout_id,
+            self.timeout_callback,
+        )
 
     def set_command_id(self, command_name: str):
         """Sets the command id for error propagation.
