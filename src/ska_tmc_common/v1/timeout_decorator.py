@@ -33,7 +33,6 @@ def timeout_decorator(function: Callable) -> Callable:
         # Start timer for the command execution
         class_instance.timekeeper.start_timer(
             class_instance.timeout_id,
-            class_instance.component_manager.command_timeout,
             class_instance.timeout_callback,
         )
 
