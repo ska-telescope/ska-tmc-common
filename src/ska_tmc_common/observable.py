@@ -45,8 +45,8 @@ class Observable:
 
     def notify_observers(
         self,
-        command_exception: bool = False,
-        attribute_value_change: bool = False,
+        *args: list,
+        **kwargs: dict,
     ) -> None:
         """This method notifies all observers regarding the event received.
 
@@ -59,4 +59,4 @@ class Observable:
         with self.lock:
             logging.info("observers : %s ", self.observers)
             for observer in self.observers:
-                observer.notify(command_exception, attribute_value_change)
+                observer.notify(*args, **kwargs)
