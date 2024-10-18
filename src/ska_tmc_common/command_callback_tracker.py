@@ -11,7 +11,10 @@ from typing import TYPE_CHECKING
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 
-from ska_tmc_common.observer import Observer
+from ska_tmc_common.observer import (
+    AttributeValueObserver,
+    LongRunningCommandExceptionObserver,
+)
 
 if TYPE_CHECKING:
     from ska_tmc_common.tmc_command import BaseTMCCommand
@@ -51,13 +54,28 @@ class CommandCallbackTracker:
             self.component_manager.long_running_result_callback
         )
         self.observable = self.component_manager.observable
-        self.observer = Observer(logger, self, self.observable)
+        self.initialize_observers(logger, self, self.observable)
+        self.lrc_exception_observer = LongRunningCommandExceptionObserver(
+            logger, self, self.observable
+        )
+        self.attribute_change_observer = AttributeValueObserver(
+            logger, self, self.observable
+        )
         self.logger.info(
             "command tracker initiated for command class %s",
             self.command_class_instance.__class__,
         )
         self.update_attr_value_change()
         self.logger.info("expected states are %s", states_to_track)
+
+    def initialize_observers(self, logger, command_cb_tracker, observable):
+        """_summary_
+
+        Args:
+            logger (_type_): _description_
+            command_cb_tracker (_type_): _description_
+            observable (_type_): _description_
+        """
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
@@ -135,7 +153,8 @@ class CommandCallbackTracker:
                 self.component_manager.stop_timer()
             self.abort_event.clear()
             self.command_completed = True
-            self.observable.deregister_observer(self.observer)
+            self.observable.deregister_observer(self.lrc_exception_observer)
+            self.observable.deregister_observer(self.attribute_change_observer)
             if self.component_manager.command_id:
                 self.lrcr_callback.remove_data(self.command_id)
             self.logger.info("clean up completed")

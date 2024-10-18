@@ -5,6 +5,7 @@ This Module utilized to initialize observers for command completion.
 from __future__ import annotations
 
 import logging
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -36,21 +37,40 @@ class Observer:
         self.logger = logger
         self.command_callback_tracker = command_callback_tracker
 
+    @abstractmethod
     def notify(
         self: Observer,
-        command_exception: bool = False,
-        attribute_value_change: bool = False,
+        *args: list,
+        **kwargs: dict,
     ) -> None:
-        """This method notifies command callback tracker about
-        the event received.
+        """This method is to update relevant method
 
         Args:
-            command_exception (bool, optional):
-            Denotes whether command exception event. Defaults to False.
-            attribute_value_change (bool, optional):
-            Denotes whether attribute change event. Defaults to False.
+            self (Observer): observer instance
         """
-        if command_exception:
+
+
+class LongRunningCommandExceptionObserver(Observer):
+    """Observer class utilized to monitor \
+        and notify command callback tracker
+    """
+
+    def notify(self, *args, **kwargs):
+        """Notifies about the update of command exception"""
+        if "command_exception" in args or kwargs.get("command_exception"):
             self.command_callback_tracker.update_exception()
-        elif attribute_value_change:
+
+
+class AttributeValueObserver(Observer):
+    """Observer class utilized to monitor \
+        and notify command callback tracker
+    """
+
+    def notify(self, *args, **kwargs):
+        """
+        Notifies about the update of attribute state
+        """
+        if "attribute_value_change" in args or kwargs.get(
+            "attribute_value_change"
+        ):
             self.command_callback_tracker.update_attr_value_change()
