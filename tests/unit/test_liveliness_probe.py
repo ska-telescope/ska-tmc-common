@@ -36,8 +36,8 @@ def test_stop_ln(dev_name):
     cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     cm._device = device
     assert cm._device.dev_name == dev_name
-    assert cm.liveliness_probe_object._thread.is_alive()
     prev_obj_id = id(cm.liveliness_probe_object)
+    assert cm.liveliness_probe_object._thread.is_alive()
     cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     # does not start again
     assert prev_obj_id == id(cm.liveliness_probe_object)
