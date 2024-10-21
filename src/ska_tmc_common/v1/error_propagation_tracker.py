@@ -7,6 +7,8 @@ from typing import Callable
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.executor import TaskStatus
 
+from ska_tmc_common.command_callback_tracker import CommandCallbackTracker
+
 
 def process_result_and_start_tracker(
     class_instance,
@@ -57,9 +59,6 @@ def process_result_and_start_tracker(
 
         # Close the timer if timeout is considered
         if is_timeout_considered:
-            # The if else block is to keep backwards compatibility. Once all
-            # repositories start using the TimeKeeper class, the block can be
-            # replaced with the if part.
             if hasattr(class_instance, "timekeeper"):
                 class_instance.timekeeper.stop_timer()
             else:
@@ -70,20 +69,21 @@ def process_result_and_start_tracker(
             function = methodcaller(cleanup_function)
             function(class_instance)
     else:
-        class_instance.start_tracker_thread(
+        class_instance.ct = CommandCallbackTracker(
+            class_instance,
+            class_instance.logger,
+            task_abort_event,
             state_function,
             expected_states,
-            task_abort_event,
-            timeout_id=class_instance.timeout_id,
-            timeout_callback=class_instance.timeout_callback,
-            command_id=class_instance.component_manager.command_id,
-            lrcr_callback=(
-                class_instance.component_manager.long_running_result_callback
-            ),
+        )
+        class_instance.timeout_callback.update_command_callback_tracker(
+            class_instance.ct
         )
 
 
-def error_propagation_decorator(
+# pylint: disable=duplicate-code
+# As per team's discussion
+def error_propagation_tracker(
     state_function: str,
     expected_states: list,
     is_timeout_considered: bool = True,
@@ -138,6 +138,7 @@ def error_propagation_decorator(
 
             # Process the command execution result and start the tracker thread
             # if necessary.
+
             process_result_and_start_tracker(
                 class_instance,
                 result,
