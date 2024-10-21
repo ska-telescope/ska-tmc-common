@@ -14,8 +14,8 @@ from ska_tmc_common import (
     TimeKeeper,
     TimeoutCallback,
     TmcLeafNodeCommand,
-    error_propagation_decorator,
-    timeout_decorator,
+    error_propagation_tracker,
+    timeout_tracker,
 )
 from tests.settings import State, logger
 
@@ -110,10 +110,10 @@ class DummyCommandClass(TmcLeafNodeCommand):
         """Cleanup method"""
         self.component_manager.state = State.NORMAL
 
-    @error_propagation_decorator(
+    @error_propagation_tracker(
         "get_state", [State.CHANGED], cleanup_function="clear_state"
     )
-    @timeout_decorator
+    @timeout_tracker
     def do(self, argin: str) -> Tuple[ResultCode, str]:
         """Do method for command class."""
         time.sleep(1)
@@ -121,10 +121,10 @@ class DummyCommandClass(TmcLeafNodeCommand):
             return ResultCode.OK, ""
         return ResultCode.FAILED, "Invalid argin"
 
-    @error_propagation_decorator(
+    @error_propagation_tracker(
         "get_state", [State.CHANGED], cleanup_function="clear_state"
     )
-    @timeout_decorator
+    @timeout_tracker
     def do_without_input(self) -> Tuple[ResultCode, str]:
         """Do method for command class."""
         time.sleep(1)

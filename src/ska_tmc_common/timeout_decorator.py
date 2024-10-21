@@ -5,7 +5,7 @@ from typing import Callable
 from ska_tango_base.commands import ResultCode
 
 
-def timeout_decorator(function: Callable) -> Callable:
+def timeout_tracker(function: Callable) -> Callable:
     """A decorator for implementing timeout functionality.
 
     :rtype: Callable

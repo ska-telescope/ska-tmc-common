@@ -81,7 +81,7 @@ def process_result_and_start_tracker(
         )
 
 
-def error_propagation_decorator(
+def error_propagation_tracker(
     state_function: str,
     expected_states: list,
     is_timeout_considered: bool = True,

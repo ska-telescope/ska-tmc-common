@@ -54,28 +54,13 @@ class CommandCallbackTracker:
             self.component_manager.long_running_result_callback
         )
         self.observable = self.component_manager.observable
-        self.initialize_observers(logger, self, self.observable)
         self.lrc_exception_observer = LongRunningCommandExceptionObserver(
             logger, self, self.observable
         )
         self.attribute_change_observer = AttributeValueObserver(
             logger, self, self.observable
         )
-        self.logger.info(
-            "command tracker initiated for command class %s",
-            self.command_class_instance.__class__,
-        )
         self.update_attr_value_change()
-        self.logger.info("expected states are %s", states_to_track)
-
-    def initialize_observers(self, logger, command_cb_tracker, observable):
-        """_summary_
-
-        Args:
-            logger (_type_): _description_
-            command_cb_tracker (_type_): _description_
-            observable (_type_): _description_
-        """
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
@@ -115,8 +100,8 @@ class CommandCallbackTracker:
                     status=TaskStatus.ABORTED
                 )
         except (AttributeError, ValueError, TypeError) as exception:
-            self.logger.debug(
-                "error occurred while attribute" + "update %s", exception
+            self.logger.error(
+                "Error occurred while attribute" + "update %s", exception
             )
 
     def update_exception(self):
@@ -137,8 +122,8 @@ class CommandCallbackTracker:
                 )
                 self.clean_up()
         except (AttributeError, ValueError, TypeError) as exception:
-            self.logger.debug(
-                "error occurred while updating exception %s", exception
+            self.logger.error(
+                "Error occurred while updating exception %s", exception
             )
 
     def clean_up(self):
@@ -157,6 +142,5 @@ class CommandCallbackTracker:
             self.observable.deregister_observer(self.attribute_change_observer)
             if self.component_manager.command_id:
                 self.lrcr_callback.remove_data(self.command_id)
-            self.logger.info("clean up completed")
         except (AttributeError, ValueError, TypeError) as exception:
-            self.logger.debug("error occurred while clean up %s", exception)
+            self.logger.error("Error occurred while clean up %s", exception)
