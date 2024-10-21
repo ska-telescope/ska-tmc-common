@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class CommandCallbackTracker:
-    """CommandCallbackTracker class helps to tracker command status
+    """CommandCallbackTracker class helps to track command status
     with help of multiple callbacks.
     """
 

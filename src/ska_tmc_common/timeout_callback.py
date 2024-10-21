@@ -62,7 +62,6 @@ class TimeoutCallback:
         else:
             raise ValueError("The id for the callback is invalid")
 
-    # depericated
     def assert_against_call(
         self, timeout_id: str, timeout_state: TimeoutState, **kwargs: Any
     ) -> bool:
