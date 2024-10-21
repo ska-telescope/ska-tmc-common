@@ -12,6 +12,9 @@ Main
 
 Added
 --------
+[0.20.5]
+* Update helper dish device to simulate the error propagation and timeout scenarios
+
 [0.20.4]
 * Update output_host and output_port values in receive addresses.
 

@@ -842,7 +842,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(TRACK_STOP, "")
         if self.defective_params["enabled"]:
-            return self.induce_fault("TrackStop", command_id)
+            return self.induce_fault("TrackStop", command_id, is_dish=True)
         if self._pointing_state != PointingState.READY:
             if self._state_duration_info:
                 self._follow_state_duration()
