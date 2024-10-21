@@ -945,7 +945,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("Configure", command_id)
+            return self.induce_fault("Configure", command_id, is_dish=True)
         if self._pointing_state != PointingState.TRACK:
             if self._state_duration_info:
                 self._follow_state_duration()
