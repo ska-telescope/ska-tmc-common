@@ -64,7 +64,6 @@ class CommandCallbackTracker:
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
-        self.logger.info("update timeout")
         if not self.command_completed:
             self.command_class_instance.update_task_status(
                 result=(
@@ -107,7 +106,6 @@ class CommandCallbackTracker:
     def update_exception(self):
         """This method is invoked when exception occurs."""
         try:
-            self.logger.info("update exception")
             if not self.command_completed and not self.abort_event.is_set():
                 self.command_class_instance.update_task_status(
                     result=(

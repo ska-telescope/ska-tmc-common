@@ -54,13 +54,14 @@ class TimeoutCallback:
         """
         if self._timeout_id == timeout_id:
             self._timeout_state = timeout_state
-        if self._timeout_state == TimeoutState.OCCURED:
-            if self.command_callback_tracker:
-                self.command_callback_tracker.update_timeout_occurred()
             for key, value in kwargs.items():
                 self._kwargs[key] = value
         else:
             raise ValueError("The id for the callback is invalid")
+
+        if self._timeout_state == TimeoutState.OCCURED:
+            if self.command_callback_tracker:
+                self.command_callback_tracker.update_timeout_occurred()
 
     def assert_against_call(
         self, timeout_id: str, timeout_state: TimeoutState, **kwargs: Any
