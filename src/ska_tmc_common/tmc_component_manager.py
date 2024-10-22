@@ -29,6 +29,7 @@ from ska_tmc_common.liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
 )
+from ska_tmc_common.observable import Observable
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
 
@@ -125,6 +126,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             | None
         ) = None
         self._command_id: str = ""
+        self.observable = Observable()
 
     @property
     def command_id(self) -> str:
