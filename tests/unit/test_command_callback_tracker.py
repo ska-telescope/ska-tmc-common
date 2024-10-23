@@ -55,7 +55,6 @@ def test_abort_command_callback_tracker_attr_change():
 
 
 def test_command_callback_tracker_command_exp():
-
     command_class_instance = Mock()
     cct = CommandCallbackTracker(
         command_class_instance, logging, threading.Event(), "get_state", ["ON"]
@@ -74,7 +73,6 @@ def test_command_callback_tracker_command_exp():
 
 
 def test_abort_command_callback_tracker_command_exp():
-
     command_class_instance = Mock()
     abort_event = threading.Event()
     cct = CommandCallbackTracker(

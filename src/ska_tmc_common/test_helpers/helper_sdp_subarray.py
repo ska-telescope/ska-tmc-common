@@ -383,7 +383,13 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes Abort command on SdpSubarray device."""
         self.update_command_info(ABORT)
         self._obs_state = ObsState.ABORTING
-        self.update_device_obsstate(self._obs_state, ABORT)
+        # self.update_device_obsstate(self._obs_state, ABORT)
+        self.push_change_event("obsState", self._obs_state)
+        self.logger.info(
+            "Pushing ObsState event for command: %s and obsState: %s",
+            "ABORT",
+            ObsState.ABORTING,
+        )
         for timer in self.timers:
             timer.cancel()
         thread = threading.Timer(
