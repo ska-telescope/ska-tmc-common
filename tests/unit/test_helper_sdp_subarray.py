@@ -102,7 +102,6 @@ def test_end_command(tango_context):
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
 
-@pytest.mark.trupti
 def test_abort_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)

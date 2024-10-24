@@ -22,9 +22,10 @@ def test_is_logging_allowed_exceeded_waiting_time():
     """Tests that is_logging_allowed returns True if enough time passed"""
     log_manager = LogManager(max_waiting_time=2)  # Set lower wait time
     initial_last_logged_time = time.time()
-    log_manager.log_type_to_last_logged_time[
-        "Dev_error"
-    ] = initial_last_logged_time
+
+    log_manager.log_type_to_last_logged_time["Dev_error"] = (
+        initial_last_logged_time
+    )
 
     # Assert initial state (before waiting time)
     assert log_manager.is_logging_allowed("Dev_error") is False
