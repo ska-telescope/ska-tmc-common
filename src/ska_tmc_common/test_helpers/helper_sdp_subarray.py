@@ -387,7 +387,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.logger.info(
             "Pushing ObsState event for command: %s and obsState: %s",
             "ABORT",
-            ObsState.ABORTING,
+            self._obs_state,
         )
         for timer in self.timers:
             timer.cancel()
