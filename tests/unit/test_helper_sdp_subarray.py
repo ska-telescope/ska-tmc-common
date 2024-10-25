@@ -106,6 +106,7 @@ def test_abort_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
     sdp_subarray_device.Abort()
+    wait_for_obstate(sdp_subarray_device, ObsState.ABORTING)
     wait_for_obstate(sdp_subarray_device, ObsState.ABORTED)
 
 

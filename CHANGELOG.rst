@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.21.1]
+* Resolved skb-536.
+* SDP Subarray Device is able to go to ABORTING state before ABORTED.
+
 [0.21.0]
 * Update error propagation to event based.
 * Removed usage of tracker thread.
