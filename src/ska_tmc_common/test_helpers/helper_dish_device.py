@@ -54,6 +54,12 @@ class HelperDishDevice(HelperDishLNDevice):
         self._program_track_table_lock = threading.Lock()
         self._scan_id = ""
         self._global_pointing_data: str = ""
+        self._band1PointingModelParams = []
+        self._band2PointingModelParams = []
+        self._band3PointingModelParams = []
+        self._band4PointingModelParams = []
+        self._band5aPointingModelParams = []
+        self._band5bPointingModelParams = []
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -83,6 +89,120 @@ class HelperDishDevice(HelperDishLNDevice):
         max_dim_x=150,
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
+    band1PointingModelParams = attribute(
+        dtype=DevString, access=AttrWriteType.READ_WRITE
+    )
+    band2PointingModelParams = attribute(
+        dtype=DevString, access=AttrWriteType.READ_WRITE
+    )
+    band3PointingModelParams = attribute(
+        dtype=DevString, access=AttrWriteType.READ_WRITE
+    )
+    band4PointingModelParams = attribute(
+        dtype=DevString, access=AttrWriteType.READ_WRITE
+    )
+    band5APointingModelParams = attribute(
+        dtype=DevString, access=AttrWriteType.READ_WRITE
+    )
+    band5BPointingModelParams = attribute(
+        dtype=DevString, access=AttrWriteType.READ_WRITE
+    )
+
+    def read_band1PointingModelParams(self):
+        """
+        This method reads the band1PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band1PointingModelParams
+
+    def write_band1PointingModelParams(self, value: str):
+        """
+        This method writes band1PointingModelParams attribute of dish.
+        :param value: _band1PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band1PointingModelParams = value
+
+    def read_band2PointingModelParams(self):
+        """
+        This method reads the band2PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band2PointingModelParams
+
+    def write_band2PointingModelParams(self, value):
+        """
+        This method writes band2PointingModelParams attribute of dish.
+        :param value: _band2PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band2PointingModelParams = value
+
+    def read_band3PointingModelParams(self):
+        """
+        This method reads the band3PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band3PointingModelParams
+
+    def write_band3PointingModelParams(self, value):
+        """
+        This method writes band3PointingModelParams attribute of dish.
+        :param value: _band3PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band3PointingModelParams = value
+
+    def read_band4PointingModelParams(self):
+        """
+        This method reads the band4PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band4PointingModelParams
+
+    def write_band4PointingModelParams(self, value):
+        """
+        This method writes band4PointingModelParams attribute of dish.
+        :param value: _band4PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band4PointingModelParams = value
+
+    def read_band5APointingModelParams(self):
+        """
+        This method reads the band5APointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band5APointingModelParams
+
+    def write_band5APointingModelParams(self, value):
+        """
+        This method writes band5APointingModelParams attribute of dish.
+        :param value: _band5APointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band5APointingModelParams = value
+
+    def read_band5BPointingModelParams(self):
+        """
+        This method reads the band5BPointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band5BPointingModelParams
+
+    def write_band5BPointingModelParams(self, value):
+        """
+        This method writes band5BPointingModelParams attribute of dish.
+        :param value: _band5BPointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band5BPointingModelParams = value
 
     @property
     def configured_band(self):
