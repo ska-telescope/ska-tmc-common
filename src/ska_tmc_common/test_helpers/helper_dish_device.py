@@ -17,7 +17,12 @@ from tango import AttrWriteType, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-from ska_tmc_common.enum import Band, DishMode, PointingState
+from ska_tmc_common.enum import (
+    Band,
+    DishMode,
+    PointingState,
+    TrackTableLoadMode,
+)
 from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE_BAND_1,
@@ -50,10 +55,13 @@ class HelperDishDevice(HelperDishLNDevice):
             31.877024524259,
         ]
         self._state_duration_info: dict = {}
-        self._program_track_table = []
+        self._program_track_table = np.array([])
         self._program_track_table_lock = threading.Lock()
         self._scan_id = ""
         self._global_pointing_data: str = ""
+        self._track_table_load_mode: TrackTableLoadMode = (
+            TrackTableLoadMode.APPEND
+        )
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -69,6 +77,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self._device.set_change_event("pointingState", True, False)
             self._device.set_change_event("dishMode", True, False)
             self._device.set_change_event("scanID", True, False)
+            self._device.set_change_event("TrackTableLoadMode", True, False)
 
             return (ResultCode.OK, "")
 
@@ -108,6 +117,30 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: None
         """
         self._scan_id = value
+
+    @attribute(
+        dtype=TrackTableLoadMode,
+        access=AttrWriteType.READ_WRITE,
+        doc="Selects track table load mode.\nWith APPEND selected, Dish will "
+        "add the coordinate set given in programTrackTable attribute to the "
+        "list of pointing coordinates already loaded in ACU.\nWith NEW "
+        "selected, Dish will delete the list of pointing coordinates "
+        "previously loaded in ACU when new coordinates are given in the "
+        "programTrackTable attribute.",
+    )
+    def trackTableLoadMode(self) -> TrackTableLoadMode:
+        """Returns the trackTableLoadMode"""
+        return self._track_table_load_mode
+
+    @trackTableLoadMode.write
+    def trackTableLoadMode(self, value: TrackTableLoadMode):
+        """Set the trackTableLoadMode"""
+        self._track_table_load_mode = value
+        self.push_change_event("trackTableLoadMode", value)
+        self.push_archive_event("trackTableLoadMode", value)
+        if self._track_table_load_mode == TrackTableLoadMode.NEW:
+            with self._program_track_table_lock:
+                self._program_track_table = np.array([])
 
     @attribute(dtype=int, access=AttrWriteType.READ)
     def kValue(self) -> int:
@@ -186,11 +219,12 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: None
         """
         with self._program_track_table_lock:
-            self._program_track_table = value
-            self.logger.info(
-                "The programTrackTable attribute value: %s",
-                self._program_track_table,
-            )
+            if self._track_table_load_mode is TrackTableLoadMode.APPEND:
+                self._program_track_table = value
+                self.logger.info(
+                    "The programTrackTable attribute value: %s",
+                    self._program_track_table,
+                )
             self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> np.ndarray:

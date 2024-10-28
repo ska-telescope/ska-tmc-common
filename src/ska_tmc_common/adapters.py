@@ -4,12 +4,18 @@ functions of adapters by creating proxy for devices.
 """
 
 import enum
+import logging
 from typing import List, Tuple, Union
 
 import tango
+from ska_ser_logging.configuration import configure_logging
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common.dev_factory import DevFactory
+from ska_tmc_common.enum import TrackTableLoadMode
+
+configure_logging()
+LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
@@ -586,7 +592,31 @@ class DishAdapter(DishLeafAdapter):
         """
         Sets Dish Manager's programTrackTable attribute.
         """
-        self._proxy.programTrackTable = program_track_table
+        try:
+            self._proxy.write_attribute(
+                "programTrackTable", program_track_table
+            )
+        except tango.DevFailed as exception:
+            LOGGER.error(str(exception))
+
+    @property
+    def TrackTableLoadMode(self) -> TrackTableLoadMode:
+        """
+        Returns Dish Manager's TrackTableLoadMode attribute value.
+        """
+        return self._proxy.TrackTableLoadMode
+
+    @TrackTableLoadMode.setter
+    def TrackTableLoadMode(self, track_table_load_mode) -> None:
+        """
+        Sets Dish Manager's TrackTableLoadMode attribute.
+        """
+        try:
+            self._proxy.write_attribute(
+                "TrackTableLoadMode", track_table_load_mode
+            )
+        except tango.DevFailed as exception:
+            LOGGER.error(str(exception))
 
     @property
     def scanID(self) -> str:

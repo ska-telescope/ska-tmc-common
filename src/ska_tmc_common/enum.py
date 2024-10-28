@@ -93,3 +93,12 @@ class FaultType(IntEnum):
     STUCK_IN_OBSTATE = 5
     COMMAND_NOT_ALLOWED_AFTER_QUEUING = 6
     COMMAND_NOT_ALLOWED_EXCEPTION_AFTER_QUEUING = 7
+
+
+@unique
+class TrackTableLoadMode(IntEnum):
+    """Class for track table load mode enums."""
+
+    NEW = 0
+    APPEND = 1
+    RESET = 2

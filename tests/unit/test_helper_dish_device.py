@@ -9,7 +9,7 @@ from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory
-from ska_tmc_common.enum import DishMode, PointingState
+from ska_tmc_common.enum import DishMode, PointingState, TrackTableLoadMode
 from tests.settings import (
     COMMAND_NOT_ALLOWED_DEFECT,
     DISH_DEVICE,
@@ -61,6 +61,7 @@ def test_set_delay(tango_context):
 def test_program_track_table(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    assert dish_device.TrackTableLoadMode == TrackTableLoadMode.APPEND
     programTrackTable_example = np.array(
         [
             1706629796036.8691,
@@ -85,6 +86,10 @@ def test_program_track_table(tango_context):
     assert np.array_equal(
         dish_device.programTrackTable, np.array(programTrackTable_example)
     )
+    assert len(dish_device.programTrackTable) > 0
+    dish_device.TrackTableLoadMode = TrackTableLoadMode.NEW
+    logger.info(dish_device.programTrackTable)
+    assert len(dish_device.programTrackTable) == 0
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
