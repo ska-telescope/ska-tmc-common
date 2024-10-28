@@ -327,7 +327,7 @@ class DishDeviceInfo(DeviceInfo):
         self.rx_capturing_data = 0
         self.achieved_pointing = []
         self.program_track_table = []
-        self.track_table_load_mode = TrackTableLoadMode.APPEND
+        self._track_table_load_mode = TrackTableLoadMode.APPEND
         self._kvalue = 0
         self.scan_id = ""
 
@@ -380,13 +380,13 @@ class DishDeviceInfo(DeviceInfo):
         Returns the track table load mode value for Dish master device
         :return: track table load mode for Dish Master
         """
-        return self.track_table_load_mode
+        return self._track_table_load_mode
 
     @track_table_load_mode.setter
     def track_table_load_mode(self, value: TrackTableLoadMode) -> None:
         """Sets the value of dish mode for Dish master device"""
         with self.lock:
-            self.track_table_load_mode = value
+            self._track_table_load_mode = value
 
     # pylint: disable=protected-access
     def from_dev_info(self, dev_info) -> None:
