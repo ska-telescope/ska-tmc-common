@@ -600,20 +600,20 @@ class DishAdapter(DishLeafAdapter):
             LOGGER.error(str(exception))
 
     @property
-    def TrackTableLoadMode(self) -> TrackTableLoadMode:
+    def trackTableLoadMode(self) -> TrackTableLoadMode:
         """
         Returns Dish Manager's TrackTableLoadMode attribute value.
         """
-        return self._proxy.TrackTableLoadMode
+        return self._proxy.trackTableLoadMode
 
-    @TrackTableLoadMode.setter
-    def TrackTableLoadMode(self, track_table_load_mode) -> None:
+    @trackTableLoadMode.setter
+    def trackTableLoadMode(self, track_table_load_mode) -> None:
         """
         Sets Dish Manager's TrackTableLoadMode attribute.
         """
         try:
             self._proxy.write_attribute(
-                "TrackTableLoadMode", track_table_load_mode
+                "trackTableLoadMode", track_table_load_mode
             )
         except tango.DevFailed as exception:
             LOGGER.error(str(exception))

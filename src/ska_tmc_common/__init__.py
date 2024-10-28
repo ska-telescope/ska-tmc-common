@@ -41,6 +41,7 @@ from .enum import (
     LivelinessProbeType,
     PointingState,
     TimeoutState,
+    TrackTableLoadMode,
 )
 from .error_propagation_decorator import error_propagation_decorator
 from .event_callback import EventCallback
@@ -187,4 +188,5 @@ __all__ = [
     "timeout_decorator",
     "error_propagation_decorator",
     "SdpQueueConnectorDeviceInfo",
+    "TrackTableLoadMode",
 ]
