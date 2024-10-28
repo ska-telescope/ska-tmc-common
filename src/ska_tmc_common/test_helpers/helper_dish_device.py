@@ -219,12 +219,11 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: None
         """
         with self._program_track_table_lock:
-            if self._track_table_load_mode is TrackTableLoadMode.APPEND:
-                self._program_track_table = value
-                self.logger.info(
-                    "The programTrackTable attribute value: %s",
-                    self._program_track_table,
-                )
+            self._program_track_table = value
+            self.logger.info(
+                "The programTrackTable attribute value: %s",
+                self._program_track_table,
+            )
             self.set_achieved_pointing()
 
     def read_achievedPointing(self) -> np.ndarray:
