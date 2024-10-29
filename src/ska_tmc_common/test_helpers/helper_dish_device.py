@@ -91,22 +91,22 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
     band1PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE
+        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
     )
     band2PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE
+        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
     )
     band3PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE
+        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
     )
     band4PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE
+        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
     )
     band5APointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE
+        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
     )
     band5BPointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE
+        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
     )
 
     def read_band1PointingModelParams(self):
