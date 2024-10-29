@@ -202,17 +202,19 @@ def test_achived_pointing(tango_context):
 
 
 def test_static_pm_setup_command(tango_context, json_factory):
-    """This test verifies the functioning of StaticPmSetup command"""
+    """This test verifies the functioning of ApplyPointingModel command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
     global_pointing_data = json_factory("global_pointing_model")
-    result, command_id = dish_master_device.StaticPmSetup(global_pointing_data)
+    result, command_id = dish_master_device.ApplyPointingModel(
+        global_pointing_data
+    )
     assert result[0] == ResultCode.QUEUED
-    assert "StaticPmSetup" in command_id[0]
+    assert "ApplyPointingModel" in command_id[0]
 
 
 def test_static_pm_setup_command_with_faulty_json(tango_context, json_factory):
-    """This test verifies the JSONDecodeError of StaticPmSetup command"""
+    """This test verifies the JSONDecodeError of ApplyPointingModel command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
 
@@ -228,7 +230,9 @@ def test_static_pm_setup_command_with_faulty_json(tango_context, json_factory):
     global_pointing_data = json_factory("global_pointing_model")
 
     # Test the command is reporting faulty JSON
-    result, command_id = dish_master_device.StaticPmSetup(global_pointing_data)
+    result, command_id = dish_master_device.ApplyPointingModel(
+        global_pointing_data
+    )
     assert result[0] == ResultCode.FAILED
     assert "Failed to decode JSON" in command_id[0]
 

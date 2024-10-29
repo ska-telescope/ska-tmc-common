@@ -1094,7 +1094,7 @@ class HelperDishDevice(HelperDishLNDevice):
         )
 
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
-    def StaticPmSetup(
+    def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -1108,7 +1108,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: Tuple[List[ResultCode], List[str]]
         """
 
-        command_id = f"{time.time()}_StaticPmSetup"
+        command_id = f"{time.time()}_ApplyPointingModel"
         try:
             if self.defective_params[
                 "enabled"
@@ -1116,9 +1116,9 @@ class HelperDishDevice(HelperDishLNDevice):
                 thread = threading.Timer(
                     self._delay,
                     function=self.push_command_result,
-                    args=[ResultCode.FAILED, "StaticPmSetup"],
+                    args=[ResultCode.FAILED, "ApplyPointingModel"],
                     kwargs={
-                        "message": "Failed to execute StaticPmSetup",
+                        "message": "Failed to execute ApplyPointingModel",
                         "command_id": command_id,
                     },
                 )
@@ -1126,7 +1126,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 thread = threading.Timer(
                     self._delay,
                     function=self.push_command_result,
-                    args=[ResultCode.OK, "StaticPmSetup"],
+                    args=[ResultCode.OK, "ApplyPointingModel"],
                     kwargs={"command_id": command_id},
                 )
             thread.start()

@@ -48,7 +48,7 @@ Added
 
 [0.19.0]
 **********
-* Added StaticPmSetup command in helper dish device to handle global pointing json.
+* Added ApplyPointingModel command in helper dish device to handle global pointing json.
 
 [0.18.0]
 **********
