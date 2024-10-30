@@ -1,7 +1,7 @@
 {
   "interface": "https://schema.skao.int/ska-mid-dish-gpm/1.2",
   "antenna": "SKA063",
-  "band": "Band_5b",
+  "band": "Band_2",
   "coefficients": {
     "IA": {
       "value": -491.05237180985154

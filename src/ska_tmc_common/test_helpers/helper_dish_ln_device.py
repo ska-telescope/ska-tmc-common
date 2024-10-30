@@ -28,6 +28,7 @@ from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
+    APPLY_POINT_MODEL,
     CONFIGURE,
     END_SCAN,
     OFF,
@@ -1161,6 +1162,27 @@ class HelperDishLNDevice(HelperBaseDevice):
             return self.induce_fault("Scan", command_id)
 
             # TBD: Add your dish mode change logic here if required
+        return [ResultCode.QUEUED], [command_id]
+
+    @command(
+        dtype_in="DevString",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ApplyPointingModel(
+        self, global_pointing_data: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ApplyPointingModel command on Dish Master
+        :param global_pointing_data: input json string.
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        command_id = f"{time.time()}_ApplyPointingModel"
+        self.logger.info("Processing ApplyPointingModel Command")
+        # to record the command data
+        self.update_command_info(APPLY_POINT_MODEL, global_pointing_data)
+
         return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
