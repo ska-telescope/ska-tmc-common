@@ -13,7 +13,7 @@ import tango
 from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState, DevString
+from tango import AttrWriteType, DevDouble, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -91,22 +91,22 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
     band1PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
+        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band2PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
+        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band3PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
+        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band4PointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
+        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band5APointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
+        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band5BPointingModelParams = attribute(
-        dtype=DevString, access=AttrWriteType.READ_WRITE,max_dim_x=18
+        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
 
     def read_band1PointingModelParams(self):
@@ -1143,16 +1143,28 @@ class HelperDishDevice(HelperDishLNDevice):
         band = data.get("band")
         if band == "Band_1":
             self.write_band1PointingModelParams(values_list)
+            self.push_change_event("band1PointingModelParams", values_list)
+            self.push_archive_event("band1PointingModelParams", values_list)
         elif band == "Band_2":
             self.write_band2PointingModelParams(values_list)
+            self.push_change_event("band2PointingModelParams", values_list)
+            self.push_archive_event("band2PointingModelParams", values_list)
         elif band == "Band_3":
             self.write_band3PointingModelParams(values_list)
+            self.push_change_event("band3PointingModelParams", values_list)
+            self.push_archive_event("band3PointingModelParams", values_list)
         elif band == "Band_4":
             self.write_band4PointingModelParams(values_list)
+            self.push_change_event("band4PointingModelParams", values_list)
+            self.push_archive_event("band4PointingModelParams", values_list)
         elif band == "Band_5A":
             self.write_band5APointingModelParams(values_list)
+            self.push_change_event("band5APointingModelParams", values_list)
+            self.push_archive_event("band5APointingModelParams", values_list)
         elif band == "Band_5B":
             self.write_band5BPointingModelParams(values_list)
+            self.push_change_event("band5BPointingModelParams", values_list)
+            self.push_archive_event("band5BPointingModelParams", values_list)
 
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
     def ApplyPointingModel(
@@ -1168,7 +1180,12 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
-        self.process_json_to_band_params(global_pointing_data)
+        try:
+            self.process_json_to_band_params(global_pointing_data)
+        except CoefficientError as e:
+            # Log the error and return a failure result code and message
+            self.logger.exception("CoefficientError: %s", e)
+            return [ResultCode.FAILED], [f"ApplyPointingModel failed:{str(e)}"]
 
         command_id = f"{time.time()}_ApplyPointingModel"
         try:
