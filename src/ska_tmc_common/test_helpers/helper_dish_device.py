@@ -102,14 +102,14 @@ class HelperDishDevice(HelperDishLNDevice):
     band4PointingModelParams = attribute(
         dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
-    band5APointingModelParams = attribute(
+    band5aPointingModelParams = attribute(
         dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
-    band5BPointingModelParams = attribute(
+    band5bPointingModelParams = attribute(
         dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
 
-    def read_band1PointingModelParams(self):
+    def read_band1PointingModelParams(self) -> List[float]:
         """
         This method reads the band1PointingModelParams attribute of a dish.
         :rtype: List
@@ -125,7 +125,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         self._band1PointingModelParams = value
 
-    def read_band2PointingModelParams(self):
+    def read_band2PointingModelParams(self) -> List[float]:
         """
         This method reads the band2PointingModelParams attribute of a dish.
         :rtype: List
@@ -141,7 +141,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         self._band2PointingModelParams = value
 
-    def read_band3PointingModelParams(self):
+    def read_band3PointingModelParams(self) -> List[float]:
         """
         This method reads the band3PointingModelParams attribute of a dish.
         :rtype: List
@@ -157,7 +157,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         self._band3PointingModelParams = value
 
-    def read_band4PointingModelParams(self):
+    def read_band4PointingModelParams(self) -> List[float]:
         """
         This method reads the band4PointingModelParams attribute of a dish.
         :rtype: List
@@ -173,37 +173,37 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         self._band4PointingModelParams = value
 
-    def read_band5APointingModelParams(self):
+    def read_band5aPointingModelParams(self) -> List[float]:
         """
-        This method reads the band5APointingModelParams attribute of a dish.
+        This method reads the band5aPointingModelParams attribute of a dish.
         :rtype: List
         """
-        return self._band5APointingModelParams
+        return self._band5aPointingModelParams
 
-    def write_band5APointingModelParams(self, value):
+    def write_band5aPointingModelParams(self, value):
         """
-        This method writes band5APointingModelParams attribute of dish.
-        :param value: _band5APointingModelParams as given is the json
+        This method writes band5aPointingModelParams attribute of dish.
+        :param value: _band5aPointingModelParams as given is the json
         :value dtype: List
         :rtype: None
         """
-        self._band5APointingModelParams = value
+        self._band5aPointingModelParams = value
 
-    def read_band5BPointingModelParams(self):
+    def read_band5bPointingModelParams(self) -> List[float]:
         """
-        This method reads the band5BPointingModelParams attribute of a dish.
+        This method reads the band5bPointingModelParams attribute of a dish.
         :rtype: List
         """
-        return self._band5BPointingModelParams
+        return self._band5bPointingModelParams
 
-    def write_band5BPointingModelParams(self, value):
+    def write_band5bPointingModelParams(self, value):
         """
-        This method writes band5BPointingModelParams attribute of dish.
-        :param value: _band5BPointingModelParams as given is the json
+        This method writes band5bPointingModelParams attribute of dish.
+        :param value: _band5bPointingModelParams as given is the json
         :value dtype: List
         :rtype: None
         """
-        self._band5BPointingModelParams = value
+        self._band5bPointingModelParams = value
 
     @property
     def configured_band(self):
@@ -1140,31 +1140,12 @@ class HelperDishDevice(HelperDishLNDevice):
         values_list = [coefficients[key]["value"] for key in required_keys]
 
         # Determine which attribute to set based on 'band' value
-        band = data.get("band")
-        if band == "Band_1":
-            self.write_band1PointingModelParams(values_list)
-            self.push_change_event("band1PointingModelParams", values_list)
-            self.push_archive_event("band1PointingModelParams", values_list)
-        elif band == "Band_2":
-            self.write_band2PointingModelParams(values_list)
-            self.push_change_event("band2PointingModelParams", values_list)
-            self.push_archive_event("band2PointingModelParams", values_list)
-        elif band == "Band_3":
-            self.write_band3PointingModelParams(values_list)
-            self.push_change_event("band3PointingModelParams", values_list)
-            self.push_archive_event("band3PointingModelParams", values_list)
-        elif band == "Band_4":
-            self.write_band4PointingModelParams(values_list)
-            self.push_change_event("band4PointingModelParams", values_list)
-            self.push_archive_event("band4PointingModelParams", values_list)
-        elif band == "Band_5A":
-            self.write_band5APointingModelParams(values_list)
-            self.push_change_event("band5APointingModelParams", values_list)
-            self.push_archive_event("band5APointingModelParams", values_list)
-        elif band == "Band_5B":
-            self.write_band5BPointingModelParams(values_list)
-            self.push_change_event("band5BPointingModelParams", values_list)
-            self.push_archive_event("band5BPointingModelParams", values_list)
+        bandPointingModelParams = (
+            f"band{data.get('band').split('_')[1]}PointingModelParams"
+        )
+        setattr(self, f"_{bandPointingModelParams}", values_list)
+        self.push_change_event(bandPointingModelParams, values_list)
+        self.push_archive_event(bandPointingModelParams, values_list)
 
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
     def ApplyPointingModel(
@@ -1214,7 +1195,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 "Processed Global pointing data successfully. Data is: %s",
                 self._global_pointing_data,
             )
-            return [ResultCode.QUEUED], [command_id]
+            return [ResultCode.OK], [command_id]
         except json.JSONDecodeError as e:
             self.logger.exception("Failed to decode JSON: %s", e)
             return [ResultCode.FAILED], ["Failed to decode JSON"]

@@ -53,8 +53,8 @@ BAND_TO_PARAMETER_LIST = [
     ("Band_2", "band2PointingModelParams"),
     ("Band_3", "band3PointingModelParams"),
     ("Band_4", "band4PointingModelParams"),
-    ("Band_5A", "band5APointingModelParams"),
-    ("Band_5B", "band5BPointingModelParams"),
+    ("Band_5a", "band5aPointingModelParams"),
+    ("Band_5b", "band5bPointingModelParams"),
 ]
 
 
@@ -217,7 +217,7 @@ def test_apply_pm_setup_command(tango_context, json_factory):
     result, command_id = dish_master_device.ApplyPointingModel(
         global_pointing_data
     )
-    assert result[0] == ResultCode.QUEUED
+    assert result[0] == ResultCode.OK
     assert "ApplyPointingModel" in command_id[0]
 
 
@@ -281,6 +281,8 @@ def test_process_band_params(tango_context, json_factory, band, param_attr):
     result, command_id = dish_master_device.ApplyPointingModel(
         global_pointing_data
     )
+    assert result[0] == ResultCode.OK
+    assert "ApplyPointingModel" in command_id[0]
 
     # Retrieve the parameter attribute corresponding to the band
     band_param_values = getattr(dish_master_device, param_attr)
