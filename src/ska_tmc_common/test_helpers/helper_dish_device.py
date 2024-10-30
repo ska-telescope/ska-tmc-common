@@ -13,7 +13,7 @@ import tango
 from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevDouble, DevState, DevString
+from tango import AttrWriteType, DevFloat, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
@@ -91,22 +91,22 @@ class HelperDishDevice(HelperDishLNDevice):
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
     band1PointingModelParams = attribute(
-        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band2PointingModelParams = attribute(
-        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band3PointingModelParams = attribute(
-        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band4PointingModelParams = attribute(
-        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band5APointingModelParams = attribute(
-        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
     band5BPointingModelParams = attribute(
-        dtype=(DevDouble,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
 
     def read_band1PointingModelParams(self):
