@@ -4,6 +4,7 @@ from datetime import datetime as dt
 
 import numpy
 import pytest
+import tango
 from ska_tango_base.commands import ResultCode
 from tango import DevFailed
 
@@ -270,3 +271,167 @@ def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     assert (
         timestamp_pointing == timestamp
     ), f"Expected timestamp: '{timestamp}', but got: '{timestamp_pointing}'"
+
+
+def test_dish_ln_command_apm(tango_context, group_callback, json_factory):
+    """apm: ApplyPointingModel test"""
+    dev_factory = DevFactory()
+    global_pointing_data = json_factory("global_pointing_model")
+    global_pointing_data = json.loads(global_pointing_data)
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = dishln_device.command_inout(
+        "ApplyPointingModel", json.dumps(global_pointing_data)
+    )
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (command_id[0], json.dumps((ResultCode.OK, "Command Completed"))),
+        lookahead=3,
+    )
+
+
+def test_apm_gpm_json_error(tango_context, group_callback, json_factory):
+    """Test to check GPM error reported by APM command"""
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    GPM_JSON_ERROR = json.dumps(
+        {
+            "enabled": True,
+            "fault_type": FaultType.GPM_JSON_ERROR,
+            "error_message": "Error in the GPM json",
+            "result": ResultCode.REJECTED,
+        }
+    )
+    global_pointing_data = json_factory("global_pointing_model")
+    global_pointing_data = json.loads(global_pointing_data)
+    dishln_device.SetDefective(GPM_JSON_ERROR)
+    result, command_id = dishln_device.ApplyPointingModel(
+        json.dumps(global_pointing_data)
+    )
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (
+            command_id[0],
+            json.dumps((ResultCode.REJECTED, "Error in the GPM json")),
+        ),
+        lookahead=3,
+    )
+
+
+def test_apm_gpm_error_reported_by_dish(
+    tango_context, group_callback, json_factory
+):
+    """Test to check GPM error reported by APM command"""
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    GPM_JSON_ERROR = json.dumps(
+        {
+            "enabled": True,
+            "fault_type": FaultType.GPM_ERROR_REPORTED_BY_DISH,
+            "error_message": "Dish ID SKA001 is not matching with gpm SKA0063",
+            "result": ResultCode.REJECTED,
+        }
+    )
+    global_pointing_data = json_factory("global_pointing_model")
+    global_pointing_data = json.loads(global_pointing_data)
+    dishln_device.SetDefective(GPM_JSON_ERROR)
+    result, command_id = dishln_device.ApplyPointingModel(
+        json.dumps(global_pointing_data)
+    )
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (
+            command_id[0],
+            json.dumps(
+                (
+                    ResultCode.REJECTED,
+                    "Dish ID SKA001 is not matching with gpm SKA0063",
+                )
+            ),
+        ),
+        lookahead=3,
+    )
+
+
+def test_apm_gpm_uri_error(tango_context, group_callback, json_factory):
+    """Test to check GPM error reported by APM command"""
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    GPM_JSON_ERROR = json.dumps(
+        {
+            "enabled": True,
+            "fault_type": FaultType.GPM_URI_ERROR,
+            "error_message": "Invalid GPM URI",
+            "result": ResultCode.REJECTED,
+        }
+    )
+    global_pointing_data = json_factory("global_pointing_model")
+    global_pointing_data = json.loads(global_pointing_data)
+    dishln_device.SetDefective(GPM_JSON_ERROR)
+    result, command_id = dishln_device.ApplyPointingModel(
+        json.dumps(global_pointing_data)
+    )
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (command_id[0], json.dumps((ResultCode.REJECTED, "Invalid GPM URI"))),
+        lookahead=3,
+    )
+
+
+def test_apm_gpm_uri_not_reachable(
+    tango_context, group_callback, json_factory
+):
+    """Test to check GPM error reported by APM command"""
+    dev_factory = DevFactory()
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    GPM_JSON_ERROR = json.dumps(
+        {
+            "enabled": True,
+            "fault_type": FaultType.GPM_URI_NOT_REACHABLE,
+            "error_message": "GPM json download failed",
+            "result": ResultCode.REJECTED,
+        }
+    )
+    global_pointing_data = json_factory("global_pointing_model")
+    global_pointing_data = json.loads(global_pointing_data)
+    dishln_device.SetDefective(GPM_JSON_ERROR)
+    result, command_id = dishln_device.ApplyPointingModel(
+        json.dumps(global_pointing_data)
+    )
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (
+            command_id[0],
+            json.dumps((ResultCode.REJECTED, "GPM json download failed")),
+        ),
+        lookahead=3,
+    )

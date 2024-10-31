@@ -28,7 +28,7 @@ from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
-    APPLY_POINT_MODEL,
+    APPLY_POINTING_MODEL,
     CONFIGURE,
     END_SCAN,
     OFF,
@@ -1181,7 +1181,17 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_ApplyPointingModel"
         self.logger.info("Processing ApplyPointingModel Command")
         # to record the command data
-        self.update_command_info(APPLY_POINT_MODEL, global_pointing_data)
+        self.update_command_info(APPLY_POINTING_MODEL, global_pointing_data)
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ApplyPointingModel", command_id)
+
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "ApplyPointingModel"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
 
         return [ResultCode.QUEUED], [command_id]
 
