@@ -79,6 +79,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._sdpQueueConnectorFqdn: str = ""
         self.attribute_subscription_data = {}
         self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
+        self._track_table_errors = []
 
     # pylint: disable=protected-access
     class InitCommand(HelperBaseDevice.InitCommand):
@@ -100,6 +101,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("dishMode", True, False)
             self._device.op_state_model.perform_action("component_on")
             self._device.set_change_event("sourceOffset", True, False)
+            self._device.set_change_event("trackTableErrors", True, False)
             self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
 
@@ -115,6 +117,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_x=1000,
         max_dim_y=1000,
     )
+    trackTableErrors = attribute(
+        dtype=(str,), access=AttrWriteType.READ, max_dim_x=1024
+    )
 
     # pylint: enable=protected-access
     def read_kValueValidationResult(self) -> str:
@@ -124,6 +129,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         :rtype:str
         """
         return self._dish_kvalue_validation_result
+
+    def read_trackTableErrors(self):
+        """Read method for trackTableErrors"""
+        return self._track_table_errors
 
     @attribute(
         dtype=ArgType.DevDouble,
