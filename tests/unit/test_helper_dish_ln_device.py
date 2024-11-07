@@ -26,7 +26,8 @@ COMMANDS = [
     "Off",
     "AbortCommands",
     "Configure",
-    "ApplyPointingModel" "Scan",
+    "ApplyPointingModel" ,
+    "Scan",
 ]
 COMMANDS_WITHOUT_INPUT = [
     "SetStandbyFPMode",
