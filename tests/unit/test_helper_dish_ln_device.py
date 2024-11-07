@@ -26,7 +26,7 @@ COMMANDS = [
     "Off",
     "AbortCommands",
     "Configure",
-    "ApplyPointingModel" ,
+    "ApplyPointingModel",
     "Scan",
 ]
 COMMANDS_WITHOUT_INPUT = [
