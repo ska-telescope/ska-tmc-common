@@ -240,6 +240,21 @@ class HelperBaseDevice(SKABaseDevice):
             thread.start()
             return [ResultCode.QUEUED], [command_id]
 
+        if fault_type in [
+            FaultType.GPM_JSON_ERROR,
+            FaultType.GPM_URI_ERROR,
+            FaultType.GPM_URI_NOT_REACHABLE,
+            FaultType.GPM_ERROR_REPORTED_BY_DISH,
+        ]:
+            thread = threading.Timer(
+                self._delay,
+                function=self.push_command_result,
+                args=[result, command_name],
+                kwargs={"message": fault_message, "command_id": command_id},
+            )
+            thread.start()
+            return [ResultCode.QUEUED], [command_id]
+
         return [ResultCode.OK], [command_id]
 
     def push_pointing_state_event(self, pointing_state: PointingState) -> None:
