@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+
+[0.22.0]
+* Updated Command ApplyPointingModel in HelperDishDevice and HelperDishLeafnode
+
 [0.21.0]
 * Update error propagation to event based.
 * Removed usage of tracker thread.
