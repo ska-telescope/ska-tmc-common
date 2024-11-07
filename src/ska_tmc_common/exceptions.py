@@ -47,3 +47,7 @@ class SubarrayNotPresentError(ValueError):
 
 class InvalidReceptorIdError(ValueError):
     """Raised when a requested resource id is invalid."""
+
+
+class CoefficientError(ValueError):
+    """Raised when a requested resource id is invalid."""
