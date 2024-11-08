@@ -591,10 +591,7 @@ class DishAdapter(DishLeafAdapter):
         """
         Sets Dish Manager's programTrackTable attribute.
         """
-        try:
-            self._proxy.programTrackTable = program_track_table
-        except tango.DevFailed as exception:
-            LOGGER.error(str(exception))
+        self._proxy.programTrackTable = program_track_table
 
     @property
     def scanID(self) -> str:
