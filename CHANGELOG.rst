@@ -13,6 +13,9 @@ Main
 Added
 --------
 
+[0.22.1]
+* Updated helper dish devices to support Dish error proagation testing on TMC SubarrayNode 
+
 [0.22.0]
 * Updated Command ApplyPointingModel in HelperDishDevice and HelperDishLeafnode
 
