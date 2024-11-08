@@ -48,6 +48,14 @@ COMMANDS_WITH_INPUT = [
     "ConfigureBand5a",
     "ConfigureBand5b",
 ]
+BAND_TO_PARAMETER_LIST = [
+    ("Band_1", "band1PointingModelParams"),
+    ("Band_2", "band2PointingModelParams"),
+    ("Band_3", "band3PointingModelParams"),
+    ("Band_4", "band4PointingModelParams"),
+    ("Band_5a", "band5aPointingModelParams"),
+    ("Band_5b", "band5bPointingModelParams"),
+]
 
 
 def test_set_delay(tango_context):
@@ -201,38 +209,86 @@ def test_achived_pointing(tango_context):
     assert current_date == tai_date
 
 
-def test_static_pm_setup_command(tango_context, json_factory):
-    """This test verifies the functioning of StaticPmSetup command"""
+def test_apply_pm_setup_command(tango_context, json_factory):
+    """This test verifies the functioning of ApplyPointingModel command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
     global_pointing_data = json_factory("global_pointing_model")
-    result, command_id = dish_master_device.StaticPmSetup(global_pointing_data)
-    assert result[0] == ResultCode.QUEUED
-    assert "StaticPmSetup" in command_id[0]
+    result, command_id = dish_master_device.ApplyPointingModel(
+        global_pointing_data
+    )
+    assert result[0] == ResultCode.OK
+    assert "ApplyPointingModel" in command_id[0]
 
 
-def test_static_pm_setup_command_with_faulty_json(tango_context, json_factory):
-    """This test verifies the JSONDecodeError of StaticPmSetup command"""
+def test_apply_pointing_model_with_missing_coefficient(
+    tango_context, json_factory
+):
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
-
-    # Read the file and store the lines
-    with open("tests/data/global_pointing_model.json", "r") as file:
-        lines = file.readlines()
-    second_line = lines[1].strip()
-
-    # Make the json faulty
-    lines[1] = "abc," + "\n"
-    with open("tests/data/global_pointing_model.json", "w") as file:
-        file.writelines(lines)
     global_pointing_data = json_factory("global_pointing_model")
 
-    # Test the command is reporting faulty JSON
-    result, command_id = dish_master_device.StaticPmSetup(global_pointing_data)
-    assert result[0] == ResultCode.FAILED
-    assert "Failed to decode JSON" in command_id[0]
+    # Modify global_pointing_data to remove "IA"
+    faulty_global_pointing_data = json.loads(global_pointing_data)
+    del faulty_global_pointing_data["coefficients"]["IA"]
+    faulty_global_pointing_data = json.dumps(faulty_global_pointing_data)
 
-    # Restore the JSON
-    lines[1] = second_line + "\n"
-    with open("tests/data/global_pointing_model.json", "w") as file:
-        file.writelines(lines)
+    # Expect CoefficientError due to missing "IA"
+    result_code, message = dish_master_device.ApplyPointingModel(
+        faulty_global_pointing_data
+    )
+
+    assert result_code == [ResultCode.FAILED]
+    assert (
+        "ApplyPointingModel failed:Missing coefficient values for: IA"
+    ) in message[0]
+
+
+@pytest.mark.parametrize("band, param_attr", BAND_TO_PARAMETER_LIST)
+def test_process_band_params(tango_context, json_factory, band, param_attr):
+    dev_factory = DevFactory()
+    dish_master_device = dev_factory.get_device(DISH_DEVICE)
+    global_pointing_data = json_factory("global_pointing_model")
+    global_pointing_data = json.loads(global_pointing_data)
+    global_pointing_data["band"] = band
+
+    # Define required keys and extract values in the correct order
+    required_keys = [
+        "IA",
+        "CA",
+        "NPAE",
+        "AN",
+        "AN0",
+        "AW",
+        "AW0",
+        "ACEC",
+        "ACES",
+        "ABA",
+        "ABphi",
+        "IE",
+        "ECEC",
+        "ECES",
+        "HECE4",
+        "HESE4",
+        "HECE8",
+        "HESE8",
+    ]
+    coefficients = global_pointing_data["coefficients"]
+    values_list = [coefficients[key]["value"] for key in required_keys]
+    global_pointing_data = json.dumps(global_pointing_data)
+
+    # Apply pointing model with the JSON data
+    result, command_id = dish_master_device.ApplyPointingModel(
+        global_pointing_data
+    )
+    assert result[0] == ResultCode.OK
+    assert "ApplyPointingModel" in command_id[0]
+
+    # Retrieve the parameter attribute corresponding to the band
+    band_param_values = getattr(dish_master_device, param_attr)
+
+    # Assertion is made in this way so as to ensure that tango
+    # attribute(DevLong) and json string(float)
+    assert np.allclose(
+        np.array(values_list), np.array(band_param_values)
+    ), f"Values for {band} do not match expected parameter values."

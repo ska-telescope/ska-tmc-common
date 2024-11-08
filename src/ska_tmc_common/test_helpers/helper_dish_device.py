@@ -13,11 +13,12 @@ import tango
 from astropy.time import Time
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango import AttrWriteType, DevState, DevString
+from tango import AttrWriteType, DevFloat, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.enum import Band, DishMode, PointingState
+from ska_tmc_common.exceptions import CoefficientError
 from ska_tmc_common.test_helpers.constants import (
     ABORT_COMMANDS,
     CONFIGURE_BAND_1,
@@ -54,6 +55,12 @@ class HelperDishDevice(HelperDishLNDevice):
         self._program_track_table_lock = threading.Lock()
         self._scan_id = ""
         self._global_pointing_data: str = ""
+        self._band1PointingModelParams = []
+        self._band2PointingModelParams = []
+        self._band3PointingModelParams = []
+        self._band4PointingModelParams = []
+        self._band5aPointingModelParams = []
+        self._band5bPointingModelParams = []
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -83,6 +90,120 @@ class HelperDishDevice(HelperDishLNDevice):
         max_dim_x=150,
     )
     scanID = attribute(dtype=DevString, access=AttrWriteType.READ_WRITE)
+    band1PointingModelParams = attribute(
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+    )
+    band2PointingModelParams = attribute(
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+    )
+    band3PointingModelParams = attribute(
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+    )
+    band4PointingModelParams = attribute(
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+    )
+    band5aPointingModelParams = attribute(
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+    )
+    band5bPointingModelParams = attribute(
+        dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
+    )
+
+    def read_band1PointingModelParams(self) -> List[float]:
+        """
+        This method reads the band1PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band1PointingModelParams
+
+    def write_band1PointingModelParams(self, value):
+        """
+        This method writes band1PointingModelParams attribute of dish.
+        :param value: _band1PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band1PointingModelParams = value
+
+    def read_band2PointingModelParams(self) -> List[float]:
+        """
+        This method reads the band2PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band2PointingModelParams
+
+    def write_band2PointingModelParams(self, value):
+        """
+        This method writes band2PointingModelParams attribute of dish.
+        :param value: _band2PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band2PointingModelParams = value
+
+    def read_band3PointingModelParams(self) -> List[float]:
+        """
+        This method reads the band3PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band3PointingModelParams
+
+    def write_band3PointingModelParams(self, value):
+        """
+        This method writes band3PointingModelParams attribute of dish.
+        :param value: _band3PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band3PointingModelParams = value
+
+    def read_band4PointingModelParams(self) -> List[float]:
+        """
+        This method reads the band4PointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band4PointingModelParams
+
+    def write_band4PointingModelParams(self, value):
+        """
+        This method writes band4PointingModelParams attribute of dish.
+        :param value: _band4PointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band4PointingModelParams = value
+
+    def read_band5aPointingModelParams(self) -> List[float]:
+        """
+        This method reads the band5aPointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band5aPointingModelParams
+
+    def write_band5aPointingModelParams(self, value):
+        """
+        This method writes band5aPointingModelParams attribute of dish.
+        :param value: _band5aPointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band5aPointingModelParams = value
+
+    def read_band5bPointingModelParams(self) -> List[float]:
+        """
+        This method reads the band5bPointingModelParams attribute of a dish.
+        :rtype: List
+        """
+        return self._band5bPointingModelParams
+
+    def write_band5bPointingModelParams(self, value):
+        """
+        This method writes band5bPointingModelParams attribute of dish.
+        :param value: _band5bPointingModelParams as given is the json
+        :value dtype: List
+        :rtype: None
+        """
+        self._band5bPointingModelParams = value
 
     @property
     def configured_band(self):
@@ -973,8 +1094,61 @@ class HelperDishDevice(HelperDishLNDevice):
             [command_id],
         )
 
+    def process_json_to_band_params(self, json_data: str) -> None:
+        """
+        Processes the given JSON string, extracts 'coefficients'
+        values in a specified order,
+        and assigns them to an attribute based on the 'band' value.
+        :raises CoefficientError: Not implemented error
+        """
+        # Load JSON data
+        data = json.loads(json_data)
+
+        # Define expected keys in the required order
+        required_keys = [
+            "IA",
+            "CA",
+            "NPAE",
+            "AN",
+            "AN0",
+            "AW",
+            "AW0",
+            "ACEC",
+            "ACES",
+            "ABA",
+            "ABphi",
+            "IE",
+            "ECEC",
+            "ECES",
+            "HECE4",
+            "HESE4",
+            "HECE8",
+            "HESE8",
+        ]
+
+        # Check if all required coefficients are present
+        coefficients = data.get("coefficients", {})
+        missing_keys = [
+            key for key in required_keys if key not in coefficients
+        ]
+        if missing_keys:
+            raise CoefficientError(
+                f"Missing coefficient values for: {', '.join(missing_keys)}"
+            )
+
+        # Extract values in the specified order
+        values_list = [coefficients[key]["value"] for key in required_keys]
+
+        # Determine which attribute to set based on 'band' value
+        bandPointingModelParams = (
+            f"band{data.get('band').split('_')[1]}PointingModelParams"
+        )
+        setattr(self, f"_{bandPointingModelParams}", values_list)
+        self.push_change_event(bandPointingModelParams, values_list)
+        self.push_archive_event(bandPointingModelParams, values_list)
+
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
-    def StaticPmSetup(
+    def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
         """
@@ -987,8 +1161,14 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
+        try:
+            self.process_json_to_band_params(global_pointing_data)
+        except CoefficientError as e:
+            # Log the error and return a failure result code and message
+            self.logger.exception("CoefficientError: %s", e)
+            return [ResultCode.FAILED], [f"ApplyPointingModel failed:{str(e)}"]
 
-        command_id = f"{time.time()}_StaticPmSetup"
+        command_id = f"{time.time()}_ApplyPointingModel"
         try:
             if self.defective_params[
                 "enabled"
@@ -996,9 +1176,9 @@ class HelperDishDevice(HelperDishLNDevice):
                 thread = threading.Timer(
                     self._delay,
                     function=self.push_command_result,
-                    args=[ResultCode.FAILED, "StaticPmSetup"],
+                    args=[ResultCode.FAILED, "ApplyPointingModel"],
                     kwargs={
-                        "message": "Failed to execute StaticPmSetup",
+                        "message": "Failed to execute ApplyPointingModel",
                         "command_id": command_id,
                     },
                 )
@@ -1006,7 +1186,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 thread = threading.Timer(
                     self._delay,
                     function=self.push_command_result,
-                    args=[ResultCode.OK, "StaticPmSetup"],
+                    args=[ResultCode.OK, "ApplyPointingModel"],
                     kwargs={"command_id": command_id},
                 )
             thread.start()
@@ -1015,7 +1195,7 @@ class HelperDishDevice(HelperDishLNDevice):
                 "Processed Global pointing data successfully. Data is: %s",
                 self._global_pointing_data,
             )
-            return [ResultCode.QUEUED], [command_id]
+            return [ResultCode.OK], [command_id]
         except json.JSONDecodeError as e:
             self.logger.exception("Failed to decode JSON: %s", e)
             return [ResultCode.FAILED], ["Failed to decode JSON"]

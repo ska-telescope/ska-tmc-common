@@ -549,17 +549,17 @@ class DishLeafAdapter(BaseAdapter):
         """
         return self._proxy.SetKValue(kvalue)
 
-    def StaticPmSetup(
+    def ApplyPointingModel(
         self, argin: List[float]
     ) -> Tuple[List[ResultCode], List[str]]:
         """
-        Invokes StaticPmSetup on device proxy.
+        Invokes ApplyPointingModel on device proxy.
         Its a dummy command at present.
         Will be renamed, once Dish ICD gets updated.
 
         :return: command invocation on Dish device proxy
         """
-        return self._proxy.StaticPmSetup(argin)
+        return self._proxy.ApplyPointingModel(argin)
 
 
 class DishAdapter(DishLeafAdapter):
