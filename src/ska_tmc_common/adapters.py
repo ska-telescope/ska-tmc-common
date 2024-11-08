@@ -4,17 +4,12 @@ functions of adapters by creating proxy for devices.
 """
 
 import enum
-import logging
 from typing import List, Tuple, Union
 
 import tango
-from ska_ser_logging.configuration import configure_logging
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common.dev_factory import DevFactory
-
-configure_logging()
-LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=invalid-name
