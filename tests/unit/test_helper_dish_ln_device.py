@@ -63,6 +63,7 @@ def test_attribute_on_helper_dish_ln_device(tango_context):
         }
     )
     assert not dish_ln_device.commandCallInfo
+    assert dish_ln_device.trackTableErrors == ()
 
 
 @pytest.mark.parametrize("command", COMMANDS_WITHOUT_INPUT)
