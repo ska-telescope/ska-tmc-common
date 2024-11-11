@@ -10,6 +10,7 @@ from typing import List, Tuple, Union
 import tango
 from ska_ser_logging.configuration import configure_logging
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.enum import TrackTableLoadMode
@@ -34,6 +35,7 @@ class AdapterType(enum.IntEnum):
     MCCS_CONTROLLER = 7
     CSP_MASTER_LEAF_NODE = 8
     DISH_LEAF_NODE = 9
+    DISHLN_POINTING_DEVICE = 10
 
 
 class BaseAdapter:
@@ -566,6 +568,76 @@ class DishLeafAdapter(BaseAdapter):
         :return: command invocation on Dish device proxy
         """
         return self._proxy.ApplyPointingModel(argin)
+
+
+class DishlnPointingDeviceAdapter(BaseAdapter):
+    """
+    This class is used for creating and managing adapter
+    of DishLeaf node pointing device.
+    """
+
+    @property
+    def healthState(self) -> HealthState:
+        """
+        Get the healthState of the DishLeaf Node Pointing Device.
+        :return: HealthState
+        """
+        return self._proxy.healthState
+
+    @property
+    def pointingProgramTrackTable(self) -> str:
+        """
+        Get the programTrackTable from the DishLeaf Node Pointing Device.
+        :return: str
+        """
+        return self._proxy.pointingProgramTrackTable
+
+    @property
+    def targetData(self) -> str:
+        """
+        Get the target data from DishLeaf Node Pointing Device.
+        :return: str
+        """
+        return self._proxy.targetData
+
+    @targetData.setter
+    def targetData(self, configure_json: str):
+        """
+        Get the target data from DishLeaf Node Pointing Device.
+
+        :param configure_json: target data in json format
+        :configure_json dtype: str
+        """
+        self._proxy.targetData = configure_json
+
+    def GenerateProgramTrackTable(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This command instructs dish pointing device to start generating program
+        track table.
+
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        return self._proxy.GenerateProgramTrackTable()
+
+    def StopProgramTrackTable(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This command instructs dish pointing device to stop generation of
+        program track table.
+
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        return self._proxy.StopProgramTrackTable()
+
+    def ChangePointingOffset(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This command sets change pointing offset flag.
+
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        return self._proxy.ChangePointingOffset()
 
 
 class DishAdapter(DishLeafAdapter):
