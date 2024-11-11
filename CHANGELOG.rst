@@ -12,6 +12,17 @@ Main
 
 Added
 --------
+
+[0.22.1]
+* Updated helper dish devices to support Dish error proagation testing on TMC SubarrayNode 
+
+[0.22.0]
+* Updated Command ApplyPointingModel in HelperDishDevice and HelperDishLeafnode
+
+[0.21.1]
+* Resolved skb-536.
+* SDP Subarray Device is able to go to ABORTING state before ABORTED.
+
 [0.21.0]
 * Update error propagation to event based.
 * Removed usage of tracker thread.
@@ -48,7 +59,7 @@ Added
 
 [0.19.0]
 **********
-* Added StaticPmSetup command in helper dish device to handle global pointing json.
+* Added ApplyPointingModel command in helper dish device to handle global pointing json.
 
 [0.18.0]
 **********

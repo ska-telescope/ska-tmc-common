@@ -28,6 +28,7 @@ from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ABORT_COMMANDS,
+    APPLY_POINTING_MODEL,
     CONFIGURE,
     END_SCAN,
     OFF,
@@ -79,6 +80,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._sdpQueueConnectorFqdn: str = ""
         self.attribute_subscription_data = {}
         self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
+        self._track_table_errors = []
 
     # pylint: disable=protected-access
     class InitCommand(HelperBaseDevice.InitCommand):
@@ -100,6 +102,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             self._device.set_change_event("dishMode", True, False)
             self._device.op_state_model.perform_action("component_on")
             self._device.set_change_event("sourceOffset", True, False)
+            self._device.set_change_event("trackTableErrors", True, False)
             self._device.push_dish_kvalue_val_result_after_initialization()
             return (ResultCode.OK, "")
 
@@ -115,6 +118,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         max_dim_x=1000,
         max_dim_y=1000,
     )
+    trackTableErrors = attribute(
+        dtype=(str,), access=AttrWriteType.READ, max_dim_x=1024
+    )
 
     # pylint: enable=protected-access
     def read_kValueValidationResult(self) -> str:
@@ -124,6 +130,10 @@ class HelperDishLNDevice(HelperBaseDevice):
         :rtype:str
         """
         return self._dish_kvalue_validation_result
+
+    def read_trackTableErrors(self):
+        """Read method for trackTableErrors"""
+        return self._track_table_errors
 
     @attribute(
         dtype=ArgType.DevDouble,
@@ -945,7 +955,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         self.update_command_info(CONFIGURE, argin)
         if self.defective_params["enabled"]:
-            return self.induce_fault("Configure", command_id)
+            return self.induce_fault("Configure", command_id, is_dish=True)
         if self._pointing_state != PointingState.TRACK:
             if self._state_duration_info:
                 self._follow_state_duration()
@@ -1161,6 +1171,37 @@ class HelperDishLNDevice(HelperBaseDevice):
             return self.induce_fault("Scan", command_id)
 
             # TBD: Add your dish mode change logic here if required
+        return [ResultCode.QUEUED], [command_id]
+
+    @command(
+        dtype_in="DevString",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ApplyPointingModel(
+        self, global_pointing_data: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ApplyPointingModel command on Dish Master
+        :param global_pointing_data: input json string.
+        :return: ResultCode and message
+        :rtype: Tuple[List[ResultCode], List[str]]
+        """
+        command_id = f"{time.time()}_ApplyPointingModel"
+        self.logger.info("Processing ApplyPointingModel Command")
+        # to record the command data
+        self.update_command_info(APPLY_POINTING_MODEL, global_pointing_data)
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ApplyPointingModel", command_id)
+
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "ApplyPointingModel"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
+
         return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
