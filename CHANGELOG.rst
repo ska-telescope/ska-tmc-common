@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.2]
+********
+* Added trackTableLoadMode attribute on the helper dish device.
+
 
 [0.22.1]
 * Updated helper dish devices to support Dish error proagation testing on TMC SubarrayNode 

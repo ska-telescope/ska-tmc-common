@@ -96,7 +96,6 @@ def test_program_track_table(tango_context):
     )
     assert len(dish_device.programTrackTable) > 0
     dish_device.TrackTableLoadMode = TrackTableLoadMode.NEW
-    logger.info(dish_device.programTrackTable)
     assert len(dish_device.programTrackTable) == 0
 
 
