@@ -97,3 +97,11 @@ class FaultType(IntEnum):
     GPM_URI_ERROR = 9
     GPM_URI_NOT_REACHABLE = 10
     GPM_ERROR_REPORTED_BY_DISH = 11
+
+
+@unique
+class TrackTableLoadMode(IntEnum):
+    """Class for track table load mode enums."""
+
+    NEW = 0
+    APPEND = 1

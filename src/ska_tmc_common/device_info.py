@@ -9,7 +9,12 @@ from typing import Any
 from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
-from ska_tmc_common.enum import Band, DishMode, PointingState
+from ska_tmc_common.enum import (
+    Band,
+    DishMode,
+    PointingState,
+    TrackTableLoadMode,
+)
 
 
 def dev_state_2_str(value: DevState) -> str:
@@ -322,6 +327,7 @@ class DishDeviceInfo(DeviceInfo):
         self.rx_capturing_data = 0
         self.achieved_pointing = []
         self.program_track_table = []
+        self._track_table_load_mode = TrackTableLoadMode.APPEND
         self._kvalue = 0
         self.scan_id = ""
 
@@ -368,6 +374,25 @@ class DishDeviceInfo(DeviceInfo):
         with self.lock:
             self._dish_mode = value
 
+    @property
+    def track_table_load_mode(self) -> TrackTableLoadMode:
+        """
+        Returns the track table load mode value for Dish master device
+        :return: track table load mode for Dish Master
+        """
+        return self._track_table_load_mode
+
+    @track_table_load_mode.setter
+    def track_table_load_mode(self, value: TrackTableLoadMode) -> None:
+        """
+        Sets the value of dish mode for Dish master device
+        :param value: TrackTableLoadMode (NEW or APPEND)
+        :value dtype: TrackTableLoadMode
+        :rtype: None
+        """
+        with self.lock:
+            self._track_table_load_mode = value
+
     # pylint: disable=protected-access
     def from_dev_info(self, dev_info) -> None:
         super().from_dev_info(dev_info)
@@ -379,6 +404,7 @@ class DishDeviceInfo(DeviceInfo):
             self.rx_capturing_data = dev_info.rx_capturing_data
             self.achieved_pointing = dev_info.achieved_pointing
             self.program_track_table = dev_info.program_track_table
+            self.track_table_load_mode = dev_info.track_table_load_mode
 
     # pylint: enable=protected-access
 
@@ -399,6 +425,7 @@ class DishDeviceInfo(DeviceInfo):
         super_dict["rxCapturingData"] = self.rx_capturing_data
         super_dict["achievedPointing"] = self.achieved_pointing
         super_dict["program_track_table"] = self.program_track_table
+        super_dict["track_table_load_mode"] = self.track_table_load_mode
         return super_dict
 
 
