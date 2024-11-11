@@ -384,7 +384,12 @@ class DishDeviceInfo(DeviceInfo):
 
     @track_table_load_mode.setter
     def track_table_load_mode(self, value: TrackTableLoadMode) -> None:
-        """Sets the value of dish mode for Dish master device"""
+        """
+        Sets the value of dish mode for Dish master device
+        :param value: TrackTableLoadMode (NEW or APPEND)
+        :value dtype: TrackTableLoadMode
+        :rtype: None
+        """
         with self.lock:
             self._track_table_load_mode = value
 

@@ -101,4 +101,3 @@ class TrackTableLoadMode(IntEnum):
 
     NEW = 0
     APPEND = 1
-    RESET = 2

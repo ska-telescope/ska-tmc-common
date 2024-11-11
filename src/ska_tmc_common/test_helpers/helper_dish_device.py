@@ -133,8 +133,13 @@ class HelperDishDevice(HelperDishLNDevice):
         return self._track_table_load_mode
 
     @trackTableLoadMode.write
-    def trackTableLoadMode(self, value: TrackTableLoadMode):
-        """Set the trackTableLoadMode"""
+    def trackTableLoadMode(self, value: TrackTableLoadMode) -> None:
+        """
+        Set the trackTableLoadMode.
+        :param value: TrackTableLoadMode (NEW or APPEND)
+        :value dtype: TrackTableLoadMode
+        :rtype: None
+        """
         self._track_table_load_mode = value
         self.push_change_event("trackTableLoadMode", value)
         self.push_archive_event("trackTableLoadMode", value)

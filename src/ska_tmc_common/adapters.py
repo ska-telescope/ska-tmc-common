@@ -607,9 +607,14 @@ class DishAdapter(DishLeafAdapter):
         return self._proxy.trackTableLoadMode
 
     @trackTableLoadMode.setter
-    def trackTableLoadMode(self, track_table_load_mode) -> None:
+    def trackTableLoadMode(
+        self, track_table_load_mode: TrackTableLoadMode
+    ) -> None:
         """
         Sets Dish Manager's TrackTableLoadMode attribute.
+        :param track_table_load_mode: TrackTableLoadMode (NEW or APPEND)
+        :track_table_load_mode dtype: TrackTableLoadMode
+        :rtype: None
         """
         try:
             self._proxy.write_attribute(
