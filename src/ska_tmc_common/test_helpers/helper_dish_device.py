@@ -250,7 +250,10 @@ class HelperDishDevice(HelperDishLNDevice):
         "programTrackTable attribute.",
     )
     def trackTableLoadMode(self) -> TrackTableLoadMode:
-        """Returns the trackTableLoadMode"""
+        """
+        Returns the trackTableLoadMode.
+        :rtype: TrackTableLoadMode
+        """
         return self._track_table_load_mode
 
     @trackTableLoadMode.write

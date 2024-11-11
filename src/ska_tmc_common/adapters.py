@@ -603,6 +603,7 @@ class DishAdapter(DishLeafAdapter):
     def trackTableLoadMode(self) -> TrackTableLoadMode:
         """
         Returns Dish Manager's TrackTableLoadMode attribute value.
+        :rtype: TrackTableLoadMode
         """
         return self._proxy.trackTableLoadMode
 
