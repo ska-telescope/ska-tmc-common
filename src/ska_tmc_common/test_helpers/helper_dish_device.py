@@ -85,6 +85,9 @@ class HelperDishDevice(HelperDishLNDevice):
             self._device.set_change_event("dishMode", True, False)
             self._device.set_change_event("scanID", True, False)
             self._device.set_change_event("TrackTableLoadMode", True, False)
+            self._device.set_change_event(
+                "band1PointingModelParams", True, False
+            )
 
             return (ResultCode.OK, "")
 
