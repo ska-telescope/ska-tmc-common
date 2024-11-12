@@ -12,6 +12,11 @@ Main
 
 Added
 --------
+
+[0.22.2]
+********
+* Added change_event for band params in helper dish device.
+
 [0.22.2]
 ********
 * Added trackTableLoadMode attribute on the helper dish device.

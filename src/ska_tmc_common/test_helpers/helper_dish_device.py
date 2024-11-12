@@ -88,6 +88,21 @@ class HelperDishDevice(HelperDishLNDevice):
             self._device.set_change_event(
                 "band1PointingModelParams", True, False
             )
+            self._device.set_change_event(
+                "band2PointingModelParams", True, False
+            )
+            self._device.set_change_event(
+                "band3PointingModelParams", True, False
+            )
+            self._device.set_change_event(
+                "band4PointingModelParams", True, False
+            )
+            self._device.set_change_event(
+                "band5APointingModelParams", True, False
+            )
+            self._device.set_change_event(
+                "band5BPointingModelParams", True, False
+            )
 
             return (ResultCode.OK, "")
 
