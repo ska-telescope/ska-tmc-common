@@ -797,6 +797,10 @@ class AdapterFactory:
             new_adapter = DishLeafAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
             )
+        elif adapter_type == AdapterType.DISHLN_POINTING_DEVICE:
+            new_adapter = DishlnPointingDeviceAdapter(
+                dev_name, self._dev_factory.get_device(dev_name)
+            )
         else:
             new_adapter = BaseAdapter(
                 dev_name, self._dev_factory.get_device(dev_name)
