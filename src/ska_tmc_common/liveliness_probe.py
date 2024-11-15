@@ -55,6 +55,7 @@ class BaseLivelinessProbe:
         Stops the sub devices
         """
         self._stop = True
+        self._thread.join(timeout=5.0)
 
     def run(self) -> NotImplementedError:
         """

@@ -64,7 +64,7 @@ class EventReceiver:
         Checks if device has stopped
         """
         self._stop = True
-        # self._thread.join()
+        self._thread.join(timeout=5.0)
 
     #  pylint: disable=broad-exception-caught
     def run(self) -> None:
