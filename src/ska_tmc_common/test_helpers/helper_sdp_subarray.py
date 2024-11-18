@@ -60,7 +60,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                     "vis0": {
                         "function": "visibilities",
                         "host": [[0, "192.168.0.1"]],
-                        "port": [[0, 15]],
+                        "port": [[0, 14000]],
                     }
                 },
                 "calibration:b": {
