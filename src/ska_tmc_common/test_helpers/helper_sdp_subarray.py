@@ -53,7 +53,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                     "vis0": {
                         "function": "visibilities",
                         "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
-                        "port": [[0, 9000], [20, 9000]],
+                        "port": [[0, 9000], [15, 9000]],
                     }
                 },
                 "target:a": {
