@@ -56,6 +56,14 @@ class BaseAdapter:
         return self._proxy
 
     @property
+    def healthState(self) -> HealthState:
+        """
+        Get the healthState of the Device.
+        :return: HealthState
+        """
+        return self._proxy.healthState
+
+    @property
     def dev_name(self) -> str:
         """
         Returns device name.
@@ -575,14 +583,6 @@ class DishlnPointingDeviceAdapter(BaseAdapter):
     This class is used for creating and managing adapter
     of DishLeaf node pointing device.
     """
-
-    @property
-    def healthState(self) -> HealthState:
-        """
-        Get the healthState of the DishLeaf Node Pointing Device.
-        :return: HealthState
-        """
-        return self._proxy.healthState
 
     @property
     def pointingProgramTrackTable(self) -> str:
