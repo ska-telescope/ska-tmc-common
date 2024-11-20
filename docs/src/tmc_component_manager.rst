@@ -1,12 +1,12 @@
 TMC Common TMC Component Manager
-============================================
+================================
 
 .. toctree::
    :maxdepth: 2
 
 
 1. TmcComponent
---------------------
+---------------
 
 .. autoclass:: ska_tmc_common.tmc_component_manager.TmcComponent
     :members:

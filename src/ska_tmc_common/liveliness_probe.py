@@ -106,12 +106,12 @@ class BaseLivelinessProbe:
                 self._logger.exception(
                     "Communication Failed on %s: %s",
                     dev_info.dev_name,
-                    exception,
+                    str(exception),
                 )
                 exception_message = (
-                    f"Communication Failed on {dev_info.dev_name}: {exception}"
+                    f"Communication Failed on {dev_info.dev_name}: "
+                    f"{str(exception)}"
                 )
-
         except tango.ConnectionFailed as connection_failed:
             exception_message = (
                 "Connection Failed on %s: %s",
