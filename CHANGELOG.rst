@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.6]
+********
+* Updated received addresses value.
+
 [0.22.5]
 ********
 * Added DishLeaf Node pointing device adapter.
