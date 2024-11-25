@@ -630,14 +630,14 @@ class DishlnPointingDeviceAdapter(BaseAdapter):
         """
         return self._proxy.StopProgramTrackTable()
 
-    def SetPointingOffset(self) -> Tuple[List[ResultCode], List[str]]:
+    def NextPointingOffset(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This command sets pointing offset flag.
+        This command sets next pointing offset for given scan.
 
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
-        return self._proxy.SetPointingOffset()
+        return self._proxy.NextPointingOffset()
 
 
 class DishAdapter(DishLeafAdapter):
