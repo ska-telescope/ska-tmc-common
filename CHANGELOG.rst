@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.7]
+********
+* Updated ChangePointingOffsets to SetPointingOffsets in DishlnPointingDeviceAdapter. 
+
 [0.22.6]
 ********
 * Updated received addresses value.
