@@ -630,14 +630,14 @@ class DishlnPointingDeviceAdapter(BaseAdapter):
         """
         return self._proxy.StopProgramTrackTable()
 
-    def SetPointingOffsets(self) -> Tuple[List[ResultCode], List[str]]:
+    def SetPointingOffset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This command sets pointing offset flag.
 
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
-        return self._proxy.SetPointingOffsets()
+        return self._proxy.SetPointingOffset()
 
 
 class DishAdapter(DishLeafAdapter):
