@@ -35,7 +35,7 @@ test_device:
   image:
     registry: artefact.skao.int
     image: ska-tmc-common
-    tag: 0.22.5
+    tag: 0.22.7
     pullPolicy: IfNotPresent
 
 deviceServers:
