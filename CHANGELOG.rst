@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.8]
+********
+* Updated SetPointingOffset to NextPointingOffset in DishlnPointingDeviceAdapter. 
+
 [0.22.7]
 ********
 * Updated ChangePointingOffsets to SetPointingOffset in DishlnPointingDeviceAdapter. 
