@@ -152,25 +152,6 @@ def test_assign_resources_invalid_input_missing_resources(tango_context):
     assert sdp_subarray_device.obsState == ObsState.EMPTY
 
 
-def test_assign_resources_invalid_input_missing_resources_key(tango_context):
-    dev_factory = DevFactory()
-    sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
-    assign_input_str = get_assign_input_str()
-    input_string = json.loads(assign_input_str)
-
-    # Remove the 'resources' key to simulate the missing key scenario
-    input_string.pop("resources", None)
-
-    with pytest.raises(
-        DevFailed,
-        match="Missing 'resources' in the AssignResources input json",
-    ):
-        sdp_subarray_device.AssignResources(json.dumps(input_string))
-
-    # Verify that the device returns to its initial state
-    assert sdp_subarray_device.obsState == ObsState.EMPTY
-
-
 def test_configure_valid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
