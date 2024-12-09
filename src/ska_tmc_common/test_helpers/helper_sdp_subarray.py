@@ -187,6 +187,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
+
         # if receive nodes not present in JSON, SDP Subarray moves to
         # obsState=EMPTY and raises exception
         if "resources" in input_json:
