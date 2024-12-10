@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.9]
+********
+*  Fixed SKB-618(Fix KeyError for Missing 'resources' Key in SDP Subarray AssignResources Command)
+
 [0.22.8]
 ********
 * Updated SetPointingOffset to NextPointingOffset in DishlnPointingDeviceAdapter. 
