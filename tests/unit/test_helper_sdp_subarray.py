@@ -164,7 +164,7 @@ def test_assign_resources_missing_resources_key(tango_context):
 
     sdp_subarray_device.AssignResources(json.dumps(input_string))
 
-    assert sdp_subarray_device.obsState == ObsState.IDLE
+    wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
 
 def test_configure_valid_input(tango_context):
