@@ -12,7 +12,7 @@ Main
 
 Added
 --------
-[0.23.0]
+[0.22.9]
 ********
 *  Fixed SKB-618(Fix KeyError for Missing 'resources' Key in SDP Subarray AssignResources Command)
 
