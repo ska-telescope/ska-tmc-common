@@ -13,7 +13,7 @@ Main
 Added
 --------
 [0.22.10]
-********
+*********
 * Updated End Command of CSPSubarrayAdapter to invoke End command instead of GoToIdle
 
 [0.22.9]
