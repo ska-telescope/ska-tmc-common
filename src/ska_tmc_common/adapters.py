@@ -722,7 +722,7 @@ class CspSubarrayAdapter(SubarrayAdapter):
         Invokes End on device proxy.
         :return: command invocation on CSP Subarray device proxy
         """
-        return self._proxy.End()
+        return self._proxy.GoToIdle()
 
 
 class AdapterFactory:
