@@ -12,9 +12,13 @@ Main
 
 Added
 --------
+[0.22.10]
+*********
+* Updated HelperSubarrayDevice to push chant event for longrunningcommandresult attribute for Scan command.
+
 [0.22.9]
 ********
-*  Fixed SKB-618(Fix KeyError for Missing 'resources' Key in SDP Subarray AssignResources Command)
+* Fixed SKB-618(Fix KeyError for Missing 'resources' Key in SDP Subarray AssignResources Command)
 
 [0.22.8]
 ********
