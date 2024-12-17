@@ -14,7 +14,7 @@ Added
 --------
 [0.22.10]
 *********
-* Updated End Command of CSPSubarrayAdapter to invoke End command instead of GoToIdle
+* Updated HelperSubarrayDevice to push chant event for longrunningcommandresult attribute for Scan command.
 
 [0.22.9]
 ********
