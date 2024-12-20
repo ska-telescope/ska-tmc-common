@@ -1,5 +1,6 @@
 import json
 
+import tango
 from ska_tango_base.commands import ResultCode
 
 from ska_tmc_common import DevFactory
@@ -18,3 +19,21 @@ def test_assign_resources_defective(tango_context):
     assert result[0] == ResultCode.FAILED
     assert FAILED_RESULT_DEFECT_EXCEPTION in command_id[0]
     subarray_device.SetDefective(json.dumps({"enabled": False}))
+
+
+def test_dish_ln_commands_scan(tango_context, group_callback):
+    dev_factory = DevFactory()
+
+    sdpln_device = dev_factory.get_device(CSP_LEAF_NODE_DEVICE)
+    sdpln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = sdpln_device.command_inout("Scan", "")
+    assert result[0] == ResultCode.QUEUED
+    assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (command_id[0], json.dumps((ResultCode.OK, "Command Completed"))),
+        lookahead=3,
+    )

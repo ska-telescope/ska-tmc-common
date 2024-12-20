@@ -84,13 +84,8 @@ def test_dish_commands_with_input(tango_context):
     assert result[0] == ResultCode.QUEUED
 
 
-@pytest.mark.ut1
 def test_dish_ln_commands_scan(tango_context, group_callback):
     dev_factory = DevFactory()
-    # dish_device = dev_factory.get_device(DISH_LN_DEVICE)
-    # result, command_id = dish_device.command_inout("Scan", "")
-    # assert result[0] == ResultCode.QUEUED
-    # assert isinstance(command_id[0], str)
 
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
     dishln_device.subscribe_event(
