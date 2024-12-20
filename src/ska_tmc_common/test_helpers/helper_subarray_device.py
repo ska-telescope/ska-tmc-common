@@ -942,9 +942,16 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Timer(
-            interval=2,
+            interval=self._delay,
             function=self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
+        )
+        thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, ASSIGN_RESOURCES],
+            kwargs={"command_id": command_id},
         )
         thread.start()
         self.logger.debug(
