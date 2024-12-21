@@ -89,10 +89,10 @@ class CommandCallbackTracker:
                         attribute_value,
                     )
                 if not self.states_to_track:  # the list is empty
+                    self.clean_up()
                     self.command_class_instance.update_task_status(
                         result=(ResultCode.OK, "Command Completed")
                     )
-                    self.clean_up()
             elif self.abort_event.is_set():
                 self.clean_up()
                 self.command_class_instance.update_task_status(
