@@ -107,18 +107,19 @@ class CommandCallbackTracker:
         """This method is invoked when exception occurs."""
         try:
             if not self.command_completed and not self.abort_event.is_set():
-                self.command_class_instance.update_task_status(
-                    result=(
-                        ResultCode.FAILED,
-                        self.lrcr_callback.command_data[self.command_id][
-                            "exception_message"
-                        ],
-                    ),
-                    exception=self.lrcr_callback.command_data[self.command_id][
-                        "exception_message"
-                    ],
-                )
-                self.clean_up()
+                if self.command_id in self.lrcr_callback.command_data:
+                    self.command_class_instance.update_task_status(
+                        result=(
+                            ResultCode.FAILED,
+                            self.lrcr_callback.command_data[self.command_id][
+                                "exception_message"
+                            ],
+                        ),
+                        exception=self.lrcr_callback.command_data[
+                            self.command_id
+                        ]["exception_message"],
+                    )
+                    self.clean_up()
         except (AttributeError, ValueError, TypeError) as exception:
             self.logger.error(
                 "Error occurred while updating exception %s", exception
