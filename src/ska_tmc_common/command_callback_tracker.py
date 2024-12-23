@@ -113,6 +113,7 @@ class CommandCallbackTracker:
                         self.command_id,
                         self.lrcr_callback.command_data,
                     )
+                    self.clean_up()
                     self.command_class_instance.update_task_status(
                         result=(
                             ResultCode.FAILED,
@@ -124,7 +125,6 @@ class CommandCallbackTracker:
                             self.command_id
                         ]["exception_message"],
                     )
-                    self.clean_up()
                 else:
                     self.logger.info(
                         "command id %s not found in %s",
