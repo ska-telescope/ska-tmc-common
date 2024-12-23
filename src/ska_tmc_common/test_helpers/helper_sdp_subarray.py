@@ -352,9 +352,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         # Allowing stuck in intermediate state defect.
         if self.defective_params["enabled"]:
-            self._obs_state = self.defective_params.get(
-                "intermediate_state", ObsState.FAULT
-            )
+            self._obs_state = ObsState.SCANNING
+            self.induce_fault()
         else:
             self._obs_state = ObsState.READY
         self.update_device_obsstate(self._obs_state, END_SCAN)
@@ -363,6 +362,9 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
+        if self.defective_params["enabled"]:
+            self._obs_state = ObsState.READY
+            self.induce_fault()
         if self._state_duration_info:
             self._follow_state_duration()
         else:
