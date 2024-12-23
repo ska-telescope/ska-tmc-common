@@ -491,9 +491,9 @@ class HelperDishDevice(HelperDishLNDevice):
             self.set_state(DevState.ON)
             self.push_change_event("State", self.dev_state())
         # Set the pointing state
-        if self._pointing_state != PointingState.READY:
-            self._pointing_state = PointingState.READY
-            self.push_change_event("pointingState", self._pointing_state)
+        # if self._pointing_state != PointingState.READY:
+        #     self._pointing_state = PointingState.READY
+        #     self.push_change_event("pointingState", self._pointing_state)
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
