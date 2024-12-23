@@ -1234,9 +1234,10 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
-        self.track_stop = True
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
+
+        self.track_stop = True
         if self._pointing_state != PointingState.READY:
             if self._state_duration_info:
                 self._follow_state_duration()
