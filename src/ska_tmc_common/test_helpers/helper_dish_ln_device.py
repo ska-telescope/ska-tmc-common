@@ -1247,7 +1247,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         # to record the command data
         self.update_command_info(END_SCAN)
         if self.defective_params["enabled"]:
-            return self.induce_fault("EndScan", command_id)
+            return self.induce_fault("EndScan", command_id, is_dish=True)
             # TBD: Add your dish mode change logic here if required
         self.push_command_result(
             ResultCode.OK, "EndScan", command_id=command_id
