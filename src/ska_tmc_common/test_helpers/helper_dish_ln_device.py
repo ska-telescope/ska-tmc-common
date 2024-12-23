@@ -1179,7 +1179,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             kwargs={"command_id": command_id},
         )
         thread.start()
-        self.logger.info("Scan command completed.")
+
         return [ResultCode.QUEUED], [command_id]
 
     @command(

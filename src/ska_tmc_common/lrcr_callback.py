@@ -34,30 +34,20 @@ class LRCRCallback:
         :param exception_msg: String of execption message. (Optional)
         """
 
-        try:
-            self.logger.info(
-                f"Updating command data with command id {command_id} "
-                f"and result "
-                f"code {result_code} and kwargs {kwargs}"
-            )
-            if command_id in self.command_data:
-                self.command_data[command_id]["result_code"] = result_code
-                self.command_data[command_id][
-                    "exception_message"
-                ] = exception_msg
-            else:
-                self.logger.info("Updating command data")
-                self.command_data[command_id] = {
-                    "result_code": result_code,
-                    "exception_message": exception_msg,
-                }
-            for key, value in kwargs.items():
-                self.command_data[command_id][key] = value
-
-            self.logger.info("Updated command data %s", self.command_data)
-
-        except Exception as exception:
-            self.logger.exception("Exception %s", exception)
+        self.logger.info(
+            f"Updating command data with command id {command_id} and result "
+            f"code {result_code} and kwargs {kwargs}"
+        )
+        if command_id in self.command_data:
+            self.command_data[command_id]["result_code"] = result_code
+            self.command_data[command_id]["exception_message"] = exception_msg
+        else:
+            self.command_data[command_id] = {
+                "result_code": result_code,
+                "exception_message": exception_msg,
+            }
+        for key, value in kwargs.items():
+            self.command_data[command_id][key] = value
 
     def assert_against_call(
         self, command_id: str, result_code: ResultCode, **kwargs: Any

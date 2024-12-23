@@ -105,7 +105,7 @@ class CommandCallbackTracker:
 
     def update_exception(self):
         """This method is invoked when exception occurs."""
-        self.logger.info("Calling update_exception")
+
         try:
             if not self.command_completed and not self.abort_event.is_set():
                 self.command_class_instance.update_task_status(
