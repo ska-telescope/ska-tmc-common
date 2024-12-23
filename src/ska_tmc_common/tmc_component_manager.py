@@ -141,7 +141,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
     def command_id(self, value: str) -> None:
         """Sets the command id used for error propagation."""
         with self.lock:
-            self.logger.info("Setting the command id as: %s", value)
+
             self._command_id = value
 
     def is_command_allowed(self, command_name: str):
