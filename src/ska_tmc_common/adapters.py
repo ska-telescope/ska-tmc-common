@@ -14,7 +14,7 @@ from ska_tango_base.control_model import HealthState
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.enum import TrackTableLoadMode
-
+from .enum import DishMode
 configure_logging()
 LOGGER = logging.getLogger(__name__)
 
@@ -388,7 +388,14 @@ class DishLeafAdapter(BaseAdapter):
     This class is used for creating and managing adapters
     for Dishes proxy.
     """
+    @property
+    def dishMode(self) -> DishMode:
+        """Get the dishMode from the dish manager.
 
+        Returns:
+            DishMode: _description_
+        """
+        self._proxy.dishMode
     @property
     def kValue(self) -> int:
         """
