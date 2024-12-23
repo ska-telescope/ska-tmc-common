@@ -113,17 +113,16 @@ class CommandCallbackTracker:
                         self.command_id,
                         self.lrcr_callback.command_data,
                     )
+                    exception_message = self.lrcr_callback.command_data[
+                        self.command_id
+                    ]["exception_message"]
                     self.clean_up()
                     self.command_class_instance.update_task_status(
                         result=(
                             ResultCode.FAILED,
-                            self.lrcr_callback.command_data[self.command_id][
-                                "exception_message"
-                            ],
+                            exception_message,
                         ),
-                        exception=self.lrcr_callback.command_data[
-                            self.command_id
-                        ]["exception_message"],
+                        exception=exception_message,
                     )
                 else:
                     self.logger.info(
