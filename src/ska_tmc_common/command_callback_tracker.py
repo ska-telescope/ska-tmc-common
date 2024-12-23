@@ -120,6 +120,12 @@ class CommandCallbackTracker:
                         ]["exception_message"],
                     )
                     self.clean_up()
+                else:
+                    self.logger.info(
+                        "command id %s not found in %s",
+                        self.command_id,
+                        self.lrcr_callback.command_data,
+                    )
         except (AttributeError, ValueError, TypeError) as exception:
             self.logger.error(
                 "Error occurred while updating exception %s", exception
