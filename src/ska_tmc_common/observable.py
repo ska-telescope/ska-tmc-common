@@ -62,4 +62,12 @@ class Observable:
                 len(self.observers),
             )
             for observer in self.observers:
+                logging.info(
+                    "Calling observer %s",
+                    observer.command_callback_tracker.command_id,
+                )
+                logging.info(
+                    "Calling observer command %s",
+                    observer.command_callback_tracker.command_class_instance,
+                )
                 observer.notify(*args, **kwargs)
