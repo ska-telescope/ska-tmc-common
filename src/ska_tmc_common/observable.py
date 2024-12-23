@@ -56,5 +56,10 @@ class Observable:
             Denotes whether attribute change event. Defaults to False.
         """
         with self.lock:
+            logging.info(
+                "Observer list is %s and length %s",
+                self.observers,
+                len(self.observers),
+            )
             for observer in self.observers:
                 observer.notify(*args, **kwargs)
