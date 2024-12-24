@@ -12,9 +12,9 @@ Main
 
 Added
 --------
-[0.22.10]
+[0.22.11]
 *********
-* Updated
+* SN will check for LRCR from all the subsystems and hence Updated subarry leaf node and dish leaf node  helpers to support Scan command completion by sending LRCRs
 
 [0.22.10]
 *********
