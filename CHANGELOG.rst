@@ -14,6 +14,10 @@ Added
 --------
 [0.22.10]
 *********
+* Updated
+
+[0.22.10]
+*********
 * Updated HelperSubarrayDevice to push chant event for longrunningcommandresult attribute for Scan command.
 
 [0.22.9]

@@ -130,7 +130,7 @@ class CommandCallbackTracker:
         This method is used for clean up of command variables and
         stopping timer.
         """
-        self.logger.info("Calling clean up")
+
         try:
             if hasattr(self.command_class_instance, "timekeeper"):
                 self.command_class_instance.timekeeper.stop_timer()
