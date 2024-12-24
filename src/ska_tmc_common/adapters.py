@@ -396,7 +396,7 @@ class DishLeafAdapter(BaseAdapter):
         """Get the dishMode from the dish manager.
 
         Returns:
-            DishMode: _description_
+            DishMode: dish mode of dish device.
         """
         return self._proxy.dishMode
 

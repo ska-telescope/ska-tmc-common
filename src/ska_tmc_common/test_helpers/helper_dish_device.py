@@ -70,8 +70,8 @@ class HelperDishDevice(HelperDishLNDevice):
         self._band4PointingModelParams = []
         self._band5aPointingModelParams = []
         self._band5bPointingModelParams = []
-        self.thread = None
-        self.track_stop = False
+        self.thread: None | threading.Thread = None
+        self.track_stop: bool = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
