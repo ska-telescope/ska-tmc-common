@@ -112,6 +112,7 @@ class CommandCallbackTracker:
         """This method is invoked when exception occurs."""
 
         try:
+            self.logger.info("Abort event is %s", self.abort_event.is_set())
             if not self.command_completed and not self.abort_event.is_set():
                 if self.command_id in self.lrcr_callback.command_data:
                     self.logger.info(
