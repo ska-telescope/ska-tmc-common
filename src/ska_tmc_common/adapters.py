@@ -398,7 +398,7 @@ class DishLeafAdapter(BaseAdapter):
         Returns:
             DishMode: _description_
         """
-        self._proxy.dishMode
+        return self._proxy.dishMode
 
     @property
     def kValue(self) -> int:

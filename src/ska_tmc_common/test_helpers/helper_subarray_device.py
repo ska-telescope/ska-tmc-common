@@ -954,7 +954,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Timer(
-            interval=2,
+            self._delay,
             function=self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
