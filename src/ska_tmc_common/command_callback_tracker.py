@@ -94,7 +94,12 @@ class CommandCallbackTracker:
                         result=(ResultCode.OK, "Command Completed")
                     )
             elif self.abort_event.is_set():
+                self.logger.info(
+                    "Calling update task status %s",
+                    self.command_class_instance,
+                )
                 self.clean_up()
+                self.logger.info("Calling update task status")
                 self.command_class_instance.update_task_status(
                     status=TaskStatus.ABORTED
                 )
