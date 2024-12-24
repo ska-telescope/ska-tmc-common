@@ -1194,13 +1194,13 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
-            thread = threading.Timer(
-                self._delay,
-                self.push_command_result,
-                args=[ResultCode.OK, SCAN],
-                kwargs={"command_id": command_id},
-            )
-            thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, SCAN],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("Scan command completed.")
         return [ResultCode.QUEUED], [command_id]
 

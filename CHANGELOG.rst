@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.13]
+*********
+* Update the helper mccs subarray device to push change the result after obsstate scanning
+
 [0.22.12]
 ********
 *  Fixed dish master Trackstop command to stop Track command.
