@@ -154,7 +154,7 @@ class CommandCallbackTracker:
                 self.command_class_instance.timekeeper.stop_timer()
             else:
                 self.component_manager.stop_timer()
-            self.abort_event.clear()
+            # self.abort_event.clear()
             self.command_completed = True
             self.logger.info("Deregistering observer")
             self.observable.deregister_observer(self.lrc_exception_observer)
