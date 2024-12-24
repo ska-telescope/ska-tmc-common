@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.11]
+*********
+* SN will check for LRCR from all the subsystems and hence Updated subarry leaf node and dish leaf node  helpers to support Scan command completion by sending LRCRs
+
 [0.22.10]
 *********
 * Updated HelperSubarrayDevice to push chant event for longrunningcommandresult attribute for Scan command.
