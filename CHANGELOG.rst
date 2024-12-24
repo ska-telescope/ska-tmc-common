@@ -12,10 +12,14 @@ Main
 
 Added
 --------
-[0.22.11]
+[0.22.12]
 ********
 *  Fixed dish master Trackstop command to stop Track command.
 *  Added dishMode property in dish adpaters.
+
+[0.22.11]
+*********
+* SN will check for LRCR from all the subsystems and hence Updated subarry leaf node and dish leaf node  helpers to support Scan command completion by sending LRCRs
 
 [0.22.10]
 *********
