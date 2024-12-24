@@ -363,8 +363,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
         if self.defective_params["enabled"]:
-            self._obs_state = ObsState.READY
             self.induce_fault()
+            return
         if self._state_duration_info:
             self._follow_state_duration()
         else:
