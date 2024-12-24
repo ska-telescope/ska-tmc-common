@@ -362,7 +362,16 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             return self.induce_fault("Scan", command_id)
 
         self.push_obs_state_event(ObsState.SCANNING)
+
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, "Scan"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("Scan command completed.")
+
         return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> bool:
