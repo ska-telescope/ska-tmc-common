@@ -354,6 +354,18 @@ class HelperSubArrayDevice(SKASubarray):
         """
         return self._receive_addresses
 
+    def push_obs_state_event(self, obs_state: ObsState) -> None:
+        """This Method pushes change event for subarray observation state
+        Args:
+        obs_state (ObsState): Observation state of subarray
+        """
+        self.logger.info(
+            "Pushing change event for subarray observation state: %s",
+            obs_state,
+        )
+        self._obs_state = obs_state
+        self.push_change_event("obsState", obs_state)
+
     def push_command_result(
         self,
         result_code: ResultCode,
@@ -942,7 +954,7 @@ class HelperSubArrayDevice(SKASubarray):
         self._obs_state = ObsState.RESOURCING
         self.push_change_event("obsState", self._obs_state)
         thread = threading.Timer(
-            interval=self._delay,
+            self._delay,
             function=self.update_device_obsstate,
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
@@ -1189,6 +1201,13 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.SCANNING:
             self._obs_state = ObsState.SCANNING
             self.push_change_event("obsState", self._obs_state)
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, SCAN],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("Scan command completed.")
         return [ResultCode.QUEUED], [command_id]
 

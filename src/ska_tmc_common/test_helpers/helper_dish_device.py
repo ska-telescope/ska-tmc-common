@@ -33,6 +33,7 @@ from ska_tmc_common.test_helpers.constants import (
     SET_OPERATE_MODE,
     SKA_EPOCH,
     TRACK,
+    TRACK_STOP,
 )
 from ska_tmc_common.test_helpers.helper_dish_ln_device import (
     HelperDishLNDevice,
@@ -69,6 +70,8 @@ class HelperDishDevice(HelperDishLNDevice):
         self._band4PointingModelParams = []
         self._band5aPointingModelParams = []
         self._band5bPointingModelParams = []
+        self.thread: None | threading.Thread = None
+        self.track_stop: bool = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -967,21 +970,22 @@ class HelperDishDevice(HelperDishLNDevice):
         delay_value = self._delay
         with tango.EnsureOmniThread():
             time.sleep(delay_value)
-            if self._pointing_state != PointingState.TRACK:
-                if self._state_duration_info:
-                    self._follow_state_duration()
-                else:
-                    self._pointing_state = PointingState.TRACK
-                    self.push_change_event(
-                        "pointingState", self._pointing_state
-                    )
+            if not self.track_stop:
+                if self._pointing_state != PointingState.TRACK:
+                    if self._state_duration_info:
+                        self._follow_state_duration()
+                    else:
+                        self._pointing_state = PointingState.TRACK
+                        self.push_change_event(
+                            "pointingState", self._pointing_state
+                        )
 
-                # Set dish mode
-            self.set_dish_mode(DishMode.OPERATE)
-            self.push_command_result(
-                ResultCode.OK, command_name, command_id=command_id
-            )
-            self.logger.info("%s command completed.", command_name)
+                    # Set dish mode
+                self.set_dish_mode(DishMode.OPERATE)
+                self.push_command_result(
+                    ResultCode.OK, command_name, command_id=command_id
+                )
+                self.logger.info("%s command completed.", command_name)
 
     @command(
         dtype_out="DevVarLongStringArray",
@@ -999,76 +1003,11 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
 
-        thread = threading.Thread(
+        self.thread = threading.Thread(
             target=self.update_lrcr, args=["Track", command_id]
         )
-        thread.start()
+        self.thread.start()
         return ([ResultCode.QUEUED], [command_id])
-
-    # TODO: Enable below commands when Dish Leaf Node implements them.
-    # def is_Slew_allowed(self) -> bool:
-    #     """
-    #     This method checks if the Slew command is allowed in current State.
-    #     :rtype:bool
-    #     """
-    #     if self.defective_params["enabled"]:
-    #         if (
-    #             self.defective_params["fault_type"]
-    #             == FaultType.COMMAND_NOT_ALLOWED
-    #         ):
-    #             self.logger.info(
-    #                 "Device is defective, cannot process command."
-    #             )
-    #             raise CommandNotAllowed(
-    #               self.defective_params["error_message"]
-    #             )
-    #     self.logger.info("Slew Command is allowed")
-    #     return True
-
-    # @command(
-    #     dtype_in=("DevVoid"),
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def Slew(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes Slew command on Dish Master
-    #     """
-    #     self.logger.info("Processing Slew Command")
-    #     # to record the command data
-    #     self.update_command_info(SLEW)
-    #     if self.defective_params["enabled"]:
-    #         return self.induce_fault("Slew")
-
-    #     if self._pointing_state != PointingState.SLEW:
-    #         self._pointing_state = PointingState.SLEW
-    #         self.push_change_event("pointingState", self._pointing_state)
-    #     self.logger.info("Slew command completed.")
-    #     return ([ResultCode.OK], [""])
-
-    # @command(
-    #     dtype_in=("DevVoid"),
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def StartCapture(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes StartCapture command on Dish Master
-    #     """
-    #     # TBD: Dish mode changedoc_out="(ReturnType, 'DevVoid')",
-    #     return ([ResultCode.OK], [""])
-
-    # @command(
-    #     dtype_in=("DevVoid"),
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def SetMaintenanceMode(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method sets the Maintainance Mode for the dish
-    #     """
-    #     # TBD: Dish mode change
-    #     return ([ResultCode.OK], [""])
 
     def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
@@ -1259,44 +1198,61 @@ class HelperDishDevice(HelperDishLNDevice):
             self.logger.exception("Failed to decode JSON: %s", e)
             return [ResultCode.FAILED], ["Failed to decode JSON"]
 
-    # TODO: Enable below commands when Dish Leaf Node implements them.
-    # def is_Reset_allowed(self) -> bool:
-    #     """
-    #     This method checks if the Reset command is allowed in current State.
-    #     :rtype:bool
-    #     """
-    #     if self.defective_params["enabled"]:
-    #         if (
-    #             self.defective_params["fault_type"]
-    #             == FaultType.COMMAND_NOT_ALLOWED
-    #         ):
-    #             self.logger.info(
-    #                 "Device is defective, cannot process command."
-    #             )
-    #             raise CommandNotAllowed(
-    #               self.defective_params["error_message"]
-    #             )
-    #     self.logger.info("Reset Command is allowed")
-    #     return True
+    def is_TrackStop_allowed(self) -> bool:
+        """
+        This method checks if the TrackStop Command is allowed in current
+        State.
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("TrackStop Command is allowed")
+        return True
 
-    # @command(
-    #     dtype_out="DevVarLongStringArray",
-    #     doc_out="(ReturnType, 'informational message')",
-    # )
-    # def Reset(self) -> Tuple[List[ResultCode], List[str]]:
-    #     """
-    #     This method invokes Reset command on Dish Master
-    #     :rtype:tuple
-    #     """
-    #     self.logger.info("Processing Reset Command")
-    #     # to record the command data
-    #     self.update_command_info(RESET)
-    #     if self.defective_params["enabled"]:
-    #         return self.induce_fault("Reset")
+    @command(
+        dtype_in="DevVoid",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes TrackStop command on  Dish Master
+        :return: ResultCode and message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_TrackStop"
+        self.logger.info(
+            "Instructed Dish simulator to invoke TrackStop command"
+        )
+        self.update_command_info(TRACK_STOP, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("TrackStop", command_id, is_dish=True)
 
-    #         # TBD: Add your dish mode change logic here if required
-    #     self.logger.info("Reset command completed.")
-    #     return ([ResultCode.OK], [""])
+        self.track_stop = True
+        if self._pointing_state != PointingState.READY:
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._pointing_state = PointingState.READY
+                self.push_change_event("pointingState", self._pointing_state)
+                self.logger.info("Pointing State: %s", self._pointing_state)
+        # Set dish mode
+        self.set_dish_mode(DishMode.OPERATE)
+        self.push_command_result(
+            ResultCode.OK, "TrackStop", command_id=command_id
+        )
+        self.track_stop = False
+        self.logger.info("TrackStop command completed.")
+        return [ResultCode.QUEUED], [command_id]
 
 
 # ----------

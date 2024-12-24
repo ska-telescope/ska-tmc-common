@@ -110,6 +110,7 @@ class CommandCallbackTracker:
 
     def update_exception(self):
         """This method is invoked when exception occurs."""
+
         try:
             if not self.command_completed and not self.abort_event.is_set():
                 if self.command_id in self.lrcr_callback.command_data:
@@ -145,6 +146,7 @@ class CommandCallbackTracker:
         This method is used for clean up of command variables and
         stopping timer.
         """
+
         try:
             if hasattr(self.command_class_instance, "timekeeper"):
                 self.command_class_instance.timekeeper.stop_timer()

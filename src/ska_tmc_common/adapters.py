@@ -15,6 +15,8 @@ from ska_tango_base.control_model import HealthState
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.enum import TrackTableLoadMode
 
+from .enum import DishMode
+
 configure_logging()
 LOGGER = logging.getLogger(__name__)
 
@@ -390,6 +392,15 @@ class DishLeafAdapter(BaseAdapter):
     """
 
     @property
+    def dishMode(self) -> DishMode:
+        """Get the dishMode from the dish manager.
+
+        Returns:
+            DishMode: dish mode of dish device.
+        """
+        return self._proxy.dishMode
+
+    @property
     def kValue(self) -> int:
         """
         Get the kValue from the dish manager.
@@ -630,14 +641,14 @@ class DishlnPointingDeviceAdapter(BaseAdapter):
         """
         return self._proxy.StopProgramTrackTable()
 
-    def ChangePointingOffset(self) -> Tuple[List[ResultCode], List[str]]:
+    def NextPointingOffset(self) -> Tuple[List[ResultCode], List[str]]:
         """
-        This command sets change pointing offset flag.
+        This command sets next pointing offset for given scan.
 
         :return: ResultCode and message
         :rtype: Tuple[List[ResultCode], List[str]]
         """
-        return self._proxy.ChangePointingOffset()
+        return self._proxy.NextPointingOffset()
 
 
 class DishAdapter(DishLeafAdapter):

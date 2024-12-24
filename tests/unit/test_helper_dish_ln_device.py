@@ -84,12 +84,22 @@ def test_dish_commands_with_input(tango_context):
     assert result[0] == ResultCode.QUEUED
 
 
-def test_dish_ln_commands_scan(tango_context):
+def test_dish_ln_commands_scan(tango_context, group_callback):
     dev_factory = DevFactory()
-    dish_device = dev_factory.get_device(DISH_LN_DEVICE)
-    result, command_id = dish_device.command_inout("Scan", "")
+
+    dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.subscribe_event(
+        "longRunningCommandResult",
+        tango.EventType.CHANGE_EVENT,
+        group_callback["longRunningCommandResult"],
+    )
+    result, command_id = dishln_device.command_inout("Scan", "")
     assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
+    group_callback["longRunningCommandResult"].assert_change_event(
+        (command_id[0], json.dumps((ResultCode.OK, "Command Completed"))),
+        lookahead=3,
+    )
 
 
 def test_scan_command_without_argin_failed_result(tango_context):

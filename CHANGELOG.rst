@@ -12,6 +12,35 @@ Main
 
 Added
 --------
+[0.22.13]
+*********
+* Update the helper mccs subarray device to push change the result after obsstate scanning
+
+[0.22.12]
+********
+*  Fixed dish master Trackstop command to stop Track command.
+*  Added dishMode property in dish adpaters.
+
+[0.22.11]
+*********
+* SN will check for LRCR from all the subsystems and hence Updated subarry leaf node and dish leaf node  helpers to support Scan command completion by sending LRCRs
+
+[0.22.10]
+*********
+* Updated HelperSubarrayDevice to push chant event for longrunningcommandresult attribute for Scan command.
+
+[0.22.9]
+********
+* Fixed SKB-618(Fix KeyError for Missing 'resources' Key in SDP Subarray AssignResources Command)
+
+[0.22.8]
+********
+* Updated SetPointingOffset to NextPointingOffset in DishlnPointingDeviceAdapter. 
+
+[0.22.7]
+********
+* Updated ChangePointingOffsets to SetPointingOffset in DishlnPointingDeviceAdapter. 
+
 [0.22.6]
 ********
 * Updated received addresses value.
