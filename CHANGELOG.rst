@@ -12,7 +12,7 @@ Main
 
 Added
 --------
-[0.22.10]
+[0.22.11]
 ********
 *  Fixed dish master Trackstop command to stop Track command.
 *  Added dishMode property in dish adpaters.
