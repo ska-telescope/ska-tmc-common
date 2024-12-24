@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.11]
+*********
+* Update the helper mccs subarray device to push change the result after obsstate scanning
+
 [0.22.10]
 *********
 * Updated HelperSubarrayDevice to push chant event for longrunningcommandresult attribute for Scan command.
