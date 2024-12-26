@@ -969,8 +969,8 @@ class HelperDishDevice(HelperDishLNDevice):
         """Updates the longrunningcommandresult  after a delay."""
         delay_value = self._delay
         with tango.EnsureOmniThread():
-            self._pointing_state = PointingState.SLEW
-            self.push_change_event("pointingState", self._pointing_state)
+            # self._pointing_state = PointingState.SLEW
+            # self.push_change_event("pointingState", self._pointing_state)
             time.sleep(delay_value)
             if not self.track_stop:
                 if self._pointing_state != PointingState.TRACK:
@@ -1002,6 +1002,9 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}-Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
+        self._pointing_state = PointingState.SLEW
+        self.push_change_event("pointingState", self._pointing_state)
+        self.logger.info("Pushed pointingState event SLEW")
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
 
