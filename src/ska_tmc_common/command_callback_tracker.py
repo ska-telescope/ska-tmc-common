@@ -77,7 +77,7 @@ class CommandCallbackTracker:
     def update_attr_value_change(self):
         """This method is invoked when attribute changes."""
         try:
-            self.logger.info("Abort event is %s", self.abort_event.is_set())
+            self.logger.debug("Abort event is %s", self.abort_event.is_set())
             attribute_value = self.get_function(self.component_manager)
             if not self.command_completed and not self.abort_event.is_set():
                 if attribute_value == self.states_to_track[0]:
