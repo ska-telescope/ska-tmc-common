@@ -47,7 +47,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
 
     # pylint: disable=arguments-renamed
-    # The pylint error arguments-renamed is disabled becasue base class has
+    # The pylint error arguments-renamed is disabled because base class has
     # second parameter as task_callback which is not used here
     def __init__(
         self,
@@ -70,7 +70,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         Assign resources to the component.
         :param resources: resources to be assigned
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("Resources: %s", resources)
         self._assigned_resources = ["0001"]
@@ -81,7 +81,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         Release resources from the component.
         :param resources: resources to be released
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("Released Resources: %s", resources)
         return ResultCode.OK, ""
@@ -90,7 +90,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Release all resources.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self._assigned_resources = []
 
@@ -102,7 +102,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         :param configuration: the configuration to be configured
         :type configuration: str
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("%s", configuration)
 
@@ -112,7 +112,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Start scanning.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("%s", args)
         return ResultCode.OK, ""
@@ -121,7 +121,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         End scanning.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -130,7 +131,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         End Scheduling blocks.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -139,7 +141,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Tell the component to abort whatever it was doing.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -148,7 +151,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Reset the component to unconfirmed but do not release resources.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -157,7 +161,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Deconfigure and release all resources.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -208,23 +213,9 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
+        self._admin_mode: str = "OFFLINE"
 
-    class InitCommand(SKASubarray.InitCommand):
-        """A class for the HelperSubarrayDevice's init_device() "command"."""
-
-        def do(self) -> Tuple[ResultCode, str]:
-            """
-            Stateless hook for device initialization.
-            :return: ResultCode
-            """
-            super().do()
-            self._device.set_change_event("obsState", True, False)
-            self._device.set_change_event("commandInProgress", True, False)
-            self._device.set_change_event("commandCallInfo", True, False)
-            self._device.set_change_event("assignedResources", True, False)
-            self._device.set_change_event("isSubsystemAvailable", True, False)
-            return ResultCode.OK, ""
-
+    # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -252,6 +243,55 @@ class HelperSubArrayDevice(SKASubarray):
     def assignedResources(self) -> str:
         return self._assigned_resources
 
+    # New adminMode attribute
+    adminMode = attribute(
+        dtype="DevString",
+        access=AttrWriteType.READ_WRITE,
+        label="Admin Mode",
+        doc="Admin mode of the device.",
+    )
+
+    class InitCommand(SKASubarray.InitCommand):
+        """A class for the HelperSubArrayDevice's init_device() "command"."""
+
+        def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialization.
+            :return: ResultCode
+            """
+            super().do()
+            self._device.set_change_event("obsState", True, False)
+            self._device.set_change_event("commandInProgress", True, False)
+            self._device.set_change_event("commandCallInfo", True, False)
+            self._device.set_change_event("assignedResources", True, False)
+            self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event("adminMode", True, False)
+            return ResultCode.OK, ""
+
+    # New read method for adminMode
+    def read_adminMode(self) -> str:
+        """
+        This method reads the adminMode value of the device.
+        :return: admin_mode value
+        :rtype: str
+        """
+        return self._admin_mode
+
+    # New write method for adminMode
+    def write_adminMode(self, value: str) -> None:
+        """
+        This method writes the adminMode value of the device.
+        """
+        if value not in ["ONLINE", "OFFLINE", "ENGINEERING"]:
+            self.logger.error(
+                "Invalid adminMode value. Allowed values are"
+                + "'ONLINE','OFFLINE','ENGINEERING'."
+            )
+        if self._admin_mode != value:
+            self._admin_mode = value
+            self.push_change_event("adminMode", self._admin_mode)
+            self.logger.info("AdminMode set to {self._admin_mode}")
+
     def read_scanId(self) -> int:
         """
         This method is used to read the attribute value for scanId.
@@ -262,14 +302,14 @@ class HelperSubArrayDevice(SKASubarray):
     def read_obsStateTransitionDuration(self):
         """
         Read transition
-        :return: state dureation info
+        :return: state duration info
         """
         return json.dumps(self._state_duration_info)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
-        Returns avalability status for the leaf nodes devices
-        :return: avalability status for the leaf nodes devices
+        Returns availability status for the leaf nodes devices
+        :return: availability status for the leaf nodes devices
         :rtype: bool
         """
         return self._isSubsystemAvailable
@@ -283,7 +323,7 @@ class HelperSubArrayDevice(SKASubarray):
         Sets Availability of the device
         :rtype: bool
         """
-        self.logger.info("Setting the avalability value to : %s", value)
+        self.logger.info("Setting the availability value to : %s", value)
         if self._isSubsystemAvailable != value:
             self._isSubsystemAvailable = value
             self.push_change_event(
@@ -327,14 +367,13 @@ class HelperSubArrayDevice(SKASubarray):
         This method is used to read the attribute value for delay.
         :return: attribute value for delay
         """
-
         return json.dumps(self._command_delay_info)
 
     def read_commandInProgress(self) -> str:
         """
         This method is used to read, which command is in progress
         :return: command in progress
-        :rtype:str
+        :rtype: str
         """
         return self._command_in_progress
 
@@ -350,7 +389,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method is used to read receiveAddresses attribute
         :return: attribute receiveAddresses
-        :rtype:str
+        :rtype: str
         """
         return self._receive_addresses
 
@@ -364,7 +403,7 @@ class HelperSubArrayDevice(SKASubarray):
             obs_state,
         )
         self._obs_state = obs_state
-        self.push_change_event("obsState", obs_state)
+        self.push_change_event("obsState", self._obs_state)
 
     def push_command_result(
         self,
@@ -490,7 +529,7 @@ class HelperSubArrayDevice(SKASubarray):
         doc_in="Reset Delay",
     )
     def ResetDelayInfo(self) -> None:
-        """Reset Delay to it's default values"""
+        """Reset Delay to its default values"""
         self.logger.info(
             "Resetting Command Delays for %s",
             self.dev_name,
@@ -601,6 +640,28 @@ class HelperSubArrayDevice(SKASubarray):
                 "Updated assignedResources attribute value to %s", str(argin)
             )
 
+    # AdminMode check helper
+    def _check_admin_mode(
+        self, command_name: str
+    ) -> Tuple[bool, List[ResultCode], List[str]]:
+        """
+        Checks if the device is in OFFLINE adminMode.
+        :param command_name: Name of the command being executed
+        :return: Tuple indicating whether to proceed, ResultCode list, and
+        message list
+        """
+        if self._admin_mode == "OFFLINE":
+            self.logger.warning(
+                "Device is in OFFLINE adminMode.Cannot process command: %s",
+                command_name,
+            )
+            return (
+                False,
+                [ResultCode.FAILED],
+                ["Device is in OFFLINE adminMode."],
+            )
+        return True, [], []
+
     def is_On_allowed(self) -> bool:
         """
         Check if command `On` is allowed in the current device
@@ -634,6 +695,12 @@ class HelperSubArrayDevice(SKASubarray):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("On")
+        if not proceed:
+            return result, message
+
         self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("On", command_id)
@@ -676,6 +743,12 @@ class HelperSubArrayDevice(SKASubarray):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Off")
+        if not proceed:
+            return result, message
+
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("Off", command_id)
@@ -683,6 +756,694 @@ class HelperSubArrayDevice(SKASubarray):
             self.set_state(DevState.OFF)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off completed")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_Standby_allowed(self) -> bool:
+        """
+        Check if command `Standby` is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Standby command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Standby command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Standby"
+        self.logger.info("Instructed simulator to invoke Standby command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Standby")
+        if not proceed:
+            return result, message
+
+        self.update_command_info(STAND_BY, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Standby", command_id)
+
+        if self.dev_state() != DevState.STANDBY:
+            self.set_state(DevState.STANDBY)
+            self.push_change_event("State", self.dev_state())
+        self.logger.info("Standby completed")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_AssignResources_allowed(self) -> bool:
+        """
+        Check if command `AssignResources` is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("AssignResources Command is allowed")
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format consists of receptorIDList.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def AssignResources(
+        self, argin: str
+    ) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes AssignResources command on subarray devices
+        :return: ResultCode and message
+        """
+        command_id = f"{time.time()}_AssignResources"
+        self.logger.info(
+            "Instructed simulator to invoke AssignResources command"
+        )
+        self.update_command_info(ASSIGN_RESOURCES, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("AssignResources")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("AssignResources", command_id)
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Timer(
+            self._delay,
+            function=self.update_device_obsstate,
+            args=[ObsState.IDLE, ASSIGN_RESOURCES],
+        )
+        thread.start()
+        self.logger.debug(
+            "AssignResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
+        )
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_ReleaseResources_allowed(self) -> bool:
+        """
+        Check if command `ReleaseResources` is allowed in the current device
+        state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseResources Command is allowed")
+        return True
+
+    @command(
+        dtype_in="str",
+        doc_in="The input string in JSON format consists of receptorIDList.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseResources command on subarray device
+        :return: ResultCode and message
+        """
+        command_id = f"{time.time()}_ReleaseResources"
+        self.logger.info(
+            "Instructed simulator to invoke ReleaseResources command"
+        )
+        self.logger.info(argin)
+        self.update_command_info(RELEASE_RESOURCES, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ReleaseResources")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ReleaseResources", command_id)
+
+        self.update_device_obsstate(ObsState.RESOURCING, RELEASE_RESOURCES)
+        thread = threading.Timer(
+            self._delay,
+            self.update_device_obsstate,
+            args=[ObsState.IDLE, RELEASE_RESOURCES],
+        )
+        thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, RELEASE_RESOURCES],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
+        self.logger.debug(
+            "ReleaseResources command invoked, obsState will transition to"
+            + "IDLE, current obsState is %s",
+            self._obs_state,
+        )
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_ReleaseAllResources_allowed(self) -> bool:
+        """
+        Check if command `ReleaseAllResources` is allowed in the current
+        device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ReleaseAllResources command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes ReleaseAllResources command on
+        subarray device
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_ReleaseAllResources"
+        self.logger.info(
+            "Instructed simulator to invoke ReleaseAllResources command"
+        )
+        self.update_command_info(RELEASE_ALL_RESOURCES, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode(
+            "ReleaseAllResources"
+        )
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ReleaseAllResources", command_id)
+
+        self._obs_state = ObsState.RESOURCING
+        self.push_change_event("obsState", self._obs_state)
+        thread = threading.Timer(
+            interval=2,
+            function=self.update_device_obsstate,
+            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
+        )
+        thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, RELEASE_ALL_RESOURCES],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
+        self.logger.debug(
+            "ReleaseAllResources command invoked, obsState will transition to"
+            + "EMPTY, current obsState is %s",
+            self._obs_state,
+        )
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_Configure_allowed(self) -> bool:
+        """
+        Check if command `Configure` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Configure Command is allowed")
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Configure command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Configure"
+        self.logger.info("Instructed simulator to invoke Configure command")
+        self.update_command_info(CONFIGURE, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Configure")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Configure", command_id)
+        if self._state_duration_info:
+            self._follow_state_duration()
+        else:
+            self._obs_state = ObsState.CONFIGURING
+            self.push_change_event("obsState", self._obs_state)
+            self.logger.info("Starting Thread for configure")
+            thread = threading.Timer(
+                interval=self._command_delay_info[CONFIGURE],
+                function=self.update_device_obsstate,
+                args=[ObsState.READY, CONFIGURE],
+            )
+            thread.start()
+            thread = threading.Timer(
+                self._delay,
+                self.push_command_result,
+                args=[ResultCode.OK, CONFIGURE],
+                kwargs={"command_id": command_id},
+            )
+            thread.start()
+            self.logger.debug(
+                "Configure command invoked, obsState will transition to"
+                + "READY current obsState is %s",
+                self._obs_state,
+            )
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_Scan_allowed(self) -> bool:
+        """
+        Check if command `Scan` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Scan Command is allowed")
+        return True
+
+    @command(
+        dtype_in=("str"),
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Scan command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Scan"
+        self.logger.info("Instructed simulator to invoke Scan command")
+        self.update_command_info(SCAN, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Scan")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Scan", command_id)
+
+        if self._obs_state != ObsState.SCANNING:
+            self._obs_state = ObsState.SCANNING
+            self.push_change_event("obsState", self._obs_state)
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, SCAN],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
+        self.logger.info("Scan command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_EndScan_allowed(self) -> bool:
+        """
+        Check if command `EndScan` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("EndScan Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes EndScan command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_EndScan"
+        self.logger.info("Instructed simulator to invoke EndScan command")
+        self.update_command_info(END_SCAN, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("EndScan")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("EndScan", command_id)
+
+        if self._obs_state != ObsState.READY:
+            self._obs_state = ObsState.READY
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("EndScan command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_End_allowed(self) -> bool:
+        """
+        Check if command `End` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("End Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def End(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes End command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_End"
+        self.logger.info("Instructed simulator to invoke End command")
+        self.update_command_info(END, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("End")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("End", command_id)
+
+        if self._obs_state != ObsState.IDLE:
+            if self._state_duration_info:
+                self._follow_state_duration()
+            else:
+                self._obs_state = ObsState.IDLE
+                self.push_change_event("obsState", self._obs_state)
+        self.logger.info("End command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_GoToIdle_allowed(self) -> bool:
+        """
+        Check if command `GoToIdle` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("GoToIdle Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes GoToIdle command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_GoToIdle"
+        self.logger.info("Instructed simulator to invoke GoToIdle command")
+        self.update_command_info(GO_TO_IDLE, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("GoToIdle")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("GoToIdle", command_id)
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("GoToIdle command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_ObsReset_allowed(self) -> bool:
+        """
+        Check if command `ObsReset` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("ObsReset Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        ObsReset Command
+        :return: ResultCode and message
+        """
+        command_id = f"{time.time()}_ObsReset"
+        self.logger.info("Instructed simulator to invoke ObsReset command")
+        self.update_command_info(OBS_RESET, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ObsReset")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("ObsReset", command_id)
+        if self._obs_state != ObsState.IDLE:
+            self._obs_state = ObsState.IDLE
+            self.push_change_event("obsState", self._obs_state)
+        self.logger.info("ObsReset command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_Abort_allowed(self) -> bool:
+        """
+        Check if command `Abort` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Abort Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Abort(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Abort command on subarray devices.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Abort"
+        self.logger.info("Instructed simulator to invoke Abort command")
+        self.update_command_info(ABORT, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Abort")
+        if not proceed:
+            return result, message
+
+        if self._obs_state != ObsState.ABORTED:
+            self._obs_state = ObsState.ABORTING
+            self.push_change_event("obsState", self._obs_state)
+            thread = threading.Timer(
+                interval=self._delay,
+                function=self.update_device_obsstate,
+                args=[ObsState.ABORTED, ABORT],
+            )
+            thread.start()
+            thread = threading.Timer(
+                self._delay,
+                self.push_command_result,
+                args=[ResultCode.OK, ABORT],
+                kwargs={"command_id": command_id},
+            )
+            thread.start()
+        self.logger.info("Abort command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_Restart_allowed(self) -> bool:
+        """
+        Check if command `Restart` is allowed in the current device state.
+
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("Restart Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This method invokes Restart command on subarray devices
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_Restart"
+
+        self.logger.info("Instructed simulator to invoke Restart command")
+        self.update_command_info(RESTART, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Restart")
+        if not proceed:
+            return result, message
+
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Restart", command_id)
+
+        if self._obs_state != ObsState.EMPTY:
+            self._obs_state = ObsState.RESTARTING
+            self.push_change_event("obsState", self._obs_state)
+            thread = threading.Timer(
+                interval=self._delay,
+                function=self.update_device_obsstate,
+                args=[ObsState.EMPTY, RESTART],
+            )
+            thread.start()
+            thread = threading.Timer(
+                self._delay,
+                self.push_command_result,
+                args=[ResultCode.OK, RESTART],
+                kwargs={"command_id": command_id},
+            )
+            thread.start()
+        self.logger.info("Restart command completed.")
         return [ResultCode.QUEUED], [command_id]
 
     def induce_fault(
@@ -753,7 +1514,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if fault_type == FaultType.FAILED_RESULT:
             if "target_obsstates" in self.defective_params:
-                # Utilise target_obsstate parameter when Subarray should
+                # Utilize target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
                 # ResultCode.FAILED
                 obsstate_list = self.defective_params["target_obsstates"]
@@ -769,7 +1530,7 @@ class HelperSubArrayDevice(SKASubarray):
                     json.dumps(
                         (
                             ResultCode.FAILED,
-                            f"Exception occured on device: {self.get_name()}",
+                            f"Exception occurred on device: {self.get_name()}",
                         )
                     ),
                 )
@@ -821,7 +1582,7 @@ class HelperSubArrayDevice(SKASubarray):
                 json.dumps(
                     [
                         ResultCode.FAILED,
-                        f"Exception occured on device: {self.get_name()}",
+                        f"Exception occurred on device: {self.get_name()}",
                     ]
                 ),
             )
@@ -866,620 +1627,9 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Setting defective params to %s", input_dict)
         self.defective_params = input_dict
 
-    def is_Standby_allowed(self) -> bool:
-        """
-        Check if command `Standby` is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Standby command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Standby(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Standby command on subarray devices
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Standby"
-        self.logger.info("Instructed simulator to invoke Standby command")
-        self.update_command_info(STAND_BY, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("Standby", command_id)
-
-        if self.dev_state() != DevState.STANDBY:
-            self.set_state(DevState.STANDBY)
-            self.push_change_event("State", self.dev_state())
-        self.logger.info("Standby completed")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_AssignResources_allowed(self) -> bool:
-        """
-        Check if command `AssignResources` is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("AssignResources Command is allowed")
-        return True
-
-    @command(
-        dtype_in=("str"),
-        doc_in="The input string in JSON format consists of receptorIDList.",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def AssignResources(
-        self, argin: str
-    ) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes AssignResources command on subarray devices
-        :return: ResultCode and message
-        """
-        command_id = f"{time.time()}_AssignResources"
-        self.logger.info(
-            "Instructed simulator to invoke AssignResources command"
-        )
-        self.update_command_info(ASSIGN_RESOURCES, argin)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("AssignResources", command_id)
-
-        self._obs_state = ObsState.RESOURCING
-        self.push_change_event("obsState", self._obs_state)
-        thread = threading.Timer(
-            self._delay,
-            function=self.update_device_obsstate,
-            args=[ObsState.IDLE, ASSIGN_RESOURCES],
-        )
-        thread.start()
-        self.logger.debug(
-            "AssignResources command invoked, obsState will transition to"
-            + "IDLE, current obsState is %s",
-            self._obs_state,
-        )
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_ReleaseResources_allowed(self) -> bool:
-        """
-        Check if command `ReleaseResources` is allowed in the current device
-        state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseResources Command is allowed")
-        return True
-
-    @command(
-        dtype_in="str",
-        doc_in="The input string in JSON format consists of receptorIDList.",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes ReleaseResources command on subarray device
-        :return: ResultCode and message
-        """
-        command_id = f"{time.time()}_ReleaseResources"
-        self.logger.info(
-            "Instructed simulator to invoke ReleaseResources command"
-        )
-        self.logger.info(argin)
-        self.update_command_info(RELEASE_RESOURCES, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("ReleaseResources", command_id)
-
-        self.update_device_obsstate(ObsState.RESOURCING, RELEASE_RESOURCES)
-        thread = threading.Timer(
-            self._delay,
-            self.update_device_obsstate,
-            args=[ObsState.IDLE, RELEASE_RESOURCES],
-        )
-        thread.start()
-        thread = threading.Timer(
-            self._delay,
-            self.push_command_result,
-            args=[ResultCode.OK, RELEASE_RESOURCES],
-            kwargs={"command_id": command_id},
-        )
-        thread.start()
-        self.logger.debug(
-            "ReleaseResources command invoked, obsState will transition to"
-            + "IDLE, current obsState is %s",
-            self._obs_state,
-        )
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_ReleaseAllResources_allowed(self) -> bool:
-        """
-        Check if command `ReleaseAllResources` is allowed in the current
-        device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ReleaseAllResources command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes ReleaseAllResources command on
-        subarray device
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_ReleaseAllResources"
-        self.logger.info(
-            "Instructed simulator to invoke ReleaseAllResources command"
-        )
-        self.update_command_info(RELEASE_ALL_RESOURCES, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("ReleaseAllResources", command_id)
-
-        self._obs_state = ObsState.RESOURCING
-        self.push_change_event("obsState", self._obs_state)
-        thread = threading.Timer(
-            interval=2,
-            function=self.update_device_obsstate,
-            args=[ObsState.EMPTY, RELEASE_ALL_RESOURCES],
-        )
-        thread.start()
-        thread = threading.Timer(
-            self._delay,
-            self.push_command_result,
-            args=[ResultCode.OK, RELEASE_ALL_RESOURCES],
-            kwargs={"command_id": command_id},
-        )
-        thread.start()
-        self.logger.debug(
-            "ReleaseAllResources command invoked, obsState will transition to"
-            + "EMPTY, current obsState is %s",
-            self._obs_state,
-        )
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Configure_allowed(self) -> bool:
-        """
-        Check if command `Configure` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Configure Command is allowed")
-        return True
-
-    @command(
-        dtype_in=("str"),
-        doc_in="The input string in JSON format.",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Configure command on subarray devices
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Configure"
-        self.logger.info("Instructed simulator to invoke Configure command")
-        self.update_command_info(CONFIGURE, argin)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("Configure", command_id)
-        if self._state_duration_info:
-            self._follow_state_duration()
-        else:
-            self._obs_state = ObsState.CONFIGURING
-            self.push_change_event("obsState", self._obs_state)
-            self.logger.info("Starting Thread for configure")
-            thread = threading.Timer(
-                interval=self._command_delay_info[CONFIGURE],
-                function=self.update_device_obsstate,
-                args=[ObsState.READY, CONFIGURE],
-            )
-            thread.start()
-            thread = threading.Timer(
-                self._delay,
-                self.push_command_result,
-                args=[ResultCode.OK, CONFIGURE],
-                kwargs={"command_id": command_id},
-            )
-            thread.start()
-            self.logger.debug(
-                "Configure command invoked, obsState will transition to"
-                + "READY current obsState is %s",
-                self._obs_state,
-            )
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Scan_allowed(self) -> bool:
-        """
-        Check if command `Scan` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Scan Command is allowed")
-        return True
-
-    @command(
-        dtype_in=("str"),
-        doc_in="The input string in JSON format.",
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Scan command on subarray devices.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Scan"
-        self.logger.info("Instructed simulator to invoke Scan command")
-        self.update_command_info(SCAN, argin)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("Scan", command_id)
-
-        if self._obs_state != ObsState.SCANNING:
-            self._obs_state = ObsState.SCANNING
-            self.push_change_event("obsState", self._obs_state)
-        thread = threading.Timer(
-            self._delay,
-            self.push_command_result,
-            args=[ResultCode.OK, SCAN],
-            kwargs={"command_id": command_id},
-        )
-        thread.start()
-        self.logger.info("Scan command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_EndScan_allowed(self) -> bool:
-        """
-        Check if command `EndScan` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("EndScan Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes EndScan command on subarray devices.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_EndScan"
-        self.logger.info("Instructed simulator to invoke EndScan command")
-        self.update_command_info(END_SCAN, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("EndScan", command_id)
-
-        if self._obs_state != ObsState.READY:
-            self._obs_state = ObsState.READY
-            self.push_change_event("obsState", self._obs_state)
-        self.logger.info("EndScan command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_End_allowed(self) -> bool:
-        """
-        Check if command `End` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("End Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def End(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes End command on subarray devices.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_End"
-        self.logger.info("Instructed simulator to invoke End command")
-        self.update_command_info(END, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("End", command_id)
-
-        if self._obs_state != ObsState.IDLE:
-            if self._state_duration_info:
-                self._follow_state_duration()
-            else:
-                self._obs_state = ObsState.IDLE
-                self.push_change_event("obsState", self._obs_state)
-        self.logger.info("End command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_GoToIdle_allowed(self) -> bool:
-        """
-        Check if command `GoToIdle` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("GoToIdle Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes GoToIdle command on subarray devices.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_GoToIdle"
-        self.logger.info("Instructed simulator to invoke GoToIdle command")
-        self.update_command_info(GO_TO_IDLE, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("GoToIdle", command_id)
-        if self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.IDLE
-            self.push_change_event("obsState", self._obs_state)
-        self.logger.info("GoToIdle command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_ObsReset_allowed(self) -> bool:
-        """
-        Check if command `ObsReset` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("ObsReset Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        ObsReset Command
-        :return: ResultCode and message
-        """
-        command_id = f"{time.time()}_ObsReset"
-        self.logger.info("Instructed simulator to invoke ObsReset command")
-        self.update_command_info(OBS_RESET, "")
-        if self.defective_params["enabled"]:
-            return self.induce_fault("ObsReset", command_id)
-        if self._obs_state != ObsState.IDLE:
-            self._obs_state = ObsState.IDLE
-            self.push_change_event("obsState", self._obs_state)
-        self.logger.info("ObsReset command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Abort_allowed(self) -> bool:
-        """
-        Check if command `Abort` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Abort Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Abort(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Abort command on subarray devices.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Abort"
-        self.logger.info("Instructed simulator to invoke Abort command")
-        self.update_command_info(ABORT, "")
-
-        if self._obs_state != ObsState.ABORTED:
-            self._obs_state = ObsState.ABORTING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Timer(
-                interval=self._delay,
-                function=self.update_device_obsstate,
-                args=[ObsState.ABORTED, ABORT],
-            )
-            thread.start()
-            thread = threading.Timer(
-                self._delay,
-                self.push_command_result,
-                args=[ResultCode.OK, ABORT],
-                kwargs={"command_id": command_id},
-            )
-            thread.start()
-        self.logger.info("Abort command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_Restart_allowed(self) -> bool:
-        """
-        Check if command `Restart` is allowed in the current device state.
-
-        :return: ``True`` if the command is allowed
-        :rtype: bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("Restart Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def Restart(self) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This method invokes Restart command on subarray devices
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_Restart"
-
-        self.logger.info("Instructed simulator to invoke Restart command")
-        self.update_command_info(RESTART, "")
-
-        if self._obs_state != ObsState.EMPTY:
-            self._obs_state = ObsState.RESTARTING
-            self.push_change_event("obsState", self._obs_state)
-            thread = threading.Timer(
-                interval=self._delay,
-                function=self.update_device_obsstate,
-                args=[ObsState.EMPTY, RESTART],
-            )
-            thread.start()
-            thread = threading.Timer(
-                self._delay,
-                self.push_command_result,
-                args=[ResultCode.OK, RESTART],
-                kwargs={"command_id": command_id},
-            )
-            thread.start()
-        self.logger.info("Restart command completed.")
-        return [ResultCode.QUEUED], [command_id]
-
-
-# ----------
-# Run server
-# ----------
+    # ----------
+    # Run server
+    # ----------
 
 
 def main(args=None, **kwargs):
