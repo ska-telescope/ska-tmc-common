@@ -454,7 +454,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
 
         if fault_type == FaultType.FAILED_RESULT:
-            self.update_device_obsstate(ObsState.READY, END)
             raise tango.Except.throw_exception(
                 fault_message,
                 "Exception occurred, command failed",
