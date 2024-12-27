@@ -213,7 +213,7 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
-        self._admin_mode: str = "OFFLINE"
+        self._admin_mode: str = "ONLINE"
 
     # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -1627,9 +1627,10 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Setting defective params to %s", input_dict)
         self.defective_params = input_dict
 
-    # ----------
-    # Run server
-    # ----------
+
+# ----------
+# Run server
+# ----------
 
 
 def main(args=None, **kwargs):
