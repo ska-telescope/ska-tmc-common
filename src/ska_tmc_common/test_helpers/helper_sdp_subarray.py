@@ -365,7 +365,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.update_command_info(END)
         if self.defective_params["enabled"]:
             self.induce_fault()
-            return
+            self._obs_state = ObsState.READY
+        self.update_device_obsstate(self._obs_state, END)
         if self._state_duration_info:
             self._follow_state_duration()
         else:
