@@ -366,7 +366,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         if self.defective_params["enabled"]:
             self._obs_state = ObsState.READY
             self.induce_fault()
-        self.update_device_obsstate(ObsState.READY, END)
         if self._state_duration_info:
             self._follow_state_duration()
         else:
@@ -455,6 +454,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
 
         if fault_type == FaultType.FAILED_RESULT:
+            self.update_device_obsstate(ObsState.READY, END)
             raise tango.Except.throw_exception(
                 fault_message,
                 "Exception occurred, command failed",
