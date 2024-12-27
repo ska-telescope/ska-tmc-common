@@ -95,12 +95,7 @@ class CommandCallbackTracker:
                         result=(ResultCode.OK, "Command Completed")
                     )
             elif self.abort_event.is_set():
-                self.logger.info(
-                    "Calling update task status %s",
-                    self.command_class_instance,
-                )
                 self.clean_up()
-                self.logger.info("Calling update task status")
                 self.command_class_instance.update_task_status(
                     status=TaskStatus.ABORTED
                 )
@@ -113,14 +108,9 @@ class CommandCallbackTracker:
         """This method is invoked when exception occurs."""
 
         try:
-            self.logger.info("Abort event is %s", self.abort_event.is_set())
+            self.logger.debug("Abort event is %s", self.abort_event.is_set())
             if not self.command_completed and not self.abort_event.is_set():
                 if self.command_id in self.lrcr_callback.command_data:
-                    self.logger.info(
-                        "Command id %s found in %s",
-                        self.command_id,
-                        self.lrcr_callback.command_data,
-                    )
                     exception_message = self.lrcr_callback.command_data[
                         self.command_id
                     ]["exception_message"]
@@ -131,12 +121,6 @@ class CommandCallbackTracker:
                             exception_message,
                         ),
                         exception=exception_message,
-                    )
-                else:
-                    self.logger.info(
-                        "command id %s not found in %s",
-                        self.command_id,
-                        self.lrcr_callback.command_data,
                     )
         except (AttributeError, ValueError, TypeError) as exception:
             self.logger.error(
@@ -154,7 +138,6 @@ class CommandCallbackTracker:
                 self.command_class_instance.timekeeper.stop_timer()
             else:
                 self.component_manager.stop_timer()
-            # self.abort_event.clear()
             self.command_completed = True
             self.logger.info("Deregistering observer")
             self.observable.deregister_observer(self.lrc_exception_observer)
