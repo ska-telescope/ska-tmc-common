@@ -356,8 +356,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             self._obs_state = ObsState.SCANNING
             self.induce_fault()
         else:
-            self._obs_state = ObsState.READY
-        self.update_device_obsstate(self._obs_state, END_SCAN)
+            thread = threading.Timer(
+                self._command_delay_info[END_SCAN],
+                self.update_device_obsstate,
+                args=[ObsState.READY, END_SCAN],
+            )
+            self.timers.append(thread)
+            thread.start()
+            self.logger.debug(
+                "EndScan command invoked, obsState will transition to READY,"
+                + "current obsState is %s",
+                self._obs_state,
+            )
 
     @command()
     def End(self):
