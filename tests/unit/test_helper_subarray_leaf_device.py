@@ -2,7 +2,7 @@ import json
 
 import pytest
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 from tango import DevFailed, EventType
 
 from ska_tmc_common import DevFactory, FaultType
@@ -88,6 +88,7 @@ def test_clear_commandCallInfo(tango_context):
 def test_leaf_node_command_without_argument(tango_context, command):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
+    subarray_leaf_device.adminMode = AdminMode.ONLINE
     result, command_id = subarray_leaf_device.command_inout(command)
     assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
@@ -96,7 +97,7 @@ def test_leaf_node_command_without_argument(tango_context, command):
 def test_assign_resources_failed_result(tango_context):
     dev_factory = DevFactory()
     subarray_leaf_device = dev_factory.get_device(SDP_LEAF_NODE_DEVICE)
-
+    subarray_leaf_device.adminMode = AdminMode.ONLINE
     subarray_leaf_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, command_id = subarray_leaf_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
@@ -115,6 +116,7 @@ def test_assign_resources_long_running_exception(
         "error_message": "Exception occurred",
         "result": ResultCode.FAILED,
     }
+    subarray_leaf_device.adminMode = AdminMode.ONLINE
     subarray_leaf_device.SetDefective(json.dumps(defect))
     subarray_leaf_device.subscribe_event(
         "longRunningCommandResult",

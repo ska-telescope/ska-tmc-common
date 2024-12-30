@@ -6,6 +6,7 @@ import numpy
 import pytest
 import tango
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory, DishMode, FaultType, PointingState
@@ -70,6 +71,7 @@ def test_attribute_on_helper_dish_ln_device(tango_context):
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     result, command_id = dish_device.command_inout(command)
     command_call_info = dish_device.commandCallInfo
     assert command_call_info[0] == (command, "")
@@ -80,6 +82,7 @@ def test_dish_commands_without_input(tango_context, command):
 def test_dish_commands_with_input(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     result, _ = dish_device.command_inout("Configure", "")
     assert result[0] == ResultCode.QUEUED
 
@@ -93,6 +96,7 @@ def test_dish_ln_commands_scan(tango_context, group_callback):
         tango.EventType.CHANGE_EVENT,
         group_callback["longRunningCommandResult"],
     )
+    dishln_device.adminMode = AdminMode.ONLINE
     result, command_id = dishln_device.command_inout("Scan", "")
     assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
@@ -105,6 +109,7 @@ def test_dish_ln_commands_scan(tango_context, group_callback):
 def test_scan_command_without_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.FAILED
@@ -116,6 +121,7 @@ def test_scan_command_without_argin_failed_result(tango_context):
 def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
@@ -126,6 +132,7 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
 def test_command_with_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout("Configure", "")
     assert result[0] == ResultCode.FAILED
@@ -136,6 +143,7 @@ def test_command_with_argin_failed_result(tango_context):
 def test_Abort_commands(tango_context):
     dev_factory = DevFactory()
     dish_ln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_ln_device.adminMode = AdminMode.ONLINE
     result, command_id = dish_ln_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
     assert isinstance(command_id[0], str)
@@ -147,6 +155,7 @@ def test_Abort_commands(tango_context):
 def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     # Set the device to the defective state with COMMAND_NOT_ALLOWED fault
     dish_device.SetDefective(json.dumps(COMMAND_NOT_ALLOWED_DEFECT))
     # Attempt to execute the command and expect the DevFailed exception
