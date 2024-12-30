@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.23.0]
+*********
+* clean up method of observable called before calling update task status
+
 [0.22.14]
 *********
 * clean up method of observable called before calling update task status
