@@ -13,7 +13,7 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -213,7 +213,7 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
-        self._admin_mode: str = "ONLINE"
+        self._admin_mode: AdminMode = AdminMode.ONLINE
 
     # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -245,7 +245,7 @@ class HelperSubArrayDevice(SKASubarray):
 
     # New adminMode attribute
     adminMode = attribute(
-        dtype="DevString",
+        dtype=AdminMode,
         access=AttrWriteType.READ_WRITE,
         label="Admin Mode",
         doc="Admin mode of the device.",
@@ -282,7 +282,11 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method writes the adminMode value of the device.
         """
-        if value not in ["ONLINE", "OFFLINE", "ENGINEERING"]:
+        if value not in [
+            AdminMode.ONLINE,
+            AdminMode.OFFLINE,
+            AdminMode.ENGINEERING,
+        ]:
             self.logger.error(
                 "Invalid adminMode value. Allowed values are"
                 + "'ONLINE','OFFLINE','ENGINEERING'."
@@ -650,7 +654,7 @@ class HelperSubArrayDevice(SKASubarray):
         :return: Tuple indicating whether to proceed, ResultCode list, and
         message list
         """
-        if self._admin_mode == "OFFLINE":
+        if self._admin_mode == AdminMode.OFFLINE:
             self.logger.warning(
                 "Device is in OFFLINE adminMode.Cannot process command: %s",
                 command_name,

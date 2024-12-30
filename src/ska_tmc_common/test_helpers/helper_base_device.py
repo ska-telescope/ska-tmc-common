@@ -10,7 +10,7 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
@@ -62,6 +62,12 @@ class HelperBaseDevice(SKABaseDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+    adminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ_WRITE,
+        label="Admin Mode",
+        doc="Admin mode of the device.",
+    )
 
     def read_delay(self) -> int:
         """
