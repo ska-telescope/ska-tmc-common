@@ -73,6 +73,21 @@ class BaseAdapter:
         """
         return self._dev_name
 
+    @property
+    def adminMode(self):
+        """
+        Return AdminMode of adapter
+        :return: AdminMode of adapter
+        """
+        return self._proxy.adminMode
+
+    @adminMode.setter
+    def adminMode(self, value: int) -> None:
+        """
+        Set the adminMode on adapter.
+        """
+        self._proxy.adminMode = value
+
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         Sets device proxies to ON state.
@@ -150,20 +165,20 @@ class CspMasterAdapter(BaseAdapter):
     for CSP master devices.
     """
 
-    @property
-    def adminMode(self):
-        """
-        Return AdminMode of CSP Master
-        :return: AdminMode of CSP Master
-        """
-        return self._proxy.adminMode
+    # @property
+    # def adminMode(self):
+    #     """
+    #     Return AdminMode of CSP Master
+    #     :return: AdminMode of CSP Master
+    #     """
+    #     return self._proxy.adminMode
 
-    @adminMode.setter
-    def adminMode(self, value: int) -> None:
-        """
-        Set the adminMode on csp master adapter.
-        """
-        self._proxy.adminMode = value
+    # @adminMode.setter
+    # def adminMode(self, value: int) -> None:
+    #     """
+    #     Set the adminMode on csp master adapter.
+    #     """
+    #     self._proxy.adminMode = value
 
     @property
     def state(self):
