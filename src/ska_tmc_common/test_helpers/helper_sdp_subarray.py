@@ -4,7 +4,6 @@
 import json
 import logging
 import threading
-import time
 from typing import Tuple
 
 import tango
@@ -470,8 +469,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "HelperSdpSubarray.induce_fault()",
                 tango.ErrSeverity.ERR,
             )
-        if fault_type == FaultType.STUCK_IN_INTERMEDIATE_STATE:
-            time.sleep(40)
 
 
 def main(args=None, **kwargs):
