@@ -76,6 +76,12 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-AssignResources"
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("AssignResources")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("AssignResources", command_id)
 

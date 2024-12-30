@@ -97,6 +97,27 @@ class HelperBaseDevice(SKABaseDevice):
             self.push_change_event("adminMode", self._admin_mode)
             self.logger.info("AdminMode set to %s", self._admin_mode)
 
+    def _check_admin_mode(
+        self, command_name: str
+    ) -> Tuple[bool, List[ResultCode], List[str]]:
+        """
+        Checks if the device is in OFFLINE adminMode.
+        :param command_name: Name of the command being executed
+        :return: Tuple indicating whether to proceed, ResultCode list, and
+        message list
+        """
+        if self._admin_mode == AdminMode.OFFLINE:
+            self.logger.warning(
+                "Device is in OFFLINE adminMode.Cannot process command: %s",
+                command_name,
+            )
+            return (
+                False,
+                [ResultCode.FAILED],
+                ["Device is in OFFLINE adminMode."],
+            )
+        return True, [], []
+
     def read_delay(self) -> int:
         """
         This method is used to read the attribute value for delay.
@@ -418,6 +439,12 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("On")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "On",
@@ -460,6 +487,12 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Off")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -499,6 +532,12 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_Standby"
         self.logger.info("Instructed simulator to invoke Standby command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Standby")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",

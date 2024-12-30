@@ -481,6 +481,12 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("SetOperateMode")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "SetOperateMode", command_id, is_dish=True
@@ -521,6 +527,11 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke AbortCommands command"
         )
         self.update_command_info(ABORT_COMMANDS, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("AbortCommands")
+        if not proceed:
+            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands", command_id, is_dish=True)
@@ -579,6 +590,11 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Will be uncommented as a part of SAH-1530
         command_id = f"{time.time()}-TrackLoadStaticOff"
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("TrackLoadStaticOff")
+        if not proceed:
+            return result, message
 
         # Set offsets.
         cross_elevation = argin[0]
@@ -640,6 +656,12 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand1 Command")
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_1, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ConfigureBand1")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand1", command_id, is_dish=True
@@ -716,6 +738,12 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ConfigureBand2")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand2", command_id, is_dish=True
@@ -773,6 +801,11 @@ class HelperDishDevice(HelperDishLNDevice):
 
         self.logger.info("Processing ConfigureBand3 Command")
 
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ConfigureBand3")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand3", command_id, is_dish=True
@@ -828,6 +861,11 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         command_id = f"{time.time()}_ConfigureBand4"
         self.logger.info("Processing ConfigureBand4 Command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ConfigureBand4")
+        if not proceed:
+            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -885,6 +923,11 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_ConfigureBand5a"
         self.logger.info("Processing ConfigureBand5a Command")
 
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ConfigureBand5a")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand5a", command_id, is_dish=True
@@ -940,6 +983,11 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_ConfigureBand5b"
 
         self.logger.info("Processing ConfigureBand5b Command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ConfigureBand5b")
+        if not proceed:
+            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -1000,6 +1048,12 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}-Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Track")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
 
@@ -1042,6 +1096,12 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Scan")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
         self._scan_id = argin
@@ -1081,6 +1141,12 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_EndScan"
         # to record the command data
         self.update_command_info(END_SCAN)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("EndScan")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id, is_dish=True)
         self._scan_id = ""
@@ -1234,6 +1300,12 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("TrackStop")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
 

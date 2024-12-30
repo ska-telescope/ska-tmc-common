@@ -41,6 +41,12 @@ class HelperMccsSubarrayDevice(HelperSubArrayDevice):
         )
         self.logger.info(argin)
         self.update_command_info(RELEASE_RESOURCES, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("ReleaseResources")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseResources", command_id)
 

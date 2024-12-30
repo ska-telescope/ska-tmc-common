@@ -74,6 +74,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("On")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("On", command_id)
@@ -96,7 +102,13 @@ class HelperCspMasterDevice(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}_Off"
-        self.logger.info("Instructed simulator to invoke On command")
+        self.logger.info("Instructed simulator to invoke Off command")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Off")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Off", command_id)
@@ -119,6 +131,12 @@ class HelperCspMasterDevice(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}_Standby"
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Standby")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Standby", command_id)

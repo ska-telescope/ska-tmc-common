@@ -104,6 +104,12 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-Allocate"
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Allocate")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Allocate", command_id)
@@ -162,6 +168,12 @@ class HelperMCCSController(HelperBaseDevice):
         """
 
         command_id = f"{time.time()}-Release"
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Release")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Release", command_id)
@@ -218,6 +230,12 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("RestartSubarray")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("RestartSubarray", command_id)

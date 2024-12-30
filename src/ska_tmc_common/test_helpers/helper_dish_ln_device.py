@@ -521,6 +521,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed Dish simulator to invoke Off command")
         self.update_command_info(OFF, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Off")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -573,6 +579,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_SetStandbyFPMode"
         self.logger.info("Processing SetStandbyFPMode Command")
         self.update_command_info(SET_STANDBY_FP_MODE, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("SetStandbyFPMode")
+        if not proceed:
+            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyFPMode", command_id)
@@ -630,6 +641,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetStandbyLPMode command"
         )
         self.update_command_info(SET_STANDBY_LP_MODE, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("SetStandbyLPMode")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyLPMode", command_id)
         # Set the device state
@@ -685,6 +702,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("SetOperateMode")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode", command_id)
 
@@ -745,6 +768,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetStowMode command"
         )
         self.update_command_info(SET_STOW_MODE, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("SetStowMode")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode", command_id)
 
@@ -800,6 +829,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Track")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id)
         if self._pointing_state != PointingState.TRACK:
@@ -851,6 +886,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("TrackStop")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
         if self._pointing_state != PointingState.READY:
@@ -905,6 +946,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke AbortCommands command"
         )
         self.update_command_info(ABORT_COMMANDS, "")
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("AbortCommands")
+        if not proceed:
+            return result, message
+
         self.logger.info("Abort Completed")
         self._pointing_state = PointingState.READY
         self.push_change_event("pointingState", self._pointing_state)
@@ -954,6 +1001,12 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke Configure command"
         )
         self.update_command_info(CONFIGURE, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Configure")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure", command_id, is_dish=True)
         if self._pointing_state != PointingState.TRACK:
@@ -1028,6 +1081,11 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("TrackLoadStaticOff")
+        if not proceed:
+            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackLoadStaticOff", command_id)
@@ -1167,6 +1225,12 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
+
+        # AdminMode check
+        proceed, result, message = self._check_admin_mode("Scan")
+        if not proceed:
+            return result, message
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
 
