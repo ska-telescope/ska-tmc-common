@@ -999,6 +999,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        self.track_stop = False
         command_id = f"{time.time()}-Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
@@ -1255,7 +1256,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(
             ResultCode.OK, "TrackStop", command_id=command_id
         )
-        self.track_stop = False
         self.logger.info("TrackStop command completed.")
         return [ResultCode.QUEUED], [command_id]
 
