@@ -31,7 +31,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
-        self._admin_mode: AdminMode = AdminMode.ONLINE
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
