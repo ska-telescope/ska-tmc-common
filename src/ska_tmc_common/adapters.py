@@ -158,6 +158,13 @@ class CspMasterAdapter(BaseAdapter):
         """
         return self._proxy.adminMode
 
+    @adminMode.setter
+    def adminMode(self, value: int) -> None:
+        """
+        Set the adminMode on csp master adapter.
+        """
+        self._proxy.adminMode = value
+
     @property
     def state(self):
         """
