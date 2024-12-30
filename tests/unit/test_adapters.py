@@ -4,6 +4,7 @@ import logging
 import mock
 import pytest
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from tango import DevState
 
 from ska_tmc_common import (
@@ -106,6 +107,7 @@ def test_base_adapter(tango_context):
     )
 
     assert subarray_adapter.proxy is not None
+    subarray_adapter.adminMode = AdminMode.ONLINE
     result_code, unique_id = subarray_adapter.On()
     assert result_code == ResultCode.QUEUED
     assert unique_id[0].endswith("On")
