@@ -294,7 +294,7 @@ class HelperSubArrayDevice(SKASubarray):
         if self._admin_mode != value:
             self._admin_mode = value
             self.push_change_event("adminMode", self._admin_mode)
-            self.logger.info("AdminMode set to {self._admin_mode}")
+            self.logger.info("AdminMode set to %s", self._admin_mode)
 
     def read_scanId(self) -> int:
         """

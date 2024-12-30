@@ -31,6 +31,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
+        self._admin_mode: AdminMode = AdminMode.ONLINE
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -44,6 +45,7 @@ class HelperBaseDevice(SKABaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             super().do()
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event("adminMode", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -68,6 +70,32 @@ class HelperBaseDevice(SKABaseDevice):
         label="Admin Mode",
         doc="Admin mode of the device.",
     )
+
+    def read_adminMode(self) -> str:
+        """
+        This method reads the adminMode value of the device.
+        :return: admin_mode value
+        :rtype: str
+        """
+        return self._admin_mode
+
+    def write_adminMode(self, value: str) -> None:
+        """
+        This method writes the adminMode value of the device.
+        """
+        if value not in [
+            AdminMode.ONLINE,
+            AdminMode.OFFLINE,
+            AdminMode.ENGINEERING,
+        ]:
+            self.logger.error(
+                "Invalid adminMode value. Allowed values are"
+                + "'ONLINE','OFFLINE','ENGINEERING'."
+            )
+        if self._admin_mode != value:
+            self._admin_mode = value
+            self.push_change_event("adminMode", self._admin_mode)
+            self.logger.info("AdminMode set to %s", self._admin_mode)
 
     def read_delay(self) -> int:
         """
