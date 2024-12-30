@@ -341,8 +341,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
-        self._obs_state = ObsState.SCANNING
-        self.update_device_obsstate(self._obs_state, SCAN)
+        thread = threading.Timer(
+            self._command_delay_info[SCAN],
+            self.update_device_obsstate,
+            args=[ObsState.SCANNING, SCAN],
+        )
+        self.timers.append(thread)
+        thread.start()
+        self.logger.debug(
+            "Scan command invoked, obsState will transition to SCANNING,"
+            + "current obsState is %s",
+            self._obs_state,
+        )
 
     @command()
     def EndScan(self):

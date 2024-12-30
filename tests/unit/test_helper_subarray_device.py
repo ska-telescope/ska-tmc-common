@@ -11,9 +11,11 @@ from ska_tmc_common.test_helpers.constants import (
     ASSIGN_RESOURCES,
     CONFIGURE,
     END,
+    END_SCAN,
     RELEASE_ALL_RESOURCES,
     RELEASE_RESOURCES,
     RESTART,
+    SCAN,
 )
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     EmptySubArrayComponentManager,
@@ -92,6 +94,8 @@ def test_helper_subarray_device_attributes(tango_context):
             RESTART: 2,
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
+            END_SCAN: 2,
+            SCAN: 2,
         }
     )
     assert not subarray_device.commandCallInfo

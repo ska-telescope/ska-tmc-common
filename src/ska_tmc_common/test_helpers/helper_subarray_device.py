@@ -193,6 +193,7 @@ class HelperSubArrayDevice(SKASubarray):
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
             END_SCAN: 2,
+            SCAN: 2,
         }
         self.dev_name = self.get_name()
         self._scan_id = 0
@@ -506,6 +507,7 @@ class HelperSubArrayDevice(SKASubarray):
             RELEASE_ALL_RESOURCES: 2,
             END: 2,
             END_SCAN: 2,
+            SCAN: 2,
         }
 
     @command(
