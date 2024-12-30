@@ -77,6 +77,7 @@ class CommandCallbackTracker:
     def update_attr_value_change(self):
         """This method is invoked when attribute changes."""
         try:
+            self.logger.debug("Abort event is %s", self.abort_event.is_set())
             attribute_value = self.get_function(self.component_manager)
             if not self.command_completed and not self.abort_event.is_set():
                 if attribute_value == self.states_to_track[0]:
@@ -89,10 +90,10 @@ class CommandCallbackTracker:
                         attribute_value,
                     )
                 if not self.states_to_track:  # the list is empty
+                    self.clean_up()
                     self.command_class_instance.update_task_status(
                         result=(ResultCode.OK, "Command Completed")
                     )
-                    self.clean_up()
             elif self.abort_event.is_set():
                 self.clean_up()
                 self.command_class_instance.update_task_status(
@@ -107,19 +108,20 @@ class CommandCallbackTracker:
         """This method is invoked when exception occurs."""
 
         try:
+            self.logger.debug("Abort event is %s", self.abort_event.is_set())
             if not self.command_completed and not self.abort_event.is_set():
-                self.command_class_instance.update_task_status(
-                    result=(
-                        ResultCode.FAILED,
-                        self.lrcr_callback.command_data[self.command_id][
-                            "exception_message"
-                        ],
-                    ),
-                    exception=self.lrcr_callback.command_data[self.command_id][
-                        "exception_message"
-                    ],
-                )
-                self.clean_up()
+                if self.command_id in self.lrcr_callback.command_data:
+                    exception_message = self.lrcr_callback.command_data[
+                        self.command_id
+                    ]["exception_message"]
+                    self.clean_up()
+                    self.command_class_instance.update_task_status(
+                        result=(
+                            ResultCode.FAILED,
+                            exception_message,
+                        ),
+                        exception=exception_message,
+                    )
         except (AttributeError, ValueError, TypeError) as exception:
             self.logger.error(
                 "Error occurred while updating exception %s", exception
@@ -136,8 +138,8 @@ class CommandCallbackTracker:
                 self.command_class_instance.timekeeper.stop_timer()
             else:
                 self.component_manager.stop_timer()
-            self.abort_event.clear()
             self.command_completed = True
+            self.logger.info("Deregistering observer")
             self.observable.deregister_observer(self.lrc_exception_observer)
             self.observable.deregister_observer(self.attribute_change_observer)
             if self.component_manager.command_id:

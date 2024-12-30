@@ -96,5 +96,4 @@ def test_clean_up():
     )
     abort_event.set()
     cct.clean_up()
-    assert not abort_event.is_set()
     command_class_instance.timekeeper.stop_timer.assert_called_once()
