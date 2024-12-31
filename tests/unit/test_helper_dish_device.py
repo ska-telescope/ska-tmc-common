@@ -165,7 +165,7 @@ def test_Abort_commands(tango_context):
     result, command_id = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
     assert "AbortCommands" in command_id[0]
-    assert dish_device.pointingState == PointingState.READY
+    assert dish_device.pointingState == PointingState.NONE
     assert dish_device.dishMode == DishMode.STANDBY_FP
 
 

@@ -12,6 +12,14 @@ Main
 
 Added
 --------
+[0.22.16]
+*********
+* Enable induce_fault functionality in HelperSDPSubarray
+
+[0.22.15]
+*********
+* Update the helper dish master to send pointing state slew before track in track command.
+  
 [0.22.14]
 *********
 * clean up method of observable called before calling update task status

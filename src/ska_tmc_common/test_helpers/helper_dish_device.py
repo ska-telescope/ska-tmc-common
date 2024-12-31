@@ -525,8 +525,6 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands", command_id, is_dish=True)
 
-        self._pointing_state = PointingState.READY
-        self.push_change_event("pointingState", self._pointing_state)
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
         self.logger.info("AbortCommands Completed")
@@ -997,9 +995,13 @@ class HelperDishDevice(HelperDishLNDevice):
         :return: ResultCode and message
         :rtype: tuple
         """
+        self.track_stop = False
         command_id = f"{time.time()}-Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
+        self._pointing_state = PointingState.SLEW
+        self.push_change_event("pointingState", self._pointing_state)
+        self.logger.info("Pushed pointingState event SLEW")
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
 
@@ -1250,7 +1252,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(
             ResultCode.OK, "TrackStop", command_id=command_id
         )
-        self.track_stop = False
         self.logger.info("TrackStop command completed.")
         return [ResultCode.QUEUED], [command_id]
 
