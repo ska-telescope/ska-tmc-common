@@ -57,4 +57,8 @@ class Observable:
         """
         with self.lock:
             for observer in self.observers:
+                logging.debug(
+                    "Calling observer %s",
+                    observer.command_callback_tracker.command_id,
+                )
                 observer.notify(*args, **kwargs)

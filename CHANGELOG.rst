@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.22.14]
+*********
+* clean up method of observable called before calling update task status
+
 [0.22.13]
 *********
 * Update the helper mccs subarray device to push change the result after obsstate scanning

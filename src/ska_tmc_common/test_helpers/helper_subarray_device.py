@@ -963,6 +963,13 @@ class HelperSubArrayDevice(SKASubarray):
             args=[ObsState.IDLE, ASSIGN_RESOURCES],
         )
         thread.start()
+        thread = threading.Timer(
+            self._delay,
+            self.push_command_result,
+            args=[ResultCode.OK, ASSIGN_RESOURCES],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.debug(
             "AssignResources command invoked, obsState will transition to"
             + "IDLE, current obsState is %s",
