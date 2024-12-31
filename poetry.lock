@@ -70,7 +70,7 @@ reference = "PyPI-public"
 
 [[package]]
 name = "astropy-iers-data"
-version = "0.2024.12.23.0.33.24"
+version = "0.2024.12.30.0.33.36"
 description = "IERS Earth Rotation and Leap Second tables for the astropy core package"
 category = "main"
 optional = false
@@ -321,10 +321,13 @@ reference = "PyPI-public"
 [[package]]
 name = "execnet"
 version = "2.1.1"
-description = ""
+description = "execnet: rapid multi-Python deployment"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
+
+[package.extras]
+testing = ["hatch", "pre-commit", "pytest", "tox"]
 
 [package.source]
 type = "legacy"
@@ -916,10 +919,13 @@ reference = "PyPI-public"
 [[package]]
 name = "pygments"
 version = "2.18.0"
-description = ""
+description = "Pygments is a syntax highlighting package written in Python."
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
+
+[package.extras]
+windows-terminal = ["colorama (>=0.4.6)"]
 
 [package.source]
 type = "legacy"
@@ -1178,7 +1184,7 @@ urllib3 = ">=1.21.1,<3"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [package.source]
 type = "legacy"
@@ -1820,8 +1826,8 @@ astropy = [
     {file = "astropy-6.1.7.tar.gz", hash = "sha256:a405ac186306b6cb152e6df2f7444ab8bd764e4127d7519da1b3ae4dd65357ef"},
 ]
 astropy-iers-data = [
-    {file = "astropy_iers_data-0.2024.12.23.0.33.24-py3-none-any.whl", hash = "sha256:40d3c6b6a5cf4dc6ad91b92b7e0f949e5366234e3c4440302247429fc8294302"},
-    {file = "astropy_iers_data-0.2024.12.23.0.33.24.tar.gz", hash = "sha256:f9bb8f676233f5bb564fdffa4b81af28160e3040a796dcaf0a9436f842fee951"},
+    {file = "astropy_iers_data-0.2024.12.30.0.33.36-py3-none-any.whl", hash = "sha256:dbf3e85b65842ce1871dc71f6f255b298805d93362e7c16fe1801f7ca4ae39b3"},
+    {file = "astropy_iers_data-0.2024.12.30.0.33.36.tar.gz", hash = "sha256:5cb8dc129c2a39d5a62fa345e166833976050a78d85e99d93ef247e310703f12"},
 ]
 attrs = [
     {file = "attrs-23.2.0-py3-none-any.whl", hash = "sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1"},

@@ -12,6 +12,7 @@ from ska_tango_base.commands import ResultCode
 from tango.server import command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -65,6 +66,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def AssignResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -76,6 +78,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-AssignResources"
+
         if self.defective_params["enabled"]:
             return self.induce_fault("AssignResources", command_id)
 
@@ -119,6 +122,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:

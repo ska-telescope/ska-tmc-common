@@ -17,6 +17,7 @@ from ska_tango_base.control_model import ObsState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 from .constants import (
@@ -225,6 +226,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def AssignResources(
         self, argin: str = ""
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -289,6 +291,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Configure command.
@@ -350,6 +353,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Scan command.
@@ -398,6 +402,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke EndScan command.
@@ -440,6 +445,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke End command.
@@ -484,6 +490,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke GoToIdle command.
@@ -524,6 +531,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Abort command.
@@ -578,6 +586,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Restart command.
@@ -628,6 +637,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke ReleaseAllResources command.
@@ -684,6 +694,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ReleaseResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:

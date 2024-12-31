@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.23.0]
+*********
+* Adding Admin mode functinality in helper devices
+
 [0.22.15]
 *********
 * Update the helper dish master to send pointing state slew before track in track command.

@@ -2,6 +2,7 @@ import json
 
 import pytest
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 
 from ska_tmc_common import DevFactory
 from tests.settings import (
@@ -17,6 +18,7 @@ commands = ["On", "Off", "Standby"]
 def test_csp_commands(tango_context, command):
     dev_factory = DevFactory()
     csp_device = dev_factory.get_device(CSP_DEVICE)
+    csp_device.adminMode = AdminMode.ONLINE
     result, command_id = csp_device.command_inout(command, "")
     assert result[0] == ResultCode.QUEUED
     assert command in command_id[0]
@@ -26,6 +28,7 @@ def test_csp_commands(tango_context, command):
 def test_csp_command_defective(tango_context, command):
     dev_factory = DevFactory()
     csp_device = dev_factory.get_device(CSP_DEVICE)
+    csp_device.adminMode = AdminMode.ONLINE
     csp_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, message = csp_device.command_inout(command, "")
     assert result[0] == ResultCode.FAILED
@@ -40,7 +43,7 @@ def test_csp_loadDishConfig_command(tango_context, json_factory):
     """
     dev_factory = DevFactory()
     csp_master_device = dev_factory.get_device(CSP_DEVICE)
-
+    csp_master_device.adminMode = AdminMode.ONLINE
     input_json_str = json_factory("mid_cbf_param_file uri")
     return_code, _ = csp_master_device.LoadDishCfg(input_json_str)
 

@@ -10,11 +10,12 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import PointingState
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
@@ -31,6 +32,7 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -44,6 +46,7 @@ class HelperBaseDevice(SKABaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             super().do()
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event("adminMode", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -376,6 +379,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command
@@ -384,6 +388,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "On",
@@ -418,6 +423,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command
@@ -426,6 +432,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -457,6 +464,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command
@@ -465,6 +473,8 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_Standby"
         self.logger.info("Instructed simulator to invoke Standby command")
+
+        # AdminMode check
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",
@@ -499,6 +509,7 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Disable command

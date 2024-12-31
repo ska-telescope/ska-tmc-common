@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from astropy.time import Time
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from tango import DevFailed
 
 from ska_tmc_common import DevFactory
@@ -103,6 +104,7 @@ def test_program_track_table(tango_context):
 def test_dish_commands_without_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     result, command_id = dish_device.command_inout(command)
     command_call_info = dish_device.commandCallInfo
     assert command_call_info[0][0] == command
@@ -114,6 +116,7 @@ def test_dish_commands_without_input(tango_context, command):
 def test_dish_commands_with_input(tango_context, command):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     result, command_id = dish_device.command_inout(command, True)
     assert result[0] == ResultCode.QUEUED
     assert command in command_id[0]
@@ -122,6 +125,7 @@ def test_dish_commands_with_input(tango_context, command):
 def test_dish_commands_scan(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     result, command_id = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.QUEUED
     assert "Scan" in command_id[0]
@@ -130,6 +134,7 @@ def test_dish_commands_scan(tango_context):
 def test_scan_command_without_argin_failed_result(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout("Scan", "")
     assert result[0] == ResultCode.FAILED
@@ -141,6 +146,7 @@ def test_scan_command_without_argin_failed_result(tango_context):
 def test_command_without_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command_to_check)
     assert result[0] == ResultCode.FAILED
@@ -152,6 +158,7 @@ def test_command_without_argin_failed_result(tango_context, command_to_check):
 def test_command_with_argin_failed_result(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     dish_device.SetDefective(json.dumps(FAILED_RESULT_DEFECT))
     result, message = dish_device.command_inout(command_to_check, True)
     assert result[0] == ResultCode.FAILED
@@ -162,6 +169,7 @@ def test_command_with_argin_failed_result(tango_context, command_to_check):
 def test_Abort_commands(tango_context):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     result, command_id = dish_device.command_inout("AbortCommands")
     assert result[0] == ResultCode.OK
     assert "AbortCommands" in command_id[0]
@@ -173,6 +181,7 @@ def test_Abort_commands(tango_context):
 def test_dish_commands_command_not_allowed(tango_context, command_to_check):
     dev_factory = DevFactory()
     dish_device = dev_factory.get_device(DISH_DEVICE)
+    dish_device.adminMode = AdminMode.ONLINE
     # Set the device to the defective state with COMMAND_NOT_ALLOWED fault
     dish_device.SetDefective(json.dumps(COMMAND_NOT_ALLOWED_DEFECT))
     # Attempt to execute the command and expect the DevFailed exception
@@ -217,6 +226,7 @@ def test_apply_pm_setup_command(tango_context, json_factory):
     """This test verifies the functioning of ApplyPointingModel command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
+    dish_master_device.adminMode = AdminMode.ONLINE
     global_pointing_data = json_factory("global_pointing_model")
     result, command_id = dish_master_device.ApplyPointingModel(
         global_pointing_data
@@ -231,7 +241,7 @@ def test_apply_pointing_model_with_missing_coefficient(
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
     global_pointing_data = json_factory("global_pointing_model")
-
+    dish_master_device.adminMode = AdminMode.ONLINE
     # Modify global_pointing_data to remove "IA"
     faulty_global_pointing_data = json.loads(global_pointing_data)
     del faulty_global_pointing_data["coefficients"]["IA"]
@@ -252,6 +262,7 @@ def test_apply_pointing_model_with_missing_coefficient(
 def test_process_band_params(tango_context, json_factory, band, param_attr):
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
+    dish_master_device.adminMode = AdminMode.ONLINE
     global_pointing_data = json_factory("global_pointing_model")
     global_pointing_data = json.loads(global_pointing_data)
     global_pointing_data["band"] = band

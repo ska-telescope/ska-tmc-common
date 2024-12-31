@@ -14,6 +14,7 @@ from tango import DevState
 from tango.server import command, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ALLOCATE,
@@ -95,6 +96,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Allocate command on MCCS
@@ -104,6 +106,7 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-Allocate"
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Allocate", command_id)
@@ -152,6 +155,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
@@ -162,6 +166,7 @@ class HelperMCCSController(HelperBaseDevice):
         """
 
         command_id = f"{time.time()}-Release"
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Release", command_id)
@@ -208,6 +213,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def RestartSubarray(
         self, argin: int
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -218,6 +224,7 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("RestartSubarray", command_id)

@@ -17,6 +17,7 @@ from tango import AttrWriteType, DevFloat, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import (
     Band,
     DishMode,
@@ -470,6 +471,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetOperateMode command on  Dish Master
@@ -481,6 +483,7 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "SetOperateMode", command_id, is_dish=True
@@ -510,6 +513,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AbortCommands command on  Dish Master
@@ -558,6 +562,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def TrackLoadStaticOff(
         self, argin: List[float]
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -623,6 +628,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand1(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -638,6 +644,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand1 Command")
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_1, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand1", command_id, is_dish=True
@@ -685,6 +692,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand2(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -714,6 +722,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand2", command_id, is_dish=True
@@ -760,6 +769,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand3(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -817,6 +827,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand4(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -873,6 +884,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand5a(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -928,6 +940,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand5b(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -989,6 +1002,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Track command on  Dish Master
@@ -1002,6 +1016,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = PointingState.SLEW
         self.push_change_event("pointingState", self._pointing_state)
         self.logger.info("Pushed pointingState event SLEW")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
 
@@ -1035,6 +1050,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method sets scanID attribute of Dish Master.
@@ -1044,6 +1060,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
         self._scan_id = argin
@@ -1074,6 +1091,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method clears the scanID attribute of Dish Master
@@ -1083,6 +1101,7 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_EndScan"
         # to record the command data
         self.update_command_info(END_SCAN)
+
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id, is_dish=True)
         self._scan_id = ""
@@ -1148,6 +1167,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_archive_event(bandPointingModelParams, values_list)
 
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
+    @admin_mode_check()
     def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1225,6 +1245,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
@@ -1236,6 +1257,7 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
 

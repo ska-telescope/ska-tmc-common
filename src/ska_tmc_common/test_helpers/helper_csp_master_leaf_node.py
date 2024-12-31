@@ -13,6 +13,7 @@ from ska_tango_base.commands import ResultCode
 from ska_telmodel.data import TMData
 from tango.server import AttrWriteType, attribute, command, run
 
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -130,6 +131,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig
