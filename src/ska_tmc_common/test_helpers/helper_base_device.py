@@ -64,40 +64,8 @@ class HelperBaseDevice(SKABaseDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
-    adminMode = attribute(
-        dtype=AdminMode,
-        access=AttrWriteType.READ_WRITE,
-        label="Admin Mode",
-        doc="Admin mode of the device.",
-    )
 
-    def read_adminMode(self) -> str:
-        """
-        This method reads the adminMode value of the device.
-        :return: admin_mode value
-        :rtype: str
-        """
-        return self._admin_mode
-
-    def write_adminMode(self, value: str) -> None:
-        """
-        This method writes the adminMode value of the device.
-        """
-        if value not in [
-            AdminMode.ONLINE,
-            AdminMode.OFFLINE,
-            AdminMode.ENGINEERING,
-        ]:
-            self.logger.error(
-                "Invalid adminMode value. Allowed values are"
-                + "'ONLINE','OFFLINE','ENGINEERING'."
-            )
-        if self._admin_mode != value:
-            self._admin_mode = value
-            self.push_change_event("adminMode", self._admin_mode)
-            self.logger.info("AdminMode set to %s", self._admin_mode)
-
-    def _check_admin_mode(
+    def _check_if_admin_mode_offline(
         self, command_name: str
     ) -> Tuple[bool, List[ResultCode], List[str]]:
         """
@@ -441,7 +409,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.logger.info("Instructed simulator to invoke On command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("On")
+        proceed, result, message = self._check_if_admin_mode_offline("On")
         if not proceed:
             return result, message
 
@@ -489,7 +457,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.logger.info("Instructed simulator to invoke Off command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Off")
+        proceed, result, message = self._check_if_admin_mode_offline("Off")
         if not proceed:
             return result, message
 
@@ -534,7 +502,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.logger.info("Instructed simulator to invoke Standby command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Standby")
+        proceed, result, message = self._check_if_admin_mode_offline("Standby")
         if not proceed:
             return result, message
 

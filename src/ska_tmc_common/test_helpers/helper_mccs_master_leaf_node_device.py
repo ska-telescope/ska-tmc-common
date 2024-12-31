@@ -78,7 +78,9 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         command_id = f"{time.time()}-AssignResources"
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("AssignResources")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "AssignResources"
+        )
         if not proceed:
             return result, message
 

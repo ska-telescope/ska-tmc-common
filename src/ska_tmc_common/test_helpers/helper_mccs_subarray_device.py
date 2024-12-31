@@ -43,7 +43,9 @@ class HelperMccsSubarrayDevice(HelperSubArrayDevice):
         self.update_command_info(RELEASE_RESOURCES, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ReleaseResources")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ReleaseResources"
+        )
         if not proceed:
             return result, message
 

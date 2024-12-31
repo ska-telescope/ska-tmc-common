@@ -106,7 +106,9 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Allocate"
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Allocate")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "Allocate"
+        )
         if not proceed:
             return result, message
 
@@ -170,7 +172,7 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-Release"
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Release")
+        proceed, result, message = self._check_if_admin_mode_offline("Release")
         if not proceed:
             return result, message
 
@@ -232,7 +234,9 @@ class HelperMCCSController(HelperBaseDevice):
         command_id = f"{time.time()}-RestartSubarray"
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("RestartSubarray")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "RestartSubarray"
+        )
         if not proceed:
             return result, message
 

@@ -76,7 +76,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.logger.info("Instructed simulator to invoke On command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("On")
+        proceed, result, message = self._check_if_admin_mode_offline("On")
         if not proceed:
             return result, message
 
@@ -105,7 +105,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self.logger.info("Instructed simulator to invoke Off command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Off")
+        proceed, result, message = self._check_if_admin_mode_offline("Off")
         if not proceed:
             return result, message
 
@@ -133,7 +133,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Standby"
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Standby")
+        proceed, result, message = self._check_if_admin_mode_offline("Standby")
         if not proceed:
             return result, message
 

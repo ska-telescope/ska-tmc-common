@@ -269,16 +269,16 @@ class HelperSubArrayDevice(SKASubarray):
             return ResultCode.OK, ""
 
     # New read method for adminMode
-    def read_adminMode(self) -> str:
+    def read_adminMode(self) -> AdminMode:
         """
         This method reads the adminMode value of the device.
         :return: admin_mode value
-        :rtype: str
+        :rtype: AdminMode
         """
         return self._admin_mode
 
     # New write method for adminMode
-    def write_adminMode(self, value: str) -> None:
+    def write_adminMode(self, value: AdminMode) -> None:
         """
         This method writes the adminMode value of the device.
         """
@@ -645,7 +645,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
 
     # AdminMode check helper
-    def _check_admin_mode(
+    def _check_if_admin_mode_offline(
         self, command_name: str
     ) -> Tuple[bool, List[ResultCode], List[str]]:
         """
@@ -701,7 +701,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke On command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("On")
+        proceed, result, message = self._check_if_admin_mode_offline("On")
         if not proceed:
             return result, message
 
@@ -749,7 +749,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Instructed simulator to invoke Off command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Off")
+        proceed, result, message = self._check_if_admin_mode_offline("Off")
         if not proceed:
             return result, message
 

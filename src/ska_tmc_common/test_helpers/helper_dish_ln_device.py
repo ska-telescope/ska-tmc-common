@@ -523,7 +523,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(OFF, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Off")
+        proceed, result, message = self._check_if_admin_mode_offline("Off")
         if not proceed:
             return result, message
 
@@ -581,7 +581,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(SET_STANDBY_FP_MODE, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("SetStandbyFPMode")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "SetStandbyFPMode"
+        )
         if not proceed:
             return result, message
 
@@ -643,7 +645,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(SET_STANDBY_LP_MODE, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("SetStandbyLPMode")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "SetStandbyLPMode"
+        )
         if not proceed:
             return result, message
 
@@ -704,7 +708,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(SET_OPERATE_MODE, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("SetOperateMode")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "SetOperateMode"
+        )
         if not proceed:
             return result, message
 
@@ -770,7 +776,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(SET_STOW_MODE, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("SetStowMode")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "SetStowMode"
+        )
         if not proceed:
             return result, message
 
@@ -831,7 +839,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(TRACK, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Track")
+        proceed, result, message = self._check_if_admin_mode_offline("Track")
         if not proceed:
             return result, message
 
@@ -888,7 +896,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(TRACK_STOP, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("TrackStop")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "TrackStop"
+        )
         if not proceed:
             return result, message
 
@@ -948,7 +958,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(ABORT_COMMANDS, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("AbortCommands")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "AbortCommands"
+        )
         if not proceed:
             return result, message
 
@@ -1003,7 +1015,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(CONFIGURE, argin)
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Configure")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "Configure"
+        )
         if not proceed:
             return result, message
 
@@ -1083,7 +1097,9 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("TrackLoadStaticOff")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "TrackLoadStaticOff"
+        )
         if not proceed:
             return result, message
 
@@ -1227,7 +1243,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.update_command_info(SCAN, argin)
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Scan")
+        proceed, result, message = self._check_if_admin_mode_offline("Scan")
         if not proceed:
             return result, message
 

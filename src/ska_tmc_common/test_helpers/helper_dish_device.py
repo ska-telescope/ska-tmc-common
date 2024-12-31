@@ -483,7 +483,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(SET_OPERATE_MODE, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("SetOperateMode")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "SetOperateMode"
+        )
         if not proceed:
             return result, message
 
@@ -529,7 +531,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(ABORT_COMMANDS, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("AbortCommands")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "AbortCommands"
+        )
         if not proceed:
             return result, message
 
@@ -592,7 +596,9 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}-TrackLoadStaticOff"
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("TrackLoadStaticOff")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "TrackLoadStaticOff"
+        )
         if not proceed:
             return result, message
 
@@ -658,7 +664,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(CONFIGURE_BAND_1, argin)
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ConfigureBand1")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ConfigureBand1"
+        )
         if not proceed:
             return result, message
 
@@ -740,7 +748,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(CONFIGURE_BAND_2, argin)
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ConfigureBand2")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ConfigureBand2"
+        )
         if not proceed:
             return result, message
 
@@ -802,7 +812,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand3 Command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ConfigureBand3")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ConfigureBand3"
+        )
         if not proceed:
             return result, message
 
@@ -863,7 +875,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand4 Command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ConfigureBand4")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ConfigureBand4"
+        )
         if not proceed:
             return result, message
 
@@ -924,7 +938,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand5a Command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ConfigureBand5a")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ConfigureBand5a"
+        )
         if not proceed:
             return result, message
 
@@ -985,7 +1001,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand5b Command")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("ConfigureBand5b")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "ConfigureBand5b"
+        )
         if not proceed:
             return result, message
 
@@ -1050,7 +1068,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(TRACK, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Track")
+        proceed, result, message = self._check_if_admin_mode_offline("Track")
         if not proceed:
             return result, message
 
@@ -1098,7 +1116,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(SCAN, argin)
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("Scan")
+        proceed, result, message = self._check_if_admin_mode_offline("Scan")
         if not proceed:
             return result, message
 
@@ -1143,7 +1161,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(END_SCAN)
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("EndScan")
+        proceed, result, message = self._check_if_admin_mode_offline("EndScan")
         if not proceed:
             return result, message
 
@@ -1302,7 +1320,9 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info(TRACK_STOP, "")
 
         # AdminMode check
-        proceed, result, message = self._check_admin_mode("TrackStop")
+        proceed, result, message = self._check_if_admin_mode_offline(
+            "TrackStop"
+        )
         if not proceed:
             return result, message
 
