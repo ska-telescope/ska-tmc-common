@@ -43,7 +43,7 @@ def test_csp_loadDishConfig_command(tango_context, json_factory):
     """
     dev_factory = DevFactory()
     csp_master_device = dev_factory.get_device(CSP_DEVICE)
-
+    csp_master_device.adminMode = AdminMode.ONLINE
     input_json_str = json_factory("mid_cbf_param_file uri")
     return_code, _ = csp_master_device.LoadDishCfg(input_json_str)
 

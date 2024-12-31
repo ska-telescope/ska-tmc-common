@@ -26,14 +26,15 @@ def check_if_admin_mode_offline(
     """
     # pylint:disable=protected-access
     admin_mode = class_instance._admin_mode
+    device_name = class_instance.__class__.__name__
     if admin_mode == AdminMode.OFFLINE:
         error_message = (
-            "Device is in OFFLINE adminMode."
-            f" Cannot process command: {command_name}"
+            f"Device: {device_name} is in OFFLINE adminMode."
+            f"Cannot process command: {command_name}"
         )
         if hasattr(class_instance, "logger"):
             class_instance.logger.warning(error_message)
-        raise AdminModeException(command_name, error_message)
+        raise AdminModeException(device_name, command_name, error_message)
     return True, [], []
 
 

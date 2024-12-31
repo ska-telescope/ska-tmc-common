@@ -269,6 +269,7 @@ def test_sdpQueueConnectorFqdn_dishln_attribute(tango_context):
     timestamp = dt.now().strftime("%Y-%m-%d %H:%M:%S")
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.adminMode = AdminMode.ONLINE
     sdpqc_device = dev_factory.get_device(HELPER_SDP_QUEUE_CONNECTOR_DEVICE)
     dishln_device.sdpQueueConnectorFqdn = SDPQC_ATTR_PROXY
     sdpqc_device.SetPointingCalSka001([1.0, 2.0, 3.0])
@@ -300,6 +301,7 @@ def test_dish_ln_command_apm(tango_context, group_callback, json_factory):
     global_pointing_data = json_factory("global_pointing_model")
     global_pointing_data = json.loads(global_pointing_data)
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.adminMode = AdminMode.ONLINE
     dishln_device.subscribe_event(
         "longRunningCommandResult",
         tango.EventType.CHANGE_EVENT,
@@ -320,6 +322,7 @@ def test_apm_gpm_json_error(tango_context, group_callback, json_factory):
     """Test to check GPM error reported by APM command"""
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.adminMode = AdminMode.ONLINE
     dishln_device.subscribe_event(
         "longRunningCommandResult",
         tango.EventType.CHANGE_EVENT,
@@ -356,6 +359,7 @@ def test_apm_gpm_error_reported_by_dish(
     """Test to check GPM error reported by APM command"""
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.adminMode = AdminMode.ONLINE
     dishln_device.subscribe_event(
         "longRunningCommandResult",
         tango.EventType.CHANGE_EVENT,
@@ -395,6 +399,7 @@ def test_apm_gpm_uri_error(tango_context, group_callback, json_factory):
     """Test to check GPM error reported by APM command"""
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.adminMode = AdminMode.ONLINE
     dishln_device.subscribe_event(
         "longRunningCommandResult",
         tango.EventType.CHANGE_EVENT,
@@ -428,6 +433,7 @@ def test_apm_gpm_uri_not_reachable(
     """Test to check GPM error reported by APM command"""
     dev_factory = DevFactory()
     dishln_device = dev_factory.get_device(DISH_LN_DEVICE)
+    dishln_device.adminMode = AdminMode.ONLINE
     dishln_device.subscribe_event(
         "longRunningCommandResult",
         tango.EventType.CHANGE_EVENT,

@@ -40,10 +40,11 @@ class ResourceReassignmentError(Exception):
 class AdminModeException(Exception):
     """Custom exception to handle errors related to admin mode."""
 
-    def __init__(self, command_name: str, message: str):
+    def __init__(self, device_name, command_name: str, message: str):
         super().__init__(message)
         self.command_name = command_name
         self.message = message
+        self.device_name = device_name
 
 
 class ResourceNotPresentError(ValueError):

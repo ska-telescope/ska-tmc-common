@@ -252,6 +252,7 @@ def test_call_adapter_method(tango_context):
     subarray_adapter = factory.get_or_create_adapter(
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
+    subarray_adapter.adminMode = AdminMode.ONLINE
     tmc_leaf_node_command_obj = TmcLeafNodeCommand(
         EmptySubArrayComponentManager(
             logger=logger,

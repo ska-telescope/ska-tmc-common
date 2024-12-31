@@ -226,6 +226,7 @@ def test_apply_pm_setup_command(tango_context, json_factory):
     """This test verifies the functioning of ApplyPointingModel command"""
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
+    dish_master_device.adminMode = AdminMode.ONLINE
     global_pointing_data = json_factory("global_pointing_model")
     result, command_id = dish_master_device.ApplyPointingModel(
         global_pointing_data
@@ -240,7 +241,7 @@ def test_apply_pointing_model_with_missing_coefficient(
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
     global_pointing_data = json_factory("global_pointing_model")
-
+    dish_master_device.adminMode = AdminMode.ONLINE
     # Modify global_pointing_data to remove "IA"
     faulty_global_pointing_data = json.loads(global_pointing_data)
     del faulty_global_pointing_data["coefficients"]["IA"]
@@ -261,6 +262,7 @@ def test_apply_pointing_model_with_missing_coefficient(
 def test_process_band_params(tango_context, json_factory, band, param_attr):
     dev_factory = DevFactory()
     dish_master_device = dev_factory.get_device(DISH_DEVICE)
+    dish_master_device.adminMode = AdminMode.ONLINE
     global_pointing_data = json_factory("global_pointing_model")
     global_pointing_data = json.loads(global_pointing_data)
     global_pointing_data["band"] = band

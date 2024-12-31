@@ -40,10 +40,11 @@ def test_mccs_controller_release_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.adminMode = AdminMode.ONLINE
+    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_subarray_device.adminMode = AdminMode.ONLINE
     result, unique_id = mccs_controller_device.command_inout(
         "Release", release_argin_string
     )
-    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
 
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith("Release")
@@ -55,10 +56,11 @@ def test_mccs_controller_allocate_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_controller_device.adminMode = AdminMode.ONLINE
+    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_subarray_device.adminMode = AdminMode.ONLINE
     result, unique_id = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
-    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith("Allocate")
     assert mccs_subarray_device.obsstate == ObsState.RESOURCING

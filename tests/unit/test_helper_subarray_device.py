@@ -104,6 +104,7 @@ def test_helper_subarray_device_attributes(tango_context):
 def test_command_call_info(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     _, _ = subarray_device.command_inout("AssignResources", "")
     command_call_info_len = len(subarray_device.commandCallInfo)
     _, _ = subarray_device.command_inout("Configure", "")
@@ -116,6 +117,7 @@ def test_command_call_info(tango_context):
 def test_obs_state_transition(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     subarray_device.AddTransition('[["CONFIGURING", 0.1]]')
     assert (
         subarray_device.obsStateTransitionDuration == '[["CONFIGURING", 0.1]]'
@@ -125,6 +127,7 @@ def test_obs_state_transition(tango_context):
 def test_set_delay(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     subarray_device.SetDelayInfo('{"Configure": 3}')
     command_delay_info = json.loads(subarray_device.commandDelayInfo)
     assert command_delay_info["Configure"] == 3
@@ -133,6 +136,7 @@ def test_set_delay(tango_context):
 def test_clear_commandCallInfo(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     _, _ = subarray_device.command_inout("Configure", "")
     subarray_device.command_inout("ClearCommandCallInfo")
     command_call_info = subarray_device.commandCallInfo
@@ -142,6 +146,7 @@ def test_clear_commandCallInfo(tango_context):
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, command_id = subarray_device.command_inout("AssignResources", "")
     assert result[0] == ResultCode.FAILED
@@ -152,6 +157,7 @@ def test_set_defective(tango_context):
 def test_command_with_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     result, command_id = subarray_device.command_inout(command, "")
     command_call_info = subarray_device.commandCallInfo
     assert command_call_info[0] == (command, "")
@@ -164,6 +170,7 @@ def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.adminMode = AdminMode.ONLINE
+    subarray_device.adminMode = AdminMode.ONLINE
     result, command_id = subarray_device.command_inout(command)
     assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
@@ -172,6 +179,7 @@ def test_command_without_argin(tango_context, command):
 def test_assign_resources_defective(tango_context):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
     subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     subarray_device.adminMode = AdminMode.ONLINE
     result, command_id = subarray_device.AssignResources("")

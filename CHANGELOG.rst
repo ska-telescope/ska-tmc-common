@@ -14,7 +14,7 @@ Added
 --------
 [0.23.0]
 *********
-* clean up method of observable called before calling update task status
+* Adding Admin mode functinality in helper devices
 
 [0.22.14]
 *********

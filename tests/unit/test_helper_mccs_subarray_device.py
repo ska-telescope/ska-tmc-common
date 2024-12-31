@@ -2,6 +2,7 @@ import json
 
 import tango
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from ska_tango_testing.mock.placeholders import Anything
 
 from ska_tmc_common import DevFactory, FaultType
@@ -10,6 +11,7 @@ from tests.settings import MCCS_SUBARRAY_DEVICE
 
 def test_lrcr_event(tango_context, group_callback):
     mccs_subarray = DevFactory().get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_subarray.adminMode = AdminMode.ONLINE
     mccs_subarray.subscribe_event(
         "longRunningCommandResult",
         tango.EventType.CHANGE_EVENT,

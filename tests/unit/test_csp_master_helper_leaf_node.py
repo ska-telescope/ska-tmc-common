@@ -1,6 +1,7 @@
 import json
 
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 
 from ska_tmc_common import DevFactory
 from tests.settings import HELPER_CSP_MASTER_LEAF_DEVICE
@@ -18,7 +19,7 @@ def test_csp_master_leaf_node_loadDishConfig_command(
     csp_master_leaf_device = dev_factory.get_device(
         HELPER_CSP_MASTER_LEAF_DEVICE
     )
-
+    csp_master_leaf_device.adminMode = AdminMode.ONLINE
     input_json_str = json_factory("mid_cbf_param_file uri")
     return_code, _ = csp_master_leaf_device.LoadDishCfg(input_json_str)
 
@@ -44,5 +45,6 @@ def test_csp_master_leaf_node_SetDishVccValidationResult_command(
     csp_master_leaf_device = dev_factory.get_device(
         HELPER_CSP_MASTER_LEAF_DEVICE
     )
+    csp_master_leaf_device.adminMode = AdminMode.ONLINE
     csp_master_leaf_device.SetDishVccValidationResult("0")
     assert csp_master_leaf_device.DishVccMapValidationResult == "0"
