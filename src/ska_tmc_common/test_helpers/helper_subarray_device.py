@@ -291,7 +291,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Invalid adminMode value. Allowed values are"
                 + "'ONLINE','OFFLINE','ENGINEERING'."
             )
-            return 
+            return
         if self._admin_mode != value:
             self._admin_mode = value
             self.push_change_event("adminMode", self._admin_mode)
