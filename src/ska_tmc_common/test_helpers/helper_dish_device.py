@@ -525,8 +525,6 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands", command_id, is_dish=True)
 
-        # self._pointing_state = PointingState.READY
-        # self.push_change_event("pointingState", self._pointing_state)
         # Set the Dish Mode
         self.set_dish_mode(DishMode.STANDBY_FP)
         self.logger.info("AbortCommands Completed")
@@ -969,8 +967,6 @@ class HelperDishDevice(HelperDishLNDevice):
         """Updates the longrunningcommandresult  after a delay."""
         delay_value = self._delay
         with tango.EnsureOmniThread():
-            # self._pointing_state = PointingState.SLEW
-            # self.push_change_event("pointingState", self._pointing_state)
             time.sleep(delay_value)
             if not self.track_stop:
                 if self._pointing_state != PointingState.TRACK:
