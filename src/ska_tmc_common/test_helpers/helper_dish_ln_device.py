@@ -23,6 +23,7 @@ from tango import (
 from tango.server import attribute, command, device_property, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
@@ -514,6 +515,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Off(self):
         """
         This method invokes Off command on Dish Simulator.
@@ -521,11 +523,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed Dish simulator to invoke Off command")
         self.update_command_info(OFF, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Off")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -570,6 +567,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStandbyFPMode command on Dish Master
@@ -579,13 +577,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_SetStandbyFPMode"
         self.logger.info("Processing SetStandbyFPMode Command")
         self.update_command_info(SET_STANDBY_FP_MODE, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "SetStandbyFPMode"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyFPMode", command_id)
@@ -632,6 +623,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStandbyLPMode command on  Dish Master
@@ -643,13 +635,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetStandbyLPMode command"
         )
         self.update_command_info(SET_STANDBY_LP_MODE, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "SetStandbyLPMode"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyLPMode", command_id)
@@ -695,6 +680,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetOperateMode command on  Dish Master
@@ -706,13 +692,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "SetOperateMode"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode", command_id)
@@ -763,6 +742,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStowMode command on  Dish Master
@@ -774,13 +754,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetStowMode command"
         )
         self.update_command_info(SET_STOW_MODE, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "SetStowMode"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode", command_id)
@@ -828,6 +801,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Track command on  Dish Master
@@ -837,11 +811,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Track")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id)
@@ -883,6 +852,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
@@ -894,13 +864,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "TrackStop"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
@@ -945,6 +908,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AbortCommands command on  Dish Master
@@ -956,13 +920,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke AbortCommands command"
         )
         self.update_command_info(ABORT_COMMANDS, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "AbortCommands"
-        )
-        if not proceed:
-            return result, message
 
         self.logger.info("Abort Completed")
         self._pointing_state = PointingState.READY
@@ -1000,6 +957,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Configure command on  Dish Master
@@ -1013,13 +971,6 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke Configure command"
         )
         self.update_command_info(CONFIGURE, argin)
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "Configure"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure", command_id, is_dish=True)
@@ -1079,6 +1030,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def TrackLoadStaticOff(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1095,13 +1047,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info(
             "Instructed Dish simulator to invoke TrackLoadStaticOff command"
         )
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "TrackLoadStaticOff"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackLoadStaticOff", command_id)
@@ -1230,6 +1175,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on Dish Master
@@ -1241,11 +1187,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Scan")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
@@ -1267,6 +1208,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1317,6 +1259,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes EndScan command on Dish Master

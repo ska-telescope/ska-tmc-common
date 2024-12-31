@@ -14,6 +14,7 @@ from ska_telmodel.data import TMData
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -66,6 +67,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command on CSP Master
@@ -74,11 +76,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("On")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -95,6 +92,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command on CSP Master
@@ -103,11 +101,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Off")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -124,6 +117,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command on CSP Master
@@ -131,11 +125,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}_Standby"
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Standby")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -188,6 +177,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig

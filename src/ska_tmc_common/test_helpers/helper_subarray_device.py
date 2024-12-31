@@ -19,6 +19,7 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -645,28 +646,6 @@ class HelperSubArrayDevice(SKASubarray):
                 "Updated assignedResources attribute value to %s", str(argin)
             )
 
-    # AdminMode check helper
-    def _check_if_admin_mode_offline(
-        self, command_name: str
-    ) -> Tuple[bool, List[ResultCode], List[str]]:
-        """
-        Checks if the device is in OFFLINE adminMode.
-        :param command_name: Name of the command being executed
-        :return: Tuple indicating whether to proceed, ResultCode list, and
-        message list
-        """
-        if self._admin_mode == AdminMode.OFFLINE:
-            self.logger.warning(
-                "Device is in OFFLINE adminMode.Cannot process command: %s",
-                command_name,
-            )
-            return (
-                False,
-                [ResultCode.FAILED],
-                ["Device is in OFFLINE adminMode."],
-            )
-        return True, [], []
-
     def is_On_allowed(self) -> bool:
         """
         Check if command `On` is allowed in the current device
@@ -692,6 +671,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command on Subarray Device
@@ -700,11 +680,6 @@ class HelperSubArrayDevice(SKASubarray):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("On")
-        if not proceed:
-            return result, message
 
         self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
@@ -740,6 +715,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command on Subarray Device
@@ -748,11 +724,6 @@ class HelperSubArrayDevice(SKASubarray):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Off")
-        if not proceed:
-            return result, message
 
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
@@ -969,6 +940,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command on subarray devices
@@ -1014,6 +986,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def AssignResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1078,6 +1051,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseResources command on subarray device
@@ -1138,6 +1112,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes ReleaseAllResources command on
@@ -1201,6 +1176,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Configure command on subarray devices
@@ -1264,6 +1240,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on subarray devices.
@@ -1313,6 +1290,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes EndScan command on subarray devices.
@@ -1355,6 +1333,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes End command on subarray devices.
@@ -1400,6 +1379,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes GoToIdle command on subarray devices.
@@ -1438,6 +1418,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ObsReset(self) -> Tuple[List[ResultCode], List[str]]:
         """
         ObsReset Command
@@ -1478,6 +1459,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Abort command on subarray devices.
@@ -1531,6 +1513,7 @@ class HelperSubArrayDevice(SKASubarray):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Restart command on subarray devices

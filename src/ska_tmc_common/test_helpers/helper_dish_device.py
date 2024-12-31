@@ -17,6 +17,7 @@ from tango import AttrWriteType, DevFloat, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import (
     Band,
     DishMode,
@@ -470,6 +471,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetOperateMode command on  Dish Master
@@ -481,13 +483,6 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "SetOperateMode"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -518,6 +513,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AbortCommands command on  Dish Master
@@ -529,13 +525,6 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke AbortCommands command"
         )
         self.update_command_info(ABORT_COMMANDS, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "AbortCommands"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("AbortCommands", command_id, is_dish=True)
@@ -575,6 +564,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def TrackLoadStaticOff(
         self, argin: List[float]
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -594,13 +584,6 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Will be uncommented as a part of SAH-1530
         command_id = f"{time.time()}-TrackLoadStaticOff"
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "TrackLoadStaticOff"
-        )
-        if not proceed:
-            return result, message
 
         # Set offsets.
         cross_elevation = argin[0]
@@ -647,6 +630,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand1(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -662,13 +646,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand1 Command")
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_1, argin)
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "ConfigureBand1"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -717,6 +694,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand2(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -746,13 +724,6 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "ConfigureBand2"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -800,6 +771,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand3(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -810,13 +782,6 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_ConfigureBand3"
 
         self.logger.info("Processing ConfigureBand3 Command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "ConfigureBand3"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -864,6 +829,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand4(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -873,13 +839,6 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         command_id = f"{time.time()}_ConfigureBand4"
         self.logger.info("Processing ConfigureBand4 Command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "ConfigureBand4"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -927,6 +886,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand5a(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -936,13 +896,6 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         command_id = f"{time.time()}_ConfigureBand5a"
         self.logger.info("Processing ConfigureBand5a Command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "ConfigureBand5a"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -989,6 +942,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def ConfigureBand5b(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -999,13 +953,6 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_ConfigureBand5b"
 
         self.logger.info("Processing ConfigureBand5b Command")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "ConfigureBand5b"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault(
@@ -1057,6 +1004,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Track command on  Dish Master
@@ -1066,11 +1014,6 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}-Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Track")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
@@ -1105,6 +1048,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method sets scanID attribute of Dish Master.
@@ -1114,11 +1058,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Scan")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
@@ -1150,6 +1089,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method clears the scanID attribute of Dish Master
@@ -1159,11 +1099,6 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_EndScan"
         # to record the command data
         self.update_command_info(END_SCAN)
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("EndScan")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id, is_dish=True)
@@ -1230,6 +1165,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_archive_event(bandPointingModelParams, values_list)
 
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
+    @admin_mode_check()
     def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1307,6 +1243,7 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
@@ -1318,13 +1255,6 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "TrackStop"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)

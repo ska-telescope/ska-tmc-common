@@ -14,6 +14,7 @@ from tango import DevState
 from tango.server import command, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ALLOCATE,
@@ -95,6 +96,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Allocate command on MCCS
@@ -104,13 +106,6 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-Allocate"
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "Allocate"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -160,6 +155,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
@@ -170,11 +166,6 @@ class HelperMCCSController(HelperBaseDevice):
         """
 
         command_id = f"{time.time()}-Release"
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline("Release")
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
@@ -222,6 +213,7 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
+    @admin_mode_check()
     def RestartSubarray(
         self, argin: int
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -232,13 +224,6 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"
-
-        # AdminMode check
-        proceed, result, message = self._check_if_admin_mode_offline(
-            "RestartSubarray"
-        )
-        if not proceed:
-            return result, message
 
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
