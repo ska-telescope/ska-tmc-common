@@ -25,12 +25,12 @@ def check_if_admin_mode_offline(
     :rtype: Tuple[bool, List[ResultCode], List[str]]
     """
     # pylint:disable=protected-access
-    admin_mode = class_instance._admin_mode
+    admin_mode = AdminMode(class_instance._admin_mode)
     device_name = class_instance.__class__.__name__
-    if admin_mode == AdminMode.OFFLINE:
+    if admin_mode != AdminMode.ONLINE:
         error_message = (
-            f"Device: {device_name} is in OFFLINE adminMode."
-            f"Cannot process command: {command_name}"
+            f"Device: {device_name} is in {admin_mode.name}"
+            + f" adminMode.Cannot process command: {command_name}"
         )
         if hasattr(class_instance, "logger"):
             class_instance.logger.warning(error_message)
@@ -63,15 +63,18 @@ def admin_mode_check(command_name: Optional[str] = None):
             :type args: Any
             :param kwargs: Keyword arguments for the wrapped function.
             :type kwargs: Any
+            :raises AdminModeException: If the device is in OFFLINE adminMode.
             :return: The result of the admin mode check
             :rtype: Tuple[Any, Any]
             """
             actual_command_name = command_name or func.__name__
 
-            # Directly access the admin_mode from the class instance
-            check_if_admin_mode_offline(class_instance, actual_command_name)
-
-            # Execute the actual function if no exception is raised
+            try:
+                check_if_admin_mode_offline(
+                    class_instance, actual_command_name
+                )
+            except AdminModeException as exp:
+                raise exp
             return func(class_instance, *args, **kwargs)
 
         return wrapper
