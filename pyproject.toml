@@ -81,6 +81,7 @@ jsonschema-specifications = "*"
 referencing = "*"
 rpds-py = "*"
 ska-control-model="*"
+MarkupSafe = "3.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
