@@ -13,7 +13,7 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import AdminMode, HealthState, ObsState
+from ska_tango_base.control_model import HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -168,6 +168,14 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
 
         return ResultCode.OK, ""
 
+    def start_communicating(self) -> None:
+        """This method is not used by TMC."""
+        self.logger.info("Start communicating method called")
+
+    def stop_communicating(self) -> None:
+        """This method is not used by TMC."""
+        self.logger.info("Stop communicating method called")
+
     @property
     def assigned_resources(self) -> list:
         """
@@ -216,7 +224,6 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
-        self._admin_mode: AdminMode = AdminMode.OFFLINE
 
     # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -246,14 +253,6 @@ class HelperSubArrayDevice(SKASubarray):
     def assignedResources(self) -> str:
         return self._assigned_resources
 
-    # New adminMode attribute
-    adminMode = attribute(
-        dtype=AdminMode,
-        access=AttrWriteType.READ_WRITE,
-        label="Admin Mode",
-        doc="Admin mode of the device.",
-    )
-
     class InitCommand(SKASubarray.InitCommand):
         """A class for the HelperSubArrayDevice's init_device() "command"."""
 
@@ -270,35 +269,6 @@ class HelperSubArrayDevice(SKASubarray):
             self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event("adminMode", True, False)
             return ResultCode.OK, ""
-
-    # New read method for adminMode
-    def read_adminMode(self) -> AdminMode:
-        """
-        This method reads the adminMode value of the device.
-        :return: admin_mode value
-        :rtype: AdminMode
-        """
-        return self._admin_mode
-
-    # New write method for adminMode
-    def write_adminMode(self, value: AdminMode) -> None:
-        """
-        This method writes the adminMode value of the device.
-        """
-        if value not in [
-            AdminMode.ONLINE,
-            AdminMode.OFFLINE,
-            AdminMode.ENGINEERING,
-        ]:
-            self.logger.error(
-                "Invalid adminMode value. Allowed values are"
-                + "'ONLINE','OFFLINE','ENGINEERING'."
-            )
-            return
-        if self._admin_mode != value:
-            self._admin_mode = value
-            self.push_change_event("adminMode", self._admin_mode)
-            self.logger.info("AdminMode set to %s", self._admin_mode)
 
     def read_scanId(self) -> int:
         """
