@@ -32,7 +32,8 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
-        self._admin_mode: AdminMode = AdminMode.OFFLINE
+        self._admin_mode: AdminMode = AdminMode.ONLINE
+        self._isAdminModeEnabled: bool = False
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -65,6 +66,21 @@ class HelperBaseDevice(SKABaseDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+    isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+
+    def read_isAdminModeEnabled(self) -> bool:
+        """
+        This method is used to read the attribute value for isAdminModeEnabled.
+        :return: isAdminModeEnabled
+        """
+        return self._isAdminModeEnabled
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        This method is used to write the attribute value for isAdminModeEnabled
+        :param value: The new value to set for isAdminModeEnabled.
+        """
+        self._isAdminModeEnabled = value
 
     def read_delay(self) -> int:
         """

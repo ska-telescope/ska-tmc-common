@@ -10,10 +10,12 @@ import time
 from typing import List, Tuple
 
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from ska_telmodel.data import TMData
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
+from ska_tmc_common import DevFactory
 from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
@@ -26,6 +28,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         super().init_device()
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
@@ -44,6 +47,40 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self._device.set_change_event("sourceDishVccConfig", True, False)
             self._device.set_change_event("dishVccConfig", True, False)
             return (ResultCode.OK, "")
+
+    def read_adminMode(self) -> AdminMode:
+        """
+        This method reads the adminMode value of the device.
+        :return: admin_mode value
+        :rtype: AdminMode
+        """
+        return self._admin_mode
+
+    # New write method for adminMode
+    def write_adminMode(self, value: AdminMode) -> None:
+        """
+        This method writes the adminMode value of the device.
+        """
+        if value not in [
+            AdminMode.ONLINE,
+            AdminMode.OFFLINE,
+            AdminMode.ENGINEERING,
+        ]:
+            self.logger.error(
+                "Invalid adminMode value. Allowed values are"
+                + "'ONLINE','OFFLINE','ENGINEERING'."
+            )
+            return
+        if self._admin_mode != value:
+            self._admin_mode = value
+            csp_subarray_device_name = "low-csp/subarray/01"
+            dev_factory = DevFactory()
+            csp_subarray_proxy = dev_factory.get_device(
+                csp_subarray_device_name
+            )
+            csp_subarray_proxy.adminMode = value
+            self.logger.info("AdminMode set to %s", self._admin_mode)
+            self.push_change_event("adminMode", self._admin_mode)
 
     def read_sourceDishVccConfig(self) -> str:
         """

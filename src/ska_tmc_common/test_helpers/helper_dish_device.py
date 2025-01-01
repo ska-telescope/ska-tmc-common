@@ -140,6 +140,26 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
 
+    def read_isAdminModeEnabled(self):
+        """
+        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
+        :raises AttributeError: Always raised to block access to the attribute.
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        Raise an AttributeError indicating that 'isAdminModeEnabled'
+        cannot be modified.
+        :param value: The value attempted to set for isAdminModeEnabled.
+        :raises AttributeError: Always raised to access to the attribute..
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
     def read_band1PointingModelParams(self) -> List[float]:
         """
         This method reads the band1PointingModelParams attribute of a dish.

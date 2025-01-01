@@ -13,7 +13,7 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -224,6 +224,7 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
 
     # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -233,6 +234,26 @@ class HelperSubArrayDevice(SKASubarray):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+
+    def read_isAdminModeEnabled(self):
+        """
+        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
+        :raises AttributeError: Always raised to block access to the attribute.
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        Raise an AttributeError indicating that 'isAdminModeEnabled'
+        cannot be modified.
+        :param value: The value attempted to set for isAdminModeEnabled.
+        :raises AttributeError: Always raised to access to the attribute..
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
 
     commandCallInfo = attribute(
         dtype=(("str",),),

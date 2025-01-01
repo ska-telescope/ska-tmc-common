@@ -8,7 +8,7 @@ from typing import Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -46,6 +46,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def init_device(self):
         super().init_device()
         self._state = DevState.OFF
+        self._admin_mode: AdminMode = AdminMode.ONLINE
         # pylint: disable=line-too-long
         self.timers = []
         self._receive_addresses = json.dumps(
@@ -98,6 +99,26 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
+
+    def read_isAdminModeEnabled(self):
+        """
+        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
+        :raises AttributeError: Always raised to block access to the attribute.
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        Raise an AttributeError indicating that 'isAdminModeEnabled'
+        cannot be modified.
+        :param value: The value attempted to set for isAdminModeEnabled.
+        :raises AttributeError: Always raised to access to the attribute..
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
 
     def read_delay(self) -> int:
         """
