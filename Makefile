@@ -30,7 +30,7 @@ ADD_ARGS ?= ## Additional args to pass to pytest
 # KUBE_NAMESPACE defines the Kubernetes Namespace that will be deployed to
 # using Helm.  If this does not already exist it will be created
 KUBE_NAMESPACE ?= ska-tmc-common
-Admin_Mode_Feature ?=true #set this value to false to disable admin model check
+
 # HELM_RELEASE is the release that all Kubernetes resources will be labelled
 # with
 HELM_RELEASE ?= test

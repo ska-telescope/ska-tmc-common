@@ -1,6 +1,5 @@
-"""Admin mode check decorator file"""
+"""Decorator for checking admin modes on helper devices."""
 
-import os
 from functools import wraps
 from typing import Any, Callable, List, Optional, Tuple
 
@@ -31,7 +30,7 @@ def check_if_admin_mode_offline(
     if admin_mode != AdminMode.ONLINE:
         error_message = (
             f"Device: {device_name} is in {admin_mode.name}"
-            + f" adminMode. Cannot process command: {command_name}"
+            + f" adminMode.Cannot process command: {command_name}"
         )
         if hasattr(class_instance, "logger"):
             class_instance.logger.warning(error_message)
@@ -70,23 +69,12 @@ def admin_mode_check(command_name: Optional[str] = None):
             """
             actual_command_name = command_name or func.__name__
 
-            admin_mode_feature = (
-                os.getenv("Admin_Mode_Feature", "false").lower() == "true"
-            )
-
-            if admin_mode_feature:
-                try:
-                    check_if_admin_mode_offline(
-                        class_instance, actual_command_name
-                    )
-                except AdminModeException as exp:
-                    raise exp
-            else:
-                if hasattr(class_instance, "logger"):
-                    class_instance.logger.info(
-                        "Admin_Mode_Feature is disabled."
-                    )
-
+            try:
+                check_if_admin_mode_offline(
+                    class_instance, actual_command_name
+                )
+            except AdminModeException as exp:
+                raise exp
             return func(class_instance, *args, **kwargs)
 
         return wrapper
