@@ -9,6 +9,7 @@ import threading
 import time
 from typing import List, Tuple
 
+from ska_control_model.admin_mode import AdminMode
 from ska_tango_base.commands import ResultCode
 from ska_telmodel.data import TMData
 from tango.server import AttrWriteType, attribute, command, run
@@ -27,6 +28,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._dish_vcc_config: str = ""
         self._dish_vcc_map_validation_result = ResultCode.STARTED
         self._memorized_dish_vcc_map: str = ""
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ

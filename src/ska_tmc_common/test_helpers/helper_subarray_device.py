@@ -197,6 +197,7 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         self._health_state = HealthState.OK
         self._isSubsystemAvailable = True
+        self._isAdminModeEnabled: bool = True
         self._command_in_progress = ""
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
@@ -234,6 +235,7 @@ class HelperSubArrayDevice(SKASubarray):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+    isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
 
     def read_isAdminModeEnabled(self):
         """

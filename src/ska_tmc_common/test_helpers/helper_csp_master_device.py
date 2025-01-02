@@ -17,6 +17,10 @@ from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import DevFactory
 from ska_tmc_common.admin_mode_decorator import admin_mode_check
+from ska_tmc_common.test_helpers.constants import (
+    CSP_SUBARRAY_DEVICE_LOW,
+    CSP_SUBARRAY_DEVICE_MID,
+)
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -29,9 +33,16 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self._source_dish_vcc_config: str = ""
         self._dish_vcc_config: str = ""
         self._admin_mode: AdminMode = AdminMode.OFFLINE
+        self.dev_name = self.get_name()
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
+    )
+    adminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ_WRITE,
+        label="Admin Mode",
+        doc="Admin mode of the device.",
     )
     dishVccConfig = attribute(dtype="DevString", access=AttrWriteType.READ)
 
@@ -73,7 +84,10 @@ class HelperCspMasterDevice(HelperBaseDevice):
             return
         if self._admin_mode != value:
             self._admin_mode = value
-            csp_subarray_device_name = "low-csp/subarray/01"
+            if "low" in self.dev_name:
+                csp_subarray_device_name = CSP_SUBARRAY_DEVICE_LOW
+            else:
+                csp_subarray_device_name = CSP_SUBARRAY_DEVICE_MID
             dev_factory = DevFactory()
             csp_subarray_proxy = dev_factory.get_device(
                 csp_subarray_device_name

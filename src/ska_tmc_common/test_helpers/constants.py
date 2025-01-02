@@ -21,7 +21,8 @@ RELEASE_ALL_RESOURCES = "ReleaseAllResources"
 GO_TO_IDLE = "GoToIdle"
 SLEW = "Slew"
 RESET = "Reset"
-
+CSP_SUBARRAY_DEVICE_LOW = "low-csp/subarray/01"
+CSP_SUBARRAY_DEVICE_MID = "mid-csp/subarray/01"
 ALLOCATE = "Allocate"
 RELEASE = "Release"
 

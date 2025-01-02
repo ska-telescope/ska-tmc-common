@@ -73,7 +73,7 @@ def admin_mode_check():
             )
 
             if not admin_mode_enabled:
-                return True
+                return False
 
             return func(class_instance, *args, **kwargs)
 
