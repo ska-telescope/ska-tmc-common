@@ -174,7 +174,6 @@ def test_command_without_argin(tango_context, command):
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.adminMode = AdminMode.ONLINE
-    subarray_device.adminMode = AdminMode.ONLINE
     result, command_id = subarray_device.command_inout(command)
     assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
@@ -185,7 +184,6 @@ def test_assign_resources_defective(tango_context):
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
     subarray_device.adminMode = AdminMode.ONLINE
     subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
-    subarray_device.adminMode = AdminMode.ONLINE
     result, command_id = subarray_device.AssignResources("")
     assert result[0] == ResultCode.FAILED
     assert "AssignResources" in command_id[0]
