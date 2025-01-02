@@ -139,6 +139,16 @@ class HelperCspMasterDevice(HelperBaseDevice):
         """
         return self._dish_vcc_config
 
+    @admin_mode_check()
+    def is_On_allowed(self) -> bool:
+        """
+        This method checks if the On command is allowed
+        in current state.
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        """
+        return True
+
     @command(
         dtype_in="DevVarStringArray",
         doc_in="Input argument as an empty list",
@@ -163,6 +173,16 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.logger.info("On command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
+    def is_Off_allowed(self) -> bool:
+        """
+        This method checks if the Off command is allowed
+        in current state.
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        """
+        return True
+
     @command(
         dtype_in="DevVarStringArray",
         doc_in="Input argument as an empty list",
@@ -186,6 +206,16 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self.push_change_event("State", self.dev_state())
             self.logger.info("Off command completed.")
         return [ResultCode.QUEUED], [command_id]
+
+    @admin_mode_check()
+    def is_Standby_allowed(self) -> bool:
+        """
+        This method checks if the Standby command is allowed
+        in current state.
+        :return: ``True`` if the command is allowed
+        :rtype: bool
+        """
+        return True
 
     @command(
         dtype_in="DevVarStringArray",
