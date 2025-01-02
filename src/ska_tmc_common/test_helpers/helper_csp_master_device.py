@@ -104,7 +104,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def On(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command on CSP Master
@@ -129,7 +128,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Off(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command on CSP Master
@@ -154,7 +152,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Standby(self, argin: list) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command on CSP Master
@@ -185,6 +182,7 @@ class HelperCspMasterDevice(HelperBaseDevice):
         self._dish_vcc_config = ""
         return [ResultCode.OK], [""]
 
+    @admin_mode_check()
     def is_LoadDishCfg_allowed(self) -> bool:
         """
         This method checks if the LoadDishCfg command is allowed
@@ -214,7 +212,6 @@ class HelperCspMasterDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig

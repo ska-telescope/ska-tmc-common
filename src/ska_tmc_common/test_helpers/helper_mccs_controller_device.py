@@ -89,6 +89,7 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         self.defective_params = input_dict
 
+    @admin_mode_check()
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
@@ -116,7 +117,6 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Allocate(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Allocate command on MCCS
@@ -149,6 +149,7 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Allocate invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Release_allowed(self) -> bool:
         """
         Check if command `Release` is allowed in the current
@@ -175,7 +176,6 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Release(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Release command on
@@ -208,6 +208,7 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Release command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_RestartSubarray_allowed(self) -> bool:
         """
         This method checks if the RestartSubarray command is allowed in the
@@ -233,7 +234,6 @@ class HelperMCCSController(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def RestartSubarray(
         self, argin: int
     ) -> Tuple[List[ResultCode], List[str]]:

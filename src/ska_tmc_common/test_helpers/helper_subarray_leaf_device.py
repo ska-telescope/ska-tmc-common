@@ -202,6 +202,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._obs_state = obs_state
             self.push_change_event("obsState", self._obs_state)
 
+    @admin_mode_check()
     def is_AssignResources_allowed(self) -> bool:
         """
         This method checks if the AssignResources command is allowed or not
@@ -226,7 +227,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def AssignResources(
         self, argin: str = ""
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -265,6 +265,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Configure_allowed(self) -> bool:
         """
         This method checks the Configure is allowed in the current device
@@ -291,7 +292,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Configure command.
@@ -327,6 +327,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Scan_allowed(self) -> bool:
         """
         This method checks if the Scan command is allowed in the current
@@ -353,7 +354,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Scan command.
@@ -378,6 +378,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> bool:
         """
         This method checks if the EndScan command is allowed in the current
@@ -402,7 +403,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke EndScan command.
@@ -421,6 +421,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("EndScan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_End_allowed(self) -> bool:
         """
         This method checks if the End command is allowed in the current
@@ -445,7 +446,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def End(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke End command.
@@ -466,6 +466,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_GoToIdle_allowed(self) -> bool:
         """
         This method checks if the GoToIdle command is allowed in the current
@@ -490,7 +491,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def GoToIdle(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke GoToIdle command.
@@ -507,6 +507,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.push_command_result(ResultCode.OK, "GoToIdle")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Abort_allowed(self) -> bool:
         """
         This method checks if the Abort command is allowed in the current
@@ -531,7 +532,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Abort command.
@@ -562,6 +562,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Restart_allowed(self) -> bool:
         """
         This method checks if the Restart command is allowed in the current
@@ -586,7 +587,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Restart(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke Restart command.
@@ -613,6 +613,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("Restart command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
         This method checks if the ReleaseAllResources command is allowed in
@@ -637,7 +638,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ReleaseAllResources(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This is the method to invoke ReleaseAllResources command.
@@ -668,6 +668,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseResources_allowed(self) -> bool:
         """
         This method checks if the ReleaseResources command is allowed in the
@@ -694,7 +695,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ReleaseResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:

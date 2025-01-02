@@ -13,7 +13,6 @@ from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
 from tango.server import command, run
 
-from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.constants import RELEASE_RESOURCES
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
@@ -31,7 +30,6 @@ class HelperMccsSubarrayDevice(HelperSubArrayDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ReleaseResources(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
         This method simulates ReleaseResources command on MCCS subarray device

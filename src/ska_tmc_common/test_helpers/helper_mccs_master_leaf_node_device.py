@@ -39,6 +39,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
+    @admin_mode_check()
     def is_AssignResources_allowed(self) -> bool:
         """
         Check if command `AssignResources` is allowed in the current device
@@ -66,7 +67,6 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def AssignResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -95,6 +95,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
         Check if command `ReleaseAllResources` is allowed in the current
@@ -122,7 +123,6 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ReleaseAllResources(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:

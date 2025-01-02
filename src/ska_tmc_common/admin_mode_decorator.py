@@ -1,7 +1,7 @@
 """Decorator to check if admin mode is valid to execute the command"""
 
 from functools import wraps
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Union
 
 from ska_tango_base.control_model import AdminMode
 
@@ -41,14 +41,12 @@ def check_if_admin_mode_offline(
     return True
 
 
-def admin_mode_check(command_name: Optional[str] = None):
+def admin_mode_check():
     """
     A decorator to check if admin mode is enabled or offline before
     executing the command. If `class_instance._isAdminModeEnabled` is
     False, skips the check and proceeds with the command.
 
-    :param command_name: The name of the command to be checked.
-    :type command_name: Optional[str]
     :return: A wrapped function that performs the admin mode check.
     :rtype: Callable
     """
@@ -68,7 +66,7 @@ def admin_mode_check(command_name: Optional[str] = None):
             :return: The result of the wrapped function along with messages.
             :rtype: bool
             """
-            actual_command_name = command_name or func.__name__
+            actual_command_name = func.__name__
 
             admin_mode_enabled = check_if_admin_mode_offline(
                 class_instance, actual_command_name
@@ -80,9 +78,5 @@ def admin_mode_check(command_name: Optional[str] = None):
             return func(class_instance, *args, **kwargs)
 
         return wrapper
-
-    # Allow direct use without parentheses
-    if callable(command_name):
-        return decorator(command_name)
 
     return decorator

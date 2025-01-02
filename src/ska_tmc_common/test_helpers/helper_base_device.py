@@ -372,6 +372,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "HealthState is set to: %s", self._health_state.name
             )
 
+    @admin_mode_check()
     def is_On_allowed(self) -> bool:
         """
         This method checks if the On command is allowed in current state.
@@ -395,7 +396,6 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def On(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes On command
@@ -416,6 +416,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("On command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off command is allowed in current state.
@@ -439,7 +440,6 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Off(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Off command
@@ -460,6 +460,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("Off command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby command is allowed in current state.
@@ -480,7 +481,6 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Standby(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Standby command
@@ -502,6 +502,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("Standy command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Disable_allowed(self) -> bool:
         """
         This method checks if the Disable command is allowed in current state.
@@ -525,7 +526,6 @@ class HelperBaseDevice(SKABaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Disable(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Disable command

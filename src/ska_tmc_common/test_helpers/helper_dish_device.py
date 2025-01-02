@@ -323,6 +323,7 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return self._kvalue
 
+    @admin_mode_check()
     def is_SetKValue_allowed(self) -> bool:
         """
         This method checks if the SetKValue Command is allowed in current
@@ -491,7 +492,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetOperateMode command on  Dish Master
@@ -533,7 +533,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AbortCommands command on  Dish Master
@@ -557,6 +556,7 @@ class HelperDishDevice(HelperDishLNDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
         This method checks if the TrackLoadStaticOff command is allowed in
@@ -582,7 +582,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def TrackLoadStaticOff(
         self, argin: List[float]
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -623,6 +622,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ConfigureBand1_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand1 command is allowed in current
@@ -648,7 +648,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ConfigureBand1(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -686,6 +685,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand1 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ConfigureBand2_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand2 Command is allowed in current
@@ -712,7 +712,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ConfigureBand2(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -764,6 +763,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand2 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ConfigureBand3_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand3 Command is allowed in current
@@ -789,7 +789,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ConfigureBand3(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -822,6 +821,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand3 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ConfigureBand4_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand4 Command is allowed in current
@@ -847,7 +847,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ConfigureBand4(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -879,6 +878,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand4 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ConfigureBand5a_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand5a Command is allowed in current
@@ -904,7 +904,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ConfigureBand5a(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -935,6 +934,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand5a command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ConfigureBand5b_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand5b Command is allowed in current
@@ -960,7 +960,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ConfigureBand5b(
         self, argin: bool
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1022,7 +1021,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Track command on  Dish Master
@@ -1046,6 +1044,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.thread.start()
         return ([ResultCode.QUEUED], [command_id])
 
+    @admin_mode_check()
     def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
@@ -1070,7 +1069,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method sets scanID attribute of Dish Master.
@@ -1087,6 +1085,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(ResultCode.OK, "Scan", command_id=command_id)
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the EndScan Command is allowed in current State.
@@ -1111,7 +1110,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method clears the scanID attribute of Dish Master
@@ -1187,7 +1185,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_archive_event(bandPointingModelParams, values_list)
 
     @command(dtype_in="str", dtype_out="DevVarLongStringArray")
-    @admin_mode_check()
     def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1240,6 +1237,7 @@ class HelperDishDevice(HelperDishLNDevice):
             self.logger.exception("Failed to decode JSON: %s", e)
             return [ResultCode.FAILED], ["Failed to decode JSON"]
 
+    @admin_mode_check()
     def is_TrackStop_allowed(self) -> bool:
         """
         This method checks if the TrackStop Command is allowed in current
@@ -1265,7 +1263,6 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master

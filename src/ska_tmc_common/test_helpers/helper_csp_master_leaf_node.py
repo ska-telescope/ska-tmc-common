@@ -115,6 +115,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._dish_vcc_config = ""
         return [ResultCode.OK], [""]
 
+    @admin_mode_check()
     def is_LoadDishCfg_allowed(self) -> bool:
         """
         This method checks if the LoadDishCfg command is allowed
@@ -131,7 +132,6 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def LoadDishCfg(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This command updates attribute sourceDishVccConfig and dishVccConfig

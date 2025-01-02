@@ -418,6 +418,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         start_thread.start()
 
+    @admin_mode_check()
     def is_SetKValue_allowed(self) -> bool:
         """
         This method checks if the SetKValue Command is allowed in current
@@ -490,6 +491,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
 
+    @admin_mode_check()
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off Command is
@@ -515,7 +517,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Off(self):
         """
         This method invokes Off command on Dish Simulator.
@@ -542,6 +543,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             command_id,
         )
 
+    @admin_mode_check()
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
         This method checks if the is_SetStandbyFPMode_allowed Command is
@@ -567,7 +569,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def SetStandbyFPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStandbyFPMode command on Dish Master
@@ -598,6 +599,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
         This method checks if the is_SetStandbyLPMode_allowed Command is
@@ -623,7 +625,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def SetStandbyLPMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStandbyLPMode command on  Dish Master
@@ -656,6 +657,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_SetOperateMode_allowed(self) -> bool:
         """
         This method checks if the SetOperateMode Command is allowed in current
@@ -680,7 +682,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def SetOperateMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetOperateMode command on  Dish Master
@@ -718,6 +719,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_SetStowMode_allowed(self) -> bool:
         """
         This method checks if the SetStowMode Command is allowed in current
@@ -742,7 +744,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def SetStowMode(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes SetStowMode command on  Dish Master
@@ -777,6 +778,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_Track_allowed(self) -> bool:
         """
         This method checks if the Track Command is allowed in current
@@ -801,7 +803,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Track(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Track command on  Dish Master
@@ -827,6 +828,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Track command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_TrackStop_allowed(self) -> bool:
         """
         This method checks if the TrackStop Command is allowed in current
@@ -852,7 +854,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def TrackStop(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes TrackStop command on  Dish Master
@@ -884,6 +885,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("TrackStop command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_AbortCommands_allowed(self) -> bool:
         """
         This method checks if the AbortCommands command is allowed in current
@@ -908,7 +910,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def AbortCommands(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes AbortCommands command on  Dish Master
@@ -932,6 +933,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_Configure_allowed(self) -> bool:
         """
         This method checks if the Configure Command is allowed in current
@@ -957,7 +959,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Configure(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Configure command on  Dish Master
@@ -1005,6 +1006,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Configure command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
         This method checks if the TrackLoadStaticOff command is allowed in
@@ -1030,7 +1032,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def TrackLoadStaticOff(
         self, argin: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1150,7 +1151,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     #     """
     #     # TBD: Dish mode change
     #     return ([ResultCode.OK], [""])
-
+    @admin_mode_check()
     def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
@@ -1175,7 +1176,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def Scan(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes Scan command on Dish Master
@@ -1208,7 +1208,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def ApplyPointingModel(
         self, global_pointing_data: str
     ) -> Tuple[List[ResultCode], List[str]]:
@@ -1235,6 +1234,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the EndScan Command is allowed in current State.
@@ -1259,7 +1259,6 @@ class HelperDishLNDevice(HelperBaseDevice):
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
-    @admin_mode_check()
     def EndScan(self) -> Tuple[List[ResultCode], List[str]]:
         """
         This method invokes EndScan command on Dish Master

@@ -14,7 +14,6 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import FaultType
-from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_subarray_device import (
     HelperSubArrayDevice,
 )
@@ -129,7 +128,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         return json.dumps(self.defective_params)
 
     @command()
-    @admin_mode_check()
     def On(self):
         """
         This method simulates On command on SDP Subarray
@@ -139,7 +137,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self.push_change_event("State", self.dev_state())
 
     @command()
-    @admin_mode_check()
     def Off(self):
         """
         This method simulates OFF command on SDP Subarray
@@ -152,7 +149,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
     )
-    @admin_mode_check()
     def AssignResources(self, argin):
         """
         This method simulates AssignResources command on SdpSubarray
@@ -218,7 +214,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         thread.start()
 
     @command()
-    @admin_mode_check()
     def ReleaseResources(self):
         """This method invokes ReleaseResources command on SdpSubarray
         device."""
@@ -239,7 +234,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
 
     @command()
-    @admin_mode_check()
     def ReleaseAllResources(self):
         """This method invokes ReleaseAllResources command on SdpSubarray
         device."""
@@ -261,7 +255,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
     )
-    @admin_mode_check()
     def Configure(self, argin):
         """
         This method invokes Configure command on SdpSubarray device.
@@ -334,7 +327,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         dtype_in=("str"),
         doc_in="The input string in JSON format.",
     )
-    @admin_mode_check()
     def Scan(self, argin):
         """
         This method invokes Scan command on SdpSubarray device.
@@ -364,7 +356,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         )
 
     @command()
-    @admin_mode_check()
     def EndScan(self):
         """This method invokes EndScan command on SdpSubarray device."""
 
@@ -389,7 +380,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
     @command()
-    @admin_mode_check()
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
@@ -413,7 +403,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
     @command()
-    @admin_mode_check()
     def Abort(self):
         """This method invokes Abort command on SdpSubarray device."""
         self.update_command_info(ABORT)
@@ -435,7 +424,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         thread.start()
 
     @command()
-    @admin_mode_check()
     def Restart(self):
         """This method invokes Restart command on SdpSubarray device."""
         self.update_command_info(RESTART)
