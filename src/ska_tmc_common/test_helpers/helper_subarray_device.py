@@ -1147,6 +1147,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Configure_allowed(self) -> bool:
         """
         Check if command `Configure` is allowed in the current device state.
@@ -1210,6 +1211,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Scan_allowed(self) -> bool:
         """
         Check if command `Scan` is allowed in the current device state.
@@ -1261,6 +1263,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Scan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> bool:
         """
         Check if command `EndScan` is allowed in the current device state.
@@ -1303,6 +1306,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("EndScan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_End_allowed(self) -> bool:
         """
         Check if command `End` is allowed in the current device state.
@@ -1348,6 +1352,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("End command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_GoToIdle_allowed(self) -> bool:
         """
         Check if command `GoToIdle` is allowed in the current device state.
@@ -1389,6 +1394,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("GoToIdle command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ObsReset_allowed(self) -> bool:
         """
         Check if command `ObsReset` is allowed in the current device state.
@@ -1426,6 +1432,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("ObsReset command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Abort_allowed(self) -> bool:
         """
         Check if command `Abort` is allowed in the current device state.
@@ -1479,6 +1486,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Abort command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Restart_allowed(self) -> bool:
         """
         Check if command `Restart` is allowed in the current device state.
