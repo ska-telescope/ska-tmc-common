@@ -9,15 +9,21 @@ from ska_tmc_common import (
     AdapterFactory,
     AdapterType,
     DevFactory,
+    HelperBaseDevice,
     HelperCspMasterDevice,
     HelperCspMasterLeafDevice,
+    HelperMCCSController,
+    HelperSdpSubarray,
     HelperSubArrayDevice,
 )
 from tests.settings import (
     CSP_DEVICE,
     CSP_SUBARRAY_DEVICE_LOW,
     CSP_SUBARRAY_DEVICE_MID,
+    HELPER_BASE_DEVICE,
     HELPER_CSP_MASTER_LEAF_DEVICE,
+    HELPER_MCCS_CONTROLLER,
+    HELPER_SDP_SUBARRAY_DEVICE,
     HELPER_SUBARRAY_DEVICE,
 )
 
@@ -45,10 +51,28 @@ def devices_to_load():
                 {"name": CSP_DEVICE},
             ],
         },
+        {
+            "class": HelperMCCSController,
+            "devices": [
+                {"name": HELPER_MCCS_CONTROLLER},
+            ],
+        },
+        {
+            "class": HelperBaseDevice,
+            "devices": [
+                {"name": HELPER_BASE_DEVICE},
+            ],
+        },
+        {
+            "class": HelperSdpSubarray,
+            "devices": [
+                {"name": HELPER_SDP_SUBARRAY_DEVICE},
+            ],
+        },
     )
 
 
-def test_admin_mode_default_admin_mode(tango_context):
+def test_admin_mode_default_admin_mode_subarray_helper(tango_context):
     """test invocation with admin mode online"""
     factory = AdapterFactory()
 
@@ -56,6 +80,46 @@ def test_admin_mode_default_admin_mode(tango_context):
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
     assert subarray_adapter.proxy.adminMode == AdminMode.OFFLINE
+
+
+def test_admin_mode_default_admin_mode_mccs_controller(tango_context):
+    """test invocation with admin mode online"""
+    factory = AdapterFactory()
+
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_MCCS_CONTROLLER, AdapterType.MCCS_CONTROLLER
+    )
+    assert subarray_adapter.proxy.adminMode == AdminMode.OFFLINE
+
+
+def test_admin_mode_default_admin_mode_csp_controller(tango_context):
+    """test invocation with admin mode online"""
+    factory = AdapterFactory()
+
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_CSP_MASTER_LEAF_DEVICE, AdapterType.CSPMASTER
+    )
+    assert subarray_adapter.proxy.adminMode == AdminMode.OFFLINE
+
+
+def test_admin_mode_default_admin_mode_sdp_master(tango_context):
+    """test invocation with admin mode online"""
+    factory = AdapterFactory()
+
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_BASE_DEVICE, AdapterType.BASE
+    )
+    assert subarray_adapter.proxy.adminMode == AdminMode.ONLINE
+
+
+def test_admin_mode_default_admin_mode_sdp_subarray(tango_context):
+    """test invocation with admin mode online"""
+    factory = AdapterFactory()
+
+    subarray_adapter = factory.get_or_create_adapter(
+        HELPER_SDP_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    )
+    assert subarray_adapter.proxy.adminMode == AdminMode.ONLINE
 
 
 def test_admin_mode_offline(tango_context):

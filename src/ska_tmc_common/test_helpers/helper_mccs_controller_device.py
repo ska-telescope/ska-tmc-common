@@ -10,8 +10,9 @@ from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from tango import DevState
-from tango.server import command, run
+from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
 from ska_tmc_common.admin_mode_decorator import admin_mode_check
@@ -34,6 +35,7 @@ class HelperMCCSController(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self.set_state(DevState.UNKNOWN)
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -54,6 +56,8 @@ class HelperMCCSController(HelperBaseDevice):
             """
             super().do()
             return (ResultCode.OK, "")
+
+    isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
 
     def read_isAdminModeEnabled(self):
         """
