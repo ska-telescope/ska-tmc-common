@@ -21,6 +21,9 @@ from ska_tmc_common.test_helpers.constants import (
     CSP_SUBARRAY_DEVICE_LOW,
     CSP_SUBARRAY_DEVICE_MID,
 )
+from ska_tmc_common.test_helpers.empty_component_manager import (
+    EmptyComponentManager,
+)
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -59,6 +62,19 @@ class HelperCspMasterDevice(HelperBaseDevice):
             self._device.set_change_event("dishVccConfig", True, False)
             return (ResultCode.OK, "")
 
+    def create_component_manager(self) -> EmptyComponentManager:
+        """
+        Creates an instance of EmptyComponentManager
+        :return: component manager instance
+        :rtype: EmptyComponentManager
+        """
+        empty_component_manager = EmptyComponentManager(
+            logger=self.logger,
+            communication_state_callback=None,
+            component_state_callback=None,
+        )
+        return empty_component_manager
+
     def read_adminMode(self) -> AdminMode:
         """
         This method reads the adminMode value of the device.
@@ -82,17 +98,28 @@ class HelperCspMasterDevice(HelperBaseDevice):
                 + "'ONLINE','OFFLINE','ENGINEERING'."
             )
             return
+
         if self._admin_mode != value:
             self._admin_mode = value
-            if "low" in self.dev_name:
-                csp_subarray_device_name = CSP_SUBARRAY_DEVICE_LOW
-            else:
-                csp_subarray_device_name = CSP_SUBARRAY_DEVICE_MID
-            dev_factory = DevFactory()
-            csp_subarray_proxy = dev_factory.get_device(
-                csp_subarray_device_name
-            )
-            csp_subarray_proxy.adminMode = value
+
+            try:
+                if "low" in self.dev_name:
+                    csp_subarray_device_name = CSP_SUBARRAY_DEVICE_LOW
+                else:
+                    csp_subarray_device_name = CSP_SUBARRAY_DEVICE_MID
+
+                dev_factory = DevFactory()
+                csp_subarray_proxy = dev_factory.get_device(
+                    csp_subarray_device_name
+                )
+                csp_subarray_proxy.adminMode = value
+
+            except Exception as e:
+                self.logger.error(
+                    "Failed to set adminMode for device %s. Error: %s",
+                    csp_subarray_device_name,
+                    str(e),
+                )
             self.logger.info("AdminMode set to %s", self._admin_mode)
             self.push_change_event("adminMode", self._admin_mode)
 
