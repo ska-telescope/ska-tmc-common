@@ -1,47 +1,51 @@
-"""Decorator for checking admin modes on helper devices."""
+"""Decorator to check if admin mode is valid to execute the command"""
 
 from functools import wraps
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, Optional, Union
 
-from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import AdminMode
-
-from ska_tmc_common.exceptions import AdminModeException
 
 
 def check_if_admin_mode_offline(
     class_instance: Any, command_name: str
-) -> Tuple[bool, List[ResultCode], List[str]]:
+) -> bool:
     """
-    Checks if the device is in OFFLINE adminMode and raises an exception.
+    Checks if the device is in OFFLINE adminMode. If
+        `class_instance._isAdminModeEnabled`
+        is False, the check is skipped.
 
     :param class_instance: The class instance containing the admin mode.
     :type class_instance: Any
     :param command_name: Name of the command being executed.
     :type command_name: str
-    :raises AdminModeException: If the device is in OFFLINE adminMode.
-    :return: Tuple indicating whether to proceed, ResultCode list, and
-             message list if no exception is raised.
-    :rtype: Tuple[bool, List[ResultCode], List[str]]
+    :return: Tuple indicating whether the command can proceed (True/False) and
+             a message list if any relevant warnings or errors exist.
+    :rtype: bool
     """
     # pylint:disable=protected-access
+    if not getattr(class_instance, "_isAdminModeEnabled", True):
+        return True
+
     admin_mode = AdminMode(class_instance._admin_mode)
     device_name = class_instance.__class__.__name__
+
     if admin_mode != AdminMode.ONLINE:
         error_message = (
-            f"Device: {device_name} is in {admin_mode.name}"
-            + f" adminMode.Cannot process command: {command_name}"
+            f"Device: {device_name} is in {admin_mode.name} "
+            f"adminMode. Cannot process command: {command_name}"
         )
         if hasattr(class_instance, "logger"):
             class_instance.logger.warning(error_message)
-        raise AdminModeException(device_name, command_name, error_message)
-    return True, [], []
+        return False
+
+    return True
 
 
 def admin_mode_check(command_name: Optional[str] = None):
     """
     A decorator to check if admin mode is enabled or offline before
-    executing the command.
+    executing the command. If `class_instance._isAdminModeEnabled` is
+    False, skips the check and proceeds with the command.
 
     :param command_name: The name of the command to be checked.
     :type command_name: Optional[str]
@@ -49,11 +53,9 @@ def admin_mode_check(command_name: Optional[str] = None):
     :rtype: Callable
     """
 
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable) -> Union[Callable, bool]:
         @wraps(func)
-        def wrapper(
-            class_instance: Any, *args: Any, **kwargs: Any
-        ) -> Tuple[Any, Any]:
+        def wrapper(class_instance: Any, *args: Any, **kwargs: Any) -> bool:
             """
             Wrapper function to perform the admin mode check.
 
@@ -63,18 +65,18 @@ def admin_mode_check(command_name: Optional[str] = None):
             :type args: Any
             :param kwargs: Keyword arguments for the wrapped function.
             :type kwargs: Any
-            :raises AdminModeException: If the device is in OFFLINE adminMode.
-            :return: The result of the admin mode check
-            :rtype: Tuple[Any, Any]
+            :return: The result of the wrapped function along with messages.
+            :rtype: bool
             """
             actual_command_name = command_name or func.__name__
 
-            try:
-                check_if_admin_mode_offline(
-                    class_instance, actual_command_name
-                )
-            except AdminModeException as exp:
-                raise exp
+            admin_mode_enabled = check_if_admin_mode_offline(
+                class_instance, actual_command_name
+            )
+
+            if not admin_mode_enabled:
+                return True
+
             return func(class_instance, *args, **kwargs)
 
         return wrapper
