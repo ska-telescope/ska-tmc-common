@@ -17,7 +17,6 @@ from tango import AttrWriteType, DevFloat, DevState, DevString
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
-from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import (
     Band,
     DishMode,
@@ -323,7 +322,6 @@ class HelperDishDevice(HelperDishLNDevice):
         """
         return self._kvalue
 
-    @admin_mode_check()
     def is_SetKValue_allowed(self) -> bool:
         """
         This method checks if the SetKValue Command is allowed in current
@@ -556,7 +554,6 @@ class HelperDishDevice(HelperDishLNDevice):
             [command_id],
         )
 
-    @admin_mode_check()
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
         This method checks if the TrackLoadStaticOff command is allowed in
@@ -622,7 +619,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Invocation of TrackLoadStaticOff command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_ConfigureBand1_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand1 command is allowed in current
@@ -685,7 +681,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand1 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_ConfigureBand2_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand2 Command is allowed in current
@@ -763,7 +758,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand2 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_ConfigureBand3_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand3 Command is allowed in current
@@ -821,7 +815,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand3 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_ConfigureBand4_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand4 Command is allowed in current
@@ -878,7 +871,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand4 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_ConfigureBand5a_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand5a Command is allowed in current
@@ -934,7 +926,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("ConfigureBand5a command completed.")
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_ConfigureBand5b_allowed(self) -> bool:
         """
         This method checks if the ConfigureBand5b Command is allowed in current
@@ -1044,7 +1035,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.thread.start()
         return ([ResultCode.QUEUED], [command_id])
 
-    @admin_mode_check()
     def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
@@ -1085,7 +1075,6 @@ class HelperDishDevice(HelperDishLNDevice):
         self.push_command_result(ResultCode.OK, "Scan", command_id=command_id)
         return [ResultCode.QUEUED], [command_id]
 
-    @admin_mode_check()
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the EndScan Command is allowed in current State.
@@ -1237,7 +1226,6 @@ class HelperDishDevice(HelperDishLNDevice):
             self.logger.exception("Failed to decode JSON: %s", e)
             return [ResultCode.FAILED], ["Failed to decode JSON"]
 
-    @admin_mode_check()
     def is_TrackStop_allowed(self) -> bool:
         """
         This method checks if the TrackStop Command is allowed in current
