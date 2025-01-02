@@ -33,6 +33,7 @@ def check_if_admin_mode_offline(
         error_message = (
             f"Device: {device_name} is in {admin_mode.name} "
             f"adminMode. Cannot process command: {command_name}"
+            f"Please set adminMode Online and try again"
         )
         if hasattr(class_instance, "logger"):
             class_instance.logger.warning(error_message)
@@ -66,7 +67,32 @@ def admin_mode_check():
             :return: The result of the wrapped function along with messages.
             :rtype: bool
             """
-            actual_command_name = func.__name__
+
+            def extract_command_name(func_name: str) -> str:
+                """
+                Extract the command name from a function
+                following the pattern 'is_CommandName_allowed'.
+
+                Args:
+                    func (Callable): Function to extract
+                    the command name from.
+
+                Returns:
+                    str: The extracted command name.
+
+                Raises:
+                    ValueError: If the function name does
+                    not match the expected pattern.
+                """
+                if func_name.startswith("is_") and func_name.endswith(
+                    "_allowed"
+                ):
+
+                    command_name = func_name[3:-8]
+                    return command_name
+                return "Command"
+
+            actual_command_name = extract_command_name(func.__name__)
 
             admin_mode_enabled = check_if_admin_mode_offline(
                 class_instance, actual_command_name
