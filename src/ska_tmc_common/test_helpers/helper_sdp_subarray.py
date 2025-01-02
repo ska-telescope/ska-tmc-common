@@ -100,25 +100,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
     delay = attribute(dtype=int, access=AttrWriteType.READ)
 
-    def read_isAdminModeEnabled(self):
-        """
-        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
-        :raises AttributeError: Always raised to block access to the attribute.
-        """
-        raise AttributeError(
-            "The 'isAdminModeEnabled' attribute is not available."
-        )
-
-    def write_isAdminModeEnabled(self, value: bool):
-        """
-        Raise an AttributeError indicating that 'isAdminModeEnabled'
-        cannot be modified.
-        :param value: The value attempted to set for isAdminModeEnabled.
-        :raises AttributeError: Always raised to access to the attribute..
-        """
-        raise AttributeError(
-            "The 'isAdminModeEnabled' attribute is not available."
-        )
 
     def read_delay(self) -> int:
         """
