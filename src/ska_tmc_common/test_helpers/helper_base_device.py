@@ -490,7 +490,6 @@ class HelperBaseDevice(SKABaseDevice):
         command_id = f"{time.time()}_Standby"
         self.logger.info("Instructed simulator to invoke Standby command")
 
-        # AdminMode check
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",
