@@ -139,6 +139,26 @@ class HelperDishDevice(HelperDishLNDevice):
         dtype=(DevFloat,), access=AttrWriteType.READ_WRITE, max_dim_x=18
     )
 
+    def read_isAdminModeEnabled(self):
+        """
+        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
+        :raises AttributeError: Always raised to block access to the attribute.
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        Raise an AttributeError indicating that 'isAdminModeEnabled'
+        cannot be modified.
+        :param value: The value attempted to set for isAdminModeEnabled.
+        :raises AttributeError: Always raised to access to the attribute..
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
     def read_band1PointingModelParams(self) -> List[float]:
         """
         This method reads the band1PointingModelParams attribute of a dish.
@@ -481,6 +501,7 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "SetOperateMode", command_id, is_dish=True
@@ -638,6 +659,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing ConfigureBand1 Command")
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_1, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand1", command_id, is_dish=True
@@ -714,6 +736,7 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # to record the command data
         self.update_command_info(CONFIGURE_BAND_2, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "ConfigureBand2", command_id, is_dish=True
@@ -1002,6 +1025,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._pointing_state = PointingState.SLEW
         self.push_change_event("pointingState", self._pointing_state)
         self.logger.info("Pushed pointingState event SLEW")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id, is_dish=True)
 
@@ -1044,6 +1068,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
         self._scan_id = argin
@@ -1083,6 +1108,7 @@ class HelperDishDevice(HelperDishLNDevice):
         command_id = f"{time.time()}_EndScan"
         # to record the command data
         self.update_command_info(END_SCAN)
+
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id, is_dish=True)
         self._scan_id = ""
@@ -1236,6 +1262,7 @@ class HelperDishDevice(HelperDishLNDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
 

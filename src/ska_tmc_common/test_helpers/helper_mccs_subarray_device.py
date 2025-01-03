@@ -41,6 +41,7 @@ class HelperMccsSubarrayDevice(HelperSubArrayDevice):
         )
         self.logger.info(argin)
         self.update_command_info(RELEASE_RESOURCES, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("ReleaseResources", command_id)
 

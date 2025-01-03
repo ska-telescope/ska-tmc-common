@@ -37,6 +37,16 @@ class ResourceReassignmentError(Exception):
         self.resources_reallocation = resources
 
 
+class AdminModeException(Exception):
+    """Custom exception to handle errors related to admin mode."""
+
+    def __init__(self, device_name, command_name: str, message: str):
+        super().__init__(message)
+        self.command_name = command_name
+        self.message = message
+        self.device_name = device_name
+
+
 class ResourceNotPresentError(ValueError):
     """Raised when a resource is requested but not present."""
 

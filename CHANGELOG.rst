@@ -12,6 +12,9 @@ Main
 
 Added
 --------
+[0.23.0]
+*********
+* Adding Admin mode functinality in helper devices
 [0.22.16]
 *********
 * Enable induce_fault functionality in HelperSDPSubarray

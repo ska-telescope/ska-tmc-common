@@ -17,6 +17,7 @@ from ska_tango_base.control_model import ObsState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 from .constants import (
@@ -201,6 +202,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             self._obs_state = obs_state
             self.push_change_event("obsState", self._obs_state)
 
+    @admin_mode_check()
     def is_AssignResources_allowed(self) -> bool:
         """
         This method checks if the AssignResources command is allowed or not
@@ -263,6 +265,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Configure_allowed(self) -> bool:
         """
         This method checks the Configure is allowed in the current device
@@ -324,6 +327,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Scan_allowed(self) -> bool:
         """
         This method checks if the Scan command is allowed in the current
@@ -374,6 +378,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
 
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> bool:
         """
         This method checks if the EndScan command is allowed in the current
@@ -416,6 +421,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("EndScan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_End_allowed(self) -> bool:
         """
         This method checks if the End command is allowed in the current
@@ -460,6 +466,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_GoToIdle_allowed(self) -> bool:
         """
         This method checks if the GoToIdle command is allowed in the current
@@ -500,6 +507,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.push_command_result(ResultCode.OK, "GoToIdle")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Abort_allowed(self) -> bool:
         """
         This method checks if the Abort command is allowed in the current
@@ -554,6 +562,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Restart_allowed(self) -> bool:
         """
         This method checks if the Restart command is allowed in the current
@@ -604,6 +613,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         self.logger.info("Restart command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
         This method checks if the ReleaseAllResources command is allowed in
@@ -658,6 +668,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseResources_allowed(self) -> bool:
         """
         This method checks if the ReleaseResources command is allowed in the

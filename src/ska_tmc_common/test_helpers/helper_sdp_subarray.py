@@ -8,7 +8,7 @@ from typing import Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -45,6 +45,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def init_device(self):
         super().init_device()
         self._state = DevState.OFF
+        self._admin_mode: AdminMode = AdminMode.ONLINE
         # pylint: disable=line-too-long
         self.timers = []
         self._receive_addresses = json.dumps(

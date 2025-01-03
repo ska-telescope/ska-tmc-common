@@ -10,11 +10,12 @@ from typing import List, Tuple
 import tango
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from tango import DevState
 from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import PointingState
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
@@ -31,6 +32,8 @@ class HelperBaseDevice(SKABaseDevice):
         self._health_state = HealthState.OK
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
+        self._admin_mode: AdminMode = AdminMode.ONLINE
+        self._isAdminModeEnabled: bool = False
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -44,6 +47,7 @@ class HelperBaseDevice(SKABaseDevice):
         def do(self) -> Tuple[ResultCode, str]:
             super().do()
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event("adminMode", True, False)
             return (ResultCode.OK, "")
 
     def create_component_manager(self) -> EmptyComponentManager:
@@ -62,6 +66,21 @@ class HelperBaseDevice(SKABaseDevice):
     delay = attribute(dtype=int, access=AttrWriteType.READ)
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
+    isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+
+    def read_isAdminModeEnabled(self) -> bool:
+        """
+        This method is used to read the attribute value for isAdminModeEnabled.
+        :return: isAdminModeEnabled
+        """
+        return self._isAdminModeEnabled
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        This method is used to write the attribute value for isAdminModeEnabled
+        :param value: The new value to set for isAdminModeEnabled.
+        """
+        self._isAdminModeEnabled = value
 
     def read_delay(self) -> int:
         """
@@ -353,6 +372,7 @@ class HelperBaseDevice(SKABaseDevice):
                 "HealthState is set to: %s", self._health_state.name
             )
 
+    @admin_mode_check()
     def is_On_allowed(self) -> bool:
         """
         This method checks if the On command is allowed in current state.
@@ -384,6 +404,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "On",
@@ -395,6 +416,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("On command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off command is allowed in current state.
@@ -426,6 +448,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -437,6 +460,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("Off command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Standby_allowed(self) -> bool:
         """
         This method checks if the Standby command is allowed in current state.
@@ -465,6 +489,7 @@ class HelperBaseDevice(SKABaseDevice):
         """
         command_id = f"{time.time()}_Standby"
         self.logger.info("Instructed simulator to invoke Standby command")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Standby",
@@ -476,6 +501,7 @@ class HelperBaseDevice(SKABaseDevice):
             self.logger.info("Standy command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Disable_allowed(self) -> bool:
         """
         This method checks if the Disable command is allowed in current state.

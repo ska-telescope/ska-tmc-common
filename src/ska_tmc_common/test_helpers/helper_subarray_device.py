@@ -13,12 +13,13 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from ska_tango_base.subarray import SKASubarray, SubarrayComponentManager
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ASSIGN_RESOURCES,
@@ -47,7 +48,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
     """
 
     # pylint: disable=arguments-renamed
-    # The pylint error arguments-renamed is disabled becasue base class has
+    # The pylint error arguments-renamed is disabled because base class has
     # second parameter as task_callback which is not used here
     def __init__(
         self,
@@ -70,7 +71,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         Assign resources to the component.
         :param resources: resources to be assigned
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("Resources: %s", resources)
         self._assigned_resources = ["0001"]
@@ -81,7 +82,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         Release resources from the component.
         :param resources: resources to be released
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("Released Resources: %s", resources)
         return ResultCode.OK, ""
@@ -90,7 +91,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Release all resources.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self._assigned_resources = []
 
@@ -102,7 +103,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         :param configuration: the configuration to be configured
         :type configuration: str
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("%s", configuration)
 
@@ -112,7 +113,7 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Start scanning.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
         """
         self.logger.info("%s", args)
         return ResultCode.OK, ""
@@ -121,7 +122,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         End scanning.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -130,7 +132,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         End Scheduling blocks.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -139,7 +142,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Tell the component to abort whatever it was doing.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -148,7 +152,8 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Reset the component to unconfirmed but do not release resources.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
@@ -157,10 +162,19 @@ class EmptySubArrayComponentManager(SubarrayComponentManager):
         """
         Deconfigure and release all resources.
         :return: ResultCode, message
-        :rtype:tuple
+        :rtype: tuple
+
         """
 
         return ResultCode.OK, ""
+
+    def start_communicating(self) -> None:
+        """This method is not used by TMC."""
+        self.logger.info("Start communicating method called")
+
+    def stop_communicating(self) -> None:
+        """This method is not used by TMC."""
+        self.logger.info("Stop communicating method called")
 
     @property
     def assigned_resources(self) -> list:
@@ -183,6 +197,7 @@ class HelperSubArrayDevice(SKASubarray):
         super().init_device()
         self._health_state = HealthState.OK
         self._isSubsystemAvailable = True
+        self._isAdminModeEnabled: bool = True
         self._command_in_progress = ""
         self._command_delay_info = {
             ASSIGN_RESOURCES: 2,
@@ -210,23 +225,9 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
 
-    class InitCommand(SKASubarray.InitCommand):
-        """A class for the HelperSubarrayDevice's init_device() "command"."""
-
-        def do(self) -> Tuple[ResultCode, str]:
-            """
-            Stateless hook for device initialization.
-            :return: ResultCode
-            """
-            super().do()
-            self._device.set_change_event("obsState", True, False)
-            self._device.set_change_event("commandInProgress", True, False)
-            self._device.set_change_event("commandCallInfo", True, False)
-            self._device.set_change_event("assignedResources", True, False)
-            self._device.set_change_event("isSubsystemAvailable", True, False)
-            return ResultCode.OK, ""
-
+    # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
 
     receiveAddresses = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -234,6 +235,27 @@ class HelperSubArrayDevice(SKASubarray):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
+    isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+
+    def read_isAdminModeEnabled(self):
+        """
+        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
+        :raises AttributeError: Always raised to block access to the attribute.
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        Raise an AttributeError indicating that 'isAdminModeEnabled'
+        cannot be modified.
+        :param value: The value attempted to set for isAdminModeEnabled.
+        :raises AttributeError: Always raised to access to the attribute..
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
 
     commandCallInfo = attribute(
         dtype=(("str",),),
@@ -254,6 +276,23 @@ class HelperSubArrayDevice(SKASubarray):
     def assignedResources(self) -> str:
         return self._assigned_resources
 
+    class InitCommand(SKASubarray.InitCommand):
+        """A class for the HelperSubArrayDevice's init_device() "command"."""
+
+        def do(self) -> Tuple[ResultCode, str]:
+            """
+            Stateless hook for device initialization.
+            :return: ResultCode
+            """
+            super().do()
+            self._device.set_change_event("obsState", True, False)
+            self._device.set_change_event("commandInProgress", True, False)
+            self._device.set_change_event("commandCallInfo", True, False)
+            self._device.set_change_event("assignedResources", True, False)
+            self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event("adminMode", True, False)
+            return ResultCode.OK, ""
+
     def read_scanId(self) -> int:
         """
         This method is used to read the attribute value for scanId.
@@ -264,14 +303,14 @@ class HelperSubArrayDevice(SKASubarray):
     def read_obsStateTransitionDuration(self):
         """
         Read transition
-        :return: state dureation info
+        :return: state duration info
         """
         return json.dumps(self._state_duration_info)
 
     def read_isSubsystemAvailable(self) -> bool:
         """
-        Returns avalability status for the leaf nodes devices
-        :return: avalability status for the leaf nodes devices
+        Returns availability status for the leaf nodes devices
+        :return: availability status for the leaf nodes devices
         :rtype: bool
         """
         return self._isSubsystemAvailable
@@ -285,7 +324,7 @@ class HelperSubArrayDevice(SKASubarray):
         Sets Availability of the device
         :rtype: bool
         """
-        self.logger.info("Setting the avalability value to : %s", value)
+        self.logger.info("Setting the availability value to : %s", value)
         if self._isSubsystemAvailable != value:
             self._isSubsystemAvailable = value
             self.push_change_event(
@@ -329,14 +368,13 @@ class HelperSubArrayDevice(SKASubarray):
         This method is used to read the attribute value for delay.
         :return: attribute value for delay
         """
-
         return json.dumps(self._command_delay_info)
 
     def read_commandInProgress(self) -> str:
         """
         This method is used to read, which command is in progress
         :return: command in progress
-        :rtype:str
+        :rtype: str
         """
         return self._command_in_progress
 
@@ -352,7 +390,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         This method is used to read receiveAddresses attribute
         :return: attribute receiveAddresses
-        :rtype:str
+        :rtype: str
         """
         return self._receive_addresses
 
@@ -366,7 +404,7 @@ class HelperSubArrayDevice(SKASubarray):
             obs_state,
         )
         self._obs_state = obs_state
-        self.push_change_event("obsState", obs_state)
+        self.push_change_event("obsState", self._obs_state)
 
     def push_command_result(
         self,
@@ -492,7 +530,7 @@ class HelperSubArrayDevice(SKASubarray):
         doc_in="Reset Delay",
     )
     def ResetDelayInfo(self) -> None:
-        """Reset Delay to it's default values"""
+        """Reset Delay to its default values"""
         self.logger.info(
             "Resetting Command Delays for %s",
             self.dev_name,
@@ -605,6 +643,7 @@ class HelperSubArrayDevice(SKASubarray):
                 "Updated assignedResources attribute value to %s", str(argin)
             )
 
+    @admin_mode_check()
     def is_On_allowed(self) -> bool:
         """
         Check if command `On` is allowed in the current device
@@ -638,6 +677,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         command_id = f"{time.time()}_On"
         self.logger.info("Instructed simulator to invoke On command")
+
         self.update_command_info(ON, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("On", command_id)
@@ -647,6 +687,7 @@ class HelperSubArrayDevice(SKASubarray):
             self.logger.info("On command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Off_allowed(self) -> bool:
         """
         Check if command `Off` is allowed in the current device
@@ -680,6 +721,7 @@ class HelperSubArrayDevice(SKASubarray):
         """
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed simulator to invoke Off command")
+
         self.update_command_info(OFF, "")
         if self.defective_params["enabled"]:
             return self.induce_fault("Off", command_id)
@@ -757,7 +799,7 @@ class HelperSubArrayDevice(SKASubarray):
 
         if fault_type == FaultType.FAILED_RESULT:
             if "target_obsstates" in self.defective_params:
-                # Utilise target_obsstate parameter when Subarray should
+                # Utilize target_obsstate parameter when Subarray should
                 # transition to specific obsState while returning
                 # ResultCode.FAILED
                 obsstate_list = self.defective_params["target_obsstates"]
@@ -773,7 +815,7 @@ class HelperSubArrayDevice(SKASubarray):
                     json.dumps(
                         (
                             ResultCode.FAILED,
-                            f"Exception occured on device: {self.get_name()}",
+                            f"Exception occurred on device: {self.get_name()}",
                         )
                     ),
                 )
@@ -825,7 +867,7 @@ class HelperSubArrayDevice(SKASubarray):
                 json.dumps(
                     [
                         ResultCode.FAILED,
-                        f"Exception occured on device: {self.get_name()}",
+                        f"Exception occurred on device: {self.get_name()}",
                     ]
                 ),
             )
@@ -870,6 +912,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Setting defective params to %s", input_dict)
         self.defective_params = input_dict
 
+    @admin_mode_check()
     def is_Standby_allowed(self) -> bool:
         """
         Check if command `Standby` is allowed in the current device
@@ -913,6 +956,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Standby completed")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_AssignResources_allowed(self) -> bool:
         """
         Check if command `AssignResources` is allowed in the current device
@@ -977,6 +1021,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseResources_allowed(self) -> bool:
         """
         Check if command `ReleaseResources` is allowed in the current device
@@ -1039,6 +1084,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
         Check if command `ReleaseAllResources` is allowed in the current
@@ -1101,6 +1147,7 @@ class HelperSubArrayDevice(SKASubarray):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Configure_allowed(self) -> bool:
         """
         Check if command `Configure` is allowed in the current device state.
@@ -1164,6 +1211,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Scan_allowed(self) -> bool:
         """
         Check if command `Scan` is allowed in the current device state.
@@ -1215,6 +1263,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Scan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> bool:
         """
         Check if command `EndScan` is allowed in the current device state.
@@ -1257,6 +1306,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("EndScan command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_End_allowed(self) -> bool:
         """
         Check if command `End` is allowed in the current device state.
@@ -1302,6 +1352,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("End command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_GoToIdle_allowed(self) -> bool:
         """
         Check if command `GoToIdle` is allowed in the current device state.
@@ -1343,6 +1394,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("GoToIdle command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ObsReset_allowed(self) -> bool:
         """
         Check if command `ObsReset` is allowed in the current device state.
@@ -1380,6 +1432,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("ObsReset command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Abort_allowed(self) -> bool:
         """
         Check if command `Abort` is allowed in the current device state.
@@ -1433,6 +1486,7 @@ class HelperSubArrayDevice(SKASubarray):
         self.logger.info("Abort command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Restart_allowed(self) -> bool:
         """
         Check if command `Restart` is allowed in the current device state.

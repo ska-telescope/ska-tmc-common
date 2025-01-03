@@ -11,6 +11,7 @@ from typing import Optional, Tuple
 from ska_tango_base.commands import ResultCode, SlowCommand
 from tango.server import command
 
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.device_info import (
     DeviceInfo,
     DishDeviceInfo,
@@ -151,6 +152,7 @@ class DummyTmcDevice(HelperBaseDevice):
             self._component_manager.sample_data = value
             return ResultCode.OK, ""
 
+    @admin_mode_check()
     def is_SetData_allowed(self) -> bool:
         """
         It checks if the SetData is allowed or not.

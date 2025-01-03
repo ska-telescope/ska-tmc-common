@@ -2,7 +2,7 @@ import json
 
 import pytest
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 
 from ska_tmc_common import DevFactory, FaultType
 from tests.settings import (
@@ -39,10 +39,13 @@ commands_without_argin = ["On", "Off"]
 def test_mccs_controller_release_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
+    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_subarray_device.adminMode = AdminMode.ONLINE
     result, unique_id = mccs_controller_device.command_inout(
         "Release", release_argin_string
     )
-    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith("Release")
     wait_for_obstate(mccs_subarray_device, ObsState.EMPTY)
@@ -52,10 +55,12 @@ def test_mccs_controller_release_command(tango_context):
 def test_mccs_controller_allocate_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
+    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_subarray_device.adminMode = AdminMode.ONLINE
     result, unique_id = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
     )
-    mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
     assert result[0] == ResultCode.QUEUED
     assert unique_id[0].endswith("Allocate")
     assert mccs_subarray_device.obsstate == ObsState.RESOURCING
@@ -67,6 +72,7 @@ def test_mccs_controller_allocate_command(tango_context):
 def test_mccs_controller_commands_without_argument(tango_context, command):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
     result, command_id = mccs_controller_device.command_inout(command)
     assert result[0] == ResultCode.QUEUED
     assert isinstance(command_id[0], str)
@@ -75,6 +81,7 @@ def test_mccs_controller_commands_without_argument(tango_context, command):
 def test_mccs_controller_allocate_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
     mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, message = mccs_controller_device.command_inout(
         "Allocate", allocate_argin_string
@@ -86,6 +93,7 @@ def test_mccs_controller_allocate_defective(tango_context):
 def test_mccs_controller_release_defective(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
     mccs_controller_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
     result, message = mccs_controller_device.command_inout(
         "Release", release_argin_string
@@ -98,6 +106,8 @@ def test_allocate_stuck_in_intermediate_state(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
+    mccs_subarray_device.adminMode = AdminMode.ONLINE
     defect = {
         "enabled": True,
         "fault_type": FaultType.STUCK_IN_INTERMEDIATE_STATE,
@@ -126,6 +136,8 @@ def test_restart_subarray_command(tango_context):
     dev_factory = DevFactory()
     mccs_controller_device = dev_factory.get_device(HELPER_MCCS_CONTROLLER)
     mccs_subarray_device = dev_factory.get_device(MCCS_SUBARRAY_DEVICE)
+    mccs_controller_device.adminMode = AdminMode.ONLINE
+    mccs_subarray_device.adminMode = AdminMode.ONLINE
     # Provide the subarray ID as an argument to the RestartSubarray command
     subarray_id = 1
     result = mccs_controller_device.command_inout(
