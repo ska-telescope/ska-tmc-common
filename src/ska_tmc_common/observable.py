@@ -40,6 +40,7 @@ class Observable:
             observer (Observer): observer class instance.
         """
         with self.lock:
+            logging.info("deregistered : %s ", observer)
             self.observers.remove(observer)
 
     def notify_observers(
