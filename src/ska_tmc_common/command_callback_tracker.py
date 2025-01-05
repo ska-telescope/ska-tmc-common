@@ -99,6 +99,9 @@ class CommandCallbackTracker:
                     "Performing clean up for command Id %s", self.command_id
                 )
                 self.clean_up()
+
+                self.abort_event.clear()
+                self.logger.info("Abort Event is cleared")
                 self.command_class_instance.update_task_status(
                     status=TaskStatus.ABORTED
                 )
