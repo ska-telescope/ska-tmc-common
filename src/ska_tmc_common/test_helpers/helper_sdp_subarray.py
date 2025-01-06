@@ -197,7 +197,16 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                     "Missing receive nodes in the AssignResources input json"
                 )
                 # Return to the initial obsState
-                self.update_device_obsstate(ObsState.FAULT, ASSIGN_RESOURCES)
+                if initial_obstate == ObsState.IDLE:
+                    self._obs_state = ObsState.FAULT
+                    self.update_device_obsstate(
+                        self._obs_state, ASSIGN_RESOURCES
+                    )
+                else:
+                    self._obs_state = initial_obstate
+                    self.update_device_obsstate(
+                        self._obs_state, ASSIGN_RESOURCES
+                    )
                 raise tango.Except.throw_exception(
                     "Incorrect input json string",
                     "Missing receive nodes in the AssignResources input json",
