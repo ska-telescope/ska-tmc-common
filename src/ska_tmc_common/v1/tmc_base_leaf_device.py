@@ -17,10 +17,10 @@ class TMCBaseLeafDevice(SKABaseDevice):
     # -----------------
     # Device Properties
     # -----------------
-    eventSubscriptionCheckPeriod = device_property(
+    EventSubscriptionCheckPeriod = device_property(
         dtype="DevFloat", default_value=1
     )
-    livelinessCheckPeriod = device_property(dtype="DevFloat", default_value=1)
+    LivelinessCheckPeriod = device_property(dtype="DevFloat", default_value=1)
     AdapterTimeOut = device_property(dtype="DevFloat", default_value=2)
 
     def create_component_manager(self):
