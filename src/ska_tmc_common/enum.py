@@ -97,6 +97,8 @@ class FaultType(IntEnum):
     GPM_URI_ERROR = 9
     GPM_URI_NOT_REACHABLE = 10
     GPM_ERROR_REPORTED_BY_DISH = 11
+    SDP_FAULT = 12
+    SDP_BACK_TO_INITIAL_STATE = 13
 
 
 @unique

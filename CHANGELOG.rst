@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.23.1]
+*********
+* Updated SDP Subarray leaf node.
+  
 [0.23.0]
 *********
 * Adding Admin mode functinality in helper devices
