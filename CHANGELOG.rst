@@ -186,6 +186,10 @@ Added
 
 Fixed
 -------
+[0.23.2]
+*********
+* Updated SDP Subarray leaf node.
+  
 [0.23.1]
 * Resolve bug SKB-658
 

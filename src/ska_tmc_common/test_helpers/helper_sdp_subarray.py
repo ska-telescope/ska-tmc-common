@@ -189,22 +189,24 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if receive nodes not present in JSON, SDP Subarray moves to
-        # obsState=EMPTY and raises exception
-        if "resources" in input_json:
-            if input_json["resources"]["receive_nodes"] == 0:
-                self.logger.info(
-                    "Missing receive nodes in the AssignResources input json"
-                )
-                # Return to the initial obsState
+        if self.defective_params["enabled"]:
+            if self.defective_params["fault_type"] == FaultType.SDP_FAULT:
+                self._obs_state = ObsState.FAULT
+                self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
+            elif (
+                self.defective_params["fault_type"]
+                == FaultType.SDP_BACK_TO_INITIAL_STATE
+            ):
                 self._obs_state = initial_obstate
                 self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
-                raise tango.Except.throw_exception(
-                    "Incorrect input json string",
-                    "Missing receive nodes in the AssignResources input json",
-                    "SdpSubarry.AssignResources()",
-                    tango.ErrSeverity.ERR,
-                )
+
+            raise tango.Except.throw_exception(
+                "Error ocurred during assign resources",
+                self.defective_params["error_message"],
+                "SdpSubarry.AssignResources()",
+                tango.ErrSeverity.ERR,
+            )
+
         thread = threading.Timer(
             self._command_delay_info[ASSIGN_RESOURCES],
             self.update_device_obsstate,
