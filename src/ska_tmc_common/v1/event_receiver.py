@@ -65,7 +65,6 @@ class EventReceiver:
         Checks if device has stopped
         """
         self._stop = True
-        # self._thread.join()
 
     #  pylint: disable=broad-exception-caught
     def run(self) -> None:
@@ -148,7 +147,6 @@ class EventReceiver:
         """
         It handles the health state events of different devices
         """
-        # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
             self._logger.error(
@@ -171,7 +169,6 @@ class EventReceiver:
         """
         It handles the state events of different devices
         """
-        # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
             self._logger.error(
@@ -191,7 +188,6 @@ class EventReceiver:
         """
         It handles the observation state events of different devices
         """
-        # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
             self._logger.error("%s\n %s", error.reason, error.desc)
