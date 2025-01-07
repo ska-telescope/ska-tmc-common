@@ -189,8 +189,6 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if receive nodes not present in JSON, SDP Subarray moves to
-        # obsState=EMPTY and raises exception
         if self.defective_params["enabled"]:
             if self.defective_params["fault_type"] == FaultType.SDP_FAULT:
                 self._obs_state = ObsState.FAULT
