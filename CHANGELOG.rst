@@ -186,6 +186,9 @@ Added
 
 Fixed
 -------
+[0.23.1]
+* Resolve bug SKB-658
+
 [0.20.2]
 * Fixed bug related to full trl usage in liveliness probe.
 
