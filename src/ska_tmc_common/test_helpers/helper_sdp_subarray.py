@@ -203,7 +203,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
 
             raise tango.Except.throw_exception(
-                self.defective_params["error_message"],
+                str(self.defective_params["error_message"]),
                 tango.ErrSeverity.ERR,
             )
 
