@@ -200,3 +200,19 @@ def test_command_id_property(component_manager):
     new_id = f"{time.time()}-TempID"
     component_manager.command_id = new_id
     assert component_manager.command_id == new_id
+
+
+def test_admin_mode_property():
+    component_manager = BaseTmcComponentManager(logger)
+    assert component_manager.is_admin_mode_enabled == True
+    component_manager.is_admin_mode_enabled = False
+    assert component_manager.is_admin_mode_enabled == False
+
+
+def test_admin_mode_property_invalid():
+    component_manager = BaseTmcComponentManager(logger)
+    assert component_manager.is_admin_mode_enabled == True
+    with pytest.raises(
+        ValueError, match="is_admin_mode_enabled must be a boolean value."
+    ):
+        component_manager.is_admin_mode_enabled = "False"

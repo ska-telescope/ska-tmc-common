@@ -52,6 +52,7 @@ class EventReceiver:
             "state": self.handle_state_event,
             "healthState": self.handle_health_state_event,
             "obsState": self.handle_obs_state_event,
+            "adminMode": self.handle_admin_mode_event,
         }
 
     def start(self) -> None:
@@ -205,7 +206,7 @@ class EventReceiver:
     def handle_admin_mode_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
-        """Handle MCCS controller change event"""
+        """Handle admin Mode change event"""
         if self._component_manager.is_admin_mode_enabled:
             if event.err:
                 error = event.errors[0]
