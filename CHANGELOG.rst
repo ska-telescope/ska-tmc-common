@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.0]
+********
+* Add common functionality of adminMode in ska-tmc-common
+
 [0.23.0]
 *********
 * Adding Admin mode functinality in helper devices

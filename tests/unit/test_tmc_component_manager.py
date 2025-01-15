@@ -2,7 +2,7 @@ import time
 
 import pytest
 import tango
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from tango import DevState
 
 from ska_tmc_common import (
@@ -14,6 +14,7 @@ from ska_tmc_common import (
     TmcLeafNodeComponentManager,
 )
 from ska_tmc_common.enum import LivelinessProbeType
+from ska_tmc_common.v1.tmc_component_manager import BaseTmcComponentManager
 from tests.settings import (
     DUMMY_MONITORED_DEVICE,
     DUMMY_SUBARRAY_DEVICE,
@@ -172,6 +173,21 @@ def test_update_device_obs_state(component_manager):
         DUMMY_MONITORED_DEVICE, obs_state
     )
     assert component_manager.get_device().obs_state == obs_state
+    assert component_manager.get_device().last_event_arrived == pytest.approx(
+        time.time(), abs=1e-3
+    )
+    assert not component_manager.get_device().unresponsive
+
+
+def test_update_device_admin_mode():
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    component_manager = BaseTmcComponentManager(logger)
+    component_manager._device = dummy_device
+    admin_mode = AdminMode.ONLINE
+    component_manager.update_device_admin_mode(
+        DUMMY_MONITORED_DEVICE, admin_mode
+    )
+    assert component_manager.get_device().adminMode == admin_mode
     assert component_manager.get_device().last_event_arrived == pytest.approx(
         time.time(), abs=1e-3
     )
