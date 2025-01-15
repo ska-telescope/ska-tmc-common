@@ -204,14 +204,14 @@ def test_command_id_property(component_manager):
 
 def test_admin_mode_property():
     component_manager = BaseTmcComponentManager(logger)
-    assert component_manager.is_admin_mode_enabled == True
+    assert component_manager.is_admin_mode_enabled is True
     component_manager.is_admin_mode_enabled = False
-    assert component_manager.is_admin_mode_enabled == False
+    assert component_manager.is_admin_mode_enabled is False
 
 
 def test_admin_mode_property_invalid():
     component_manager = BaseTmcComponentManager(logger)
-    assert component_manager.is_admin_mode_enabled == True
+    assert component_manager.is_admin_mode_enabled is True
     with pytest.raises(
         ValueError, match="is_admin_mode_enabled must be a boolean value."
     ):
