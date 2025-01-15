@@ -167,6 +167,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
         :param value: admin mode enabled flag
         :type value: bool
+        :raises ValueError: If the provided value is not a boolean
         """
         if not isinstance(value, bool):
             raise ValueError("is_admin_mode_enabled must be a boolean value.")
@@ -286,7 +287,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         and call the relative callbacks if available
         :param device_name: Name of the device on which admin mode is updated
         :type device_name: str
-        :param admin_state: admin mode of the device
+        :param admin_mode: admin mode of the device
         :type admin_mode: AdminMode
         """
         self.logger.info("Admin Mode value updated on device: %s", device_name)
