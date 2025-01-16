@@ -1,4 +1,3 @@
-import unittest
 from unittest.mock import MagicMock, Mock
 
 from ska_control_model import AdminMode
