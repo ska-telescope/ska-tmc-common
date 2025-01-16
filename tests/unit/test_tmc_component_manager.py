@@ -15,6 +15,12 @@ from ska_tmc_common import (
 )
 from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.v1.tmc_component_manager import BaseTmcComponentManager
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcComponentManager as TmcCM,
+)
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcLeafNodeComponentManager as TmcLNCM,
+)
 from tests.settings import (
     DUMMY_MONITORED_DEVICE,
     DUMMY_SUBARRAY_DEVICE,
@@ -22,9 +28,10 @@ from tests.settings import (
 )
 
 
-def test_add_device():
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_add_device(component_manager):
     dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         _component=dummy_component,
         logger=logger,
@@ -35,9 +42,10 @@ def test_add_device():
     assert len(dummy_component._devices) == 2
 
 
-def test_get_device():
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_get_device(component_manager):
     dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         _component=dummy_component,
         logger=logger,
@@ -48,9 +56,10 @@ def test_get_device():
     assert dummy_device_info.dev_name == DUMMY_MONITORED_DEVICE
 
 
-def test_update_device():
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_update_device(component_manager):
     dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         _component=dummy_component,
         logger=logger,
@@ -65,17 +74,23 @@ def test_update_device():
     assert new_device_info.unresponsive is True
 
 
-def test_get_device_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_get_device_leafnode(component_manager):
     dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.dev_name == DUMMY_MONITORED_DEVICE
 
 
-def test_update_device_health_state_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_update_device_health_state_leafnode(component_manager):
     dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.health_state == HealthState.UNKNOWN
@@ -84,9 +99,12 @@ def test_update_device_health_state_leafnode():
     assert dummy_device_info.health_state == HealthState.OK
 
 
-def test_update_device_state_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_update_device_state_leafnode(component_manager):
     dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.state == DevState.UNKNOWN
@@ -95,9 +113,12 @@ def test_update_device_state_leafnode():
     assert dummy_device_info.state == DevState.ON
 
 
-def test_update_device_obs_state_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_update_device_obs_state_leafnode(component_manager):
     dummy_device = SubArrayDeviceInfo(DUMMY_SUBARRAY_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.obs_state == ObsState.EMPTY

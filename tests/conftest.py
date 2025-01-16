@@ -213,28 +213,17 @@ def group_callback() -> MockTangoEventCallbackGroup:
     return group_callback
 
 
-@pytest.fixture
-def component_manager() -> TmcLeafNodeComponentManager:
+@pytest.fixture(params=[TmcLeafNodeComponentManager, CmV1])
+def component_manager(request):
     """
-    create a component manager instance for dummy device for testing
-    :return: component manager
-    :rtype : TmcLeafNodeComponentManager
+    Create a component manager instance for a dummy device for testing.
+
+    :return: Component manager
+    :rtype: TmcLeafNodeComponentManager
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = TmcLeafNodeComponentManager(logger)
-    cm._device = dummy_device
-    return cm
-
-
-@pytest.fixture
-def component_manager_v1() -> CmV1:
-    """
-    create a component manager instance for dummy device for testing
-    :return: component manager
-    :rtype : CmV1
-    """
-    dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = CmV1(logger)
+    cm_cls = request.param
+    cm = cm_cls(logger)
     cm._device = dummy_device
     return cm
 
