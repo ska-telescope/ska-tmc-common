@@ -236,6 +236,12 @@ class HelperSubArrayDevice(SKASubarray):
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
     isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+    adminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ_WRITE,
+        label="Admin Mode",
+        doc="Admin mode of the device.",
+    )
 
     def read_isAdminModeEnabled(self):
         """
@@ -256,6 +262,20 @@ class HelperSubArrayDevice(SKASubarray):
         raise AttributeError(
             "The 'isAdminModeEnabled' attribute is not available."
         )
+
+    def read_adminMode(self) -> AdminMode:
+        """
+        This method reads the adminMode value of the device.
+        :return: admin_mode value
+        :rtype: AdminMode
+        """
+        return self._admin_mode
+
+    def write_adminMode(self, value):
+        """
+        This method writes the adminMode value of the device.
+        """
+        self._admin_mode = value
 
     commandCallInfo = attribute(
         dtype=(("str",),),
