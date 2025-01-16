@@ -231,7 +231,7 @@ def component_manager_v1() -> CmV1:
     """
     create a component manager instance for dummy device for testing
     :return: component manager
-    :rtype : TmcLeafNodeComponentManager
+    :rtype : CmV1
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = CmV1(logger)

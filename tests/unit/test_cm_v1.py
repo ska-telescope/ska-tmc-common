@@ -2,7 +2,7 @@ import time
 
 import pytest
 import tango
-from ska_tango_base.control_model import AdminMode, HealthState, ObsState
+from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
 from ska_tmc_common import (
