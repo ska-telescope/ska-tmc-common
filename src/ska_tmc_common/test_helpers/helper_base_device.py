@@ -123,7 +123,10 @@ class HelperBaseDevice(SKABaseDevice):
         """
         This method writes the adminMode value of the device.
         """
-        self._admin_mode = value
+        if self._admin_mode != value:
+            self._admin_mode = value
+            self.logger.info("AdminMode set to %s", self._admin_mode)
+            self.push_change_event("adminMode", self._admin_mode)
 
     def always_executed_hook(self) -> None:
         pass
