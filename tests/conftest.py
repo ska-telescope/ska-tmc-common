@@ -36,6 +36,9 @@ from ska_tmc_common import (
     TmcLeafNodeComponentManager,
 )
 from ska_tmc_common.tmc_base_leaf_device import TMCBaseLeafDevice
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcLeafNodeComponentManager as CmV1,
+)
 from tests.settings import (
     CSP_DEVICE,
     CSP_LEAF_NODE_DEVICE,
@@ -219,6 +222,19 @@ def component_manager() -> TmcLeafNodeComponentManager:
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
     cm = TmcLeafNodeComponentManager(logger)
+    cm._device = dummy_device
+    return cm
+
+
+@pytest.fixture
+def component_manager_v1() -> CmV1:
+    """
+    create a component manager instance for dummy device for testing
+    :return: component manager
+    :rtype : TmcLeafNodeComponentManager
+    """
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm = CmV1(logger)
     cm._device = dummy_device
     return cm
 
