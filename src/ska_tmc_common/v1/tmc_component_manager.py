@@ -176,7 +176,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
 
     def get_device(self) -> DeviceInfo:
         """
-        Return the device info our of the monitoring loop with name device_name
+        Return the device info out of the monitoring loop with name device_name
         :return: a device info
         :rtype: DeviceInfo
         """
@@ -571,7 +571,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def get_device(self) -> DeviceInfo:
         """
-        Return the device info our of the monitoring loop with name device_name
+        Return the device info out of the monitoring loop with name device_name
         :return: a device info
         :rtype: DeviceInfo
         """
