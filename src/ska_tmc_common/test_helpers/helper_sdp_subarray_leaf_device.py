@@ -26,6 +26,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         super().init_device()
         self._isSubsystemAvailable = True
         self._raise_exception = False
+        self._isAdminModeEnabled: bool = True
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
