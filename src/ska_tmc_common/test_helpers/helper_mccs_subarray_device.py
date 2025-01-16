@@ -11,6 +11,7 @@ from typing import List, Tuple
 
 from ska_control_model import ObsState
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from tango.server import command, run
 
 from ska_tmc_common.test_helpers.constants import RELEASE_RESOURCES
@@ -23,6 +24,10 @@ class HelperMccsSubarrayDevice(HelperSubArrayDevice):
     """
     A device exposing commands and attributes of the Mccs Subarray Device.
     """
+
+    def init_device(self):
+        super().init_device()
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
 
     @command(
         dtype_in="str",

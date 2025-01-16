@@ -225,7 +225,7 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
-        self._admin_mode: AdminMode = AdminMode.OFFLINE
+        self._admin_mode: AdminMode = AdminMode.ONLINE
 
     # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
