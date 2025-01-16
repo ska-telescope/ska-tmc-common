@@ -29,7 +29,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._dish_vcc_map_validation_result = ResultCode.STARTED
         self._memorized_dish_vcc_map: str = ""
         self._admin_mode: AdminMode = AdminMode.OFFLINE
-        self._isAdminModeEnabled: bool = True
+        self._isAdminModeEnabled: bool = False
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ

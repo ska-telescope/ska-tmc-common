@@ -46,7 +46,7 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
         # list of tuple
         self._command_call_info = []
         self._command_info = ("", "")
-        self._isAdminModeEnabled: bool = True
+        self._isAdminModeEnabled: bool = False
 
     class InitCommand(HelperBaseDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""

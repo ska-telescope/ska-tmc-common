@@ -24,7 +24,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._isSubsystemAvailable = True
-        self._isAdminModeEnabled: bool = True
+        self._isAdminModeEnabled: bool = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
