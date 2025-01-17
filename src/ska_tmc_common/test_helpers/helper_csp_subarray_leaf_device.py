@@ -25,6 +25,7 @@ class HelperCspSubarrayLeafDevice(HelperSubarrayLeafDevice):
     def init_device(self) -> None:
         super().init_device()
         self._isSubsystemAvailable = True
+        self._isAdminModeEnabled: bool = False
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""

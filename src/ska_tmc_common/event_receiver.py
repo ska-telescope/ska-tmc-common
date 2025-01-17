@@ -135,6 +135,7 @@ class EventReceiver:
                         callable_value,
                         stateless=True,
                     )
+                    self.stop()
             except Exception as exception:
                 self._logger.exception(
                     "Exception occured while subscribing to events "

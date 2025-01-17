@@ -10,6 +10,15 @@ from ska_tmc_common import (
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
+from ska_tmc_common.v1.liveliness_probe import (
+    BaseLivelinessProbe as baselivelinessprobe,
+)
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcComponentManager as TmcCM,
+)
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcLeafNodeComponentManager as TmcLNCM,
+)
 from tests.settings import logger
 
 
@@ -19,8 +28,9 @@ def dev_name():
     return "dummy/monitored/device"
 
 
-def test_stop():
-    cm = TmcComponentManager(
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_stop(component_manager):
+    cm = component_manager(
         _input_parameter=InputParameter(None), logger=logger
     )
     lp = cm.liveliness_probe_object
@@ -30,9 +40,12 @@ def test_stop():
     assert lp._stop
 
 
-def test_stop_ln(dev_name):
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_stop_ln(dev_name, component_manager):
     device = DishDeviceInfo(dev_name)
-    cm = TmcLeafNodeComponentManager(
+    cm = component_manager(
         logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
     cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
@@ -51,17 +64,25 @@ def test_stop_ln(dev_name):
     assert cm.liveliness_probe_object._stop
 
 
-def test_base_not_implemented_exception():
-    cm = TmcLeafNodeComponentManager(
+@pytest.mark.parametrize(
+    "component_manager, liveliness_probe",
+    [
+        (TmcLeafNodeComponentManager, BaseLivelinessProbe),
+        (TmcLNCM, baselivelinessprobe),
+    ],
+)
+def test_base_not_implemented_exception(component_manager, liveliness_probe):
+    cm = component_manager(
         logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
-    base_probe = BaseLivelinessProbe(cm, logger)
+    base_probe = liveliness_probe(cm, logger)
     with pytest.raises(NotImplementedError):
         base_probe.run()
 
 
-def test_add_and_remove_device(dev_name):
-    cm = TmcComponentManager(
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_add_and_remove_device(dev_name, component_manager):
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         logger=logger,
     )
