@@ -5,7 +5,7 @@ It is provided for explanatory purposes, and to support testing of this
 package.
 """
 
-# pylint: disable=unused-argument, duplicate-code
+# pylint: disable=unused-argument
 
 import json
 import threading

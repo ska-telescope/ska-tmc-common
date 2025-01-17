@@ -15,7 +15,6 @@ from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
 
 
-# pylint: disable=duplicate-code
 class EventReceiver:
     """
     The EventReceiver class has the responsibility to receive events

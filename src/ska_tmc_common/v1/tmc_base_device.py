@@ -9,7 +9,7 @@ from ska_tango_base import SKABaseDevice
 from tango.server import attribute, device_property
 
 
-# pylint: disable=invalid-name, duplicate-code
+# pylint: disable=invalid-name
 class TMCBaseDevice(SKABaseDevice):
     """
     Class for common attributes.
