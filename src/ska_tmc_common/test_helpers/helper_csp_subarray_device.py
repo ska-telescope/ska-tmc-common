@@ -1,4 +1,3 @@
-# pylint: disable=too-many-lines
 """
 This module implements the Helper devices for CSP subarray nodes for testing
 an integrated TMC
