@@ -33,7 +33,7 @@ class HelperBaseDevice(SKABaseDevice):
         self.dev_name = self.get_name()
         self._isSubsystemAvailable = True
         self._admin_mode: AdminMode = AdminMode.ONLINE
-        self._isAdminModeEnabled: bool = False
+        self._isAdminModeEnabled: bool = True
         self.defective_params = {
             "enabled": False,
             "fault_type": FaultType.FAILED_RESULT,
@@ -67,6 +67,12 @@ class HelperBaseDevice(SKABaseDevice):
     defective = attribute(dtype=str, access=AttrWriteType.READ)
     isSubsystemAvailable = attribute(dtype=bool, access=AttrWriteType.READ)
     isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+    adminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ_WRITE,
+        label="Admin Mode",
+        doc="Admin mode of the device.",
+    )
 
     def read_isAdminModeEnabled(self) -> bool:
         """
@@ -104,6 +110,23 @@ class HelperBaseDevice(SKABaseDevice):
         :rtype: bool
         """
         return self._isSubsystemAvailable
+
+    def read_adminMode(self) -> AdminMode:
+        """
+        This method reads the adminMode value of the device.
+        :return: admin_mode value
+        :rtype: AdminMode
+        """
+        return self._admin_mode
+
+    def write_adminMode(self, value):
+        """
+        This method writes the adminMode value of the device.
+        """
+        if self._admin_mode != value:
+            self._admin_mode = value
+            self.logger.info("AdminMode set to %s", self._admin_mode)
+            self.push_change_event("adminMode", self._admin_mode)
 
     def always_executed_hook(self) -> None:
         pass

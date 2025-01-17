@@ -82,6 +82,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.attribute_subscription_data = {}
         self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
         self._track_table_errors = []
+        self._isAdminModeEnabled: bool = False
 
     # pylint: disable=protected-access
     class InitCommand(HelperBaseDevice.InitCommand):

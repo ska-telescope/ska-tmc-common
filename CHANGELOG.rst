@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.0]
+********
+* Add common functionality of adminMode in ska-tmc-common
+
 [0.23.0]
 *********
 * Adding Admin mode functinality in helper devices
@@ -186,7 +190,7 @@ Added
 
 Fixed
 -------
-[0.23.3]
+[0.24.1]
 * Resolved bug SKB-658 on TMC Central Node and SubarrayNode
 
 [0.23.2]

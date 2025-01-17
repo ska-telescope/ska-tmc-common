@@ -9,6 +9,7 @@ from time import sleep
 from typing import Callable, Optional
 
 import tango
+from ska_control_model import AdminMode
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
@@ -51,6 +52,7 @@ class EventReceiver:
             "state": self.handle_state_event,
             "healthState": self.handle_health_state_event,
             "obsState": self.handle_obs_state_event,
+            "adminMode": self.handle_admin_mode_event,
         }
 
     def start(self) -> None:
@@ -135,6 +137,7 @@ class EventReceiver:
                         callable_value,
                         stateless=True,
                     )
+                    self.stop()
             except Exception as exception:
                 self._logger.exception(
                     "Exception occured while subscribing to events "
@@ -200,3 +203,29 @@ class EventReceiver:
         self._component_manager.update_device_obs_state(
             event.device.dev_name(), new_value
         )
+
+    def handle_admin_mode_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Handle admin Mode change event"""
+        if self._component_manager.is_admin_mode_enabled:
+            if event.err:
+                error = event.errors[0]
+                error_msg = f"{error.reason},{error.desc}"
+                self._logger.error(error_msg)
+                self._component_manager.update_event_failure(
+                    event.device.dev_name()
+                )
+                return
+            new_value = event.attr_value.value
+            self._logger.info(
+                "Received an adminMode event with : %s for device: %s",
+                new_value,
+                event.device.dev_name(),
+            )
+            self._component_manager.update_device_admin_mode(
+                event.device.dev_name(), new_value
+            )
+            self._logger.debug(
+                "Admin Mode updated to :%s", AdminMode(new_value).name
+            )

@@ -2,7 +2,7 @@ import json
 from operator import methodcaller
 
 import pytest
-from ska_control_model import ObsState
+from ska_control_model import HealthState, ObsState
 from ska_tango_base.commands import ResultCode
 from ska_tango_base.control_model import AdminMode
 
@@ -218,3 +218,11 @@ def test_assigned_resources_attribute_with_change_event(tango_context):
         "assignedResources"
     ).value
     assert assigned_resources == '{"channels": [0]}'
+
+
+def test_set_direct_health_state(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    assert subarray_device.healthState == HealthState.OK
+    subarray_device.SetDirectHealthState(HealthState.DEGRADED)
+    assert subarray_device.healthState == HealthState.DEGRADED

@@ -14,7 +14,7 @@ from logging import Logger
 from typing import Callable, Optional, Union
 
 import tango
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
 from ska_tmc_common.device_info import (
@@ -109,12 +109,13 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             component_state_callback,
         )
         self.event_receiver = _event_receiver
+        self._is_admin_mode_enabled: bool = True
         self.proxy_timeout = proxy_timeout
         self.event_subscription_check_period = event_subscription_check_period
         self.liveliness_check_period = liveliness_check_period
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
-
+        self.rlock = threading._RLock()
         if self.event_receiver:
             evt_sub_check_period = event_subscription_check_period
             self.event_receiver_object = EventReceiver(
@@ -130,6 +131,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         ) = None
         self._command_id: str = ""
         self.observable = Observable()
+        self._device = None
 
     @property
     def command_id(self) -> str:
@@ -146,6 +148,39 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         with self.lock:
 
             self._command_id = value
+
+    @property
+    def is_admin_mode_enabled(self):
+        """
+        Return the admin mode enabled flag.
+
+        :return: admin mode enabled flag
+        :rtype: bool
+        """
+        with self.rlock:
+            return self._is_admin_mode_enabled
+
+    @is_admin_mode_enabled.setter
+    def is_admin_mode_enabled(self, value):
+        """
+        Set the admin mode enabled flag.
+
+        :param value: admin mode enabled flag
+        :type value: bool
+        :raises ValueError: If the provided value is not a boolean
+        """
+        if not isinstance(value, bool):
+            raise ValueError("is_admin_mode_enabled must be a boolean value.")
+        with self.rlock:
+            self._is_admin_mode_enabled = value
+
+    def get_device(self) -> DeviceInfo:
+        """
+        Return the device info out of the monitoring loop with name device_name
+        :return: a device info
+        :rtype: DeviceInfo
+        """
+        return self._device
 
     def is_command_allowed(self, command_name: str):
         """
@@ -243,6 +278,24 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 "Exception occured while starting the timer thread : %s",
                 exp_msg,
             )
+
+    def update_device_admin_mode(
+        self, device_name: str, admin_mode: AdminMode
+    ) -> None:
+        """
+        Update a monitored device admin mode,
+        and call the relative callbacks if available
+        :param device_name: Name of the device on which admin mode is updated
+        :type device_name: str
+        :param admin_mode: admin mode of the device
+        :type admin_mode: AdminMode
+        """
+        self.logger.info("Admin Mode value updated on device: %s", device_name)
+        with self.rlock:
+            dev_info = self.get_device()
+            dev_info.adminMode = admin_mode
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
 
     #  pylint: enable=broad-exception-caught
     def timeout_handler(
@@ -520,7 +573,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def get_device(self) -> DeviceInfo:
         """
-        Return the device info our of the monitoring loop with name device_name
+        Return the device info out of the monitoring loop with name device_name
         :return: a device info
         :rtype: DeviceInfo
         """
