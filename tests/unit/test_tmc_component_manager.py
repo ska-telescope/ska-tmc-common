@@ -10,10 +10,12 @@ from ska_tmc_common import (
     DummyComponent,
     InputParameter,
     SubArrayDeviceInfo,
+)
+from ska_tmc_common.enum import LivelinessProbeType
+from ska_tmc_common.v1.tmc_component_manager import (
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
-from ska_tmc_common.enum import LivelinessProbeType
 from tests.settings import (
     DUMMY_MONITORED_DEVICE,
     DUMMY_SUBARRAY_DEVICE,

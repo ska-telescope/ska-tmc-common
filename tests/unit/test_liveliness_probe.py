@@ -2,11 +2,9 @@ import time
 
 import pytest
 
-from ska_tmc_common import (
-    BaseLivelinessProbe,
-    DishDeviceInfo,
-    InputParameter,
-    LivelinessProbeType,
+from ska_tmc_common import DishDeviceInfo, InputParameter, LivelinessProbeType
+from ska_tmc_common.v1.liveliness_probe import BaseLivelinessProbe
+from ska_tmc_common.v1.tmc_component_manager import (
     TmcComponentManager,
     TmcLeafNodeComponentManager,
 )

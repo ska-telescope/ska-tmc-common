@@ -26,8 +26,10 @@ from ska_tmc_common import (
     LRCRCallback,
     SubArrayDeviceInfo,
     TimeoutCallback,
-    TmcComponentManager,
     TmcLeafNodeCommand,
+)
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
 

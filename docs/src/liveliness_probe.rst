@@ -7,18 +7,18 @@ TMC Common LivelinessProbe
 
 1. BaseLivelinessProbe
 ----------------------
-.. autoclass:: ska_tmc_common.liveliness_probe.BaseLivelinessProbe
+.. autoclass:: ska_tmc_common.v1.liveliness_probe.BaseLivelinessProbe
     :members:
     :undoc-members:
 
 2. MultiDeviceLivelinessProbe
 -----------------------------
-.. autoclass:: ska_tmc_common.liveliness_probe.MultiDeviceLivelinessProbe
+.. autoclass:: ska_tmc_common.v1.liveliness_probe.MultiDeviceLivelinessProbe
     :members:
     :undoc-members:
 
 3. SingleDeviceLivelinessProbe
 ------------------------------
-.. autoclass:: ska_tmc_common.liveliness_probe.SingleDeviceLivelinessProbe
+.. autoclass:: ska_tmc_common.v1.liveliness_probe.SingleDeviceLivelinessProbe
     :members:
     :undoc-members:
