@@ -35,7 +35,7 @@ from ska_tmc_common import (
     HelperSubArrayDevice,
     TmcLeafNodeComponentManager,
 )
-from ska_tmc_common.tmc_base_leaf_device import TMCBaseLeafDevice
+from ska_tmc_common.v1.tmc_base_leaf_device import TMCBaseLeafDevice
 from ska_tmc_common.v1.tmc_component_manager import (
     TmcLeafNodeComponentManager as CmV1,
 )

@@ -10,14 +10,14 @@ from ska_tmc_common import (
     DummyComponent,
     InputParameter,
     SubArrayDeviceInfo,
-    TmcComponentManager,
-    TmcLeafNodeComponentManager,
 )
 from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.v1.tmc_component_manager import BaseTmcComponentManager
+from ska_tmc_common.v1.tmc_component_manager import TmcComponentManager
 from ska_tmc_common.v1.tmc_component_manager import (
     TmcComponentManager as TmcCM,
 )
+from ska_tmc_common.v1.tmc_component_manager import TmcLeafNodeComponentManager
 from ska_tmc_common.v1.tmc_component_manager import (
     TmcLeafNodeComponentManager as TmcLNCM,
 )

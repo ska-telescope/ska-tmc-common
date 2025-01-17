@@ -12,6 +12,7 @@ from ska_tmc_common import (
     HelperBaseDevice,
     HelperCspMasterDevice,
     HelperCspMasterLeafDevice,
+    HelperCSPSubarrayDevice,
     HelperMCCSController,
     HelperSdpSubarray,
     HelperSubArrayDevice,
@@ -35,6 +36,11 @@ def devices_to_load():
             "class": HelperSubArrayDevice,
             "devices": [
                 {"name": HELPER_SUBARRAY_DEVICE},
+            ],
+        },
+        {
+            "class": HelperCSPSubarrayDevice,
+            "devices": [
                 {"name": CSP_SUBARRAY_DEVICE_LOW},
                 {"name": CSP_SUBARRAY_DEVICE_MID},
             ],
@@ -79,7 +85,17 @@ def test_admin_mode_default_admin_mode_subarray_helper(tango_context):
     subarray_adapter = factory.get_or_create_adapter(
         HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
     )
-    assert subarray_adapter.proxy.adminMode == AdminMode.OFFLINE
+    assert subarray_adapter.proxy.adminMode == AdminMode.ONLINE
+
+
+def test_admin_mode_default_admin_mode_csp_subarray_helper(tango_context):
+    """test invocation with admin mode online"""
+    factory = AdapterFactory()
+
+    csp_subarray_adapter = factory.get_or_create_adapter(
+        CSP_SUBARRAY_DEVICE_MID, AdapterType.CSPSUBARRAY
+    )
+    assert csp_subarray_adapter.proxy.adminMode == AdminMode.OFFLINE
 
 
 def test_admin_mode_default_admin_mode_mccs_controller(tango_context):
@@ -126,12 +142,12 @@ def test_admin_mode_offline(tango_context):
     """test invocation with admin mode offline"""
     factory = AdapterFactory()
 
-    subarray_adapter = factory.get_or_create_adapter(
-        HELPER_SUBARRAY_DEVICE, AdapterType.SUBARRAY
+    csp_subarray_adapter = factory.get_or_create_adapter(
+        CSP_SUBARRAY_DEVICE_MID, AdapterType.SUBARRAY
     )
-    subarray_adapter.proxy.adminMode = AdminMode.OFFLINE
+    assert csp_subarray_adapter.adminMode == AdminMode.OFFLINE
     with pytest.raises(tango.DevFailed) as exc_info:
-        subarray_adapter.On()
+        csp_subarray_adapter.On()
     assert "Command On not allowed" in str(exc_info)
 
 
@@ -217,7 +233,7 @@ def test_csp_device_default_admin_mode(tango_context):
     """
     dev_factory = DevFactory()
     csp_master_device = dev_factory.get_device(CSP_DEVICE)
-    csp_subarray_device = dev_factory.get_device(HELPER_SUBARRAY_DEVICE)
+    csp_subarray_device = dev_factory.get_device(CSP_SUBARRAY_DEVICE_MID)
     assert csp_master_device.adminMode == AdminMode.OFFLINE
     assert csp_subarray_device.adminMode == AdminMode.OFFLINE
 

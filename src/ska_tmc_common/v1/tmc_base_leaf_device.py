@@ -8,7 +8,6 @@ from ska_tango_base import SKABaseDevice
 from tango.server import device_property
 
 
-# pylint: disable=duplicate-code
 class TMCBaseLeafDevice(SKABaseDevice):
     """
     Class for common methods of leaf devices.

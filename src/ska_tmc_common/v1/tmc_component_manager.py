@@ -5,7 +5,7 @@ It is provided for explanatory purposes, and to support testing of this
 package.
 """
 
-# pylint: disable=unused-argument, duplicate-code
+# pylint: disable=unused-argument
 
 import json
 import threading
@@ -347,7 +347,8 @@ class TmcComponentManager(BaseTmcComponentManager):
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        event_subscription_check_period: int = 1,
+        liveliness_check_period: int = 1,
         **kwargs,
     ):
         """
@@ -363,7 +364,8 @@ class TmcComponentManager(BaseTmcComponentManager):
             communication_state_callback,
             component_state_callback,
             proxy_timeout,
-            sleep_time,
+            event_subscription_check_period,
+            liveliness_check_period,
             *args,
             **kwargs,
         )

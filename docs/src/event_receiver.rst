@@ -7,7 +7,7 @@ TMC Common EventReceiver
 
 1. EventReceiver
 ----------------
-.. automodule:: ska_tmc_common.event_receiver
-.. autoclass:: ska_tmc_common.event_receiver.EventReceiver
+.. automodule:: ska_tmc_common.v1.event_receiver
+.. autoclass:: ska_tmc_common.v1.event_receiver.EventReceiver
     :members:
     :undoc-members:

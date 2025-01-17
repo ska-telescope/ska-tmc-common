@@ -190,12 +190,15 @@ Added
 
 Fixed
 -------
+[0.24.1]
+* Resolved bug SKB-658 on TMC Central Node and SubarrayNode
+
 [0.23.2]
 *********
 * Updated SDP Subarray leaf node.
   
 [0.23.1]
-* Resolve bug SKB-658
+* Resolved bug SKB-658 on TMC Leaf Nodes
 
 [0.20.2]
 * Fixed bug related to full trl usage in liveliness probe.
