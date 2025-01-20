@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ska_tmc_common.observer import Observer
 
+from copy import deepcopy
+
 
 class Observable:
     """The class maintains the list of observers
@@ -56,7 +58,8 @@ class Observable:
             Denotes whether attribute change event. Defaults to False.
         """
         with self.lock:
-            for observer in self.observers:
+            current_observers = deepcopy(self.observers)
+            for observer in current_observers:
                 logging.debug(
                     "Calling observer %s",
                     observer.command_callback_tracker.command_id,
