@@ -45,6 +45,7 @@ from .enum import (
 )
 from .error_propagation_decorator import error_propagation_decorator
 from .event_callback import EventCallback
+from .event_receiver import EventReceiver
 from .exceptions import (
     CommandNotAllowed,
     ConversionError,
@@ -57,6 +58,11 @@ from .exceptions import (
     SubarrayNotPresentError,
 )
 from .input import InputParameter
+from .liveliness_probe import (
+    BaseLivelinessProbe,
+    MultiDeviceLivelinessProbe,
+    SingleDeviceLivelinessProbe,
+)
 from .lrcr_callback import LRCRCallback
 from .op_state_model import TMCOpStateMachine, TMCOpStateModel
 from .test_helpers.empty_component_manager import EmptyComponentManager
@@ -95,15 +101,9 @@ from .test_helpers.helper_tmc_device import (
 from .timekeeper import TimeKeeper
 from .timeout_callback import TimeoutCallback
 from .timeout_decorator import timeout_decorator
+from .tmc_base_device import TMCBaseDevice
 from .tmc_command import BaseTMCCommand, TMCCommand, TmcLeafNodeCommand
-from .v1.event_receiver import EventReceiver
-from .v1.liveliness_probe import (
-    BaseLivelinessProbe,
-    MultiDeviceLivelinessProbe,
-    SingleDeviceLivelinessProbe,
-)
-from .v1.tmc_base_device import TMCBaseDevice
-from .v1.tmc_component_manager import (
+from .tmc_component_manager import (
     BaseTmcComponentManager,
     TmcComponent,
     TmcComponentManager,
