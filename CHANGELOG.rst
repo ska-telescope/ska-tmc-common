@@ -190,6 +190,10 @@ Added
 
 Fixed
 -------
+[0.24.2]
+* Fixed issue with observers list.
+* Fixed issue with backward compatibility by adding files back to ska_tmc_common folder.
+
 [0.24.1]
 * Resolved bug SKB-658 on TMC Central Node and SubarrayNode
 
