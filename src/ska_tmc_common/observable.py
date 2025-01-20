@@ -7,11 +7,16 @@ from __future__ import annotations
 
 import logging
 import threading
-from copy import deepcopy
+from copy import copy
 from typing import TYPE_CHECKING
+
+from ska_ser_logging import configure_logging
 
 if TYPE_CHECKING:
     from ska_tmc_common.observer import Observer
+
+configure_logging()
+logger = logging.getLogger("observable")
 
 
 class Observable:
@@ -31,7 +36,7 @@ class Observable:
             observer (Observer): Observer class instance.
         """
         with self.lock:
-            logging.info("registered : %s ", observer)
+            logger.info("registered : %s ", observer)
             self.observers.append(observer)
 
     def deregister_observer(self, observer: Observer) -> None:
@@ -56,10 +61,10 @@ class Observable:
             attribute_value_change (bool, optional):
             Denotes whether attribute change event. Defaults to False.
         """
-        current_observers = deepcopy(self.observers)
         with self.lock:
+            current_observers = copy(self.observers)
             for observer in current_observers:
-                logging.debug(
+                logger.debug(
                     "Calling observer %s",
                     observer.command_callback_tracker.command_id,
                 )
