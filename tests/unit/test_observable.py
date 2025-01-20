@@ -5,7 +5,6 @@ import pytest
 from ska_tmc_common.observable import Observable
 
 
-@pytest.mark.new
 def test_observable():
     observer = Mock()
     observable = Observable()
