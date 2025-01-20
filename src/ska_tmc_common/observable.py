@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import threading
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -56,7 +57,8 @@ class Observable:
             Denotes whether attribute change event. Defaults to False.
         """
         with self.lock:
-            for observer in self.observers:
+            current_observers = deepcopy(self.observers)
+            for observer in current_observers:
                 logging.debug(
                     "Calling observer %s",
                     observer.command_callback_tracker.command_id,
