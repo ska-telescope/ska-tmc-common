@@ -3,7 +3,7 @@ from os.path import dirname, join
 
 import pytest
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 from tango import DevFailed, DevState
 
 from ska_tmc_common import DevFactory, FaultType
@@ -47,6 +47,7 @@ def devices_to_load():
 def test_set_defective(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     defect = {
         "enabled": True,
         "fault_type": FaultType.FAILED_RESULT,
@@ -63,6 +64,7 @@ def test_set_defective(tango_context):
 def test_on_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.On()
     assert sdp_subarray_device.state() == DevState.ON
 
@@ -70,6 +72,7 @@ def test_on_command(tango_context):
 def test_off_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.Off()
     assert sdp_subarray_device.state() == DevState.OFF
 
@@ -77,6 +80,7 @@ def test_off_command(tango_context):
 def test_release_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.ReleaseResources()
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
@@ -84,6 +88,7 @@ def test_release_command(tango_context):
 def test_release_all_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.ReleaseAllResources()
     wait_for_obstate(sdp_subarray_device, ObsState.EMPTY)
 
@@ -91,6 +96,7 @@ def test_release_all_command(tango_context):
 def test_endscan_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.EndScan()
     wait_for_obstate(sdp_subarray_device, ObsState.READY)
 
@@ -98,6 +104,7 @@ def test_endscan_command(tango_context):
 def test_end_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.End()
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
 
@@ -105,6 +112,7 @@ def test_end_command(tango_context):
 def test_abort_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.Abort()
     wait_for_obstate(sdp_subarray_device, ObsState.ABORTING)
     wait_for_obstate(sdp_subarray_device, ObsState.ABORTED)
@@ -113,6 +121,7 @@ def test_abort_command(tango_context):
 def test_restart_command(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     sdp_subarray_device.Restart()
     wait_for_obstate(sdp_subarray_device, ObsState.EMPTY)
 
@@ -120,6 +129,7 @@ def test_restart_command(tango_context):
 def test_assign_resources_valid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     assign_input_str = get_assign_input_str()
     sdp_subarray_device.AssignResources(assign_input_str)
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
@@ -128,6 +138,7 @@ def test_assign_resources_valid_input(tango_context):
 def test_assign_resources_invalid_input_missing_eb_id(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     assign_input_str = get_assign_input_str()
     input_string = json.loads(assign_input_str)
     del input_string["execution_block"]["eb_id"]
@@ -141,15 +152,23 @@ def test_assign_resources_invalid_input_missing_eb_id(tango_context):
 def test_assign_resources_invalid_input_missing_resources(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     assign_input_str = get_assign_input_str()
     input_string = json.loads(assign_input_str)
-    input_string["resources"]["receive_nodes"] = 0
+    defect = {
+        "enabled": True,
+        "fault_type": FaultType.SDP_FAULT,
+        "error_message": (
+            "Missing receive nodes in the AssignResources input json"
+        ),
+    }
+    sdp_subarray_device.SetDefective(json.dumps(defect))
     with pytest.raises(
         DevFailed,
         match="Missing receive nodes in the AssignResources input json",
     ):
         sdp_subarray_device.AssignResources(json.dumps(input_string))
-    assert sdp_subarray_device.obsState == ObsState.EMPTY
+    assert sdp_subarray_device.obsState == ObsState.FAULT
 
 
 def test_assign_resources_missing_resources_key(tango_context):
@@ -158,6 +177,7 @@ def test_assign_resources_missing_resources_key(tango_context):
     """
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     assign_input_str = get_assign_input_str()
     input_string = json.loads(assign_input_str)
     input_string.pop("resources")  # Remove the 'resources' key
@@ -170,6 +190,7 @@ def test_assign_resources_missing_resources_key(tango_context):
 def test_configure_valid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     configure_input_str = get_configure_input_str()
     sdp_subarray_device.Configure(configure_input_str)
     wait_for_obstate(sdp_subarray_device, ObsState.READY)
@@ -178,6 +199,7 @@ def test_configure_valid_input(tango_context):
 def test_configure_invalid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     assign_input_str = get_assign_input_str()
     sdp_subarray_device.AssignResources(assign_input_str)
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
@@ -194,6 +216,7 @@ def test_configure_invalid_input(tango_context):
 def test_scan_valid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     scan_input_str = get_scan_input_str()
     sdp_subarray_device.Scan(scan_input_str)
     wait_for_obstate(sdp_subarray_device, ObsState.SCANNING)
@@ -202,6 +225,7 @@ def test_scan_valid_input(tango_context):
 def test_scan_invalid_input(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     assign_input_str = get_assign_input_str()
     sdp_subarray_device.AssignResources(assign_input_str)
     wait_for_obstate(sdp_subarray_device, ObsState.IDLE)
@@ -221,6 +245,7 @@ def test_scan_invalid_input(tango_context):
 def test_release_resources_defective(tango_context):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     # Check ReleaseAllResources Defective
     defect = {
         "enabled": True,
@@ -238,6 +263,7 @@ def test_release_resources_defective(tango_context):
 def test_sdp_receive_addresses(tango_context, json_factory):
     dev_factory = DevFactory()
     sdp_subarray_device = dev_factory.get_device(SDP_SUBARRAY_DEVICE)
+    sdp_subarray_device.adminMode = AdminMode.ONLINE
     receive_addr = json_factory("ReceiveAddresses_mid")
     sdp_subarray_device.SetDirectreceiveAddresses(receive_addr)
     assert sdp_subarray_device.receiveAddresses == receive_addr

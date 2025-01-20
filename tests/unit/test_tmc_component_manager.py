@@ -2,7 +2,7 @@ import time
 
 import pytest
 import tango
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from tango import DevState
 
 from ska_tmc_common import (
@@ -10,10 +10,17 @@ from ska_tmc_common import (
     DummyComponent,
     InputParameter,
     SubArrayDeviceInfo,
-    TmcComponentManager,
-    TmcLeafNodeComponentManager,
 )
 from ska_tmc_common.enum import LivelinessProbeType
+from ska_tmc_common.v1.tmc_component_manager import BaseTmcComponentManager
+from ska_tmc_common.v1.tmc_component_manager import TmcComponentManager
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcComponentManager as TmcCM,
+)
+from ska_tmc_common.v1.tmc_component_manager import TmcLeafNodeComponentManager
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcLeafNodeComponentManager as TmcLNCM,
+)
 from tests.settings import (
     DUMMY_MONITORED_DEVICE,
     DUMMY_SUBARRAY_DEVICE,
@@ -21,9 +28,10 @@ from tests.settings import (
 )
 
 
-def test_add_device():
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_add_device(component_manager):
     dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         _component=dummy_component,
         logger=logger,
@@ -34,9 +42,10 @@ def test_add_device():
     assert len(dummy_component._devices) == 2
 
 
-def test_get_device():
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_get_device(component_manager):
     dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         _component=dummy_component,
         logger=logger,
@@ -47,9 +56,10 @@ def test_get_device():
     assert dummy_device_info.dev_name == DUMMY_MONITORED_DEVICE
 
 
-def test_update_device():
+@pytest.mark.parametrize("component_manager", [TmcComponentManager, TmcCM])
+def test_update_device(component_manager):
     dummy_component = DummyComponent(logger)
-    cm = TmcComponentManager(
+    cm = component_manager(
         _input_parameter=InputParameter(None),
         _component=dummy_component,
         logger=logger,
@@ -64,17 +74,23 @@ def test_update_device():
     assert new_device_info.unresponsive is True
 
 
-def test_get_device_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_get_device_leafnode(component_manager):
     dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.dev_name == DUMMY_MONITORED_DEVICE
 
 
-def test_update_device_health_state_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_update_device_health_state_leafnode(component_manager):
     dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.health_state == HealthState.UNKNOWN
@@ -83,9 +99,12 @@ def test_update_device_health_state_leafnode():
     assert dummy_device_info.health_state == HealthState.OK
 
 
-def test_update_device_state_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_update_device_state_leafnode(component_manager):
     dummy_device = DeviceInfo(DUMMY_MONITORED_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.state == DevState.UNKNOWN
@@ -94,9 +113,12 @@ def test_update_device_state_leafnode():
     assert dummy_device_info.state == DevState.ON
 
 
-def test_update_device_obs_state_leafnode():
+@pytest.mark.parametrize(
+    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
+)
+def test_update_device_obs_state_leafnode(component_manager):
     dummy_device = SubArrayDeviceInfo(DUMMY_SUBARRAY_DEVICE)
-    cm = TmcLeafNodeComponentManager(logger)
+    cm = component_manager(logger)
     cm._device = dummy_device
     dummy_device_info = cm.get_device()
     assert dummy_device_info.obs_state == ObsState.EMPTY
@@ -178,9 +200,40 @@ def test_update_device_obs_state(component_manager):
     assert not component_manager.get_device().unresponsive
 
 
+def test_update_device_admin_mode():
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    component_manager = BaseTmcComponentManager(logger)
+    component_manager._device = dummy_device
+    admin_mode = AdminMode.ONLINE
+    component_manager.update_device_admin_mode(
+        DUMMY_MONITORED_DEVICE, admin_mode
+    )
+    assert component_manager.get_device().adminMode == admin_mode
+    assert component_manager.get_device().last_event_arrived == pytest.approx(
+        time.time(), abs=1e-3
+    )
+    assert not component_manager.get_device().unresponsive
+
+
 def test_command_id_property(component_manager):
     # Test if command id property can be accessed and set correctly
     assert component_manager.command_id == ""
     new_id = f"{time.time()}-TempID"
     component_manager.command_id = new_id
     assert component_manager.command_id == new_id
+
+
+def test_admin_mode_property():
+    component_manager = BaseTmcComponentManager(logger)
+    assert component_manager.is_admin_mode_enabled is True
+    component_manager.is_admin_mode_enabled = False
+    assert component_manager.is_admin_mode_enabled is False
+
+
+def test_admin_mode_property_invalid():
+    component_manager = BaseTmcComponentManager(logger)
+    assert component_manager.is_admin_mode_enabled is True
+    with pytest.raises(
+        ValueError, match="is_admin_mode_enabled must be a boolean value."
+    ):
+        component_manager.is_admin_mode_enabled = "False"

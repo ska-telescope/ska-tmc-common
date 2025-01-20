@@ -23,6 +23,7 @@ from tango import (
 from tango.server import attribute, command, device_property, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import DishMode, PointingState
 from ska_tmc_common.event_callback import EventCallback
 from ska_tmc_common.test_helpers.constants import (
@@ -81,6 +82,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.attribute_subscription_data = {}
         self._sdp_pointing_offsets = [0.0, 0.0, 0.0]
         self._track_table_errors = []
+        self._isAdminModeEnabled: bool = False
 
     # pylint: disable=protected-access
     class InitCommand(HelperBaseDevice.InitCommand):
@@ -417,6 +419,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         )
         start_thread.start()
 
+    @admin_mode_check()
     def is_SetKValue_allowed(self) -> bool:
         """
         This method checks if the SetKValue Command is allowed in current
@@ -489,6 +492,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self._command_call_info.clear()
         self.push_change_event("commandCallInfo", self._command_call_info)
 
+    @admin_mode_check()
     def is_Off_allowed(self) -> bool:
         """
         This method checks if the Off Command is
@@ -521,6 +525,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Off"
         self.logger.info("Instructed Dish simulator to invoke Off command")
         self.update_command_info(OFF, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault(
                 "Off",
@@ -539,6 +544,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             command_id,
         )
 
+    @admin_mode_check()
     def is_SetStandbyFPMode_allowed(self) -> bool:
         """
         This method checks if the is_SetStandbyFPMode_allowed Command is
@@ -594,6 +600,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_SetStandbyLPMode_allowed(self) -> bool:
         """
         This method checks if the is_SetStandbyLPMode_allowed Command is
@@ -630,6 +637,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetStandbyLPMode command"
         )
         self.update_command_info(SET_STANDBY_LP_MODE, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStandbyLPMode", command_id)
         # Set the device state
@@ -650,6 +658,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_SetOperateMode_allowed(self) -> bool:
         """
         This method checks if the SetOperateMode Command is allowed in current
@@ -685,6 +694,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetOperateMode command"
         )
         self.update_command_info(SET_OPERATE_MODE, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetOperateMode", command_id)
 
@@ -710,6 +720,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_SetStowMode_allowed(self) -> bool:
         """
         This method checks if the SetStowMode Command is allowed in current
@@ -745,6 +756,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke SetStowMode command"
         )
         self.update_command_info(SET_STOW_MODE, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("SetStowMode", command_id)
 
@@ -767,6 +779,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_Track_allowed(self) -> bool:
         """
         This method checks if the Track Command is allowed in current
@@ -800,6 +813,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         command_id = f"{time.time()}_Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Track", command_id)
         if self._pointing_state != PointingState.TRACK:
@@ -815,6 +829,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Track command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_TrackStop_allowed(self) -> bool:
         """
         This method checks if the TrackStop Command is allowed in current
@@ -851,6 +866,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke TrackStop command"
         )
         self.update_command_info(TRACK_STOP, "")
+
         if self.defective_params["enabled"]:
             return self.induce_fault("TrackStop", command_id, is_dish=True)
         if self._pointing_state != PointingState.READY:
@@ -870,6 +886,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("TrackStop command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_AbortCommands_allowed(self) -> bool:
         """
         This method checks if the AbortCommands command is allowed in current
@@ -905,6 +922,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke AbortCommands command"
         )
         self.update_command_info(ABORT_COMMANDS, "")
+
         self.logger.info("Abort Completed")
         self._pointing_state = PointingState.READY
         self.push_change_event("pointingState", self._pointing_state)
@@ -916,6 +934,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             [command_id],
         )
 
+    @admin_mode_check()
     def is_Configure_allowed(self) -> bool:
         """
         This method checks if the Configure Command is allowed in current
@@ -954,6 +973,7 @@ class HelperDishLNDevice(HelperBaseDevice):
             "Instructed Dish simulator to invoke Configure command"
         )
         self.update_command_info(CONFIGURE, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Configure", command_id, is_dish=True)
         if self._pointing_state != PointingState.TRACK:
@@ -987,6 +1007,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Configure command completed.")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_TrackLoadStaticOff_allowed(self) -> bool:
         """
         This method checks if the TrackLoadStaticOff command is allowed in
@@ -1131,7 +1152,7 @@ class HelperDishLNDevice(HelperBaseDevice):
     #     """
     #     # TBD: Dish mode change
     #     return ([ResultCode.OK], [""])
-
+    @admin_mode_check()
     def is_Scan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the Scan Command is allowed in current State.
@@ -1167,6 +1188,7 @@ class HelperDishLNDevice(HelperBaseDevice):
         self.logger.info("Processing Scan Command")
         # to record the command data
         self.update_command_info(SCAN, argin)
+
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
 
@@ -1213,6 +1235,7 @@ class HelperDishLNDevice(HelperBaseDevice):
 
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
         """
         This method checks if the EndScan Command is allowed in current State.

@@ -7,7 +7,7 @@ TMC Common TMCBaseDevice
 
 1. TMCBaseDevice
 ----------------
-.. automodule:: ska_tmc_common.tmc_base_device
-.. autoclass:: ska_tmc_common.tmc_base_device.TMCBaseDevice
+.. automodule:: ska_tmc_common.v1.tmc_base_device
+.. autoclass:: ska_tmc_common.v1.tmc_base_device.TMCBaseDevice
     :members:
     :undoc-members:

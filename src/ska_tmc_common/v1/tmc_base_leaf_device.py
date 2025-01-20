@@ -5,12 +5,22 @@ This module includes methods for common attributes.
 from typing import Any
 
 from ska_tango_base import SKABaseDevice
+from tango.server import device_property
 
 
 class TMCBaseLeafDevice(SKABaseDevice):
     """
     Class for common methods of leaf devices.
     """
+
+    # -----------------
+    # Device Properties
+    # -----------------
+    EventSubscriptionCheckPeriod = device_property(
+        dtype="DevFloat", default_value=1
+    )
+    LivelinessCheckPeriod = device_property(dtype="DevFloat", default_value=1)
+    AdapterTimeOut = device_property(dtype="DevFloat", default_value=2)
 
     def create_component_manager(self):
         """

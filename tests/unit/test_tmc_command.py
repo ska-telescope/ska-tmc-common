@@ -10,8 +10,8 @@ from ska_tmc_common import (
     HelperAdapterFactory,
     LivelinessProbeType,
     TMCCommand,
-    TmcComponentManager,
 )
+from ska_tmc_common.v1.tmc_component_manager import TmcComponentManager
 from src.ska_tmc_common import InputParameter
 from tests.settings import DummyComponentManager, State, logger
 

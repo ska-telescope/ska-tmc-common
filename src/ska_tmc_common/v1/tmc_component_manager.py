@@ -14,7 +14,7 @@ from logging import Logger
 from typing import Callable, Optional, Union
 
 import tango
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
 from ska_tmc_common.device_info import (
@@ -23,15 +23,15 @@ from ska_tmc_common.device_info import (
     SubArrayDeviceInfo,
 )
 from ska_tmc_common.enum import LivelinessProbeType, TimeoutState
-from ska_tmc_common.event_receiver import EventReceiver
 from ska_tmc_common.input import InputParameter
-from ska_tmc_common.liveliness_probe import (
-    MultiDeviceLivelinessProbe,
-    SingleDeviceLivelinessProbe,
-)
 from ska_tmc_common.observable import Observable
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
+from ska_tmc_common.v1.event_receiver import EventReceiver
+from ska_tmc_common.v1.liveliness_probe import (
+    MultiDeviceLivelinessProbe,
+    SingleDeviceLivelinessProbe,
+)
 
 
 class TmcComponent:
@@ -99,7 +99,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        event_subscription_check_period: int = 1,
+        liveliness_check_period: int = 1,
         **kwargs,
     ):
         super().__init__(
@@ -108,17 +109,20 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             component_state_callback,
         )
         self.event_receiver = _event_receiver
+        self._is_admin_mode_enabled: bool = True
         self.proxy_timeout = proxy_timeout
-        self.sleep_time = sleep_time
+        self.event_subscription_check_period = event_subscription_check_period
+        self.liveliness_check_period = liveliness_check_period
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
-
+        self.rlock = threading._RLock()
         if self.event_receiver:
+            evt_sub_check_period = event_subscription_check_period
             self.event_receiver_object = EventReceiver(
                 self,
                 logger=logger,
                 proxy_timeout=proxy_timeout,
-                sleep_time=sleep_time,
+                event_subscription_check_period=evt_sub_check_period,
             )
         self.timer_object = None
         self.liveliness_probe_object: (
@@ -127,6 +131,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         ) = None
         self._command_id: str = ""
         self.observable = Observable()
+        self._device = None
 
     @property
     def command_id(self) -> str:
@@ -143,6 +148,39 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         with self.lock:
 
             self._command_id = value
+
+    @property
+    def is_admin_mode_enabled(self):
+        """
+        Return the admin mode enabled flag.
+
+        :return: admin mode enabled flag
+        :rtype: bool
+        """
+        with self.rlock:
+            return self._is_admin_mode_enabled
+
+    @is_admin_mode_enabled.setter
+    def is_admin_mode_enabled(self, value):
+        """
+        Set the admin mode enabled flag.
+
+        :param value: admin mode enabled flag
+        :type value: bool
+        :raises ValueError: If the provided value is not a boolean
+        """
+        if not isinstance(value, bool):
+            raise ValueError("is_admin_mode_enabled must be a boolean value.")
+        with self.rlock:
+            self._is_admin_mode_enabled = value
+
+    def get_device(self) -> DeviceInfo:
+        """
+        Return the device info out of the monitoring loop with name device_name
+        :return: a device info
+        :rtype: DeviceInfo
+        """
+        return self._device
 
     def is_command_allowed(self, command_name: str):
         """
@@ -173,7 +211,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                     self,
                     logger=self.logger,
                     proxy_timeout=self.proxy_timeout,
-                    sleep_time=self.sleep_time,
+                    liveliness_check_period=self.liveliness_check_period,
                 )
 
             self.liveliness_probe_object.start()
@@ -184,7 +222,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                     self,
                     logger=self.logger,
                     proxy_timeout=self.proxy_timeout,
-                    sleep_time=self.sleep_time,
+                    liveliness_check_period=self.liveliness_check_period,
                 )
             self.liveliness_probe_object.start()
         else:
@@ -241,6 +279,24 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 exp_msg,
             )
 
+    def update_device_admin_mode(
+        self, device_name: str, admin_mode: AdminMode
+    ) -> None:
+        """
+        Update a monitored device admin mode,
+        and call the relative callbacks if available
+        :param device_name: Name of the device on which admin mode is updated
+        :type device_name: str
+        :param admin_mode: admin mode of the device
+        :type admin_mode: AdminMode
+        """
+        self.logger.info("Admin Mode value updated on device: %s", device_name)
+        with self.rlock:
+            dev_info = self.get_device()
+            dev_info.adminMode = admin_mode
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
+
     #  pylint: enable=broad-exception-caught
     def timeout_handler(
         self, timeout_id: str, timeout_callback: TimeoutCallback
@@ -291,7 +347,8 @@ class TmcComponentManager(BaseTmcComponentManager):
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        event_subscription_check_period: int = 1,
+        liveliness_check_period: int = 1,
         **kwargs,
     ):
         """
@@ -307,7 +364,8 @@ class TmcComponentManager(BaseTmcComponentManager):
             communication_state_callback,
             component_state_callback,
             proxy_timeout,
-            sleep_time,
+            event_subscription_check_period,
+            liveliness_check_period,
             *args,
             **kwargs,
         )
@@ -486,7 +544,8 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        event_subscription_check_period: int = 1,
+        liveliness_check_period: int = 1,
         **kwargs,
     ):
         """
@@ -500,7 +559,8 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             communication_state_callback,
             component_state_callback,
             proxy_timeout,
-            sleep_time,
+            event_subscription_check_period,
+            liveliness_check_period,
             args,
             kwargs,
         )
@@ -513,7 +573,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def get_device(self) -> DeviceInfo:
         """
-        Return the device info our of the monitoring loop with name device_name
+        Return the device info out of the monitoring loop with name device_name
         :return: a device info
         :rtype: DeviceInfo
         """

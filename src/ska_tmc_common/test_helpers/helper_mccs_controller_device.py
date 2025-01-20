@@ -10,10 +10,12 @@ from typing import List, Tuple
 
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import AdminMode
 from tango import DevState
-from tango.server import command, run
+from tango.server import AttrWriteType, attribute, command, run
 
 from ska_tmc_common import CommandNotAllowed, DevFactory, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ALLOCATE,
@@ -33,6 +35,7 @@ class HelperMCCSController(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self.set_state(DevState.UNKNOWN)
+        self._admin_mode: AdminMode = AdminMode.OFFLINE
         self._command_delay_info = {
             CONFIGURE: 2,
             ABORT: 2,
@@ -54,6 +57,28 @@ class HelperMCCSController(HelperBaseDevice):
             super().do()
             return (ResultCode.OK, "")
 
+    isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+
+    def read_isAdminModeEnabled(self):
+        """
+        Raise an AttributeError indicating 'isAdminModeEnabled' is unavailable.
+        :raises AttributeError: Always raised to block access to the attribute.
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
+    def write_isAdminModeEnabled(self, value: bool):
+        """
+        Raise an AttributeError indicating that 'isAdminModeEnabled'
+        cannot be modified.
+        :param value: The value attempted to set for isAdminModeEnabled.
+        :raises AttributeError: Always raised to access to the attribute..
+        """
+        raise AttributeError(
+            "The 'isAdminModeEnabled' attribute is not available."
+        )
+
     @command(
         dtype_in=str,
         doc_in="Set Defective parameters",
@@ -68,6 +93,7 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Setting defective params to %s", input_dict)
         self.defective_params = input_dict
 
+    @admin_mode_check()
     def is_Allocate_allowed(self) -> bool:
         """
         Check if command `Allocate` is allowed in the current device
@@ -104,6 +130,7 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-Allocate"
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Allocate", command_id)
@@ -126,6 +153,7 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Allocate invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_Release_allowed(self) -> bool:
         """
         Check if command `Release` is allowed in the current
@@ -162,6 +190,7 @@ class HelperMCCSController(HelperBaseDevice):
         """
 
         command_id = f"{time.time()}-Release"
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("Release", command_id)
@@ -183,6 +212,7 @@ class HelperMCCSController(HelperBaseDevice):
         self.logger.info("Release command invoked on MCCS Controller")
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_RestartSubarray_allowed(self) -> bool:
         """
         This method checks if the RestartSubarray command is allowed in the
@@ -218,6 +248,7 @@ class HelperMCCSController(HelperBaseDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}-RestartSubarray"
+
         if self.defective_params["enabled"]:
             self.logger.info("Device is defective, cannot process command.")
             return self.induce_fault("RestartSubarray", command_id)

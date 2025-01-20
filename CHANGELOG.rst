@@ -12,6 +12,21 @@ Main
 
 Added
 --------
+[0.24.0]
+********
+* Add common functionality of adminMode in ska-tmc-common
+
+[0.23.0]
+*********
+* Adding Admin mode functinality in helper devices
+[0.22.16]
+*********
+* Enable induce_fault functionality in HelperSDPSubarray
+
+[0.22.15]
+*********
+* Update the helper dish master to send pointing state slew before track in track command.
+  
 [0.22.14]
 *********
 * clean up method of observable called before calling update task status
@@ -175,6 +190,16 @@ Added
 
 Fixed
 -------
+[0.24.1]
+* Resolved bug SKB-658 on TMC Central Node and SubarrayNode
+
+[0.23.2]
+*********
+* Updated SDP Subarray leaf node.
+  
+[0.23.1]
+* Resolved bug SKB-658 on TMC Leaf Nodes
+
 [0.20.2]
 * Fixed bug related to full trl usage in liveliness probe.
 

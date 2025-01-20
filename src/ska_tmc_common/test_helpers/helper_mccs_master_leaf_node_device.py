@@ -12,6 +12,7 @@ from ska_tango_base.commands import ResultCode
 from tango.server import command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
+from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
 
 
@@ -23,6 +24,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
     def init_device(self) -> None:
         super().init_device()
         self._isSubsystemAvailable = True
+        self._isAdminModeEnabled: bool = False
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
@@ -38,6 +40,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
 
+    @admin_mode_check()
     def is_AssignResources_allowed(self) -> bool:
         """
         Check if command `AssignResources` is allowed in the current device
@@ -76,6 +79,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         :rtype: Tuple
         """
         command_id = f"{time.time()}-AssignResources"
+
         if self.defective_params["enabled"]:
             return self.induce_fault("AssignResources", command_id)
 
@@ -92,6 +96,7 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
         )
         return [ResultCode.QUEUED], [command_id]
 
+    @admin_mode_check()
     def is_ReleaseAllResources_allowed(self) -> bool:
         """
         Check if command `ReleaseAllResources` is allowed in the current

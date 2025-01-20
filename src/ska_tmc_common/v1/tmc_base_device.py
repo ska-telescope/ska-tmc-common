@@ -18,7 +18,11 @@ class TMCBaseDevice(SKABaseDevice):
     # -----------------
     # Device Properties
     # -----------------
-    SleepTime = device_property(dtype="DevFloat", default_value=1)
+
+    EventSubscriptionCheckPeriod = device_property(
+        dtype="DevFloat", default_value=1
+    )
+    LivelinessCheckPeriod = device_property(dtype="DevFloat", default_value=1)
 
     # -----------------
     # Attributes

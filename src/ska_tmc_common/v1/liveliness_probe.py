@@ -30,7 +30,7 @@ class BaseLivelinessProbe:
         component_manager,
         logger: Logger,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        liveliness_check_period: int = 1,
         max_logging_time: int = 5,
     ):
         self._thread = threading.Thread(target=self.run)
@@ -39,7 +39,7 @@ class BaseLivelinessProbe:
         self._thread.daemon = True
         self._component_manager = component_manager
         self._proxy_timeout = proxy_timeout
-        self._sleep_time = sleep_time
+        self._liveliness_check_period = liveliness_check_period
         self._dev_factory = DevFactory()
         self.log_manager = LogManager(max_logging_time)
 
@@ -171,14 +171,14 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         logger: Logger,
         max_workers: int = 5,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        liveliness_check_period: int = 1,
         max_logging_time: int = 5,
     ):
         super().__init__(
             component_manager,
             logger,
             proxy_timeout,
-            sleep_time,
+            liveliness_check_period,
             max_logging_time,
         )
         self._max_workers = max_workers
@@ -231,7 +231,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     self._logger.warning("Exception occured: %s", exception)
                 except BaseException as exp_msg:
                     self._logger.warning("Exception occured: %s", exp_msg)
-                sleep(self._sleep_time)
+                sleep(self._liveliness_check_period)
 
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
@@ -270,4 +270,4 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                             dev_info.dev_name,
                             exp_msg,
                         )
-                sleep(self._sleep_time)
+                sleep(self._liveliness_check_period)

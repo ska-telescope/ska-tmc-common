@@ -8,7 +8,7 @@ from typing import Tuple
 
 import tango
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 from ska_tango_base.subarray import SKASubarray
 from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
@@ -45,6 +45,7 @@ class HelperSdpSubarray(HelperSubArrayDevice):
     def init_device(self):
         super().init_device()
         self._state = DevState.OFF
+        self._admin_mode: AdminMode = AdminMode.ONLINE
         # pylint: disable=line-too-long
         self.timers = []
         self._receive_addresses = json.dumps(
@@ -188,22 +189,24 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 tango.ErrSeverity.ERR,
             )
 
-        # if receive nodes not present in JSON, SDP Subarray moves to
-        # obsState=EMPTY and raises exception
-        if "resources" in input_json:
-            if input_json["resources"]["receive_nodes"] == 0:
-                self.logger.info(
-                    "Missing receive nodes in the AssignResources input json"
-                )
-                # Return to the initial obsState
+        if self.defective_params["enabled"]:
+            if self.defective_params["fault_type"] == FaultType.SDP_FAULT:
+                self._obs_state = ObsState.FAULT
+                self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
+            elif (
+                self.defective_params["fault_type"]
+                == FaultType.SDP_BACK_TO_INITIAL_STATE
+            ):
                 self._obs_state = initial_obstate
                 self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
-                raise tango.Except.throw_exception(
-                    "Incorrect input json string",
-                    "Missing receive nodes in the AssignResources input json",
-                    "SdpSubarry.AssignResources()",
-                    tango.ErrSeverity.ERR,
-                )
+
+            raise tango.Except.throw_exception(
+                "Error ocurred during assign resources",
+                self.defective_params["error_message"],
+                "SdpSubarry.AssignResources()",
+                tango.ErrSeverity.ERR,
+            )
+
         thread = threading.Timer(
             self._command_delay_info[ASSIGN_RESOURCES],
             self.update_device_obsstate,
@@ -341,8 +344,18 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 "SdpSubarry.Configure()",
                 tango.ErrSeverity.ERR,
             )
-        self._obs_state = ObsState.SCANNING
-        self.update_device_obsstate(self._obs_state, SCAN)
+        thread = threading.Timer(
+            self._command_delay_info[SCAN],
+            self.update_device_obsstate,
+            args=[ObsState.SCANNING, SCAN],
+        )
+        self.timers.append(thread)
+        thread.start()
+        self.logger.debug(
+            "Scan command invoked, obsState will transition to SCANNING,"
+            + "current obsState is %s",
+            self._obs_state,
+        )
 
     @command()
     def EndScan(self):
@@ -352,17 +365,29 @@ class HelperSdpSubarray(HelperSubArrayDevice):
 
         # Allowing stuck in intermediate state defect.
         if self.defective_params["enabled"]:
-            self._obs_state = self.defective_params.get(
-                "intermediate_state", ObsState.FAULT
-            )
+            self._obs_state = ObsState.SCANNING
+            self.induce_fault()
         else:
-            self._obs_state = ObsState.READY
-        self.update_device_obsstate(self._obs_state, END_SCAN)
+            thread = threading.Timer(
+                self._command_delay_info[END_SCAN],
+                self.update_device_obsstate,
+                args=[ObsState.READY, END_SCAN],
+            )
+            self.timers.append(thread)
+            thread.start()
+            self.logger.debug(
+                "EndScan command invoked, obsState will transition to READY,"
+                + "current obsState is %s",
+                self._obs_state,
+            )
 
     @command()
     def End(self):
         """This method invokes End command on SdpSubarray device."""
         self.update_command_info(END)
+        if self.defective_params["enabled"]:
+            self._obs_state = ObsState.READY
+            self.induce_fault()
         if self._state_duration_info:
             self._follow_state_duration()
         else:

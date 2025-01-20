@@ -26,8 +26,10 @@ from ska_tmc_common import (
     LRCRCallback,
     SubArrayDeviceInfo,
     TimeoutCallback,
-    TmcComponentManager,
     TmcLeafNodeCommand,
+)
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcComponentManager,
     TmcLeafNodeComponentManager,
 )
 
@@ -51,6 +53,8 @@ SUBARRAY_DEVICE = "helper/subarray/device"
 MCCS_SUBARRAY_DEVICE = "low-mccs/subarray/01"
 SDP_SUBARRAY_DEVICE = "helper/sdpsubarray/device"
 CSP_SUBARRAY_DEVICE = "helper/cspsubarray/device"
+CSP_SUBARRAY_DEVICE_LOW = "low-csp/subarray/01"
+CSP_SUBARRAY_DEVICE_MID = "mid-csp/subarray/01"
 SUBARRAY_LEAF_DEVICE = "helper/subarrayleaf/device"
 MCCS_SUBARRAY_LEAF_NODE = "ska_low/tm_leaf_node/mccs_subarray01"
 DISH_DEVICE = "helper/dish/device"

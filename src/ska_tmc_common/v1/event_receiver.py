@@ -9,6 +9,7 @@ from time import sleep
 from typing import Callable, Optional
 
 import tango
+from ska_control_model import AdminMode
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
@@ -35,7 +36,7 @@ class EventReceiver:
         attribute_dict: Optional[dict[str, Callable]] = None,
         max_workers: int = 1,
         proxy_timeout: int = 500,
-        sleep_time: int = 1,
+        event_subscription_check_period: int = 1,
     ):
         self._thread = threading.Thread(target=self.run)
         self._stop = False
@@ -43,13 +44,14 @@ class EventReceiver:
         self._thread.daemon = True
         self._component_manager = component_manager
         self._proxy_timeout = proxy_timeout
-        self._sleep_time = sleep_time
+        self._event_subscription_check_period = event_subscription_check_period
         self._max_workers = max_workers
         self._dev_factory = DevFactory()
         self.attribute_dictionary: dict[str, Callable] = attribute_dict or {
             "state": self.handle_state_event,
             "healthState": self.handle_health_state_event,
             "obsState": self.handle_obs_state_event,
+            "adminMode": self.handle_admin_mode_event,
         }
 
     def start(self) -> None:
@@ -64,7 +66,6 @@ class EventReceiver:
         Checks if device has stopped
         """
         self._stop = True
-        # self._thread.join()
 
     #  pylint: disable=broad-exception-caught
     def run(self) -> None:
@@ -83,7 +84,7 @@ class EventReceiver:
                         self.submit_task(dev_info)
                 except Exception as exp:
                     self._logger.warning("Exception occurred: %s", exp)
-                sleep(self._sleep_time)
+                sleep(self._event_subscription_check_period)
 
     def submit_task(self, device_info: DeviceInfo) -> None:
         """Submits the task to the executor for the given device info object.
@@ -135,6 +136,7 @@ class EventReceiver:
                         callable_value,
                         stateless=True,
                     )
+                    self.stop()
             except Exception as exception:
                 self._logger.exception(
                     "Exception occured while subscribing to events "
@@ -147,7 +149,6 @@ class EventReceiver:
         """
         It handles the health state events of different devices
         """
-        # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
             self._logger.error(
@@ -170,7 +171,6 @@ class EventReceiver:
         """
         It handles the state events of different devices
         """
-        # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
             self._logger.error(
@@ -190,7 +190,6 @@ class EventReceiver:
         """
         It handles the observation state events of different devices
         """
-        # import debugpy; debugpy.debug_this_thread()
         if event.err:
             error = event.errors[0]
             self._logger.error("%s\n %s", error.reason, error.desc)
@@ -203,3 +202,29 @@ class EventReceiver:
         self._component_manager.update_device_obs_state(
             event.device.dev_name(), new_value
         )
+
+    def handle_admin_mode_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Handle admin Mode change event"""
+        if self._component_manager.is_admin_mode_enabled:
+            if event.err:
+                error = event.errors[0]
+                error_msg = f"{error.reason},{error.desc}"
+                self._logger.error(error_msg)
+                self._component_manager.update_event_failure(
+                    event.device.dev_name()
+                )
+                return
+            new_value = event.attr_value.value
+            self._logger.info(
+                "Received an adminMode event with : %s for device: %s",
+                new_value,
+                event.device.dev_name(),
+            )
+            self._component_manager.update_device_admin_mode(
+                event.device.dev_name(), new_value
+            )
+            self._logger.debug(
+                "Admin Mode updated to :%s", AdminMode(new_value).name
+            )
