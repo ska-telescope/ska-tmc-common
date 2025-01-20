@@ -7,12 +7,11 @@ from __future__ import annotations
 
 import logging
 import threading
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ska_tmc_common.observer import Observer
-
-from copy import deepcopy
 
 
 class Observable:
