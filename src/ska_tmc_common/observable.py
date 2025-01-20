@@ -56,8 +56,8 @@ class Observable:
             attribute_value_change (bool, optional):
             Denotes whether attribute change event. Defaults to False.
         """
+        current_observers = deepcopy(self.observers)
         with self.lock:
-            current_observers = deepcopy(self.observers)
             for observer in current_observers:
                 logging.debug(
                     "Calling observer %s",
