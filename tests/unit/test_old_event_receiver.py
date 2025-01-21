@@ -9,7 +9,7 @@ from ska_control_model import ObsState
 from tango import EventData
 
 from ska_tmc_common import DevFactory
-from ska_tmc_common.v1.event_receiver import EventReceiver
+from ska_tmc_common.event_receiver import EventReceiver
 from tests.settings import (
     SUBARRAY_DEVICE,
     DummyComponentManager,
