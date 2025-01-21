@@ -22,7 +22,4 @@ def devices_to_load():
 def test_base_leaf_device(tango_context, group_callback):
 
     leaf_device = tango.DeviceProxy("test/leaf/d1")
-    leaf_device.subscribe_event(
-        "state", tango.EventType.CHANGE_EVENT, group_callback["state"]
-    )
     leaf_device.push_state_event(DevState.ON)
