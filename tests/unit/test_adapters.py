@@ -145,6 +145,7 @@ def test_get_or_create_dish_adapter(tango_context):
     dish_adapter = factory.get_or_create_adapter(
         HELPER_DISH_DEVICE, AdapterType.DISH
     )
+    dish_adapter.programTrackTable = ["123", "234"]
     assert isinstance(dish_adapter, DishAdapter)
 
 
