@@ -26,6 +26,14 @@ def test_event_receiver():
     """
     cm = create_cm()
     event_receiver = EventReceiver(cm, logger)
+    assert event_receiver._stop is False
+    assert event_receiver._thread.daemon is True
+    assert event_receiver._logger == logger
+    assert event_receiver._component_manager == cm
+    assert event_receiver._proxy_timeout == 500
+    assert event_receiver._event_subscription_check_period == 1
+    assert event_receiver._max_workers == 1
+
     event_receiver.start()
 
     assert event_receiver._thread.is_alive()
