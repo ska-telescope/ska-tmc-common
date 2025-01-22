@@ -61,6 +61,18 @@ class CommandCallbackTracker:
             logger, self, self.observable
         )
         self.update_attr_value_change()
+        self.is_exception_received()
+
+    def is_exception_received(self):
+        """If exception is received immediately after command invoked
+        then call update exception
+        """
+        exception_message = self.lrcr_callback.command_data.get(
+            self.command_id, {}
+        ).get("exception_message", "")
+        self.logger.debug("Received exception message %s", exception_message)
+        if exception_message:
+            self.update_exception()
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
