@@ -60,9 +60,9 @@ class CommandCallbackTracker:
         self.attribute_change_observer = AttributeValueObserver(
             logger, self, self.observable
         )
+        self.rlock = threading.RLock()
         self.update_attr_value_change()
         self.is_exception_received()
-        self.rlock = threading.RLock()
 
     def is_exception_received(self):
         """If exception is received immediately after command invoked
