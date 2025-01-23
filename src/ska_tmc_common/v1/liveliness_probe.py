@@ -15,7 +15,6 @@ from ska_tmc_common.device_info import DeviceInfo
 from ska_tmc_common.log_manager import LogManager
 
 
-# pylint: disable=duplicate-code
 class BaseLivelinessProbe:
     """
     The BaseLivelinessProbe class has the responsibility to monitor the sub

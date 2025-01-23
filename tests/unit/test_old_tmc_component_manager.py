@@ -2,7 +2,7 @@ import time
 
 import pytest
 import tango
-from ska_tango_base.control_model import AdminMode, HealthState, ObsState
+from ska_tango_base.control_model import HealthState, ObsState
 from tango import DevState
 
 from ska_tmc_common import (
@@ -12,13 +12,10 @@ from ska_tmc_common import (
     SubArrayDeviceInfo,
 )
 from ska_tmc_common.enum import LivelinessProbeType
-from ska_tmc_common.v1.tmc_component_manager import BaseTmcComponentManager
-from ska_tmc_common.v1.tmc_component_manager import TmcComponentManager
-from ska_tmc_common.v1.tmc_component_manager import (
-    TmcComponentManager as TmcCM,
-)
-from ska_tmc_common.v1.tmc_component_manager import TmcLeafNodeComponentManager
-from ska_tmc_common.v1.tmc_component_manager import (
+from ska_tmc_common.tmc_component_manager import TmcComponentManager
+from ska_tmc_common.tmc_component_manager import TmcComponentManager as TmcCM
+from ska_tmc_common.tmc_component_manager import TmcLeafNodeComponentManager
+from ska_tmc_common.tmc_component_manager import (
     TmcLeafNodeComponentManager as TmcLNCM,
 )
 from tests.settings import (
@@ -200,40 +197,9 @@ def test_update_device_obs_state(component_manager):
     assert not component_manager.get_device().unresponsive
 
 
-def test_update_device_admin_mode():
-    dummy_device = DeviceInfo("dummy/monitored/device")
-    component_manager = BaseTmcComponentManager(logger)
-    component_manager._device = dummy_device
-    admin_mode = AdminMode.ONLINE
-    component_manager.update_device_admin_mode(
-        DUMMY_MONITORED_DEVICE, admin_mode
-    )
-    assert component_manager.get_device().adminMode == admin_mode
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
-    )
-    assert not component_manager.get_device().unresponsive
-
-
 def test_command_id_property(component_manager):
     # Test if command id property can be accessed and set correctly
     assert component_manager.command_id == ""
     new_id = f"{time.time()}-TempID"
     component_manager.command_id = new_id
     assert component_manager.command_id == new_id
-
-
-def test_admin_mode_property():
-    component_manager = BaseTmcComponentManager(logger)
-    assert component_manager.is_admin_mode_enabled is True
-    component_manager.is_admin_mode_enabled = False
-    assert component_manager.is_admin_mode_enabled is False
-
-
-def test_admin_mode_property_invalid():
-    component_manager = BaseTmcComponentManager(logger)
-    assert component_manager.is_admin_mode_enabled is True
-    with pytest.raises(
-        ValueError, match="is_admin_mode_enabled must be a boolean value."
-    ):
-        component_manager.is_admin_mode_enabled = "False"

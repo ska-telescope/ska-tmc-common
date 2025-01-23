@@ -3,6 +3,7 @@ This module monitors sub devices.
 Inherited from liveliness probe functionality
 """
 
+# pylint: disable=duplicate-code
 import threading
 from logging import Logger
 from time import sleep

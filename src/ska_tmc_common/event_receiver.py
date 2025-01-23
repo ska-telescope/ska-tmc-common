@@ -3,6 +3,7 @@ The event_receiver has the responsibility to receive events
 from the sub devices managed by a TMC node.
 """
 
+# pylint: disable=duplicate-code
 import threading
 from logging import Logger
 from time import sleep
@@ -135,6 +136,7 @@ class EventReceiver:
                         callable_value,
                         stateless=True,
                     )
+                    self.stop()
             except Exception as exception:
                 self._logger.exception(
                     "Exception occured while subscribing to events "

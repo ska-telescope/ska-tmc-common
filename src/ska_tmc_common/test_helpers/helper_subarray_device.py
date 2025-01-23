@@ -225,7 +225,7 @@ class HelperSubArrayDevice(SKASubarray):
             "result": ResultCode.FAILED,
         }
         self._receive_addresses = ""
-        self._admin_mode: AdminMode = AdminMode.OFFLINE
+        self._admin_mode: AdminMode = AdminMode.ONLINE
 
     # Existing attributes
     commandInProgress = attribute(dtype="DevString", access=AttrWriteType.READ)
@@ -236,6 +236,12 @@ class HelperSubArrayDevice(SKASubarray):
 
     commandDelayInfo = attribute(dtype=str, access=AttrWriteType.READ)
     isAdminModeEnabled = attribute(dtype=bool, access=AttrWriteType.READ_WRITE)
+    adminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ_WRITE,
+        label="Admin Mode",
+        doc="Admin mode of the device.",
+    )
 
     def read_isAdminModeEnabled(self):
         """
@@ -256,6 +262,23 @@ class HelperSubArrayDevice(SKASubarray):
         raise AttributeError(
             "The 'isAdminModeEnabled' attribute is not available."
         )
+
+    def read_adminMode(self) -> AdminMode:
+        """
+        This method reads the adminMode value of the device.
+        :return: admin_mode value
+        :rtype: AdminMode
+        """
+        return self._admin_mode
+
+    def write_adminMode(self, value):
+        """
+        This method writes the adminMode value of the device.
+        """
+        if self._admin_mode != value:
+            self._admin_mode = value
+            self.logger.info("AdminMode set to %s", self._admin_mode)
+            self.push_change_event("adminMode", self._admin_mode)
 
     commandCallInfo = attribute(
         dtype=(("str",),),

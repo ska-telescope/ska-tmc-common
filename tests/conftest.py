@@ -35,7 +35,10 @@ from ska_tmc_common import (
     HelperSubArrayDevice,
     TmcLeafNodeComponentManager,
 )
-from ska_tmc_common.tmc_base_leaf_device import TMCBaseLeafDevice
+from ska_tmc_common.v1.tmc_base_leaf_device import TMCBaseLeafDevice
+from ska_tmc_common.v1.tmc_component_manager import (
+    TmcLeafNodeComponentManager as CmV1,
+)
 from tests.settings import (
     CSP_DEVICE,
     CSP_LEAF_NODE_DEVICE,
@@ -210,15 +213,17 @@ def group_callback() -> MockTangoEventCallbackGroup:
     return group_callback
 
 
-@pytest.fixture
-def component_manager() -> TmcLeafNodeComponentManager:
+@pytest.fixture(params=[TmcLeafNodeComponentManager, CmV1])
+def component_manager(request):
     """
-    create a component manager instance for dummy device for testing
-    :return: component manager
-    :rtype : TmcLeafNodeComponentManager
+    Create a component manager instance for a dummy device for testing.
+
+    :return: Component manager
+    :rtype: TmcLeafNodeComponentManager
     """
     dummy_device = DeviceInfo("dummy/monitored/device")
-    cm = TmcLeafNodeComponentManager(logger)
+    cm_cls = request.param
+    cm = cm_cls(logger)
     cm._device = dummy_device
     return cm
 

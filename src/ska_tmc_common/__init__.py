@@ -70,6 +70,7 @@ from .test_helpers.helper_adapter_factory import HelperAdapterFactory
 from .test_helpers.helper_base_device import HelperBaseDevice
 from .test_helpers.helper_csp_master_device import HelperCspMasterDevice
 from .test_helpers.helper_csp_master_leaf_node import HelperCspMasterLeafDevice
+from .test_helpers.helper_csp_subarray_device import HelperCSPSubarrayDevice
 from .test_helpers.helper_csp_subarray_leaf_device import (
     HelperCspSubarrayLeafDevice,
 )
@@ -173,6 +174,7 @@ __all__ = [
     "HelperMCCSMasterLeafNode",
     "HelperMccsSubarrayDevice",
     "HelperSubArrayDevice",
+    "HelperCSPSubarrayDevice",
     "HelperCspMasterDevice",
     "HelperCspMasterLeafDevice",
     "EmptySubArrayComponentManager",

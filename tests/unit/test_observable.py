@@ -10,8 +10,8 @@ def test_observable():
     observable = Observable()
     observable.register_observer(observer)
     assert observable.observers == [observer]
-    observable.notify_observers("atribute_value_change")
-    observer.notify.assert_called_with("atribute_value_change")
+    observable.notify_observers("attribute_value_change")
+    observer.notify.assert_called_with("attribute_value_change")
     with pytest.raises(AssertionError):
         observer.notify.assert_called_with("command_exception")
     observable.deregister_observer(observer)

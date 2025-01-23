@@ -2,7 +2,6 @@
 This module includes methods for common attributes.
 """
 
-# pylint: disable=duplicate-code
 import json
 from typing import Any
 
@@ -19,7 +18,11 @@ class TMCBaseDevice(SKABaseDevice):
     # -----------------
     # Device Properties
     # -----------------
-    SleepTime = device_property(dtype="DevFloat", default_value=1)
+
+    EventSubscriptionCheckPeriod = device_property(
+        dtype="DevFloat", default_value=1
+    )
+    LivelinessCheckPeriod = device_property(dtype="DevFloat", default_value=1)
 
     # -----------------
     # Attributes

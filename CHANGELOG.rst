@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.0]
+********
+* Add common functionality of adminMode in ska-tmc-common
+
 [0.23.0]
 *********
 * Adding Admin mode functinality in helper devices
@@ -186,12 +190,19 @@ Added
 
 Fixed
 -------
+[0.24.2]
+* Fixed issue with observers list.
+* Fixed issue with backward compatibility by adding files back to ska_tmc_common folder.
+
+[0.24.1]
+* Resolved bug SKB-658 on TMC Central Node and SubarrayNode
+
 [0.23.2]
 *********
 * Updated SDP Subarray leaf node.
   
 [0.23.1]
-* Resolve bug SKB-658
+* Resolved bug SKB-658 on TMC Leaf Nodes
 
 [0.20.2]
 * Fixed bug related to full trl usage in liveliness probe.

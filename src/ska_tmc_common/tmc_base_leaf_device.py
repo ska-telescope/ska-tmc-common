@@ -2,6 +2,7 @@
 This module includes methods for common attributes.
 """
 
+# pylint: disable=duplicate-code
 from typing import Any
 
 from ska_tango_base import SKABaseDevice

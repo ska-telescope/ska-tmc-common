@@ -4,7 +4,8 @@ import time
 import pytest
 import tango
 
-from ska_tmc_common import DeviceInfo, InputParameter, TmcComponentManager
+from ska_tmc_common import DeviceInfo, InputParameter
+from ska_tmc_common.v1.tmc_component_manager import TmcComponentManager
 from tests.settings import (
     CSP_SUBARRAY_DEVICE,
     SDP_SUBARRAY_DEVICE,

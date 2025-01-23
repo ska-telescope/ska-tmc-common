@@ -1,4 +1,4 @@
-from ska_tmc_common import TmcComponent
+from ska_tmc_common.v1.tmc_component_manager import TmcComponent
 
 
 class TestTMCComponent(TmcComponent):

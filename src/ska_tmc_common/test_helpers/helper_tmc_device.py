@@ -18,7 +18,7 @@ from ska_tmc_common.device_info import (
     SubArrayDeviceInfo,
 )
 from ska_tmc_common.test_helpers.helper_base_device import HelperBaseDevice
-from ska_tmc_common.tmc_component_manager import (
+from ska_tmc_common.v1.tmc_component_manager import (
     TmcComponent,
     TmcComponentManager,
 )
