@@ -45,9 +45,10 @@ class Observable:
         Args:
             observer (Observer): observer class instance.
         """
-        self.logger.info("Deregistering observer")
+        logger.info("Deregistering observer")
         with self.lock:
             self.observers.remove(observer)
+            logger.info("deregistered : %s ", observer)
 
     def notify_observers(
         self,

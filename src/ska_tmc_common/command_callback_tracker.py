@@ -119,6 +119,8 @@ class CommandCallbackTracker:
                     self.command_class_instance.update_task_status(
                         status=TaskStatus.ABORTED
                     )
+                else:
+                    self.logger.info("No condition matched")
             except (
                 AttributeError,
                 ValueError,
