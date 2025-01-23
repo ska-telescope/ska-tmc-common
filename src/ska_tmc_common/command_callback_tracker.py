@@ -61,52 +61,62 @@ class CommandCallbackTracker:
             logger, self, self.observable
         )
         self.update_attr_value_change()
+        self.rlock = threading.RLock()
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
-        if not self.command_completed:
-            self.command_class_instance.update_task_status(
-                result=(
-                    ResultCode.FAILED,
-                    "Timeout has occurred, command failed",
-                ),
-                exception="Timeout has occurred, command failed",
-            )
-            self.clean_up()
+        with self.rlock:
+            if not self.command_completed:
+                self.command_class_instance.update_task_status(
+                    result=(
+                        ResultCode.FAILED,
+                        "Timeout has occurred, command failed",
+                    ),
+                    exception="Timeout has occurred, command failed",
+                )
+                self.clean_up()
 
     def update_attr_value_change(self):
         """This method is invoked when attribute changes."""
-        try:
-            self.logger.debug("Abort event is %s", self.abort_event.is_set())
-            attribute_value = self.get_function(self.component_manager)
-            if not self.command_completed and not self.abort_event.is_set():
-                if attribute_value == self.states_to_track[0]:
-                    self.states_to_track.remove(attribute_value)
-                else:
-                    self.logger.debug(
-                        "attribute values waiting for: %s "
-                        + "and received: %s",
-                        self.states_to_track,
-                        attribute_value,
-                    )
-                if not self.states_to_track:  # the list is empty
+        with self.rlock:
+            try:
+                self.logger.debug(
+                    "Abort event is %s", self.abort_event.is_set()
+                )
+                attribute_value = self.get_function(self.component_manager)
+                if (
+                    not self.command_completed
+                    and not self.abort_event.is_set()
+                ):
+                    if attribute_value == self.states_to_track[0]:
+                        self.states_to_track.remove(attribute_value)
+                    else:
+                        self.logger.debug(
+                            "attribute values waiting for: %s "
+                            + "and received: %s",
+                            self.states_to_track,
+                            attribute_value,
+                        )
+                    if not self.states_to_track:  # the list is empty
+                        self.clean_up()
+                        self.command_class_instance.update_task_status(
+                            result=(ResultCode.OK, "Command Completed")
+                        )
+                elif self.abort_event.is_set():
+
                     self.clean_up()
                     self.command_class_instance.update_task_status(
-                        result=(ResultCode.OK, "Command Completed")
+                        status=TaskStatus.ABORTED
                     )
-            elif self.abort_event.is_set():
-                self.logger.info("Inside abort event ")
-                self.clean_up()
-                self.logger.info("Clean up done")
-                self.logger.error("Clean up done")
-
-                self.command_class_instance.update_task_status(
-                    status=TaskStatus.ABORTED
+            except (
+                AttributeError,
+                ValueError,
+                TypeError,
+                IndexError,
+            ) as exception:
+                self.logger.error(
+                    "Error occurred while attribute" + "update %s", exception
                 )
-        except (AttributeError, ValueError, TypeError) as exception:
-            self.logger.error(
-                "Error occurred while attribute" + "update %s", exception
-            )
 
     def update_exception(self):
         """This method is invoked when exception occurs."""
