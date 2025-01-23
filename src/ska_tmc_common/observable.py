@@ -45,29 +45,34 @@ class Observable:
         Args:
             observer (Observer): observer class instance.
         """
-        logger.info("Deregistering observer")
-        with self.lock:
-            self.observers.remove(observer)
-            logger.info("deregistered : %s ", observer)
+        try:
+            logger.info("Deregistering observer")
+            logger.info("%s", self.observers)
+            with self.lock:
+                self.observers.remove(observer)
+                logger.info("deregistered : %s ", observer)
+        except Exception as e:
+            logger.error("The exception is: %s", e)
 
-    def notify_observers(
-        self,
-        *args: list,
-        **kwargs: dict,
-    ) -> None:
-        """This method notifies all observers regarding the event received.
 
-        Args:
-            command_exception (bool, optional):
-            Denotes whether command exception event. Defaults to False.
-            attribute_value_change (bool, optional):
-            Denotes whether attribute change event. Defaults to False.
-        """
-        with self.lock:
-            current_observers = copy(self.observers)
-            for observer in current_observers:
-                logger.debug(
-                    "Calling observer %s",
-                    observer.command_callback_tracker.command_id,
-                )
-                observer.notify(*args, **kwargs)
+def notify_observers(
+    self,
+    *args: list,
+    **kwargs: dict,
+) -> None:
+    """This method notifies all observers regarding the event received.
+
+    Args:
+        command_exception (bool, optional):
+        Denotes whether command exception event. Defaults to False.
+        attribute_value_change (bool, optional):
+        Denotes whether attribute change event. Defaults to False.
+    """
+    with self.lock:
+        current_observers = copy(self.observers)
+        for observer in current_observers:
+            logger.debug(
+                "Calling observer %s",
+                observer.command_callback_tracker.command_id,
+            )
+            observer.notify(*args, **kwargs)
