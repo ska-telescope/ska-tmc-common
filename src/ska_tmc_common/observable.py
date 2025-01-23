@@ -70,7 +70,7 @@ class Observable:
         with self.lock:
             current_observers = copy(self.observers)
             for observer in current_observers:
-                logger.debug(
+                logger.info(
                     "Calling observer %s",
                     observer.command_callback_tracker.command_id,
                 )
