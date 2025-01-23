@@ -45,6 +45,7 @@ class Observable:
         Args:
             observer (Observer): observer class instance.
         """
+        self.logger.info("Deregistering observer")
         with self.lock:
             self.observers.remove(observer)
 

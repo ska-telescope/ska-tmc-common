@@ -92,7 +92,7 @@ class CommandCallbackTracker:
         """This method is invoked when attribute changes."""
         with self.rlock:
             try:
-                self.logger.debug(
+                self.logger.info(
                     "Abort event is %s", self.abort_event.is_set()
                 )
                 attribute_value = self.get_function(self.component_manager)
@@ -103,7 +103,7 @@ class CommandCallbackTracker:
                     if attribute_value == self.states_to_track[0]:
                         self.states_to_track.remove(attribute_value)
                     else:
-                        self.logger.debug(
+                        self.logger.info(
                             "attribute values waiting for: %s "
                             + "and received: %s",
                             self.states_to_track,
