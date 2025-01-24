@@ -46,11 +46,11 @@ class Observable:
             observer (Observer): observer class instance.
         """
         try:
-            logger.info("Deregistering observer")
+            logger.debug("Deregistering observer")
 
             with self.lock:
                 self.observers.remove(observer)
-                logger.info("deregistered : %s ", observer)
+                logger.debug("deregistered : %s ", observer)
         except Exception as e:
             logger.error("The exception is: %s", e)
 
@@ -70,7 +70,7 @@ class Observable:
         with self.lock:
             current_observers = copy(self.observers)
             for observer in current_observers:
-                logger.info(
+                logger.debug(
                     "Calling observer %s",
                     observer.command_callback_tracker.command_id,
                 )

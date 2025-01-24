@@ -92,14 +92,14 @@ class CommandCallbackTracker:
         """This method is invoked when attribute changes."""
 
         try:
-            self.logger.info("Abort event is %s", self.abort_event.is_set())
+            self.logger.debug("Abort event is %s", self.abort_event.is_set())
             attribute_value = self.get_function(self.component_manager)
 
             if not self.command_completed and not self.abort_event.is_set():
                 if attribute_value == self.states_to_track[0]:
                     self.states_to_track.remove(attribute_value)
                 else:
-                    self.logger.info(
+                    self.logger.debug(
                         "attribute values waiting for: %s "
                         + "and received: %s",
                         self.states_to_track,
@@ -115,8 +115,7 @@ class CommandCallbackTracker:
                 self.command_class_instance.update_task_status(
                     status=TaskStatus.ABORTED
                 )
-            else:
-                self.logger.info("No condition matched")
+
         except (
             AttributeError,
             ValueError,
