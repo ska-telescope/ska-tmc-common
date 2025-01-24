@@ -93,12 +93,8 @@ class CommandCallbackTracker:
 
         try:
             self.logger.info("Abort event is %s", self.abort_event.is_set())
-            self.logger.info(
-                "self.command_completed %s", self.command_completed
-            )
-            self.logger.info("self.states_to_track %s", self.states_to_track)
             attribute_value = self.get_function(self.component_manager)
-            self.logger.info("attribute_value %s", attribute_value)
+
             if not self.command_completed and not self.abort_event.is_set():
                 if attribute_value == self.states_to_track[0]:
                     self.states_to_track.remove(attribute_value)

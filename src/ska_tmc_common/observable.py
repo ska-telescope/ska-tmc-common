@@ -47,7 +47,7 @@ class Observable:
         """
         try:
             logger.info("Deregistering observer")
-            logger.info("%s", self.observers)
+
             with self.lock:
                 self.observers.remove(observer)
                 logger.info("deregistered : %s ", observer)
