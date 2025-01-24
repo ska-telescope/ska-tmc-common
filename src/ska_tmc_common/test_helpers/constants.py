@@ -25,7 +25,7 @@ CSP_SUBARRAY_DEVICE_LOW = "low-csp/subarray/01"
 CSP_SUBARRAY_DEVICE_MID = "mid-csp/subarray/01"
 ALLOCATE = "Allocate"
 RELEASE = "Release"
-
+SETADMINMODE = "SetAdminMode"
 TRACK = "Track"
 TRACK_STOP = "TrackStop"
 ABORT_COMMANDS = "AbortCommands"
