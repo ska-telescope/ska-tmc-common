@@ -547,7 +547,7 @@ class HelperBaseDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in="DevEnum",
+        dtype_in="DevString",
         doc_in="The input string in JSON format.",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
