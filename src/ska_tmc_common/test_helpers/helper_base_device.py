@@ -21,8 +21,6 @@ from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
 
-from .constants import SETADMINMODE
-
 
 # pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperBaseDevice(SKABaseDevice):
@@ -559,7 +557,6 @@ class HelperBaseDevice(SKABaseDevice):
         :rtype: tuple
         """
         command_id = f"{time.time()}_SetAdminMode"
-        self.update_command_info(SETADMINMODE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
 
