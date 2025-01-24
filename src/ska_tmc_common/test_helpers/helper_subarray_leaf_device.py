@@ -31,7 +31,6 @@ from .constants import (
     RELEASE_RESOURCES,
     RESTART,
     SCAN,
-    SETADMINMODE,
 )
 
 
@@ -466,47 +465,6 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
             + "IDLE, current obsState is %s",
             self._obs_state,
         )
-        return [ResultCode.QUEUED], [command_id]
-
-    def is_SetAdminMode_allowed(self) -> bool:
-        """
-        This method checks if SetAdminMode command is allowed in the current
-        device state.
-        :return: ``True`` if the command is allowed
-        :rtype:bool
-        :raises CommandNotAllowed: command is not allowed
-        """
-        if self.defective_params["enabled"]:
-            if (
-                self.defective_params["fault_type"]
-                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
-            ):
-                self.logger.info(
-                    "Device is defective, cannot process command."
-                )
-                raise CommandNotAllowed(self.defective_params["error_message"])
-        self.logger.info("SetAdminMode Command is allowed")
-        return True
-
-    @command(
-        dtype_out="DevVarLongStringArray",
-        doc_out="(ReturnType, 'informational message')",
-    )
-    def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
-        """
-        This is the method to invoke SetAdminMode command.
-        :return: ResultCode, message
-        :rtype: tuple
-        """
-        command_id = f"{time.time()}_SetAdminMode"
-        self.update_command_info(SETADMINMODE, argin)
-        if self.defective_params["enabled"]:
-            return self.induce_fault("SetAdminMode", command_id)
-
-        self.push_command_result(
-            ResultCode.OK, "SetAdminMode", command_id=command_id
-        )
-        self.logger.debug("SetAdminMode invoke on leafnode")
         return [ResultCode.QUEUED], [command_id]
 
     @admin_mode_check()

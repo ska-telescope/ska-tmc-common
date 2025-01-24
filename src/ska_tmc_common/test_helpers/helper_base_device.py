@@ -21,6 +21,8 @@ from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
 
+from .constants import SETADMINMODE
+
 
 # pylint: disable=attribute-defined-outside-init,invalid-name
 class HelperBaseDevice(SKABaseDevice):
@@ -522,6 +524,47 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standy command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_SetAdminMode_allowed(self) -> bool:
+        """
+        This method checks if SetAdminMode command is allowed in the current
+        device state.
+        :return: ``True`` if the command is allowed
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("SetAdminMode Command is allowed")
+        return True
+
+    @command(
+        dtype_out="DevEnum",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke SetAdminMode command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        command_id = f"{time.time()}_SetAdminMode"
+        self.update_command_info(SETADMINMODE, argin)
+        if self.defective_params["enabled"]:
+            return self.induce_fault("SetAdminMode", command_id)
+
+        self.push_command_result(
+            ResultCode.OK, "SetAdminMode", command_id=command_id
+        )
+        self.logger.debug("SetAdminMode invoke on leafnode")
         return [ResultCode.QUEUED], [command_id]
 
     @admin_mode_check()
