@@ -556,6 +556,7 @@ class HelperBaseDevice(SKABaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.looger.debug(f"The input adminmode is {argin}")
         command_id = f"{time.time()}_SetAdminMode"
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
