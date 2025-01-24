@@ -545,7 +545,7 @@ class HelperBaseDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_in=("str"),
+        dtype_in=("int"),
         doc_in="The input string in JSON format.",
         dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
