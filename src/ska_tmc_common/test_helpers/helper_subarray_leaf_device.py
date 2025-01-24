@@ -494,12 +494,12 @@ class HelperSubarrayLeafDevice(HelperBaseDevice):
     )
     def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
         """
-        This is the method to invoke End command.
+        This is the method to invoke SetAdminMode command.
         :return: ResultCode, message
         :rtype: tuple
         """
         command_id = f"{time.time()}_SetAdminMode"
-        self.update_command_info(SETADMINMODE)
+        self.update_command_info(SETADMINMODE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
 
