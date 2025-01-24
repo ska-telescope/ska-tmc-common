@@ -156,11 +156,12 @@ class CommandCallbackTracker:
         """
 
         try:
+            self.command_completed = True
             if hasattr(self.command_class_instance, "timekeeper"):
                 self.command_class_instance.timekeeper.stop_timer()
             else:
                 self.component_manager.stop_timer()
-            self.command_completed = True
+
             self.logger.info("Deregistering observer")
             self.observable.deregister_observer(self.lrc_exception_observer)
             self.observable.deregister_observer(self.attribute_change_observer)
