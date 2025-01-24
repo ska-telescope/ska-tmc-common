@@ -130,6 +130,13 @@ class BaseAdapter:
         """
         return self.proxy.State()
 
+    def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Sets adminMode on device proxies
+        :return: proxy of device
+        """
+        return self.proxy.SetAdminMode(argin)
+
 
 class CspMasterLeafNodeAdapter(BaseAdapter):
     """
