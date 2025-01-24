@@ -45,8 +45,14 @@ class Observable:
         Args:
             observer (Observer): observer class instance.
         """
-        with self.lock:
-            self.observers.remove(observer)
+        try:
+            logger.debug("Deregistering observer")
+
+            with self.lock:
+                self.observers.remove(observer)
+                logger.debug("deregistered : %s ", observer)
+        except Exception as e:
+            logger.error("The exception is: %s", e)
 
     def notify_observers(
         self,

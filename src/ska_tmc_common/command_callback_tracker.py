@@ -60,6 +60,7 @@ class CommandCallbackTracker:
         self.attribute_change_observer = AttributeValueObserver(
             logger, self, self.observable
         )
+
         self.update_attr_value_change()
         self.is_exception_received()
 
@@ -76,6 +77,7 @@ class CommandCallbackTracker:
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
+
         if not self.command_completed:
             self.command_class_instance.update_task_status(
                 result=(
@@ -88,9 +90,11 @@ class CommandCallbackTracker:
 
     def update_attr_value_change(self):
         """This method is invoked when attribute changes."""
+
         try:
             self.logger.debug("Abort event is %s", self.abort_event.is_set())
             attribute_value = self.get_function(self.component_manager)
+
             if not self.command_completed and not self.abort_event.is_set():
                 if attribute_value == self.states_to_track[0]:
                     self.states_to_track.remove(attribute_value)
@@ -111,7 +115,13 @@ class CommandCallbackTracker:
                 self.command_class_instance.update_task_status(
                     status=TaskStatus.ABORTED
                 )
-        except (AttributeError, ValueError, TypeError) as exception:
+
+        except (
+            AttributeError,
+            ValueError,
+            TypeError,
+            IndexError,
+        ) as exception:
             self.logger.error(
                 "Error occurred while attribute" + "update %s", exception
             )
