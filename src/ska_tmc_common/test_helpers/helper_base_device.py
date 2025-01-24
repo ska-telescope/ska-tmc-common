@@ -547,7 +547,9 @@ class HelperBaseDevice(SKABaseDevice):
         return True
 
     @command(
-        dtype_out="DevEnum",
+        dtype_in="DevEnum",
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
