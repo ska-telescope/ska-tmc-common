@@ -31,7 +31,6 @@ from .constants import (
     RELEASE_RESOURCES,
     RESTART,
     SCAN,
-    SETADMINMODE,
 )
 
 
