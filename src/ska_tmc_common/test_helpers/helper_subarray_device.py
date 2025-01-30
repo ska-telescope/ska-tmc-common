@@ -1542,11 +1542,13 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
+        self.logger.debug("The input adminmode is %s", argin)
         command_id = f"{time.time()}_SetAdminMode"
         self.update_command_info(SETADMINMODE, argin)
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
-
+        self.logger.info("The adminmode is %s", self._admin_mode)
+        self.push_change_event("adminMode", self._admin_mode)
         self.logger.debug("SetAdminMode invoke on leafnode")
         return [ResultCode.QUEUED], [command_id]
 
