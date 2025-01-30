@@ -17,6 +17,7 @@ from tango.server import AttrWriteType, attribute, command, run
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import PointingState
+from ska_tmc_common.test_helpers.constants import SETADMINMODE
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
@@ -556,8 +557,10 @@ class HelperBaseDevice(SKABaseDevice):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.logger.debug("The input adminmode is %s", argin)
+        value = AdminMode(argin)
+        self.logger.debug("The input adminmode is %s", value)
         command_id = f"{time.time()}_SetAdminMode"
+        self.update_command_info(SETADMINMODE, str(value))
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
         self.logger.info("The adminmode is %s", self._admin_mode)

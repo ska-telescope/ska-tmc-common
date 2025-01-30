@@ -1542,9 +1542,10 @@ class HelperSubArrayDevice(SKASubarray):
         :return: ResultCode, message
         :rtype: tuple
         """
-        self.logger.debug("The input adminmode is %s", argin)
+        value = AdminMode(argin)
+        self.logger.debug("The input adminmode is %s", value)
         command_id = f"{time.time()}_SetAdminMode"
-        self.update_command_info(SETADMINMODE, argin)
+        self.update_command_info(SETADMINMODE, str(value))
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
         self.logger.info("The adminmode is %s", self._admin_mode)
