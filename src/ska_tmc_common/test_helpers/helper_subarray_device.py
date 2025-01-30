@@ -1547,9 +1547,6 @@ class HelperSubArrayDevice(SKASubarray):
         if self.defective_params["enabled"]:
             return self.induce_fault("SetAdminMode", command_id)
 
-        self.push_command_result(
-            ResultCode.OK, "SetAdminMode", command_id=command_id
-        )
         self.logger.debug("SetAdminMode invoke on leafnode")
         return [ResultCode.QUEUED], [command_id]
 
