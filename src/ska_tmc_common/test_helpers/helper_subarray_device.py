@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 # pylint: disable=too-many-lines
 """
 This module implements the Helper devices for subarray nodes for testing
