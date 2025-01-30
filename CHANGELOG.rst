@@ -190,6 +190,9 @@ Added
 
 Fixed
 -------
+[0.24.3]
+* Exception check added which is received before registering the observer
+
 [0.24.2]
 * Fixed issue with observers list.
 * Fixed issue with backward compatibility by adding files back to ska_tmc_common folder.

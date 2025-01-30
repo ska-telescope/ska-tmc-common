@@ -60,10 +60,24 @@ class CommandCallbackTracker:
         self.attribute_change_observer = AttributeValueObserver(
             logger, self, self.observable
         )
+
         self.update_attr_value_change()
+        self.is_exception_received()
+
+    def is_exception_received(self):
+        """If exception is received immediately after command invoked
+        then call update exception
+        """
+        exception_message = self.lrcr_callback.command_data.get(
+            self.command_id, {}
+        ).get("exception_message", "")
+        self.logger.debug("Received exception message %s", exception_message)
+        if exception_message:
+            self.update_exception()
 
     def update_timeout_occurred(self):
         """This method is called when timeout occurs."""
+
         if not self.command_completed:
             self.command_class_instance.update_task_status(
                 result=(
@@ -76,9 +90,11 @@ class CommandCallbackTracker:
 
     def update_attr_value_change(self):
         """This method is invoked when attribute changes."""
+
         try:
             self.logger.debug("Abort event is %s", self.abort_event.is_set())
             attribute_value = self.get_function(self.component_manager)
+
             if not self.command_completed and not self.abort_event.is_set():
                 if attribute_value == self.states_to_track[0]:
                     self.states_to_track.remove(attribute_value)
@@ -99,7 +115,13 @@ class CommandCallbackTracker:
                 self.command_class_instance.update_task_status(
                     status=TaskStatus.ABORTED
                 )
-        except (AttributeError, ValueError, TypeError) as exception:
+
+        except (
+            AttributeError,
+            ValueError,
+            TypeError,
+            IndexError,
+        ) as exception:
             self.logger.error(
                 "Error occurred while attribute" + "update %s", exception
             )
@@ -134,11 +156,12 @@ class CommandCallbackTracker:
         """
 
         try:
+            self.command_completed = True
             if hasattr(self.command_class_instance, "timekeeper"):
                 self.command_class_instance.timekeeper.stop_timer()
             else:
                 self.component_manager.stop_timer()
-            self.command_completed = True
+
             self.logger.info("Deregistering observer")
             self.observable.deregister_observer(self.lrc_exception_observer)
             self.observable.deregister_observer(self.attribute_change_observer)
