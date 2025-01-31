@@ -8,7 +8,7 @@ an integrated TMC
 from typing import Tuple
 
 from ska_tango_base.commands import ResultCode
-from ska_tango_base.control_model import ObsState
+from ska_tango_base.control_model import AdminMode, ObsState
 from tango import AttrWriteType
 from tango.server import attribute, command, run
 
@@ -27,6 +27,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         self._isSubsystemAvailable = True
         self._raise_exception = False
         self._isAdminModeEnabled: bool = False
+        self._sdp_subarray_admin_mode: AdminMode = AdminMode.OFFLINE
 
     class InitCommand(HelperSubarrayLeafDevice.InitCommand):
         """A class for the HelperSubarrayDevice's init_device() "command"."""
@@ -38,11 +39,16 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
             """
             super().do()
             self._device.set_change_event("sdpSubarrayObsState", True, False)
+            self._device.set_change_event("sdpSubarrayAdminMode", True, False)
             return ResultCode.OK, ""
 
     sdpSubarrayObsState = attribute(
         dtype=ObsState,
         access=AttrWriteType.READ,
+    )
+
+    sdpSubarrayAdminMode = attribute(
+        dtype=AdminMode, access=AttrWriteType.READ
     )
 
     def read_sdpSubarrayObsState(self):
@@ -51,6 +57,13 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         :return: obsstate value
         """
         return self._obs_state
+
+    def read_sdpSubarrayAdminMode(self):
+        """
+        Reads the current admin mode of the CSP subarray
+        :return: admin mode
+        """
+        return self._sdp_subarray_admin_mode
 
     @command(
         dtype_in=int,
@@ -64,6 +77,21 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
         if self._obs_state != value:
             self._obs_state = value
             self.push_change_event("sdpSubarrayObsState", self._obs_state)
+
+    @command(
+        dtype_in=int,
+        doc_in="Set AdminMode",
+    )
+    def SetSdpSubarrayLeafNodeAdminMode(self, argin: int) -> None:
+        """
+        Trigger a ObsState change
+        """
+        value = AdminMode(argin)
+        if self._sdp_subarray_admin_mode != value:
+            self._sdp_subarray_admin_mode = value
+            self.push_change_event(
+                "sdpSubarrayAdminMode", self._sdp_subarray_admin_mode
+            )
 
     def push_obs_state_event(self, obs_state: ObsState) -> None:
         self.logger.info(
