@@ -190,6 +190,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
             )
 
         if self.defective_params["enabled"]:
+            error_message = self.defective_params.get("error_message")
+            self.logger.info("error_message: %s ", error_message)
             if self.defective_params["fault_type"] == FaultType.SDP_FAULT:
                 self._obs_state = ObsState.FAULT
                 self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
@@ -201,8 +203,8 @@ class HelperSdpSubarray(HelperSubArrayDevice):
                 self.update_device_obsstate(self._obs_state, ASSIGN_RESOURCES)
 
             raise tango.Except.throw_exception(
+                error_message,
                 "Error ocurred during assign resources",
-                self.defective_params["error_message"],
                 "SdpSubarry.AssignResources()",
                 tango.ErrSeverity.ERR,
             )
