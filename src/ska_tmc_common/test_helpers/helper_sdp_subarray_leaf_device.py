@@ -60,7 +60,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def read_sdpSubarrayAdminMode(self):
         """
-        Reads the current admin mode of the CSP subarray
+        Reads the admin mode of the CSP subarray leaf node
         :return: admin mode
         """
         return self._sdp_subarray_admin_mode
@@ -84,7 +84,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
     )
     def SetSdpSubarrayLeafNodeAdminMode(self, argin: int) -> None:
         """
-        Trigger a ObsState change
+        Trigger a admin mode change
         """
         value = AdminMode(argin)
         if self._sdp_subarray_admin_mode != value:

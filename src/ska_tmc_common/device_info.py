@@ -89,12 +89,12 @@ class DeviceInfo:
 
     @property
     def admin_mode(self) -> DevState:
-        """State property"""
+        """AdminMode property"""
         return self._admin_mode
 
     @admin_mode.setter
     def admin_mode(self, value: AdminMode):
-        """State property setter.
+        """AdminMode property setter.
 
         :param value: Value to be set
         :type value: `AdminMode`
