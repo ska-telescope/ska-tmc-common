@@ -19,7 +19,7 @@ from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
 
 # pylint: disable=invalid-name
 class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
-    """A device exposing commands and attributes of the CSP Subarray Leaf
+    """A device exposing commands and attributes of the SDP Subarray Leaf
     Nodes devices."""
 
     def init_device(self) -> None:
@@ -60,7 +60,7 @@ class HelperSdpSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def read_sdpSubarrayAdminMode(self):
         """
-        Reads the admin mode of the CSP subarray leaf node
+        Reads the admin mode of the SDP subarray leaf node
         :return: admin mode
         """
         return self._sdp_subarray_admin_mode
