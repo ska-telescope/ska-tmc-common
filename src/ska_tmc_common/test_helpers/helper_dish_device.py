@@ -597,7 +597,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self.update_command_info("TrackLoadStaticOff", str(argin))
 
         # Will be uncommented as a part of SAH-1530
-        command_id = f"{time.time()}-TrackLoadStaticOff"
+        command_id = f"{time.time()}_TrackLoadStaticOff"
 
         # Set offsets.
         cross_elevation = argin[0]
@@ -1019,7 +1019,7 @@ class HelperDishDevice(HelperDishLNDevice):
         :rtype: tuple
         """
         self.track_stop = False
-        command_id = f"{time.time()}-Track"
+        command_id = f"{time.time()}_Track"
         self.logger.info("Instructed Dish simulator to invoke Track command")
         self.update_command_info(TRACK, "")
         self._pointing_state = PointingState.SLEW
