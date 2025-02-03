@@ -190,6 +190,9 @@ Added
 
 Fixed
 -------
+[0.24.4]
+* admin mode attribute added for csp, sdp and mccs subarray leaf node helper devices
+
 [0.24.3]
 * Exception check added which is received before registering the observer
 
