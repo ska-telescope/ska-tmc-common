@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.6]
+********
+* Updated helper dish device to push dish subsystems LRCR events (same as DishManager)
+
 [0.24.0]
 ********
 * Add common functionality of adminMode in ska-tmc-common
