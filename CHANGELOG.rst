@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.7]
+********
+* Implemented the SetAdminMode command for helper leaf devices
+
 [0.24.6]
 ********
 * Updated helper dish device to push dish subsystems LRCR events (same as DishManager)
