@@ -109,10 +109,12 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             component_state_callback,
         )
         self.event_receiver = _event_receiver
+        self._is_admin_mode_enabled: bool = True
         self.proxy_timeout = proxy_timeout
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
+        self.rlock = threading._RLock()
 
         if self.event_receiver:
             self.event_receiver_object = EventReceiver(
@@ -144,6 +146,31 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         with self.lock:
 
             self._command_id = value
+
+    @property
+    def is_admin_mode_enabled(self):
+        """
+        Return the admin mode enabled flag.
+
+        :return: admin mode enabled flag
+        :rtype: bool
+        """
+        with self.rlock:
+            return self._is_admin_mode_enabled
+
+    @is_admin_mode_enabled.setter
+    def is_admin_mode_enabled(self, value):
+        """
+        Set the admin mode enabled flag.
+
+        :param value: admin mode enabled flag
+        :type value: bool
+        :raises ValueError: If the provided value is not a boolean
+        """
+        if not isinstance(value, bool):
+            raise ValueError("is_admin_mode_enabled must be a boolean value.")
+        with self.rlock:
+            self._is_admin_mode_enabled = value
 
     def is_command_allowed(self, command_name: str):
         """
