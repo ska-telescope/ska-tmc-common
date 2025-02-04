@@ -206,29 +206,3 @@ class EventReceiver:
         self._component_manager.update_device_obs_state(
             event.device.dev_name(), new_value
         )
-
-    def handle_admin_mode_event(
-        self, event: tango.EventType.CHANGE_EVENT
-    ) -> None:
-        """Handle admin Mode change event"""
-        if self._component_manager.is_admin_mode_enabled:
-            if event.err:
-                error = event.errors[0]
-                error_msg = f"{error.reason},{error.desc}"
-                self._logger.error(error_msg)
-                self._component_manager.update_event_failure(
-                    event.device.dev_name()
-                )
-                return
-            new_value = event.attr_value.value
-            self._logger.info(
-                "Received an adminMode event with : %s for device: %s",
-                new_value,
-                event.device.dev_name(),
-            )
-            self._component_manager.update_device_admin_mode(
-                event.device.dev_name(), new_value
-            )
-            self._logger.debug(
-                "Admin Mode updated to :%s", AdminMode(new_value).name
-            )
