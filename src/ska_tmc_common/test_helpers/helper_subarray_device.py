@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 # pylint: disable=too-many-lines
 """
 This module implements the Helper devices for subarray nodes for testing
@@ -34,6 +35,7 @@ from ska_tmc_common.test_helpers.constants import (
     RELEASE_RESOURCES,
     RESTART,
     SCAN,
+    SETADMINMODE,
     STAND_BY,
 )
 
@@ -1477,7 +1479,7 @@ class HelperSubArrayDevice(SKASubarray):
         return True
 
     @command(
-        dtype_out="DevVarLongStringArray",
+        dtype_out="DevEnum",
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
@@ -1507,6 +1509,49 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
         self.logger.info("Abort command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_SetAdminMode_allowed(self) -> bool:
+        """
+        This method checks if SetAdminMode command is allowed in the current
+        device state.
+        :return: ``True`` if the command is allowed
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("SetAdminMode Command is allowed")
+        return True
+
+    @command(
+        dtype_in="DevEnum",
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke SetAdminMode command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        value = AdminMode(argin)
+        self.logger.debug("The input adminmode is %s", value)
+        command_id = f"{time.time()}_SetAdminMode"
+        self.update_command_info(SETADMINMODE, str(value))
+        if self.defective_params["enabled"]:
+            return self.induce_fault("SetAdminMode", command_id)
+        self.logger.info("The adminmode is %s", self._admin_mode)
+        self.push_change_event("adminMode", self._admin_mode)
+        self.logger.debug("SetAdminMode invoke on leafnode")
         return [ResultCode.QUEUED], [command_id]
 
     @admin_mode_check()

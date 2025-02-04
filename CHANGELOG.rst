@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.7]
+********
+* Implemented the SetAdminMode command for helper leaf devices
+
 [0.24.6]
 ********
 * Updated helper dish device to push dish subsystems LRCR events (same as DishManager)
@@ -194,6 +198,9 @@ Added
 
 Fixed
 -------
+[0.24.6]
+* AdminMode command implementation on Leafnodes for SN testing
+
 [0.24.5]
 * admin mode attribute added for csp, sdp and mccs subarray leaf node helper devices
 

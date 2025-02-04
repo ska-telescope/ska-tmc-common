@@ -113,6 +113,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.sleep_time = sleep_time
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
+        self.rlock = threading._RLock()
 
         if self.event_receiver:
             self.event_receiver_object = EventReceiver(

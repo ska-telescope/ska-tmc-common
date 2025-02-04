@@ -17,6 +17,7 @@ from tango.server import AttrWriteType, attribute, command, run
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.admin_mode_decorator import admin_mode_check
 from ska_tmc_common.enum import PointingState
+from ska_tmc_common.test_helpers.constants import SETADMINMODE
 from ska_tmc_common.test_helpers.empty_component_manager import (
     EmptyComponentManager,
 )
@@ -522,6 +523,49 @@ class HelperBaseDevice(SKABaseDevice):
             self.set_state(DevState.STANDBY)
             self.push_change_event("State", self.dev_state())
             self.logger.info("Standy command completed.")
+        return [ResultCode.QUEUED], [command_id]
+
+    def is_SetAdminMode_allowed(self) -> bool:
+        """
+        This method checks if SetAdminMode command is allowed in the current
+        device state.
+        :return: ``True`` if the command is allowed
+        :rtype:bool
+        :raises CommandNotAllowed: command is not allowed
+        """
+        if self.defective_params["enabled"]:
+            if (
+                self.defective_params["fault_type"]
+                == FaultType.COMMAND_NOT_ALLOWED_BEFORE_QUEUING
+            ):
+                self.logger.info(
+                    "Device is defective, cannot process command."
+                )
+                raise CommandNotAllowed(self.defective_params["error_message"])
+        self.logger.info("SetAdminMode Command is allowed")
+        return True
+
+    @command(
+        dtype_in="DevEnum",
+        doc_in="The input string in JSON format.",
+        dtype_out="DevVarLongStringArray",
+        doc_out="(ReturnType, 'informational message')",
+    )
+    def SetAdminMode(self, argin) -> Tuple[List[ResultCode], List[str]]:
+        """
+        This is the method to invoke SetAdminMode command.
+        :return: ResultCode, message
+        :rtype: tuple
+        """
+        value = AdminMode(argin)
+        self.logger.debug("The input adminmode is %s", value)
+        command_id = f"{time.time()}_SetAdminMode"
+        self.update_command_info(SETADMINMODE, str(value))
+        if self.defective_params["enabled"]:
+            return self.induce_fault("SetAdminMode", command_id)
+        self.logger.info("The adminmode is %s", self._admin_mode)
+        self.push_change_event("adminMode", self._admin_mode)
+        self.logger.debug("SetAdminMode invoke on leafnode")
         return [ResultCode.QUEUED], [command_id]
 
     @admin_mode_check()
