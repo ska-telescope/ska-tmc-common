@@ -81,6 +81,9 @@ from .test_helpers.helper_mccs_master_leaf_node_device import (
     HelperMCCSMasterLeafNode,
 )
 from .test_helpers.helper_mccs_subarray_device import HelperMccsSubarrayDevice
+from .test_helpers.helper_mccs_subarray_leaf_device import (
+    HelperMccsSubarrayLeafDevice,
+)
 from .test_helpers.helper_sdp_queue_connector_device import (
     HelperSdpQueueConnector,
 )
@@ -191,4 +194,5 @@ __all__ = [
     "error_propagation_decorator",
     "SdpQueueConnectorDeviceInfo",
     "TrackTableLoadMode",
+    "HelperMccsSubarrayLeafDevice",
 ]

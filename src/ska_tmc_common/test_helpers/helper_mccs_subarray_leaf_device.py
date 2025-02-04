@@ -1,6 +1,6 @@
 """
-This module implements the Helper devices for subarray leaf nodes for testing
-an integrated TMC
+This module implements the Helper devices for MCCS subarray leaf nodes
+for testing an integrated TMC
 """
 
 # pylint: disable=attribute-defined-outside-init
@@ -19,7 +19,7 @@ from ska_tmc_common.test_helpers.helper_subarray_leaf_device import (
 
 # pylint: disable=invalid-name
 class HelperMccsSubarrayLeafDevice(HelperSubarrayLeafDevice):
-    """A device exposing commands and attributes of the CSP Subarray Leaf
+    """A device exposing commands and attributes of the MCCS Subarray Leaf
     Node devices."""
 
     def init_device(self) -> None:
@@ -45,7 +45,7 @@ class HelperMccsSubarrayLeafDevice(HelperSubarrayLeafDevice):
 
     def read_mccsSubarrayAdminMode(self):
         """
-        Reads the current observation state of the CSP subarray
+        Reads the current admin mode of the CSP subarray
         :return: obs state
         """
         return self._mccs_subarray_admin_mode
@@ -56,7 +56,7 @@ class HelperMccsSubarrayLeafDevice(HelperSubarrayLeafDevice):
     )
     def SetMccsSubarrayLeafNodeAdminMode(self, argin: int) -> None:
         """
-        Trigger a ObsState change
+        Trigger a admin mode change
         """
         value = AdminMode(argin)
         if self._mccs_subarray_admin_mode != value:
