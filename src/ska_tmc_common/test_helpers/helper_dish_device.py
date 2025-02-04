@@ -72,6 +72,7 @@ class HelperDishDevice(HelperDishLNDevice):
         self._band5bPointingModelParams = []
         self.thread: None | threading.Thread = None
         self.track_stop: bool = False
+        self._lrcr_event_delay = 0.2
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperDishDevice's init_device() command."""
@@ -518,9 +519,22 @@ class HelperDishDevice(HelperDishLNDevice):
 
         # Set the Dish Mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(
-            ResultCode.OK, "SetOperateMode", command_id=command_id
+
+        spf_setopearatemode_cmd_id = f"{time.time()}_SPF_SetOperateMode"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetOperateMode", "None"],
+            kwargs={"command_id": spf_setopearatemode_cmd_id},
         )
+        thread.start()
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetOperateMode", "SetOperateMode completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("SetOperateMode command completed.")
         return (
             [ResultCode.QUEUED],
@@ -675,9 +689,30 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B1)
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand1", command_id=command_id
+
+        set_index_position_command_id = f"{time.time()}_DS_SetIndexPosition"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetIndexPosition"],
+            kwargs={"command_id": set_index_position_command_id},
         )
+        thread.start()
+        sprfx_configureband1_cmd_id = f"{time.time()}_SPFRX_ConfigureBand1"
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand1", "None"],
+            kwargs={"command_id": sprfx_configureband1_cmd_id},
+        )
+        thread.start()
+        thread = threading.Timer(
+            3 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand1", "ConfigureBand1 completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("ConfigureBand1 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -752,9 +787,29 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B2)
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand2", command_id=command_id
+        set_index_position_command_id = f"{time.time()}_DS_SetIndexPosition"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetIndexPosition"],
+            kwargs={"command_id": set_index_position_command_id},
         )
+        thread.start()
+        sprfx_configureband2_cmd_id = f"{time.time()}_SPFRX_ConfigureBand2"
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand2", "None"],
+            kwargs={"command_id": sprfx_configureband2_cmd_id},
+        )
+        thread.start()
+        thread = threading.Timer(
+            3 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand2", "ConfigureBand2 completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("ConfigureBand2 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -809,9 +864,29 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B3)
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand3", command_id=command_id
+        set_index_position_command_id = f"{time.time()}_DS_SetIndexPosition"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetIndexPosition"],
+            kwargs={"command_id": set_index_position_command_id},
         )
+        thread.start()
+        sprfx_configureband3_cmd_id = f"{time.time()}_SPFRX_ConfigureBand3"
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand3", "None"],
+            kwargs={"command_id": sprfx_configureband3_cmd_id},
+        )
+        thread.start()
+        thread = threading.Timer(
+            3 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand3", "ConfigureBand3 completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("ConfigureBand3 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -865,9 +940,29 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B4)
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand4", command_id=command_id
+        set_index_position_command_id = f"{time.time()}_DS_SetIndexPosition"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetIndexPosition"],
+            kwargs={"command_id": set_index_position_command_id},
         )
+        thread.start()
+        sprfx_configureband4_cmd_id = f"{time.time()}_SPFRX_ConfigureBand4"
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand4", "None"],
+            kwargs={"command_id": sprfx_configureband4_cmd_id},
+        )
+        thread.start()
+        thread = threading.Timer(
+            3 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand4", "ConfigureBand4 completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("ConfigureBand4 command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -920,9 +1015,33 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B5a)
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand5a", command_id=command_id
+        set_index_position_command_id = f"{time.time()}_DS_SetIndexPosition"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetIndexPosition"],
+            kwargs={"command_id": set_index_position_command_id},
         )
+        thread.start()
+        sprfx_configureband5a_cmd_id = f"{time.time()}_SPFRX_ConfigureBand5a"
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand5a", "None"],
+            kwargs={"command_id": sprfx_configureband5a_cmd_id},
+        )
+        thread.start()
+        thread = threading.Timer(
+            3 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[
+                ResultCode.OK,
+                "ConfigureBand5a",
+                "ConfigureBand5a completed",
+            ],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("ConfigureBand5a command completed.")
         return [ResultCode.QUEUED], [command_id]
 
@@ -976,15 +1095,39 @@ class HelperDishDevice(HelperDishLNDevice):
         thread.start()
         # Set dish configured band
         self.set_configured_band(Band.B5b)
-        self.push_command_result(
-            ResultCode.OK, "ConfigureBand5b", command_id=command_id
+        set_index_position_command_id = f"{time.time()}_DS_SetIndexPosition"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "SetIndexPosition"],
+            kwargs={"command_id": set_index_position_command_id},
         )
+        thread.start()
+        sprfx_configureband5b_cmd_id = f"{time.time()}_SPFRX_ConfigureBand5b"
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "ConfigureBand5b", "None"],
+            kwargs={"command_id": sprfx_configureband5b_cmd_id},
+        )
+        thread.start()
+        thread = threading.Timer(
+            3 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[
+                ResultCode.OK,
+                "ConfigureBand5b",
+                "ConfigureBand5b completed",
+            ],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("ConfigureBand5b command completed.")
         return [ResultCode.QUEUED], [command_id]
 
     # Below changes will be un-commented in SAH-1530
 
-    def update_lrcr(
+    def update_track_lrcr(
         self, command_name: str = "", command_id: str = ""
     ) -> None:
         """Updates the longrunningcommandresult  after a delay."""
@@ -1001,10 +1144,18 @@ class HelperDishDevice(HelperDishLNDevice):
                             "pointingState", self._pointing_state
                         )
 
-                    # Set dish mode
+                # Set dish mode
                 self.set_dish_mode(DishMode.OPERATE)
+                command_result_message = (
+                    "Track command has been executed on "
+                    + "DS. Monitor the achievedTargetLock attribute to "
+                    + "determine when the dish is on source."
+                )
                 self.push_command_result(
-                    ResultCode.OK, command_name, command_id=command_id
+                    ResultCode.OK,
+                    command_name,
+                    command_result_message,
+                    command_id=command_id,
                 )
                 self.logger.info("%s command completed.", command_name)
 
@@ -1030,7 +1181,7 @@ class HelperDishDevice(HelperDishLNDevice):
             return self.induce_fault("Track", command_id, is_dish=True)
 
         self.thread = threading.Thread(
-            target=self.update_lrcr, args=["Track", command_id]
+            target=self.update_track_lrcr, args=["Track", command_id]
         )
         self.thread.start()
         return ([ResultCode.QUEUED], [command_id])
@@ -1072,7 +1223,13 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("Scan", command_id, is_dish=True)
         self._scan_id = argin
-        self.push_command_result(ResultCode.OK, "Scan", command_id=command_id)
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "Scan", "Scan completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         return [ResultCode.QUEUED], [command_id]
 
     def is_EndScan_allowed(self) -> Union[bool, CommandNotAllowed]:
@@ -1112,9 +1269,13 @@ class HelperDishDevice(HelperDishLNDevice):
         if self.defective_params["enabled"]:
             return self.induce_fault("EndScan", command_id, is_dish=True)
         self._scan_id = ""
-        self.push_command_result(
-            ResultCode.OK, "EndScan", command_id=command_id
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "EndScan", "EndScan completed"],
+            kwargs={"command_id": command_id},
         )
+        thread.start()
         return (
             [ResultCode.QUEUED],
             [command_id],
@@ -1276,9 +1437,21 @@ class HelperDishDevice(HelperDishLNDevice):
                 self.logger.info("Pointing State: %s", self._pointing_state)
         # Set dish mode
         self.set_dish_mode(DishMode.OPERATE)
-        self.push_command_result(
-            ResultCode.OK, "TrackStop", command_id=command_id
+        ds_trackstop_command_id = f"{time.time()}_DS_TrackStop"
+        thread = threading.Timer(
+            self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "TrackStop"],
+            kwargs={"command_id": ds_trackstop_command_id},
         )
+        thread.start()
+        thread = threading.Timer(
+            2 * self._lrcr_event_delay,
+            function=self.push_command_result,
+            args=[ResultCode.OK, "TrackStop", "TrackStop completed"],
+            kwargs={"command_id": command_id},
+        )
+        thread.start()
         self.logger.info("TrackStop command completed.")
         return [ResultCode.QUEUED], [command_id]
 
