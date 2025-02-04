@@ -528,9 +528,8 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": spf_setopearatemode_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "SetOperateMode", "SetOperateMode completed"],
             kwargs={"command_id": command_id},
@@ -699,18 +698,16 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": set_index_position_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         sprfx_configureband1_cmd_id = f"{time.time()}_SPFRX_ConfigureBand1"
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand1", "None"],
             kwargs={"command_id": sprfx_configureband1_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            3 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand1", "ConfigureBand1 completed"],
             kwargs={"command_id": command_id},
@@ -798,18 +795,16 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": set_index_position_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         sprfx_configureband2_cmd_id = f"{time.time()}_SPFRX_ConfigureBand2"
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand2", "None"],
             kwargs={"command_id": sprfx_configureband2_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            3 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand2", "ConfigureBand2 completed"],
             kwargs={"command_id": command_id},
@@ -877,18 +872,16 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": set_index_position_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         sprfx_configureband3_cmd_id = f"{time.time()}_SPFRX_ConfigureBand3"
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand3", "None"],
             kwargs={"command_id": sprfx_configureband3_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            3 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand3", "ConfigureBand3 completed"],
             kwargs={"command_id": command_id},
@@ -955,18 +948,16 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": set_index_position_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         sprfx_configureband4_cmd_id = f"{time.time()}_SPFRX_ConfigureBand4"
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand4", "None"],
             kwargs={"command_id": sprfx_configureband4_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            3 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand4", "ConfigureBand4 completed"],
             kwargs={"command_id": command_id},
@@ -1032,18 +1023,16 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": set_index_position_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         sprfx_configureband5a_cmd_id = f"{time.time()}_SPFRX_ConfigureBand5a"
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand5a", "None"],
             kwargs={"command_id": sprfx_configureband5a_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            3 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[
                 ResultCode.OK,
@@ -1114,18 +1103,16 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": set_index_position_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         sprfx_configureband5b_cmd_id = f"{time.time()}_SPFRX_ConfigureBand5b"
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "ConfigureBand5b", "None"],
             kwargs={"command_id": sprfx_configureband5b_cmd_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            3 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[
                 ResultCode.OK,
@@ -1458,9 +1445,8 @@ class HelperDishDevice(HelperDishLNDevice):
             kwargs={"command_id": ds_trackstop_command_id},
         )
         thread.start()
-        time.sleep(self._lrcr_event_delay)
         thread = threading.Timer(
-            self._lrcr_event_delay,
+            2 * self._lrcr_event_delay,
             function=self.push_command_result,
             args=[ResultCode.OK, "TrackStop", "TrackStop completed"],
             kwargs={"command_id": command_id},
