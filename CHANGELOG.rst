@@ -190,6 +190,9 @@ Added
 
 Fixed
 -------
+[0.24.4]
+* Fix command id's for Track and TrackLoadStaticOff commands on helper dish device.
+
 [0.24.3]
 * Exception check added which is received before registering the observer
 
