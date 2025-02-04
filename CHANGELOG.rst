@@ -190,6 +190,9 @@ Added
 
 Fixed
 -------
+[0.24.5]
+* admin mode attribute added for csp, sdp and mccs subarray leaf node helper devices
+
 [0.24.4]
 * Fix command id's for Track and TrackLoadStaticOff commands on helper dish device.
 

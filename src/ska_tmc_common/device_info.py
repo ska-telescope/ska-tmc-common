@@ -6,7 +6,7 @@ import json
 import threading
 from typing import Any
 
-from ska_tango_base.control_model import HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState, ObsState
 from tango import DevState
 
 from ska_tmc_common.enum import (
@@ -70,6 +70,7 @@ class DeviceInfo:
         self.lock = threading.Lock()
         self._source_dish_vcc_config = ""
         self._dish_vcc_config = ""
+        self._admin_mode = None
 
     @property
     def state(self) -> DevState:
@@ -85,6 +86,21 @@ class DeviceInfo:
         """
         with self.lock:
             self._state = value
+
+    @property
+    def admin_mode(self) -> DevState:
+        """AdminMode property"""
+        return self._admin_mode
+
+    @admin_mode.setter
+    def admin_mode(self, value: AdminMode):
+        """AdminMode property setter.
+
+        :param value: Value to be set
+        :type value: `AdminMode`
+        """
+        with self.lock:
+            self._admin_mode = value
 
     @property
     def health_state(self) -> HealthState:
