@@ -36,7 +36,6 @@ def test_stop(component_manager):
     assert lp._stop
 
 
-@pytest.mark.skip(reason="Unstable test case")
 @pytest.mark.parametrize(
     "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
 )
