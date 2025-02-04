@@ -10,7 +10,6 @@ from time import sleep
 from typing import Callable, Optional
 
 import tango
-from ska_control_model import AdminMode
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
