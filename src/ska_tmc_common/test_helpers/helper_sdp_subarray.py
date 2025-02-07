@@ -335,27 +335,31 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         :raises throw_exception: when input json is wrong
         """
         self.update_command_info(SCAN, argin)
-        input_json = json.loads(argin)
-        if "scan_id" not in input_json:
-            self.logger.info("Missing scan_id in the Scan input json")
-            raise tango.Except.throw_exception(
-                "Incorrect input json string",
-                "Missing scan_id in the Scan input json",
-                "SdpSubarry.Configure()",
-                tango.ErrSeverity.ERR,
+        if self.defective_params["enabled"]:
+            self._obs_state = ObsState.READY
+            self.induce_fault()
+        else:
+            input_json = json.loads(argin)
+            if "scan_id" not in input_json:
+                self.logger.info("Missing scan_id in the Scan input json")
+                raise tango.Except.throw_exception(
+                    "Incorrect input json string",
+                    "Missing scan_id in the Scan input json",
+                    "SdpSubarry.Configure()",
+                    tango.ErrSeverity.ERR,
+                )
+            thread = threading.Timer(
+                self._command_delay_info[SCAN],
+                self.update_device_obsstate,
+                args=[ObsState.SCANNING, SCAN],
             )
-        thread = threading.Timer(
-            self._command_delay_info[SCAN],
-            self.update_device_obsstate,
-            args=[ObsState.SCANNING, SCAN],
-        )
-        self.timers.append(thread)
-        thread.start()
-        self.logger.debug(
-            "Scan command invoked, obsState will transition to SCANNING,"
-            + "current obsState is %s",
-            self._obs_state,
-        )
+            self.timers.append(thread)
+            thread.start()
+            self.logger.debug(
+                "Scan command invoked, obsState will transition to SCANNING,"
+                + "current obsState is %s",
+                self._obs_state,
+            )
 
     @command()
     def EndScan(self):
