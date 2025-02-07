@@ -334,11 +334,14 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         This method invokes Scan command on SdpSubarray device.
         :raises throw_exception: when input json is wrong
         """
+
         self.update_command_info(SCAN, argin)
         if self.defective_params["enabled"]:
+            self.logger.info("Scan invoked with defective params")
             self._obs_state = ObsState.READY
             self.induce_fault()
         else:
+            self.logger.info("Scan command invoked")
             input_json = json.loads(argin)
             if "scan_id" not in input_json:
                 self.logger.info("Missing scan_id in the Scan input json")
