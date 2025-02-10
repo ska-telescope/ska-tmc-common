@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.24.8]
+********
+* Updated SDP subarry helper device to induce error during Scan command
+
 [0.24.7]
 ********
 * Implemented the SetAdminMode command for helper leaf devices
