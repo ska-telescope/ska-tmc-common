@@ -1480,7 +1480,7 @@ class HelperSubArrayDevice(SKASubarray):
         return True
 
     @command(
-        dtype_out="DevEnum",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
