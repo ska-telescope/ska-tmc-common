@@ -1496,12 +1496,14 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
+
             thread = threading.Timer(
                 interval=self._delay,
                 function=self.update_device_obsstate,
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
+            self.logger.info("update_device_obsstate started")
             thread = threading.Timer(
                 self._delay,
                 self.push_command_result,
@@ -1509,6 +1511,7 @@ class HelperSubArrayDevice(SKASubarray):
                 kwargs={"command_id": command_id},
             )
             thread.start()
+            self.logger.info("push_command_result started")
         self.logger.info("Abort command started.")
         return [ResultCode.QUEUED], [command_id]
 
