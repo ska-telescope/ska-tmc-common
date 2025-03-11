@@ -1512,6 +1512,7 @@ class HelperSubArrayDevice(SKASubarray):
             )
             thread.start()
             self.logger.info("push_command_result started")
+        self.logger.info("Abort command command_id = %s.", command_id)
         self.logger.info("Abort command started.")
         return [ResultCode.QUEUED], [command_id]
 
