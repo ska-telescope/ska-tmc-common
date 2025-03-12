@@ -11,6 +11,7 @@ import json
 import threading
 import time
 from logging import Logger
+from queue import Empty
 from typing import Callable, Optional, Union
 
 import tango
@@ -132,6 +133,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self._command_id: str = ""
         self.observable = Observable()
         self._device = None
+        self.event_queues = {}
+        self._stop_thread: bool = False
 
     @property
     def command_id(self) -> str:
@@ -677,3 +680,48 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             dev_info: DeviceInfo = self.get_device()
             dev_info.update_unresponsive(False, "")
+
+    def process_event(self, attribute_name: str) -> None:
+        """Process the given attribute's event using the data from the
+        event_queues and invoke corresponding process method.
+
+        :param attribute_name: Name of the attribute for which event is to be
+            processed
+        :type attribute_name: str
+
+
+        """
+        while not self._stop_thread:
+            try:
+                event_data = self.event_queues[attribute_name].get(
+                    block=True, timeout=0.1
+                )
+                if not self.check_event_error(
+                    event_data, f"{attribute_name}_Callback"
+                ):
+                    self.event_processing_methods[attribute_name](
+                        event_data.device.dev_name(),
+                        event_data.attr_value.value,
+                    )
+            except Empty:
+                # If an empty exception is raised by the Queue, we can
+                # safely ignore it.
+                pass
+            except Exception as exception:
+                self.logger.error(exception)
+        self.logger.debug("Process event thread stopped")
+
+    def check_event_error(self, event: tango.EventData, callback: str):
+        """Method for checking event error."""
+        if event.err:
+            error = event.errors[0]
+            self.logger.error(
+                "Error occurred on %s for device: %s - %s, %s",
+                callback,
+                event.device.dev_name(),
+                error.reason,
+                error.desc,
+            )
+            self.update_event_failure(event.device.dev_name())
+            return True
+        return False
