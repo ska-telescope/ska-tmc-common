@@ -15,7 +15,7 @@ from ska_tango_testing.mock import MockCallable
 from ska_tango_testing.mock.tango.event_callback import (
     MockTangoEventCallbackGroup,
 )
-from tango.test_context import MultiDeviceTestContext
+from tango.test_context import DeviceTestContext, MultiDeviceTestContext
 
 from ska_tmc_common import (
     DevFactory,
@@ -31,6 +31,7 @@ from ska_tmc_common import (
     HelperMCCSMasterLeafNode,
     HelperMccsSubarrayDevice,
     HelperSdpQueueConnector,
+    HelperSdpSubarray,
     HelperSdpSubarrayLeafDevice,
     HelperSubArrayDevice,
     TmcLeafNodeComponentManager,
@@ -51,6 +52,8 @@ from tests.settings import (
     HELPER_SDP_QUEUE_CONNECTOR_DEVICE,
     MCCS_SUBARRAY_DEVICE,
     SDP_LEAF_NODE_DEVICE,
+    SDP_SUBARRAY_DEVICE_LOW,
+    SDP_SUBARRAY_DEVICE_MID,
     SUBARRAY_DEVICE,
     TMC_COMMON_DEVICE,
     logger,
@@ -272,3 +275,45 @@ def json_factory():
         return get_input_str(join(dirname(__file__), "data", f"{slug}.json"))
 
     return _get_json
+
+
+@pytest.fixture
+def sdp_subarray_low(request):
+    """Create DeviceProxy for tests"""
+    true_context = request.config.getoption("--true-context")
+    if not true_context:
+        with DeviceTestContext(
+            HelperSdpSubarray,
+            device_name=SDP_SUBARRAY_DEVICE_LOW,
+            timeout=20,
+        ) as proxy:
+            yield proxy
+    else:
+        database = tango.Database()
+        instance_list = database.get_device_exported_for_class(
+            "HelperSdpSubarray"
+        )
+        for instance in instance_list.value_string:
+            yield tango.DeviceProxy(instance)
+            break
+
+
+@pytest.fixture
+def sdp_subarray_mid(request):
+    """Create DeviceProxy for tests"""
+    true_context = request.config.getoption("--true-context")
+    if not true_context:
+        with DeviceTestContext(
+            HelperSdpSubarray,
+            device_name=SDP_SUBARRAY_DEVICE_MID,
+            timeout=20,
+        ) as proxy:
+            yield proxy
+    else:
+        database = tango.Database()
+        instance_list = database.get_device_exported_for_class(
+            "HelperSdpSubarray"
+        )
+        for instance in instance_list.value_string:
+            yield tango.DeviceProxy(instance)
+            break

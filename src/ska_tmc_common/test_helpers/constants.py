@@ -1,6 +1,8 @@
 """Constants
 """
 
+import json
+
 ON = "On"
 OFF = "Off"
 STAND_BY = "Standby"
@@ -34,3 +36,54 @@ SET_STANDBY_LP_MODE = "SetStandbyLPMode"
 SET_STOW_MODE = "SetStowMode"
 SET_OPERATE_MODE = "SetOperateMode"
 SKA_EPOCH = "1999-12-31T23:59:28Z"
+RECEIVE_ADDRESSES_LOW = json.dumps(
+    {
+        "science_A": {
+            "vis0": {
+                "function": "visibilities",
+                "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                "port": [[0, 9000, 1], [2000, 9000, 1]],
+            }
+        },
+        "target:a": {
+            "vis0": {
+                "function": "visibilities",
+                "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                "port": [[0, 9000, 1], [20, 9001, 1]],
+            }
+        },
+        "calibration:b": {
+            "vis0": {
+                "function": "visibilities",
+                "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                "port": [[0, 9000, 1], [20, 9001, 1]],
+            }
+        },
+    }
+)
+
+RECEIVE_ADDRESSES_MID = json.dumps(
+    {
+        "science_A": {
+            "vis0": {
+                "function": "visibilities",
+                "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                "port": [[0, 9000], [20, 9001]],
+            }
+        },
+        "target:a": {
+            "vis0": {
+                "function": "visibilities",
+                "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                "port": [[0, 9000], [20, 9001]],
+            }
+        },
+        "calibration:b": {
+            "vis0": {
+                "function": "visibilities",
+                "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
+                "port": [[0, 9000], [20, 9001]],
+            }
+        },
+    }
+)
