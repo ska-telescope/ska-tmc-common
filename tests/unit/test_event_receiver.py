@@ -1,7 +1,7 @@
 """A module to test the Event Receiver class"""
 
 import time
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
 import tango
@@ -99,9 +99,19 @@ def test_event_subscription_additional_attributes(tango_context):
     event_receiver.stop()
 
 
-def test_handle_obsstate_event_with_error():
-    # Mock the component manager and logger
+@pytest.mark.parametrize(
+    "event_method, event_queue_key",
+    [
+        ("handle_state_event", "state"),
+        ("handle_health_state_event", "healthState"),
+        ("handle_obs_state_event", "obsState"),
+    ],
+)
+def test_event_placed_in_queue(event_method, event_queue_key):
+    # Mock the event queue and component manager
+    mock_event_queue = Mock()
     component_manager = Mock()
+    component_manager.event_queues = {event_queue_key: mock_event_queue}
     logger = Mock()
 
     # Initialize the EventReceiver with mocks
@@ -110,92 +120,12 @@ def test_handle_obsstate_event_with_error():
         logger=logger,
     )
 
-    # Create a mock Tango EventData object with error
+    # Create a mock Tango EventData object
     mock_event = Mock(spec=EventData)
-    mock_event.err = True
-    mock_event.errors = [
-        MagicMock(reason="ErrorReason", desc="ErrorDescription")
-    ]
-    mock_event.device.dev_name.return_value = "test/device/2"
 
-    # Call the method under test
-    event_receiver.handle_obs_state_event(mock_event)
+    # Dynamically call the method under test
+    method_to_call = getattr(event_receiver, event_method)
+    method_to_call(mock_event)
 
-    # Assert the logger error method was called
-    logger.error.assert_called_once_with(
-        "%s\n %s", "ErrorReason", "ErrorDescription"
-    )
-
-    # Assert the component manager's update_event_failure was called
-    component_manager.update_event_failure.assert_called_once_with(
-        "test/device/2"
-    )
-
-
-def test_handle_healthstate_event_with_error():
-    # Mock the component manager and logger
-    component_manager = Mock()
-    logger = Mock()
-
-    # Initialize the EventReceiver with mocks
-    event_receiver = EventReceiver(
-        component_manager=component_manager,
-        logger=logger,
-    )
-
-    # Create a mock Tango EventData object with error
-    mock_event = Mock(spec=EventData)
-    mock_event.err = True
-    mock_event.errors = [
-        MagicMock(reason="ErrorReason", desc="ErrorDescription")
-    ]
-    mock_event.device.dev_name.return_value = "test/device/2"
-
-    # Call the method under test
-    event_receiver.handle_health_state_event(mock_event)
-
-    # Assert the logger error method was called
-    logger.error.assert_called_once_with(
-        "Received error from device %s: %s %s",
-        "test/device/2",
-        "ErrorReason",
-        "ErrorDescription",
-    )
-
-    # Assert the component manager's update_event_failure was called
-    component_manager.update_event_failure.assert_called_once_with(
-        "test/device/2"
-    )
-
-
-def test_handle_state_event_with_error():
-    # Mock the component manager and logger
-    component_manager = Mock()
-    logger = Mock()
-
-    # Initialize the EventReceiver with mocks
-    event_receiver = EventReceiver(
-        component_manager=component_manager,
-        logger=logger,
-    )
-
-    # Create a mock Tango EventData object with error
-    mock_event = Mock(spec=EventData)
-    mock_event.err = True
-    mock_event.errors = [
-        MagicMock(reason="ErrorReason", desc="ErrorDescription")
-    ]
-    mock_event.device.dev_name.return_value = "test/device/2"
-
-    # Call the method under test
-    event_receiver.handle_state_event(mock_event)
-
-    # Assert the logger error method was called
-    logger.error.assert_called_once_with(
-        "Reason :%s  Description %s", "ErrorReason", "ErrorDescription"
-    )
-
-    # Assert the component manager's update_event_failure was called
-    component_manager.update_event_failure.assert_called_once_with(
-        "test/device/2"
-    )
+    # Assert that the event was put into the correct queue
+    mock_event_queue.put.assert_called_once_with(mock_event)
