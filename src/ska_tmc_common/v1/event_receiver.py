@@ -148,44 +148,12 @@ class EventReceiver:
         """
         It handles the health state events of different devices
         """
-        # if event.err:
-        #     error = event.errors[0]
-        #     self._logger.error(
-        #         "Received error from device %s: %s %s",
-        #         event.device.dev_name(),
-        #         error.reason,
-        #         error.desc,
-        #     )
-        #     self._component_manager.update_event_failure(
-        #         event.device.dev_name()
-        #     )
-        #     return
-        #
-        # new_value = event.attr_value.value
-        # self._component_manager.update_device_health_state(
-        #     event.device.dev_name(), new_value
-        # )
-
         self._component_manager.event_queues["healthState"].put(event)
 
     def handle_state_event(self, event: tango.EventData) -> None:
         """
         It handles the state events of different devices
         """
-        # if event.err:
-        #     error = event.errors[0]
-        #     self._logger.error(
-        #         "Reason :%s  Description %s", error.reason, error.desc
-        #     )
-        #     self._component_manager.update_event_failure(
-        #         event.device.dev_name()
-        #     )
-        #     return
-        #
-        # new_value = event.attr_value.value
-        # self._component_manager.update_device_state(
-        #     event.device.dev_name(), new_value
-        # )
 
         self._component_manager.event_queues["state"].put(event)
 

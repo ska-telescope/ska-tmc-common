@@ -451,7 +451,6 @@ class HelperSubArrayDevice(SKASubarray):
         :type command_id: str
         """
 
-        self.logger.info("Push Thread started")
         if not command_id:
             command_id = f"{time.time()}-{command_name}"
         command_result = (
@@ -1511,8 +1510,6 @@ class HelperSubArrayDevice(SKASubarray):
                 kwargs={"command_id": command_id},
             )
             thread.start()
-
-        self.logger.info("Abort command started.")
         return [ResultCode.QUEUED], [command_id]
 
     def is_SetAdminMode_allowed(self) -> bool:
