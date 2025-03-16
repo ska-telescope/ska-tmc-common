@@ -203,7 +203,9 @@ def test_update_device_obs_state(component_manager):
     assert not component_manager.get_device().unresponsive
 
 
-@pytest.mark.parametrize("event_queue", ["state", "obsState", "healthState"])
+@pytest.mark.parametrize(
+    "event_queue", ["state", "obsState", "healthState", "adminMode"]
+)
 def test_handle_event_with_error(event_queue):
     # Initialize mocks
     logger = Mock()

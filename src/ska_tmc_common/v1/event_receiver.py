@@ -177,4 +177,5 @@ class EventReceiver:
     ) -> None:
         """Handle admin Mode change event"""
 
-        self._component_manager.event_queues["adminMode"].put(event)
+        if self._component_manager.is_admin_mode_enabled:
+            self._component_manager.event_queues["adminMode"].put(event)
