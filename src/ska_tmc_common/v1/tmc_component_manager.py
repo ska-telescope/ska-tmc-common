@@ -364,8 +364,16 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                     #     event_data.attr_value.value,
                     # )
 
+                    self.logger.info("attribute_name %s", attribute_name)
                     method_name = self.event_processing_methods[attribute_name]
-                    if hasattr(self, method_name):
+                    self.logger.info(
+                        "method_name -  %s , type - %s",
+                        method_name,
+                        type(method_name),
+                    )
+                    if hasattr(
+                        self, self.event_processing_methods[attribute_name]
+                    ):
                         method = getattr(self, method_name)
                         method(
                             event_data.device.dev_name(),
