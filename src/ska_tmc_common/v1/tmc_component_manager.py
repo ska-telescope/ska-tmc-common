@@ -387,7 +387,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             except AttributeError as attr_error:
                 # Handling issues with dynamic method resolution
                 self.logger.error(f"Attribute error: {attr_error} ")
-            except Exception as exception:
+            except Exception as exception:  # pylint: disable=broad-except
                 self.logger.error(exception)
         self.logger.debug("Process event thread stopped")
 
