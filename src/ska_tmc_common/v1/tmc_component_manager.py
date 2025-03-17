@@ -359,18 +359,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 if not self.check_event_error(
                     event_data, f"{attribute_name}_Callback"
                 ):
-                    # self.event_processing_methods[attribute_name](
-                    #     event_data.device.dev_name(),
-                    #     event_data.attr_value.value,
-                    # )
-
-                    self.logger.info("attribute_name %s", attribute_name)
                     method_name = self.event_processing_methods[attribute_name]
-                    self.logger.info(
-                        "method_name -  %s , type - %s",
-                        method_name,
-                        type(method_name),
-                    )
                     if hasattr(
                         self, self.event_processing_methods[attribute_name]
                     ):

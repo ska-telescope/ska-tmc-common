@@ -187,23 +187,6 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         self.transitional_obsstate = transitional_obsstate
         self.command_obj = DummyCommandClass(self, self.logger)
         self._state_val = State.NORMAL
-        # self.event_queues: Dict[str, Queue] = {
-        #     "obsState": Queue(),
-        #     "longRunningCommandResult": Queue(),
-        #     "adminMode": Queue(),
-        #     "healthState": Queue(),
-        #     "state": Queue(),
-        # }
-        #
-        # self.event_processing_methods: Dict[
-        #     str, Callable[[str, Any], None]
-        # ] = {
-        #     "healthState": self.update_device_health_state,
-        #     "state": (self.update_device_state),
-        #     "adminMode": self.update_device_admin_mode,
-        #     "obsState": self.update_device_obs_state,
-        # }
-
         self.__start_event_processing_threads()
 
     @property

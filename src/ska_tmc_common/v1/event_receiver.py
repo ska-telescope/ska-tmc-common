@@ -145,43 +145,38 @@ class EventReceiver:
                 )
 
     def handle_health_state_event(self, event: tango.EventData) -> None:
-        """
-        It handles the health state events of different devices
-        """
+        """Submit healthState event to callback for processing thus making
+        tango bus free for next event handling"""
 
         self._component_manager.update_event("healthState", event)
 
     def handle_state_event(self, event: tango.EventData) -> None:
-        """
-        It handles the state events of different devices
-        """
+        """Submit state event to callback for processing thus making
+        tango bus free for next event handling"""
 
-        # self._component_manager.event_queues["state"].put(event)
         self._component_manager.update_event("state", event)
 
     def handle_obs_state_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
-        """Handle the Obs-State event."""
+        """Submit obsState event to callback for processing thus making
+        tango bus free for next event handling"""
 
-        # self._component_manager.event_queues["obsState"].put(event)
         self._component_manager.update_event("obsState", event)
 
     def handle_command_result_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
-        """Handle the LRCR event."""
-        # self._component_manager.event_queues["longRunningCommandResult"].put(
-        #     event
-        # )
+        """Submit longRunningCommandResult event to callback for processing
+        thus making tango bus free for next event handling"""
 
         self._component_manager.update_event("longRunningCommandResult", event)
 
     def handle_admin_mode_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
-        """Handle admin Mode change event"""
+        """Submit adminMode event to callback for processing thus making
+        tango bus free for next event handling"""
 
         if self._component_manager.is_admin_mode_enabled:
             self._component_manager.update_event("adminMode", event)
-            # self._component_manager.event_queues["adminMode"].put(event)
