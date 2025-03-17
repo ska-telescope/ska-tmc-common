@@ -123,7 +123,9 @@ def error_propagation_tracker(
 
             # Set task callback and task abort event
             class_instance.task_callback = kwargs["task_callback"]
-            task_abort_event = kwargs["task_abort_event"]
+            # pylint: disable=possibly-used-before-assignment
+            if kwargs["task_abort_event"]:
+                task_abort_event = kwargs["task_abort_event"]
 
             # Set the command in progress and setup the data required for the
             # error propagation functionality
