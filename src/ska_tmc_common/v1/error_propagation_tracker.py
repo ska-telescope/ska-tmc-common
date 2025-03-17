@@ -113,6 +113,9 @@ def error_propagation_tracker(
             """Wrapper method"""
             # Extract the class instance from the input arguments
             class_instance = args[0]
+            class_instance.logger.info(
+                "Class instance: %s", class_instance.__name__
+            )
             class_instance.logger.debug(
                 "Executing the error propagation decorator with: %s, %s",
                 args,
