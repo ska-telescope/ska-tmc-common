@@ -113,9 +113,6 @@ def error_propagation_tracker(
             """Wrapper method"""
             # Extract the class instance from the input arguments
             class_instance = args[0]
-            class_instance.logger.info(
-                "Class instance: %s", type(class_instance).__name__
-            )
             class_instance.logger.debug(
                 "Executing the error propagation decorator with: %s, %s",
                 args,
@@ -127,7 +124,7 @@ def error_propagation_tracker(
             # Set task callback and task abort event
             class_instance.task_callback = kwargs["task_callback"]
             # pylint: disable=possibly-used-before-assignment
-            if kwargs["task_abort_event"]:
+            if str(type(class_instance).__name__) != "Abort":
                 task_abort_event = kwargs["task_abort_event"]
 
             # Set the command in progress and setup the data required for the
