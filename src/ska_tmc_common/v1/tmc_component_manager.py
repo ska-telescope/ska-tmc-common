@@ -11,8 +11,8 @@ import json
 import threading
 import time
 from logging import Logger
-from queue import Empty
-from typing import Callable, Optional, Union
+from queue import Empty, Queue
+from typing import Any, Callable, Dict, Optional, Union
 
 import tango
 from ska_tango_base.control_model import AdminMode, HealthState, ObsState
@@ -135,6 +135,22 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self._device = None
         self.event_queues = {}
         self._stop_thread: bool = False
+        self.event_queues: Dict[str, Queue] = {
+            "obsState": Queue(),
+            "longRunningCommandResult": Queue(),
+            "adminMode": Queue(),
+            "healthState": Queue(),
+            "state": Queue(),
+        }
+        self.event_processing_methods: Dict[
+            str, Callable[[str, Any], None]
+        ] = {
+            "healthState": "update_device_health_state",
+            "state": "update_device_state",
+            "adminMode": "update_device_admin_mode",
+            "obsState": "update_device_obs_state",
+            "longRunningCommandResult": "update_command_result",
+        }
 
     @property
     def command_id(self) -> str:
@@ -320,6 +336,88 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         """Stops the timer for command execution"""
         self.logger.info("Stopping timer %s", self.timer_object)
         self.timer_object.cancel()
+
+    def update_event(self, event_type, event):
+        """Updates event in respective queue"""
+        self.event_queues[event_type].put(event)
+
+    def process_event(self, attribute_name: str) -> None:
+        """Process the given attribute's event using the data from the
+        event_queues and invoke corresponding process method.
+
+        :param attribute_name: Name of the attribute for which event is to be
+            processed
+        :type attribute_name: str
+
+
+        """
+        while not self._stop_thread:
+            try:
+                event_data = self.event_queues[attribute_name].get(
+                    block=True, timeout=0.1
+                )
+                if not self.check_event_error(
+                    event_data, f"{attribute_name}_Callback"
+                ):
+                    # self.event_processing_methods[attribute_name](
+                    #     event_data.device.dev_name(),
+                    #     event_data.attr_value.value,
+                    # )
+
+                    method_name = self.event_processing_methods[attribute_name]
+                    if hasattr(self, method_name):
+                        method = getattr(self, method_name)
+                        method(
+                            event_data.device.dev_name(),
+                            event_data.attr_value.value,
+                        )
+                    else:
+                        self.logger.error(
+                            "Method %s not found in the current class"
+                            " or child class.",
+                            method_name,
+                        )
+            except Empty:
+                # If an empty exception is raised by the Queue, we can
+                # safely ignore it.
+                pass
+            except KeyError as key_error:
+                # Handling missing keys in the event processing dictionary
+                self.logger.error(f"Key error: {key_error} ")
+            except AttributeError as attr_error:
+                # Handling issues with dynamic method resolution
+                self.logger.error(f"Attribute error: {attr_error} ")
+            except Exception as exception:
+                self.logger.error(exception)
+        self.logger.debug("Process event thread stopped")
+
+    def check_event_error(self, event: tango.EventData, callback: str):
+        """Method for checking event error."""
+        if event.err:
+            error = event.errors[0]
+            self.logger.error(
+                "Error occurred on %s for device: %s - %s, %s",
+                callback,
+                event.device.dev_name(),
+                error.reason,
+                error.desc,
+            )
+
+            if hasattr(self, "update_event_failure"):
+                update_event_failure_method = getattr(
+                    self, "update_event_failure"
+                )
+                if callable(update_event_failure_method):
+                    # If callable, execute the method
+                    update_event_failure_method(event.device.dev_name())
+                else:
+                    # Log error if method is not callable or not found
+                    self.logger.error(
+                        "The attribute 'update_event_failure' is "
+                        "either not defined or not callable. "
+                    )
+            return True
+        return False
 
 
 class TmcComponentManager(BaseTmcComponentManager):
@@ -680,48 +778,3 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             dev_info: DeviceInfo = self.get_device()
             dev_info.update_unresponsive(False, "")
-
-    def process_event(self, attribute_name: str) -> None:
-        """Process the given attribute's event using the data from the
-        event_queues and invoke corresponding process method.
-
-        :param attribute_name: Name of the attribute for which event is to be
-            processed
-        :type attribute_name: str
-
-
-        """
-        while not self._stop_thread:
-            try:
-                event_data = self.event_queues[attribute_name].get(
-                    block=True, timeout=0.1
-                )
-                if not self.check_event_error(
-                    event_data, f"{attribute_name}_Callback"
-                ):
-                    self.event_processing_methods[attribute_name](
-                        event_data.device.dev_name(),
-                        event_data.attr_value.value,
-                    )
-            except Empty:
-                # If an empty exception is raised by the Queue, we can
-                # safely ignore it.
-                pass
-            except Exception as exception:
-                self.logger.error(exception)
-        self.logger.debug("Process event thread stopped")
-
-    def check_event_error(self, event: tango.EventData, callback: str):
-        """Method for checking event error."""
-        if event.err:
-            error = event.errors[0]
-            self.logger.error(
-                "Error occurred on %s for device: %s - %s, %s",
-                callback,
-                event.device.dev_name(),
-                error.reason,
-                error.desc,
-            )
-            self.update_event_failure(event.device.dev_name())
-            return True
-        return False

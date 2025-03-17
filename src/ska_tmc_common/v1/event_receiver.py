@@ -148,29 +148,34 @@ class EventReceiver:
         """
         It handles the health state events of different devices
         """
-        self._component_manager.event_queues["healthState"].put(event)
+
+        self._component_manager.update_event("healthState", event)
 
     def handle_state_event(self, event: tango.EventData) -> None:
         """
         It handles the state events of different devices
         """
 
-        self._component_manager.event_queues["state"].put(event)
+        # self._component_manager.event_queues["state"].put(event)
+        self._component_manager.update_event("state", event)
 
     def handle_obs_state_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
         """Handle the Obs-State event."""
 
-        self._component_manager.event_queues["obsState"].put(event)
+        # self._component_manager.event_queues["obsState"].put(event)
+        self._component_manager.update_event("obsState", event)
 
     def handle_command_result_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
         """Handle the LRCR event."""
-        self._component_manager.event_queues["longRunningCommandResult"].put(
-            event
-        )
+        # self._component_manager.event_queues["longRunningCommandResult"].put(
+        #     event
+        # )
+
+        self._component_manager.update_event("longRunningCommandResult", event)
 
     def handle_admin_mode_event(
         self, event: tango.EventType.CHANGE_EVENT
@@ -178,4 +183,5 @@ class EventReceiver:
         """Handle admin Mode change event"""
 
         if self._component_manager.is_admin_mode_enabled:
-            self._component_manager.event_queues["adminMode"].put(event)
+            self._component_manager.update_event("adminMode", event)
+            # self._component_manager.event_queues["adminMode"].put(event)

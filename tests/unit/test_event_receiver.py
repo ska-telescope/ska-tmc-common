@@ -128,4 +128,7 @@ def test_event_placed_in_queue(event_method, event_queue_key):
     method_to_call(mock_event)
 
     # Assert that the event was put into the correct queue
-    mock_event_queue.put.assert_called_once_with(mock_event)
+    # mock_event_queue.put.assert_called_once_with(mock_event)
+    component_manager.update_event.assert_called_once_with(
+        event_queue_key, mock_event
+    )
