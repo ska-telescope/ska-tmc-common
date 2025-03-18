@@ -1,11 +1,7 @@
 """Release information for Python Package"""
 
 name="""ska-tmc-common"""
-<<<<<<< HEAD
 version="0.24.10"
-=======
-version="0.24.8"
->>>>>>> parent of 6288875c (Merge branch 'sah-1670' into 'master')
 version_info=version.split(".")
 description="""SKA TMC Common"""
 author="Team NCRA"
@@ -14,10 +10,5 @@ license="""BSD-3-Clause"""
 url="""https://www.skao.int/"""
 copyright=""""""
 
-<<<<<<< HEAD
 release=0.24.10
 tag=0.24.10
-=======
-release=0.24.8
-tag=0.24.8
->>>>>>> parent of 6288875c (Merge branch 'sah-1670' into 'master')
