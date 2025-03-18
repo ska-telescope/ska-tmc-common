@@ -12,11 +12,6 @@ Main
 
 Added
 --------
-[0.24.9]
-********
-* Updated event receiver handlers to introduce queue based processing
-
-
 [0.24.8]
 ********
 * Updated SDP subarry helper device to induce error during Scan command

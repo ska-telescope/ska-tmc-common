@@ -189,7 +189,6 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         self.transitional_obsstate = transitional_obsstate
         self.command_obj = DummyCommandClass(self, self.logger)
         self._state_val = State.NORMAL
-        self.__start_event_processing_threads()
 
     @property
     def state(self) -> IntEnum:
@@ -242,14 +241,6 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
             task_callback=task_callback,
         )
         return status, msg
-
-    def __start_event_processing_threads(self) -> None:
-        """Start all the event processing threads."""
-        for attribute in self.event_queues:
-            thread = threading.Thread(
-                target=self.process_event, args=[attribute], name=attribute
-            )
-            thread.start()
 
 
 class DummyCommandClass(TmcLeafNodeCommand):
