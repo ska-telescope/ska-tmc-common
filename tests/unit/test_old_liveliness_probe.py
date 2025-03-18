@@ -1,5 +1,3 @@
-import time
-
 import pytest
 
 from ska_tmc_common import DishDeviceInfo, InputParameter, LivelinessProbeType
@@ -42,14 +40,10 @@ def test_stop_ln(dev_name, component_manager):
     cm = component_manager(
         logger=logger, _liveliness_probe=LivelinessProbeType.SINGLE_DEVICE
     )
-    cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     cm._device = device
     assert cm._device.dev_name == dev_name
+    cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     prev_obj_id = id(cm.liveliness_probe_object)
-    # It was obsereved that some times this test case fails if
-    # liveliness probe takes little extra time to start ,
-    # hence this sleep is added.
-    time.sleep(0.1)
     assert cm.liveliness_probe_object._thread.is_alive()
     cm.start_liveliness_probe(LivelinessProbeType.SINGLE_DEVICE)
     # does not start again

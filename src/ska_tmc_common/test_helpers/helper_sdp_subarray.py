@@ -14,11 +14,7 @@ from tango import AttrWriteType, DevState
 from tango.server import attribute, command, run
 
 from ska_tmc_common import FaultType
-from ska_tmc_common.test_helpers.helper_subarray_device import (
-    HelperSubArrayDevice,
-)
-
-from .constants import (
+from ska_tmc_common.test_helpers.constants import (
     ABORT,
     ASSIGN_RESOURCES,
     CONFIGURE,
@@ -26,10 +22,15 @@ from .constants import (
     END_SCAN,
     OFF,
     ON,
+    RECEIVE_ADDRESSES_LOW,
+    RECEIVE_ADDRESSES_MID,
     RELEASE_ALL_RESOURCES,
     RELEASE_RESOURCES,
     RESTART,
     SCAN,
+)
+from ska_tmc_common.test_helpers.helper_subarray_device import (
+    HelperSubArrayDevice,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,30 +49,10 @@ class HelperSdpSubarray(HelperSubArrayDevice):
         self._admin_mode: AdminMode = AdminMode.ONLINE
         # pylint: disable=line-too-long
         self.timers = []
-        self._receive_addresses = json.dumps(
-            {
-                "science_A": {
-                    "vis0": {
-                        "function": "visibilities",
-                        "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
-                        "port": [[0, 9000], [20, 9001]],
-                    }
-                },
-                "target:a": {
-                    "vis0": {
-                        "function": "visibilities",
-                        "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
-                        "port": [[0, 9000], [20, 9001]],
-                    }
-                },
-                "calibration:b": {
-                    "vis0": {
-                        "function": "visibilities",
-                        "host": [[0, "192.168.0.1"], [2000, "192.168.0.2"]],
-                        "port": [[0, 9000], [20, 9001]],
-                    }
-                },
-            }
+        self._receive_addresses = (
+            RECEIVE_ADDRESSES_LOW
+            if "low" in self.dev_name
+            else RECEIVE_ADDRESSES_MID
         )
 
         self.push_change_event("receiveAddresses", self._receive_addresses)

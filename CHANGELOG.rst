@@ -207,6 +207,9 @@ Added
 
 Fixed
 -------
+[0.24.10]
+* Fixed SKB-732 
+
 [0.24.6]
 * AdminMode command implementation on Leafnodes for SN testing
 
