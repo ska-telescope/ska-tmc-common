@@ -1,9 +1,10 @@
 import time
+from unittest.mock import MagicMock, Mock
 
 import pytest
 import tango
 from ska_tango_base.control_model import AdminMode, HealthState, ObsState
-from tango import DevState
+from tango import DevState, EventData
 
 from ska_tmc_common import (
     DeviceInfo,
@@ -24,6 +25,8 @@ from ska_tmc_common.v1.tmc_component_manager import (
 from tests.settings import (
     DUMMY_MONITORED_DEVICE,
     DUMMY_SUBARRAY_DEVICE,
+    SUBARRAY_DEVICE,
+    DummyComponentManager,
     logger,
 )
 
@@ -198,6 +201,38 @@ def test_update_device_obs_state(component_manager):
         time.time(), abs=1e-3
     )
     assert not component_manager.get_device().unresponsive
+
+
+@pytest.mark.parametrize(
+    "event_queue", ["state", "obsState", "healthState", "adminMode"]
+)
+def test_handle_event_with_error(event_queue):
+    # Initialize mocks
+    logger = Mock()
+    component_manager = DummyComponentManager(logger)
+    component_manager.add_device(SUBARRAY_DEVICE)
+
+    # Create a mock Tango EventData object with error
+    mock_event = Mock(spec=EventData)
+    mock_event.err = True
+    mock_event.errors = [
+        MagicMock(reason="ErrorReason", desc="ErrorDescription")
+    ]
+    mock_event.device.dev_name.return_value = "test/device/1"
+
+    component_manager.event_queues[event_queue].put(mock_event)
+
+    # Sleep is needed since sometimes test will fail if logger is
+    # not yet called
+    time.sleep(0.1)
+
+    logger.error.assert_called_once_with(
+        "Error occurred on %s for device: %s - %s, %s",
+        f"{event_queue}_Callback",
+        mock_event.device.dev_name(),
+        "ErrorReason",
+        "ErrorDescription",
+    )
 
 
 def test_update_device_admin_mode():
