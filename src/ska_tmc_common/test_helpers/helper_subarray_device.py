@@ -1479,7 +1479,7 @@ class HelperSubArrayDevice(SKASubarray):
         return True
 
     @command(
-        dtype_out="DevEnum",
+        dtype_out="DevVarLongStringArray",
         doc_out="(ReturnType, 'informational message')",
     )
     def Abort(self) -> Tuple[List[ResultCode], List[str]]:
@@ -1495,12 +1495,14 @@ class HelperSubArrayDevice(SKASubarray):
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
             self.push_change_event("obsState", self._obs_state)
+
             thread = threading.Timer(
                 interval=self._delay,
                 function=self.update_device_obsstate,
                 args=[ObsState.ABORTED, ABORT],
             )
             thread.start()
+
             thread = threading.Timer(
                 self._delay,
                 self.push_command_result,
@@ -1508,7 +1510,6 @@ class HelperSubArrayDevice(SKASubarray):
                 kwargs={"command_id": command_id},
             )
             thread.start()
-        self.logger.info("Abort command completed.")
         return [ResultCode.QUEUED], [command_id]
 
     def is_SetAdminMode_allowed(self) -> bool:
