@@ -142,8 +142,9 @@ class HelperMCCSController(HelperBaseDevice):
         mccs_subarray_proxy = dev_factory.get_device(mccs_subarray_device_name)
         mccs_subarray_proxy.AssignResources(argin)
 
-        thread = threading.Thread(
-            target=self.push_command_result,
+        thread = threading.Timer(
+            30,
+            function=self.push_command_result,
             args=[ResultCode.OK, "Allocate"],
             kwargs={
                 "command_id": command_id,
