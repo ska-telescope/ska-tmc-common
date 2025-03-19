@@ -724,6 +724,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
                 # Create a new queue if it does not exist
                 self.event_queues[event_type] = Queue()
             self.event_queues[event_type].put(event)
+        self.logger.info("Event Updated")
 
     def process_event(self, attribute_name: str) -> None:
         """Process the given attribute's event using the data from the
@@ -771,15 +772,21 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         #     except Exception as exception:  # pylint: disable=broad-except
         #         self.logger.error(exception)
         # self.logger.debug("Process event thread stopped")
+        self.logger.info("Process started for %s", attribute_name)
 
         while not self._stop_thread:
             try:
                 event_data = self.event_queues[attribute_name].get(
                     block=True, timeout=0.1
                 )
+                self.logger.info("%s", event_data)
                 if not self.check_event_error(
                     event_data, f"{attribute_name}_Callback"
                 ):
+                    self.logger.info(
+                        "using %s",
+                        self.event_processing_methods[attribute_name],
+                    )
                     self.event_processing_methods[attribute_name](
                         event_data.attr_value.value,
                     )
