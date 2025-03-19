@@ -68,6 +68,8 @@ class CommandCallbackTracker:
         """If exception is received immediately after command invoked
         then call update exception
         """
+        self.logger.info("Command id: %s", self.command_id)
+        self.logger.info("Command data: %s", self.lrcr_callback.command_data)
         exception_message = self.lrcr_callback.command_data.get(
             self.command_id, {}
         ).get("exception_message", "")
