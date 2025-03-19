@@ -388,34 +388,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 self.logger.error(exception)
         self.logger.debug("Process event thread stopped")
 
-    def check_event_error(self, event: tango.EventData, callback: str):
-        """Method for checking event error."""
-        if event.err:
-            error = event.errors[0]
-            self.logger.error(
-                "Error occurred on %s for device: %s - %s, %s",
-                callback,
-                event.device.dev_name(),
-                error.reason,
-                error.desc,
-            )
-
-            if hasattr(self, "update_event_failure"):
-                update_event_failure_method = getattr(
-                    self, "update_event_failure"
-                )
-                if callable(update_event_failure_method):
-                    # If callable, execute the method
-                    update_event_failure_method(event.device.dev_name())
-                else:
-                    # Log error if method is not callable or not found
-                    self.logger.error(
-                        "The attribute 'update_event_failure' is "
-                        "either not defined or not callable. "
-                    )
-            return True
-        return False
-
 
 class TmcComponentManager(BaseTmcComponentManager):
     """
@@ -617,6 +589,34 @@ class TmcComponentManager(BaseTmcComponentManager):
             a subclass!"
         )
 
+    def check_event_error(self, event: tango.EventData, callback: str):
+        """Method for checking event error."""
+        if event.err:
+            error = event.errors[0]
+            self.logger.error(
+                "Error occurred on %s for device: %s - %s, %s",
+                callback,
+                event.device.dev_name(),
+                error.reason,
+                error.desc,
+            )
+
+            if hasattr(self, "update_event_failure"):
+                update_event_failure_method = getattr(
+                    self, "update_event_failure"
+                )
+                if callable(update_event_failure_method):
+                    # If callable, execute the method
+                    update_event_failure_method(event.device.dev_name())
+                else:
+                    # Log error if method is not callable or not found
+                    self.logger.error(
+                        "The attribute 'update_event_failure' is "
+                        "either not defined or not callable. "
+                    )
+            return True
+        return False
+
 
 class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     """
@@ -687,17 +687,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         with self.lock:
             self._device = device_info
-
-    def update_event_failure(self, device_name: str) -> None:
-        """
-        Update a monitored device failure status
-
-        :param device_name: name of the device
-        :type device_name: str
-        """
-        with self.lock:
-            self._device.last_event_arrived = time.time()
-            # self._device.update_unresponsive(False)
 
     def update_device_health_state(
         self, device_name: str, health_state: HealthState
@@ -775,3 +764,31 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             dev_info: DeviceInfo = self.get_device()
             dev_info.update_unresponsive(False, "")
+
+    def check_event_error(self, event: tango.EventData, callback: str):
+        """Method for checking event error."""
+        if event.err:
+            error = event.errors[0]
+            self.logger.error(
+                "Error occurred on %s for device: %s - %s, %s",
+                callback,
+                event.device.dev_name(),
+                error.reason,
+                error.desc,
+            )
+
+            if hasattr(self, "update_event_failure"):
+                update_event_failure_method = getattr(
+                    self, "update_event_failure"
+                )
+                if callable(update_event_failure_method):
+                    # If callable, execute the method
+                    update_event_failure_method()
+                else:
+                    # Log error if method is not callable or not found
+                    self.logger.error(
+                        "The attribute 'update_event_failure' is "
+                        "either not defined or not callable. "
+                    )
+            return True
+        return False
