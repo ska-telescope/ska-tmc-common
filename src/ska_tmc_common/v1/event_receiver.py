@@ -126,7 +126,7 @@ class EventReceiver:
             )
         else:
             try:
-                for attribute in attribute_dictionary.items():
+                for attribute in attribute_dictionary:
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
