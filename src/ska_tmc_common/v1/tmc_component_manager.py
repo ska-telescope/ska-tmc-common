@@ -11,7 +11,7 @@ import json
 import threading
 import time
 from logging import Logger
-from queue import Empty  # , Queue
+from queue import Empty, Queue
 from typing import Callable, Optional, Union
 
 import tango
@@ -712,9 +712,17 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             dev_info: DeviceInfo = self.get_device()
             dev_info.update_unresponsive(False, "")
 
+    # def update_event(self, event_type, event):
+    #     """Updates event in respective queue"""
+    #     with self.event_lock:
+    #         self.event_queues[event_type].put(event)
+
     def update_event(self, event_type, event):
         """Updates event in respective queue"""
         with self.event_lock:
+            if event_type not in self.event_queues:
+                # Create a new queue if it does not exist
+                self.event_queues[event_type] = Queue()
             self.event_queues[event_type].put(event)
 
     def process_event(self, attribute_name: str) -> None:
