@@ -186,7 +186,7 @@ class EventReceiver:
         """Submit event to callback for processing
         thus making tango bus free for next event handling"""
         with self.event_lock:
-            self.logger.info(
+            self._logger.info(
                 "Received  event : %s, ",
                 event,
             )
