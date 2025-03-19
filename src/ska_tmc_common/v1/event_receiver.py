@@ -52,6 +52,7 @@ class EventReceiver:
             "obsState": self.handle_obs_state_event,
             "adminMode": self.handle_admin_mode_event,
         }
+        self.event_lock = threading._RLock()
 
     def start(self) -> None:
         """
@@ -125,14 +126,14 @@ class EventReceiver:
             )
         else:
             try:
-                for attribute, callable_value in attribute_dictionary.items():
+                for attribute in attribute_dictionary.items():
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,
-                        callable_value,
+                        self.handle_event,
                         stateless=True,
                     )
                     self.stop()
@@ -180,3 +181,10 @@ class EventReceiver:
 
         if self._component_manager.is_admin_mode_enabled:
             self._component_manager.update_event("adminMode", event)
+
+    def handle_event(self, event: tango.EventType.CHANGE_EVENT) -> None:
+        """Submit event to callback for processing
+        thus making tango bus free for next event handling"""
+        with self.event_lock:
+            attr_name = event.attr_name.split("/")[-1]
+            self._component_manager.update_event(attr_name, event)
