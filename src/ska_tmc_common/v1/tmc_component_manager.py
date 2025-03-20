@@ -136,22 +136,15 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self._device = None
         self.event_queues = {}
         self._stop_thread: bool = False
-        # self.event_queues: Dict[str, Queue] = {
-        #     "obsState": Queue(),
-        #     "longRunningCommandResult": Queue(),
-        #     "adminMode": Queue(),
-        #     "healthState": Queue(),
-        #     "state": Queue(),
-        # }
-        # self.event_processing_methods: Dict[
-        #     str, Callable[[str, Any], None]
-        # ] = {
-        #     "healthState": "update_device_health_state",
-        #     "state": "update_device_state",
-        #     "adminMode": "update_device_admin_mode",
-        #     "obsState": "update_device_obs_state",
-        #     "longRunningCommandResult": "update_command_result",
-        # }
+        self.attribute_name_mapping = {
+            "obsstate": "obsState",
+            "adminmode": "adminMode",
+            "longrunningcommandresult": "longRunningCommandResult",
+            "dishvccconfig": "dishVccConfig",
+            "sourcedishvccconfig": "sourceDishVccConfig",
+            "state": "state",
+            "healthstate": "healthState",
+        }
 
     @property
     def command_id(self) -> str:
@@ -724,8 +717,10 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.event_lock:
             if event_type not in self.event_queues:
                 # Create a new queue if it does not exist
-                self.event_queues[event_type] = Queue()
-            self.event_queues[event_type].put(event)
+
+                queue_name = self.attribute_name_mapping[event_type]
+                self.event_queues[queue_name] = Queue()
+            self.event_queues[queue_name].put(event)
 
     def process_event(self, attribute_name: str) -> None:
         """Process the given attribute's event using the data from the
