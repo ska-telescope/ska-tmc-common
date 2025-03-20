@@ -15,7 +15,7 @@ from queue import Empty, Queue
 from typing import Callable, Optional, Union
 
 import tango
-from ska_tango_base.control_model import AdminMode, HealthState  # , ObsState
+from ska_tango_base.control_model import AdminMode, HealthState
 from ska_tango_base.executor import TaskExecutorComponentManager
 
 from ska_tmc_common.device_info import (
@@ -648,6 +648,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         :type health_state: HealthState
         """
         with self.lock:
+            self.logger.info("update_device_health_state invoked")
             self._device.health_state = health_state
             self._device.last_event_arrived = time.time()
 
@@ -661,25 +662,9 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         :type state: DevState
         """
         with self.lock:
+            self.logger.info("update_device_state invoked")
             self._device.state = state
             self._device.last_event_arrived = time.time()
-
-    # def update_device_obs_state(
-    #     self, device_name: str, obs_state: ObsState
-    # ) -> None:
-    #     """
-    #     Update a monitored device obs state,
-    #     and call the relative callbacks if available
-    #
-    #     :param device_name: name of the device
-    #     :type device_name: str
-    #     :param obs_state: obs state of the device
-    #     :type obs_state: ObsState
-    #     """
-    #     with self.lock:
-    #         self._device.obs_state = obs_state
-    #         self._device.last_event_arrived = time.time()
-    #         # self._device.update_unresponsive(False)
 
     def update_exception_for_unresponsiveness(
         self, device_info: DeviceInfo, exception: str
@@ -732,42 +717,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
 
         """
-        # while not self._stop_thread:
-        #     try:
-        #         event_data = self.event_queues[attribute_name].get(
-        #             block=True, timeout=0.1
-        #         )
-        #         if not self.check_event_error(
-        #             event_data, f"{attribute_name}_Callback"
-        #         ):
-        #           method_name = self.event_processing_methods[attribute_name]
-        #             if hasattr(
-        #                 self, self.event_processing_methods[attribute_name]
-        #             ):
-        #                 method = getattr(self, method_name)
-        #                 method(
-        #                     event_data.device.dev_name(),
-        #                     event_data.attr_value.value,
-        #                 )
-        #             else:
-        #                 self.logger.error(
-        #                     "Method %s not found in the current class"
-        #                     " or child class.",
-        #                     method_name,
-        #                 )
-        #     except Empty:
-        #         # If an empty exception is raised by the Queue, we can
-        #         # safely ignore it.
-        #         pass
-        #     except KeyError as key_error:
-        #         # Handling missing keys in the event processing dictionary
-        #         self.logger.error(f"Key error: {key_error} ")
-        #     except AttributeError as attr_error:
-        #         # Handling issues with dynamic method resolution
-        #         self.logger.error(f"Attribute error: {attr_error} ")
-        #     except Exception as exception:  # pylint: disable=broad-except
-        #         self.logger.error(exception)
-        # self.logger.debug("Process event thread stopped")
+
         self.logger.info("Process started for %s", attribute_name)
 
         while not self._stop_thread:
@@ -775,14 +725,11 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
                 event_data = self.event_queues[attribute_name].get(
                     block=True, timeout=0.1
                 )
-                self.logger.info("%s", event_data)
+
                 if not self.check_event_error(
                     event_data, f"{attribute_name}_Callback"
                 ):
-                    self.logger.info(
-                        "using %s",
-                        self.event_processing_methods[attribute_name],
-                    )
+
                     self.event_processing_methods[attribute_name](
                         event_data.attr_value.value,
                     )
