@@ -189,7 +189,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         self.transitional_obsstate = transitional_obsstate
         self.command_obj = DummyCommandClass(self, self.logger)
         self._state_val = State.NORMAL
-        self.__start_event_processing_threads()
+        self.event_processing_methods = self.get_attribute_dict()
 
     @property
     def state(self) -> IntEnum:
@@ -243,13 +243,27 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
         )
         return status, msg
 
-    def __start_event_processing_threads(self) -> None:
-        """Start all the event processing threads."""
-        for attribute in self.event_queues:
-            thread = threading.Thread(
-                target=self.process_event, args=[attribute], name=attribute
-            )
-            thread.start()
+    def get_attribute_dict(self) -> dict:
+        """
+        :return: Dictionary of attributes to be handled by the EventReceiver.
+        """
+        attributes = {
+            "obsState": self.update_device_obs_state,
+            "state": self.update_device_state,
+            "adminMode": self.update_device_admin_mode,
+        }
+        return {**attributes}
+
+    def update_device_obs_state(self, obs_state: ObsState) -> None:
+        """
+        Update a monitored device obs state,
+        and call the relative callbacks if available
+        :param obs_state: obs state of the device
+        :type obs_state: ObsState
+        """
+        with self.rlock:
+            dev_info = self.get_device()
+            dev_info.obs_state = obs_state
 
 
 class DummyCommandClass(TmcLeafNodeCommand):
