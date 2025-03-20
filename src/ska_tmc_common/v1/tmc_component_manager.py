@@ -11,7 +11,7 @@ import json
 import threading
 import time
 from logging import Logger
-from queue import Empty, Queue
+from queue import Empty
 from typing import Callable, Optional, Union
 
 import tango
@@ -720,11 +720,15 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def update_event(self, event_type, event):
         """Updates event in respective queue"""
         with self.event_lock:
-            if event_type not in self.event_queues:
-                # Create a new queue if it does not exist
-                self.event_queues[event_type] = Queue()
+            # if event_type not in self.event_queues:
+            #     # Create a new queue if it does not exist
+            #     self.event_queues[event_type] = Queue()
             self.event_queues[event_type].put(event)
-        self.logger.info("Event Updated")
+        self.logger.info(
+            "Event Updated for %s on %s",
+            event_type,
+            self.event_queues[event_type],
+        )
 
     def process_event(self, attribute_name: str) -> None:
         """Process the given attribute's event using the data from the
