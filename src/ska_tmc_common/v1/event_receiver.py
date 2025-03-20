@@ -190,5 +190,8 @@ class EventReceiver:
                 "Received  event : %s, ",
                 event,
             )
+
             attr_name = event.attr_name.split("/")[-1]
+            if "#dbase=no" in attr_name:
+                attr_name = attr_name.split("#")[0]
             self._component_manager.update_event(attr_name, event)

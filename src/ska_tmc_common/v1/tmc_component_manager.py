@@ -11,7 +11,7 @@ import json
 import threading
 import time
 from logging import Logger
-from queue import Empty
+from queue import Empty, Queue
 from typing import Callable, Optional, Union
 
 import tango
@@ -610,6 +610,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
             kwargs,
         )
         self._device = None
+        self.event_processing_methods = {}
 
     def reset(self) -> None:
         """
@@ -719,16 +720,12 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def update_event(self, event_type, event):
         """Updates event in respective queue"""
+        self.logger.info("event_type  %s in %s", event_type, event)
         with self.event_lock:
-            # if event_type not in self.event_queues:
-            #     # Create a new queue if it does not exist
-            #     self.event_queues[event_type] = Queue()
+            if event_type not in self.event_queues:
+                # Create a new queue if it does not exist
+                self.event_queues[event_type] = Queue()
             self.event_queues[event_type].put(event)
-        self.logger.info(
-            "Event Updated for %s on %s",
-            event_type,
-            self.event_queues[event_type],
-        )
 
     def process_event(self, attribute_name: str) -> None:
         """Process the given attribute's event using the data from the
@@ -829,3 +826,12 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
                     )
             return True
         return False
+
+    def start_event_processing_threads(self) -> None:
+        """Start all the event processing threads."""
+        self.logger.info("Starting event proessing q- %s", self.event_queues)
+        for attribute in self.event_processing_methods:
+            thread = threading.Thread(
+                target=self.process_event, args=[attribute], name=attribute
+            )
+            thread.start()
