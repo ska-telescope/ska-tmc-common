@@ -207,6 +207,9 @@ Added
 
 Fixed
 -------
+[0.24.11]
+* Delay provided to allocate command of MCCS Master Leaf Node
+
 [0.24.10]
 * Fixed SKB-732 
 
