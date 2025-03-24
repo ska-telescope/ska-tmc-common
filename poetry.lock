@@ -2092,13 +2092,13 @@ reference = "ska-nexus"
 
 [[package]]
 name = "ska-tango-base"
-version = "1.3.1"
+version = "1.2.0"
 description = "SKA Tango base classes"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ska_tango_base-1.3.1-py3-none-any.whl", hash = "sha256:ed2fb67e53991fe454f0ad4b41a5bc49533ff55d069af959b02cfbfc17f78271"},
-    {file = "ska_tango_base-1.3.1.tar.gz", hash = "sha256:a426fcb7bf80339a29cb42b3aa361b21b22f31be26ca4c2e191089c23fb1f299"},
+    {file = "ska_tango_base-1.2.0-py3-none-any.whl", hash = "sha256:4e2e9721e3df890406ce129b5fdb4329e7a08cc8d491baa5f748a7b164f6b9b1"},
+    {file = "ska_tango_base-1.2.0.tar.gz", hash = "sha256:f9b46ee7d2632444e9ecd6000d653dd448e06974ed8270cf9ad726367df9fd26"},
 ]
 
 [package.dependencies]
@@ -2113,9 +2113,6 @@ pytango = ">=9.4.2,<11.0.0"
 ska-control-model = ">=1.0.0,<2.0.0"
 ska-ser-logging = ">=0.4.3,<0.5.0"
 transitions = ">=0.9.0,<0.10.0"
-
-[package.extras]
-telemetry = ["opentelemetry-exporter-otlp (>=1.29.0)", "opentelemetry-sdk (>=1.29.0)"]
 
 [package.source]
 type = "legacy"
@@ -2658,4 +2655,4 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4d31e8900a97013cdede57161c5dcfcce8e6d6759cf748372eb8599fbecbe801"
+content-hash = "a67f1fed0b57b7cf667f5cee2248b308bd4059a188bba088b8e4050732e1481b"
