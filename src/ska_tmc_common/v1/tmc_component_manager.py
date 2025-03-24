@@ -696,16 +696,45 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     #     with self.event_lock:
     #         self.event_queues[event_type].put(event)
 
-    def update_event(self, event_type, event):
-        """Updates event in respective queue"""
-        self.logger.info("event_type  %s in %s", event_type, event)
-        with self.event_lock:
-            if event_type not in self.event_queues:
-                # Create a new queue if it does not exist
+    # def update_event(self, event_type, event):
+    #     """Updates event in respective queue"""
+    #     self.logger.info("event_type  %s in %s", event_type, event)
+    #     with self.event_lock:
+    #         if event_type not in self.event_queues:
+    #             # Create a new queue if it does not exist
+    #
+    #             queue_name = self.attribute_name_mapping[event_type]
+    #             self.event_queues[queue_name] = Queue()
+    #     self.event_queues[queue_name].put(event)
 
-                queue_name = self.attribute_name_mapping[event_type]
-                self.event_queues[queue_name] = Queue()
-        self.event_queues[queue_name].put(event)
+    def update_health_state_event(self, event: tango.EventData):
+        """Updates health state event  in respective queue"""
+        self.event_queues["healthState"].put(event)
+
+    def update_state_event(self, event: tango.EventData):
+        """Updates state event  in respective queue"""
+        self.logger.info("Updating state queue")
+        self.event_queues["state"].put(event)
+
+    def update_obs_state_event(self, event: tango.EventData):
+        """Updates obsState event  in respective queue"""
+        self.event_queues["obsState"].put(event)
+
+    def update_command_result_event(self, event: tango.EventData):
+        """Updates longRunningCommandResult event  in respective queue"""
+        self.event_queues["longRunningCommandResult"].put(event)
+
+    def update_admin_mode_event(self, event: tango.EventData):
+        """Updates adminMode event  in respective queue"""
+        self.event_queues["adminMode"].put(event)
+
+    def update_dishvcc_config_event(self, event: tango.EventData):
+        """Updates dishVccConfig event  in respective queue"""
+        self.event_queues["dishVccConfig"].put(event)
+
+    def update_source_dishvcc_config_event(self, event: tango.EventData):
+        """Updates sourceDishVccConfig event  in respective queue"""
+        self.event_queues["sourceDishVccConfig"].put(event)
 
     def process_event(self, attribute_name: str) -> None:
         """Process the given attribute's event using the data from the
@@ -771,8 +800,9 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def start_event_processing_threads(self) -> None:
         """Start all the event processing threads."""
-        self.logger.info("Starting event proessing q- %s", self.event_queues)
+
         for attribute in self.event_processing_methods:
+            self.event_queues[attribute] = Queue()
             thread = threading.Thread(
                 target=self.process_event, args=[attribute], name=attribute
             )

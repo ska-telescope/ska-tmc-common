@@ -48,7 +48,14 @@ class EventReceiver:
             "state",
             "healthState",
         ]
-        # self.event_lock = threading._RLock()
+        self.event_handling_methods: dict[str, Callable] = {
+            "state": self.handle_state_event,
+            "healthState": self.handle_health_state_event,
+            "obsState": self.handle_obs_state_event,
+            "adminMode": self.handle_admin_mode_event,
+            "dishVccConfig": self.handle_dishvcc_event,
+            "sourceDishVccConfig": self.handle_source_dishvcc_config_event,
+        }
 
     def start(self) -> None:
         """
@@ -128,10 +135,11 @@ class EventReceiver:
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
+                    handle_event = self.event_handling_methods["attribute"]
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,
-                        self.handle_event,
+                        handle_event,
                         stateless=True,
                     )
                     self.stop()
@@ -143,12 +151,56 @@ class EventReceiver:
                     exception,
                 )
 
-    def handle_event(self, event: tango.EventType.CHANGE_EVENT) -> None:
-        """Submit event to callback for processing
-        thus making tango bus free for next event handling"""
-        # with self.event_lock:
+    def handle_health_state_event(self, event: tango.EventData) -> None:
+        """Submit healthState event to callback for processing thus making
+        tango bus free for next event handling"""
 
-        attr_name = event.attr_name.split("/")[-1]
-        if "#dbase=no" in attr_name:
-            attr_name = attr_name.split("#")[0]
-        self._component_manager.update_event(attr_name, event)
+        self._component_manager.update_health_state_event(event)
+
+    def handle_state_event(self, event: tango.EventData) -> None:
+        """Submit state event to callback for processing thus making
+        tango bus free for next event handling"""
+
+        self._component_manager.update_state_event(event)
+
+    def handle_obs_state_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit obsState event to callback for processing thus making
+        tango bus free for next event handling"""
+
+        self._component_manager.update_obs_state_event(event)
+
+    def handle_command_result_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit longRunningCommandResult event to callback for processing
+        thus making tango bus free for next event handling"""
+
+        self._component_manager.update_command_result_event(event)
+
+    def handle_admin_mode_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit adminMode event to callback for processing thus making
+        tango bus free for next event handling"""
+
+        if self._component_manager.is_admin_mode_enabled:
+            self._component_manager.update_admin_mode_event(event)
+
+    def handle_dishvcc_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit dishVccConfig event to callback for processing thus making
+        tango bus free for next event handling"""
+
+        self._component_manager.update_dishvcc_config_event(event)
+
+    def handle_source_dishvcc_config_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit sourceDishVccConfig event to callback for
+        processing thus making
+        tango bus free for next event handling"""
+
+        self._component_manager.update_source_dishvcc_config_event(event)
