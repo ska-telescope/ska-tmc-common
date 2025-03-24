@@ -117,7 +117,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
         self.rlock = threading._RLock()
-        # self.event_lock = threading._RLock()
+        self.event_lock = threading._RLock()
         if self.event_receiver:
             evt_sub_check_period = event_subscription_check_period
             self.event_receiver_object = EventReceiver(
@@ -699,12 +699,12 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
     def update_event(self, event_type, event):
         """Updates event in respective queue"""
         self.logger.info("event_type  %s in %s", event_type, event)
-        # with self.event_lock:
-        if event_type not in self.event_queues:
-            # Create a new queue if it does not exist
+        with self.event_lock:
+            if event_type not in self.event_queues:
+                # Create a new queue if it does not exist
 
-            queue_name = self.attribute_name_mapping[event_type]
-            self.event_queues[queue_name] = Queue()
+                queue_name = self.attribute_name_mapping[event_type]
+                self.event_queues[queue_name] = Queue()
         self.event_queues[queue_name].put(event)
 
     def process_event(self, attribute_name: str) -> None:
