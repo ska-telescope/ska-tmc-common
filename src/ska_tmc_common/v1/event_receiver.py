@@ -135,7 +135,7 @@ class EventReceiver:
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
-                    handle_event = self.event_handling_methods["attribute"]
+                    handle_event = self.event_handling_methods[attribute]
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,
