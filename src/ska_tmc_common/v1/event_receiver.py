@@ -48,7 +48,7 @@ class EventReceiver:
             "state",
             "healthState",
         ]
-        self.event_lock = threading._RLock()
+        # self.event_lock = threading._RLock()
 
     def start(self) -> None:
         """
@@ -146,9 +146,9 @@ class EventReceiver:
     def handle_event(self, event: tango.EventType.CHANGE_EVENT) -> None:
         """Submit event to callback for processing
         thus making tango bus free for next event handling"""
-        with self.event_lock:
+        # with self.event_lock:
 
-            attr_name = event.attr_name.split("/")[-1]
-            if "#dbase=no" in attr_name:
-                attr_name = attr_name.split("#")[0]
-            self._component_manager.update_event(attr_name, event)
+        attr_name = event.attr_name.split("/")[-1]
+        if "#dbase=no" in attr_name:
+            attr_name = attr_name.split("#")[0]
+        self._component_manager.update_event(attr_name, event)
