@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.25.0]
+********
+* Updated ska-tango-base to v1.2.0
+
 [0.24.8]
 ********
 * Updated SDP subarry helper device to induce error during Scan command

@@ -111,13 +111,13 @@ reference = "PyPI-public"
 
 [[package]]
 name = "astropy-iers-data"
-version = "0.2025.3.10.0.29.26"
+version = "0.2025.3.24.0.35.32"
 description = "IERS Earth Rotation and Leap Second tables for the astropy core package"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "astropy_iers_data-0.2025.3.10.0.29.26-py3-none-any.whl", hash = "sha256:0f8b9447268ac0e22f7af8627ca19d0300ffc20ba88a2a5a4dda366241faada5"},
-    {file = "astropy_iers_data-0.2025.3.10.0.29.26.tar.gz", hash = "sha256:dd4865861f00dec8a442ef8135f034675a7b05f17846562e2ea71678f5dbaa97"},
+    {file = "astropy_iers_data-0.2025.3.24.0.35.32-py3-none-any.whl", hash = "sha256:a9eb0c46a19d055dac53fdb99d91d0117ec5ccfd0033ff0ffcfcac4d4a44a677"},
+    {file = "astropy_iers_data-0.2025.3.24.0.35.32.tar.gz", hash = "sha256:4c01603b92800b5a89a2a7418b3f84d66fef3334e8e5af2ec726510db6e1b384"},
 ]
 
 [package.extras]
@@ -607,13 +607,13 @@ reference = "PyPI-public"
 
 [[package]]
 name = "filelock"
-version = "3.17.0"
+version = "3.18.0"
 description = "A platform independent file lock."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "filelock-3.17.0-py3-none-any.whl", hash = "sha256:533dc2f7ba78dc2f0f531fc6c4940addf7b70a481e269a5a3b93be94ffbe8338"},
-    {file = "filelock-3.17.0.tar.gz", hash = "sha256:ee4e77401ef576ebb38cd7f13b9b28893194acc20a8e68e18730ba9c0e54660e"},
+    {file = "filelock-3.18.0-py3-none-any.whl", hash = "sha256:c401f4f8377c4464e6db25fff06205fd89bdd83b65eb0488ed1b160f780e21de"},
+    {file = "filelock-3.18.0.tar.gz", hash = "sha256:adbc88eabb99d2fec8c9c1b229b171f18afa655400173ddc653d5d01501fb9f2"},
 ]
 
 [package.extras]
@@ -805,13 +805,13 @@ reference = "PyPI-public"
 
 [[package]]
 name = "iniconfig"
-version = "2.0.0"
+version = "2.1.0"
 description = "brain-dead simple config-ini parsing"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
-    {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
+    {file = "iniconfig-2.1.0-py3-none-any.whl", hash = "sha256:9deba5723312380e77435581c6bf4935c94cbfab9b1ed33ef8d238ea168eb760"},
+    {file = "iniconfig-2.1.0.tar.gz", hash = "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7"},
 ]
 
 [package.source]
@@ -1234,19 +1234,19 @@ reference = "PyPI-public"
 
 [[package]]
 name = "platformdirs"
-version = "4.3.6"
+version = "4.3.7"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "platformdirs-4.3.6-py3-none-any.whl", hash = "sha256:73e575e1408ab8103900836b97580d5307456908a03e92031bab39e4554cc3fb"},
-    {file = "platformdirs-4.3.6.tar.gz", hash = "sha256:357fb2acbc885b0419afd3ce3ed34564c13c9b95c89360cd9563f73aa5e2b907"},
+    {file = "platformdirs-4.3.7-py3-none-any.whl", hash = "sha256:a03875334331946f13c549dbd8f4bac7a13a50a895a0eb1e8c6a8ace80d40a94"},
+    {file = "platformdirs-4.3.7.tar.gz", hash = "sha256:eb437d586b6a0986388f0d6f74aa0cde27b48d0e3d66843640bfb6bdcdb6e351"},
 ]
 
 [package.extras]
-docs = ["furo (>=2024.8.6)", "proselint (>=0.14)", "sphinx (>=8.0.2)", "sphinx-autodoc-typehints (>=2.4)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=8.3.2)", "pytest-cov (>=5)", "pytest-mock (>=3.14)"]
-type = ["mypy (>=1.11.2)"]
+docs = ["furo (>=2024.8.6)", "proselint (>=0.14)", "sphinx (>=8.1.3)", "sphinx-autodoc-typehints (>=3)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=8.3.4)", "pytest-cov (>=6)", "pytest-mock (>=3.14)"]
+type = ["mypy (>=1.14.1)"]
 
 [package.source]
 type = "legacy"
@@ -2092,13 +2092,13 @@ reference = "ska-nexus"
 
 [[package]]
 name = "ska-tango-base"
-version = "1.2.0"
+version = "1.3.1"
 description = "SKA Tango base classes"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ska_tango_base-1.2.0-py3-none-any.whl", hash = "sha256:4e2e9721e3df890406ce129b5fdb4329e7a08cc8d491baa5f748a7b164f6b9b1"},
-    {file = "ska_tango_base-1.2.0.tar.gz", hash = "sha256:f9b46ee7d2632444e9ecd6000d653dd448e06974ed8270cf9ad726367df9fd26"},
+    {file = "ska_tango_base-1.3.1-py3-none-any.whl", hash = "sha256:ed2fb67e53991fe454f0ad4b41a5bc49533ff55d069af959b02cfbfc17f78271"},
+    {file = "ska_tango_base-1.3.1.tar.gz", hash = "sha256:a426fcb7bf80339a29cb42b3aa361b21b22f31be26ca4c2e191089c23fb1f299"},
 ]
 
 [package.dependencies]
@@ -2113,6 +2113,9 @@ pytango = ">=9.4.2,<11.0.0"
 ska-control-model = ">=1.0.0,<2.0.0"
 ska-ser-logging = ">=0.4.3,<0.5.0"
 transitions = ">=0.9.0,<0.10.0"
+
+[package.extras]
+telemetry = ["opentelemetry-exporter-otlp (>=1.29.0)", "opentelemetry-sdk (>=1.29.0)"]
 
 [package.source]
 type = "legacy"
@@ -2141,19 +2144,20 @@ reference = "ska-nexus"
 
 [[package]]
 name = "ska-telmodel"
-version = "1.20.0"
+version = "1.20.1"
 description = "SKA telescope model library"
 optional = false
 python-versions = ">=3.10.0,<4.0.0"
 files = [
-    {file = "ska_telmodel-1.20.0-py3-none-any.whl", hash = "sha256:cc4894c720d9fd2cb653a584055b5f77d5ef315db496bac0228ac88f9158d63e"},
-    {file = "ska_telmodel-1.20.0.tar.gz", hash = "sha256:9001260c518d2bca802dcea1b1ae242cc169d51e6cf15a5e39e83b1d536bab63"},
+    {file = "ska_telmodel-1.20.1-py3-none-any.whl", hash = "sha256:8258d74d5c75e0fdaad8802d3ce44bb80329a0cb1af69ab6963664546698382a"},
+    {file = "ska_telmodel-1.20.1.tar.gz", hash = "sha256:72edc7b9bfc0834835531afbce265ddc3fbeb4610c82faf9007f0f1e583d8a50"},
 ]
 
 [package.dependencies]
 appdirs = ">=1.4.4,<2.0.0"
 filelock = ">=3.15.4,<4.0.0"
 gitpython = ">=3.1.41,<4.0.0"
+jsonschema = ">=4.0.0,<5.0.0"
 overrides = ">=7.7.0"
 prettytable = ">=3.11.0,<4.0.0"
 python-gitlab = ">=3.8.0,<4.0.0"
@@ -2654,4 +2658,4 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a67f1fed0b57b7cf667f5cee2248b308bd4059a188bba088b8e4050732e1481b"
+content-hash = "4d31e8900a97013cdede57161c5dcfcce8e6d6759cf748372eb8599fbecbe801"
