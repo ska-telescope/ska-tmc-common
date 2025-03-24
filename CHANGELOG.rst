@@ -12,10 +12,13 @@ Main
 
 Added
 --------
+[0.25.0]
+********
+* Updated ska-tango-base to v1.2.0
+
 [0.24.9]
 ********
 * Updated event receiver handlers to introduce queue based processing
-
 
 [0.24.8]
 ********
