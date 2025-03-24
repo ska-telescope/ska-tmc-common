@@ -267,3 +267,35 @@ def test_sdp_receive_addresses(tango_context, json_factory):
     receive_addr = json_factory("ReceiveAddresses_mid")
     sdp_subarray_device.SetDirectreceiveAddresses(receive_addr)
     assert sdp_subarray_device.receiveAddresses == receive_addr
+
+
+def test_sdp_low_receive_address(sdp_subarray_low):
+    """Test to verify number of items in the port key"""
+    low_sdp_subarray = sdp_subarray_low
+    receive_addresses_value = json.loads(low_sdp_subarray.receiveAddresses)
+    assert len(receive_addresses_value["science_A"]["vis0"]["port"][0]) == 3
+    assert len(receive_addresses_value["science_A"]["vis0"]["port"][1]) == 3
+    assert len(receive_addresses_value["target:a"]["vis0"]["port"][0]) == 3
+    assert len(receive_addresses_value["target:a"]["vis0"]["port"][1]) == 3
+    assert (
+        len(receive_addresses_value["calibration:b"]["vis0"]["port"][0]) == 3
+    )
+    assert (
+        len(receive_addresses_value["calibration:b"]["vis0"]["port"][1]) == 3
+    )
+
+
+def test_sdp_mid_receive_address(sdp_subarray_mid):
+    """Test to verify number of items in the port key"""
+    low_sdp_subarray = sdp_subarray_mid
+    receive_addresses_value = json.loads(low_sdp_subarray.receiveAddresses)
+    assert len(receive_addresses_value["science_A"]["vis0"]["port"][0]) == 2
+    assert len(receive_addresses_value["science_A"]["vis0"]["port"][1]) == 2
+    assert len(receive_addresses_value["target:a"]["vis0"]["port"][0]) == 2
+    assert len(receive_addresses_value["target:a"]["vis0"]["port"][1]) == 2
+    assert (
+        len(receive_addresses_value["calibration:b"]["vis0"]["port"][0]) == 2
+    )
+    assert (
+        len(receive_addresses_value["calibration:b"]["vis0"]["port"][1]) == 2
+    )

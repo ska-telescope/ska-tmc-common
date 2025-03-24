@@ -16,6 +16,10 @@ Added
 ********
 * Updated ska-tango-base to v1.2.0
 
+[0.24.9]
+********
+* Updated event receiver handlers to introduce queue based processing
+
 [0.24.8]
 ********
 * Updated SDP subarry helper device to induce error during Scan command
@@ -206,6 +210,9 @@ Added
 
 Fixed
 -------
+[0.24.10]
+* Fixed SKB-732 
+
 [0.24.6]
 * AdminMode command implementation on Leafnodes for SN testing
 

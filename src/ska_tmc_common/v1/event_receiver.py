@@ -9,7 +9,6 @@ from time import sleep
 from typing import Callable, Optional
 
 import tango
-from ska_control_model import AdminMode
 
 from ska_tmc_common.dev_factory import DevFactory
 from ska_tmc_common.device_info import DeviceInfo
@@ -146,85 +145,38 @@ class EventReceiver:
                 )
 
     def handle_health_state_event(self, event: tango.EventData) -> None:
-        """
-        It handles the health state events of different devices
-        """
-        if event.err:
-            error = event.errors[0]
-            self._logger.error(
-                "Received error from device %s: %s %s",
-                event.device.dev_name(),
-                error.reason,
-                error.desc,
-            )
-            self._component_manager.update_event_failure(
-                event.device.dev_name()
-            )
-            return
+        """Submit healthState event to callback for processing thus making
+        tango bus free for next event handling"""
 
-        new_value = event.attr_value.value
-        self._component_manager.update_device_health_state(
-            event.device.dev_name(), new_value
-        )
+        self._component_manager.update_event("healthState", event)
 
     def handle_state_event(self, event: tango.EventData) -> None:
-        """
-        It handles the state events of different devices
-        """
-        if event.err:
-            error = event.errors[0]
-            self._logger.error(
-                "Reason :%s  Description %s", error.reason, error.desc
-            )
-            self._component_manager.update_event_failure(
-                event.device.dev_name()
-            )
-            return
+        """Submit state event to callback for processing thus making
+        tango bus free for next event handling"""
 
-        new_value = event.attr_value.value
-        self._component_manager.update_device_state(
-            event.device.dev_name(), new_value
-        )
+        self._component_manager.update_event("state", event)
 
-    def handle_obs_state_event(self, event: tango.EventData) -> None:
-        """
-        It handles the observation state events of different devices
-        """
-        if event.err:
-            error = event.errors[0]
-            self._logger.error("%s\n %s", error.reason, error.desc)
-            self._component_manager.update_event_failure(
-                event.device.dev_name()
-            )
-            return
+    def handle_obs_state_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit obsState event to callback for processing thus making
+        tango bus free for next event handling"""
 
-        new_value = event.attr_value.value
-        self._component_manager.update_device_obs_state(
-            event.device.dev_name(), new_value
-        )
+        self._component_manager.update_event("obsState", event)
+
+    def handle_command_result_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit longRunningCommandResult event to callback for processing
+        thus making tango bus free for next event handling"""
+
+        self._component_manager.update_event("longRunningCommandResult", event)
 
     def handle_admin_mode_event(
         self, event: tango.EventType.CHANGE_EVENT
     ) -> None:
-        """Handle admin Mode change event"""
+        """Submit adminMode event to callback for processing thus making
+        tango bus free for next event handling"""
+
         if self._component_manager.is_admin_mode_enabled:
-            if event.err:
-                error = event.errors[0]
-                error_msg = f"{error.reason},{error.desc}"
-                self._logger.error(error_msg)
-                self._component_manager.update_event_failure(
-                    event.device.dev_name()
-                )
-                return
-            new_value = event.attr_value.value
-            self._logger.info(
-                "Received an adminMode event with : %s for device: %s",
-                new_value,
-                event.device.dev_name(),
-            )
-            self._component_manager.update_device_admin_mode(
-                event.device.dev_name(), new_value
-            )
-            self._logger.debug(
-                "Admin Mode updated to :%s", AdminMode(new_value).name
-            )
+            self._component_manager.update_event("adminMode", event)
