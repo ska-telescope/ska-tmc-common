@@ -186,8 +186,7 @@ class EventReceiver:
         """Submit adminMode event to callback for processing thus making
         tango bus free for next event handling"""
 
-        if self._component_manager.is_admin_mode_enabled:
-            self._component_manager.update_admin_mode_event(event)
+        self._component_manager.update_admin_mode_event(event)
 
     def handle_dishvcc_event(
         self, event: tango.EventType.CHANGE_EVENT
