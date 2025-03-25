@@ -12,6 +12,10 @@ Main
 
 Added
 --------
+[0.25.1]
+********
+* Added Abort command in MCCS master leaf node adapter
+
 [0.25.0]
 ********
 * Updated ska-tango-base to v1.2.0
@@ -210,6 +214,9 @@ Added
 
 Fixed
 -------
+[0.25.1]
+* Delay provided to allocate command of MCCS Master Leaf Node
+
 [0.24.10]
 * Fixed SKB-732 
 
