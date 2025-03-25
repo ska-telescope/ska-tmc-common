@@ -248,6 +248,22 @@ def component_manager(request):
     return cm
 
 
+@pytest.fixture(params=[TmcLeafNodeComponentManager])
+def component_manager_old(request):
+    """
+    Create a component manager instance for a dummy device for testing.
+
+    :return: Component manager
+    :rtype: TmcLeafNodeComponentManager
+    """
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm_cls = request.param
+    cm = cm_cls(logger)
+    cm._device = dummy_device
+
+    return cm
+
+
 @pytest.fixture
 def task_callback() -> MockCallable:
     """
