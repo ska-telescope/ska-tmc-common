@@ -368,6 +368,13 @@ class MCCSMasterLeafNodeAdapter(BaseAdapter):
         """
         return self._proxy.ReleaseAllResources(argin)
 
+    def Abort(self, argin: str) -> Tuple[List[ResultCode], List[str]]:
+        """
+        Invokes Abort on subarray device proxy.
+        :return: command invocation on subarray device proxy
+        """
+        return self._proxy.Abort(argin)
+
 
 class MCCSControllerAdapter(BaseAdapter):
     """

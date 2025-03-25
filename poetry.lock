@@ -628,12 +628,12 @@ reference = "PyPI-public"
 
 [[package]]
 name = "fire"
-version = "0.5.0"
+version = "0.6.0"
 description = "A library for automatically generating command line interfaces."
 optional = false
 python-versions = "*"
 files = [
-    {file = "fire-0.5.0.tar.gz", hash = "sha256:a6b0d49e98c8963910021f92bba66f65ab440da2982b78eb1bbf95a0a34aacc6"},
+    {file = "fire-0.6.0.tar.gz", hash = "sha256:54ec5b996ecdd3c0309c800324a0703d6da512241bc73b553db959d98de0aa66"},
 ]
 
 [package.dependencies]
@@ -1275,13 +1275,13 @@ reference = "PyPI-public"
 
 [[package]]
 name = "prettytable"
-version = "3.15.1"
+version = "3.16.0"
 description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "prettytable-3.15.1-py3-none-any.whl", hash = "sha256:1bb0da7437e904ec879d2998aded19abc722719aa3d384a7faa44dcbe4aeb2e9"},
-    {file = "prettytable-3.15.1.tar.gz", hash = "sha256:f0edb38060cb9161b2417939bfd5cd9877da73388fb19d1e8bf7987e8558896e"},
+    {file = "prettytable-3.16.0-py3-none-any.whl", hash = "sha256:b5eccfabb82222f5aa46b798ff02a8452cf530a352c31bddfa29be41242863aa"},
+    {file = "prettytable-3.16.0.tar.gz", hash = "sha256:3c64b31719d961bf69c9a7e03d0c1e477320906a98da63952bc6698d6164ff57"},
 ]
 
 [package.dependencies]
@@ -2092,13 +2092,13 @@ reference = "ska-nexus"
 
 [[package]]
 name = "ska-tango-base"
-version = "1.0.0"
+version = "1.2.0"
 description = "SKA Tango base classes"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ska_tango_base-1.0.0-py3-none-any.whl", hash = "sha256:edb86c02f7de36b8b8b8ea379e986de7885e48feb2b6aa4210233ff163f4ae0c"},
-    {file = "ska_tango_base-1.0.0.tar.gz", hash = "sha256:20636bb3b3966caa37c53a972ac4031c3d6cf7eebb0bce4e99064f90a76fb5a5"},
+    {file = "ska_tango_base-1.2.0-py3-none-any.whl", hash = "sha256:4e2e9721e3df890406ce129b5fdb4329e7a08cc8d491baa5f748a7b164f6b9b1"},
+    {file = "ska_tango_base-1.2.0.tar.gz", hash = "sha256:f9b46ee7d2632444e9ecd6000d653dd448e06974ed8270cf9ad726367df9fd26"},
 ]
 
 [package.dependencies]
@@ -2109,7 +2109,7 @@ numpy = [
     {version = ">=1.23.2", markers = "python_version == \"3.11\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
 ]
-pytango = ">=9.4.2,<10.0.0"
+pytango = ">=9.4.2,<11.0.0"
 ska-control-model = ">=1.0.0,<2.0.0"
 ska-ser-logging = ">=0.4.3,<0.5.0"
 transitions = ">=0.9.0,<0.10.0"
@@ -2655,4 +2655,4 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cd0166dc5a83dd6e42a215bcabfa323261970d7d31bc65b9c2840c83d4cc21a7"
+content-hash = "54ff08633c414a997f206d456c9d2d1a3c1fbefe03fb8bbc70f3212ebf6b7f0c"
