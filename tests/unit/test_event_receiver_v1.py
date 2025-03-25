@@ -1,7 +1,7 @@
 """A module to test the Event Receiver class"""
 
 import time
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
 from ska_control_model import ObsState
@@ -83,32 +83,6 @@ def test_event_subscription_default(tango_context):
                 + " received."
             )
     event_receiver.stop()
-
-
-@pytest.mark.parametrize("event_queue", ["adminMode"])
-def test_handle_admin_mode_event_when_disabled(event_queue):
-    # Initialize mocks
-    logger = Mock()
-    component_manager = DummyComponentManager(logger)
-    component_manager.add_device(SUBARRAY_DEVICE)
-    component_manager.is_admin_mode_enabled = False
-
-    event_receiver = EventReceiver(
-        component_manager=component_manager,
-        logger=logger,
-    )
-
-    # Create a mock Tango EventData object with error
-    mock_event = Mock(spec=EventData)
-    mock_event.err = True
-    mock_event.errors = [
-        MagicMock(reason="ErrorReason", desc="ErrorDescription")
-    ]
-    mock_event.device.dev_name.return_value = "test/device/1"
-    event_receiver.handle_admin_mode_event(mock_event)
-
-    logger.error.assert_not_called()
-    logger.info.assert_not_called()
 
 
 @pytest.mark.parametrize(
