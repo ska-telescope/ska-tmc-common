@@ -55,6 +55,7 @@ class EventReceiver:
             "adminMode": self.handle_admin_mode_event,
             "dishVccConfig": self.handle_dishvcc_event,
             "sourceDishVccConfig": self.handle_source_dishvcc_config_event,
+            "longRunningCommandResult": self.handle_command_result_event,
         }
 
     def start(self) -> None:

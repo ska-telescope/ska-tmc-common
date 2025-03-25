@@ -662,7 +662,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         :type state: DevState
         """
         with self.lock:
-            self.logger.info("update_device_state invoked")
+
             self._device.state = state
             self._device.last_event_arrived = time.time()
 
