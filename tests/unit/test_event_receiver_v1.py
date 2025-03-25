@@ -1,7 +1,7 @@
 """A module to test the Event Receiver class"""
 
 import time
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 from ska_control_model import ObsState
@@ -85,58 +85,45 @@ def test_event_subscription_default(tango_context):
     event_receiver.stop()
 
 
-# WIP
-# @pytest.mark.pt11
-# @pytest.mark.parametrize("event_queue", ["adminMode"])
-# def test_handle_admin_mode_event_when_disabled(event_queue):
-#     # Initialize mocks
-#     dev_factory = DevFactory()
-#     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
-#
-#     logger = Mock()
-#     component_manager = DummyComponentManager(logger)
-#     component_manager.add_device(SUBARRAY_DEVICE)
-#     component_manager.is_admin_mode_enabled = False
-#     component_manager.start_event_processing_threads()
-#
-#     event_receiver = EventReceiver(
-#         component_manager=component_manager,
-#         logger=logger,
-#     )
-#
-#     # Create a mock Tango EventData object with error
-#     mock_event = Mock(spec=EventData)
-#     mock_event.err = True
-#     mock_event.errors = [
-#         MagicMock(reason="ErrorReason", desc="ErrorDescription")
-#     ]
-#     mock_event.device.dev_name.return_value = "test/device/1"
-#     event_receiver.handle_event(mock_event)
-#
-#     subarray_device.SetDirectState(DevState.ON)
-#     start_time = time.time()
-#     while cm.get_device().state != DevState.ON:
-#         if time.time() - start_time > TIMEOUT:
-#             event_receiver.stop()
-#             pytest.fail(
-#                 reason="Timeout occured while waiting for State event to be"
-#                        + " received."
-#             )
-#     event_receiver.stop()
-#
-#     logger.error.assert_not_called()
-#     logger.info.assert_not_called()
+@pytest.mark.parametrize("event_queue", ["adminMode"])
+def test_handle_admin_mode_event_when_disabled(event_queue):
+    # Initialize mocks
+    logger = Mock()
+    component_manager = DummyComponentManager(logger)
+    component_manager.add_device(SUBARRAY_DEVICE)
+    component_manager.is_admin_mode_enabled = False
+
+    event_receiver = EventReceiver(
+        component_manager=component_manager,
+        logger=logger,
+    )
+
+    # Create a mock Tango EventData object with error
+    mock_event = Mock(spec=EventData)
+    mock_event.err = True
+    mock_event.errors = [
+        MagicMock(reason="ErrorReason", desc="ErrorDescription")
+    ]
+    mock_event.device.dev_name.return_value = "test/device/1"
+    event_receiver.handle_admin_mode_event(mock_event)
+
+    logger.error.assert_not_called()
+    logger.info.assert_not_called()
 
 
 @pytest.mark.parametrize(
-    "event_method, event_queue_key",
+    "event_method, event_queue_key,event_handler",
     [
-        ("handle_event", "state"),
-        ("handle_event", "healthState"),
-        ("handle_event", "obsState"),
+        ("handle_state_event", "state", "update_state_event"),
+        (
+            "handle_health_state_event",
+            "healthState",
+            "update_health_state_event",
+        ),
+        ("handle_obs_state_event", "obsState", "update_obs_state_event"),
     ],
 )
-def test_event_placed_in_queue(event_method, event_queue_key):
+def test_event_placed_in_queue(event_method, event_queue_key, event_handler):
     # Mock the event queue and component manager
     mock_event_queue = Mock()
     component_manager = Mock()
@@ -159,6 +146,5 @@ def test_event_placed_in_queue(event_method, event_queue_key):
     method_to_call = getattr(event_receiver, event_method)
     method_to_call(mock_event)
 
-    component_manager.update_event.assert_called_once_with(
-        event_queue_key, mock_event
-    )
+    methodname = getattr(component_manager, event_handler)
+    methodname.assert_called_once_with(mock_event)

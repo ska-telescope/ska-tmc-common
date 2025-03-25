@@ -3,15 +3,10 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 import tango
-from ska_tango_base.control_model import AdminMode, HealthState, ObsState
+from ska_tango_base.control_model import AdminMode, HealthState
 from tango import DevState, EventData
 
-from ska_tmc_common import (
-    DeviceInfo,
-    DummyComponent,
-    InputParameter,
-    SubArrayDeviceInfo,
-)
+from ska_tmc_common import DeviceInfo, DummyComponent, InputParameter
 from ska_tmc_common.enum import LivelinessProbeType
 from ska_tmc_common.v1.tmc_component_manager import BaseTmcComponentManager
 from ska_tmc_common.v1.tmc_component_manager import TmcComponentManager
@@ -98,7 +93,7 @@ def test_update_device_health_state_leafnode(component_manager):
     dummy_device_info = cm.get_device()
     assert dummy_device_info.health_state == HealthState.UNKNOWN
 
-    cm.update_device_health_state(DUMMY_MONITORED_DEVICE, HealthState.OK)
+    cm.update_device_health_state(HealthState.OK)
     assert dummy_device_info.health_state == HealthState.OK
 
 
@@ -112,22 +107,8 @@ def test_update_device_state_leafnode(component_manager):
     dummy_device_info = cm.get_device()
     assert dummy_device_info.state == DevState.UNKNOWN
 
-    cm.update_device_state(DUMMY_MONITORED_DEVICE, DevState.ON)
+    cm.update_device_state(DevState.ON)
     assert dummy_device_info.state == DevState.ON
-
-
-@pytest.mark.parametrize(
-    "component_manager", [TmcLeafNodeComponentManager, TmcLNCM]
-)
-def test_update_device_obs_state_leafnode(component_manager):
-    dummy_device = SubArrayDeviceInfo(DUMMY_SUBARRAY_DEVICE)
-    cm = component_manager(logger)
-    cm._device = dummy_device
-    dummy_device_info = cm.get_device()
-    assert dummy_device_info.obs_state == ObsState.EMPTY
-
-    cm.update_device_obs_state(DUMMY_SUBARRAY_DEVICE, ObsState.IDLE)
-    assert dummy_device_info.obs_state == ObsState.IDLE
 
 
 def test_start_liveliness_probe_single_device(component_manager):
@@ -166,41 +147,49 @@ def test_update_responsiveness_info(component_manager):
 def test_update_device_health_state(component_manager):
     # Test if update_device_health_state updates the
     # device's health state and does not raise an exception
+    dummy_component = DummyComponent(logger)
+    component_manager = TmcCM(
+        _input_parameter=InputParameter(None),
+        _component=dummy_component,
+        logger=logger,
+    )
+    component_manager.add_device(DUMMY_MONITORED_DEVICE)
+
     health_state = HealthState.OK
     component_manager.update_device_health_state(
         DUMMY_MONITORED_DEVICE, health_state
     )
-    assert component_manager.get_device().health_state == health_state
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
+    assert (
+        component_manager.get_device(DUMMY_MONITORED_DEVICE).health_state
+        == health_state
     )
-    assert not component_manager.get_device().unresponsive
+    assert component_manager.get_device(
+        DUMMY_MONITORED_DEVICE
+    ).last_event_arrived == pytest.approx(time.time(), abs=1e-3)
+    assert not component_manager.get_device(
+        DUMMY_MONITORED_DEVICE
+    ).unresponsive
 
 
 def test_update_device_state(component_manager):
     # Test if update_device_state updates
     # the device's state and does not raise an exception
     state = tango.DevState.ON
+    dummy_component = DummyComponent(logger)
+    component_manager = TmcCM(
+        _input_parameter=InputParameter(None),
+        _component=dummy_component,
+        logger=logger,
+    )
+    component_manager.add_device(DUMMY_MONITORED_DEVICE)
     component_manager.update_device_state(DUMMY_MONITORED_DEVICE, state)
-    assert component_manager.get_device().state == state
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
-    )
-    assert not component_manager.get_device().unresponsive
-
-
-def test_update_device_obs_state(component_manager):
-    # Test if update_device_obs_state updates
-    # the device's obs state and does not raise an exception
-    obs_state = ObsState.READY
-    component_manager.update_device_obs_state(
-        DUMMY_MONITORED_DEVICE, obs_state
-    )
-    assert component_manager.get_device().obs_state == obs_state
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
-    )
-    assert not component_manager.get_device().unresponsive
+    assert component_manager.get_device(DUMMY_MONITORED_DEVICE).state == state
+    assert component_manager.get_device(
+        DUMMY_MONITORED_DEVICE
+    ).last_event_arrived == pytest.approx(time.time(), abs=1e-3)
+    assert not component_manager.get_device(
+        DUMMY_MONITORED_DEVICE
+    ).unresponsive
 
 
 @pytest.mark.parametrize(
@@ -220,6 +209,7 @@ def test_handle_event_with_error(event_queue):
     ]
     mock_event.device.dev_name.return_value = "test/device/1"
 
+    component_manager.start_event_processing_threads()
     component_manager.event_queues[event_queue].put(mock_event)
 
     # Sleep is needed since sometimes test will fail if logger is
@@ -240,9 +230,7 @@ def test_update_device_admin_mode():
     component_manager = BaseTmcComponentManager(logger)
     component_manager._device = dummy_device
     admin_mode = AdminMode.ONLINE
-    component_manager.update_device_admin_mode(
-        DUMMY_MONITORED_DEVICE, admin_mode
-    )
+    component_manager.update_device_admin_mode(admin_mode)
     assert component_manager.get_device().adminMode == admin_mode
     assert component_manager.get_device().last_event_arrived == pytest.approx(
         time.time(), abs=1e-3

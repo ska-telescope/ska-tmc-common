@@ -251,6 +251,7 @@ class DummyComponentManager(TmcLeafNodeComponentManager):
             "obsState": self.update_device_obs_state,
             "state": self.update_device_state,
             "adminMode": self.update_device_admin_mode,
+            "healthState": self.update_device_health_state,
         }
         return {**attributes}
 

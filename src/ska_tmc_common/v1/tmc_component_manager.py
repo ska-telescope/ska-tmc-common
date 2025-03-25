@@ -541,19 +541,8 @@ class TmcComponentManager(BaseTmcComponentManager):
                 error.desc,
             )
 
-            if hasattr(self, "update_event_failure"):
-                update_event_failure_method = getattr(
-                    self, "update_event_failure"
-                )
-                if callable(update_event_failure_method):
-                    # If callable, execute the method
-                    update_event_failure_method(event.device.dev_name())
-                else:
-                    # Log error if method is not callable or not found
-                    self.logger.error(
-                        "The attribute 'update_event_failure' is "
-                        "either not defined or not callable. "
-                    )
+            self.update_event_failure(event.device.dev_name())
+
             return True
         return False
 
@@ -648,7 +637,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         :type health_state: HealthState
         """
         with self.lock:
-            self.logger.info("update_device_health_state invoked")
+
             self._device.health_state = health_state
             self._device.last_event_arrived = time.time()
 
@@ -690,22 +679,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         with self.lock:
             dev_info: DeviceInfo = self.get_device()
             dev_info.update_unresponsive(False, "")
-
-    # def update_event(self, event_type, event):
-    #     """Updates event in respective queue"""
-    #     with self.event_lock:
-    #         self.event_queues[event_type].put(event)
-
-    # def update_event(self, event_type, event):
-    #     """Updates event in respective queue"""
-    #     self.logger.info("event_type  %s in %s", event_type, event)
-    #     with self.event_lock:
-    #         if event_type not in self.event_queues:
-    #             # Create a new queue if it does not exist
-    #
-    #             queue_name = self.attribute_name_mapping[event_type]
-    #             self.event_queues[queue_name] = Queue()
-    #     self.event_queues[queue_name].put(event)
 
     def update_health_state_event(self, event: tango.EventData):
         """Updates health state event  in respective queue"""
@@ -781,20 +754,8 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
                 error.reason,
                 error.desc,
             )
+            self.update_event_failure()
 
-            if hasattr(self, "update_event_failure"):
-                update_event_failure_method = getattr(
-                    self, "update_event_failure"
-                )
-                if callable(update_event_failure_method):
-                    # If callable, execute the method
-                    update_event_failure_method()
-                else:
-                    # Log error if method is not callable or not found
-                    self.logger.error(
-                        "The attribute 'update_event_failure' is "
-                        "either not defined or not callable. "
-                    )
             return True
         return False
 
@@ -807,3 +768,12 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
                 target=self.process_event, args=[attribute], name=attribute
             )
             thread.start()
+
+    def update_event_failure(self) -> None:
+        """
+        Update the failure status of an event for a specific device.
+        """
+        with self.lock:
+            dev_info = self.get_device()
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
