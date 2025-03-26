@@ -300,12 +300,12 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         :param admin_mode: admin mode of the device
         :type admin_mode: AdminMode
         """
-        if self.is_admin_mode_enabled is True:
-            with self.rlock:
-                dev_info = self.get_device()
-                dev_info.adminMode = admin_mode
-                dev_info.last_event_arrived = time.time()
-                dev_info.update_unresponsive(False)
+
+        with self.rlock:
+            dev_info = self.get_device()
+            dev_info.adminMode = admin_mode
+            dev_info.last_event_arrived = time.time()
+            dev_info.update_unresponsive(False)
 
     #  pylint: enable=broad-exception-caught
     def timeout_handler(
