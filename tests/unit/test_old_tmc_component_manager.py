@@ -157,44 +157,47 @@ def test_update_responsiveness_info(component_manager):
     assert not component_manager.get_device().unresponsive
 
 
-def test_update_device_health_state(component_manager):
+def test_update_device_health_state(component_manager_old):
     # Test if update_device_health_state updates the
     # device's health state and does not raise an exception
     health_state = HealthState.OK
-    component_manager.update_device_health_state(
+    component_manager_old.update_device_health_state(
         DUMMY_MONITORED_DEVICE, health_state
     )
-    assert component_manager.get_device().health_state == health_state
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
+    assert component_manager_old.get_device().health_state == health_state
+    assert (
+        component_manager_old.get_device().last_event_arrived
+        == pytest.approx(time.time(), abs=1e-3)
     )
-    assert not component_manager.get_device().unresponsive
+    assert not component_manager_old.get_device().unresponsive
 
 
-def test_update_device_state(component_manager):
+def test_update_device_state(component_manager_old):
     # Test if update_device_state updates
     # the device's state and does not raise an exception
     state = tango.DevState.ON
-    component_manager.update_device_state(DUMMY_MONITORED_DEVICE, state)
-    assert component_manager.get_device().state == state
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
+    component_manager_old.update_device_state(DUMMY_MONITORED_DEVICE, state)
+    assert component_manager_old.get_device().state == state
+    assert (
+        component_manager_old.get_device().last_event_arrived
+        == pytest.approx(time.time(), abs=1e-3)
     )
-    assert not component_manager.get_device().unresponsive
+    assert not component_manager_old.get_device().unresponsive
 
 
-def test_update_device_obs_state(component_manager):
+def test_update_device_obs_state(component_manager_old):
     # Test if update_device_obs_state updates
     # the device's obs state and does not raise an exception
     obs_state = ObsState.READY
-    component_manager.update_device_obs_state(
+    component_manager_old.update_device_obs_state(
         DUMMY_MONITORED_DEVICE, obs_state
     )
-    assert component_manager.get_device().obs_state == obs_state
-    assert component_manager.get_device().last_event_arrived == pytest.approx(
-        time.time(), abs=1e-3
+    assert component_manager_old.get_device().obs_state == obs_state
+    assert (
+        component_manager_old.get_device().last_event_arrived
+        == pytest.approx(time.time(), abs=1e-3)
     )
-    assert not component_manager.get_device().unresponsive
+    assert not component_manager_old.get_device().unresponsive
 
 
 def test_command_id_property(component_manager):

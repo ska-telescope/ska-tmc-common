@@ -18,12 +18,10 @@ class EventReceiver:
     """
     The EventReceiver class has the responsibility to receive events
     from the sub devices managed by a TMC node. It subscribes to State,
-    healthState and obsState attribute by default. To subscribe any additional
-    attributes, the class should be sent an attribute_dictionary that contains
-    the attribute names as keys and their handler methods as values.
-
-    The Component Manager uses the handle events methods for the attribute of
-    interest. For each of them a callback is defined.
+    healthState  attribute by default. To subscribe any
+    additional attributes, the class should be sent an
+    attribute_tobe_subscribed that contains
+    the attribute names
 
     TBD: what about scalability? what if we have 1000 devices?
     """
@@ -32,7 +30,7 @@ class EventReceiver:
         self,
         component_manager,
         logger: Logger,
-        attribute_dict: Optional[dict[str, Callable]] = None,
+        attribute_list: Optional[dict[str, Callable]] = None,
         max_workers: int = 1,
         proxy_timeout: int = 500,
         event_subscription_check_period: int = 1,
@@ -46,11 +44,18 @@ class EventReceiver:
         self._event_subscription_check_period = event_subscription_check_period
         self._max_workers = max_workers
         self._dev_factory = DevFactory()
-        self.attribute_dictionary: dict[str, Callable] = attribute_dict or {
+        self.attribute_tobe_subscribed: list[str] = attribute_list or [
+            "state",
+            "healthState",
+        ]
+        self.event_handling_methods: dict[str, Callable] = {
             "state": self.handle_state_event,
             "healthState": self.handle_health_state_event,
             "obsState": self.handle_obs_state_event,
             "adminMode": self.handle_admin_mode_event,
+            "dishVccConfig": self.handle_dishvcc_event,
+            "sourceDishVccConfig": self.handle_source_dishvcc_config_event,
+            "longRunningCommandResult": self.handle_command_result_event,
         }
 
     def start(self) -> None:
@@ -97,20 +102,22 @@ class EventReceiver:
         if device_info.last_event_arrived is None:
             self.subscribe_events(
                 dev_info=device_info,
-                attribute_dictionary=(self.attribute_dictionary),
+                attribute_tobe_subscribed=(self.attribute_tobe_subscribed),
             )
 
     def subscribe_events(
-        self, dev_info: DeviceInfo, attribute_dictionary: dict[str, Callable]
+        self,
+        dev_info: DeviceInfo,
+        attribute_tobe_subscribed: list[str],
     ) -> None:
         """A method to subscribe to attribute events from lower level devices.
 
         :param dev_info: The device info object of the given device.
         :type dev_info: DeviceInfo
 
-        :param attribute_dictionary: A dictionary containing the attributes to
-            subscribe to as keys and their handler functions as values.
-        :type attribute_dictionary: dict[str, Callable]
+        :param attribute_tobe_subscribed: A list containing the attributes to
+            subscribe
+        :type attribute_tobe_subscribed: list[str]
 
         :rtype: None
         """
@@ -125,14 +132,15 @@ class EventReceiver:
             )
         else:
             try:
-                for attribute, callable_value in attribute_dictionary.items():
+                for attribute in attribute_tobe_subscribed:
                     self._logger.info(
                         "Subscribing event for attribute: %s", attribute
                     )
+                    handle_event = self.event_handling_methods[attribute]
                     proxy.subscribe_event(
                         attribute,
                         tango.EventType.CHANGE_EVENT,
-                        callable_value,
+                        handle_event,
                         stateless=True,
                     )
                     self.stop()
@@ -148,13 +156,13 @@ class EventReceiver:
         """Submit healthState event to callback for processing thus making
         tango bus free for next event handling"""
 
-        self._component_manager.update_event("healthState", event)
+        self._component_manager.update_health_state_event(event)
 
     def handle_state_event(self, event: tango.EventData) -> None:
         """Submit state event to callback for processing thus making
         tango bus free for next event handling"""
 
-        self._component_manager.update_event("state", event)
+        self._component_manager.update_state_event(event)
 
     def handle_obs_state_event(
         self, event: tango.EventType.CHANGE_EVENT
@@ -162,7 +170,7 @@ class EventReceiver:
         """Submit obsState event to callback for processing thus making
         tango bus free for next event handling"""
 
-        self._component_manager.update_event("obsState", event)
+        self._component_manager.update_obs_state_event(event)
 
     def handle_command_result_event(
         self, event: tango.EventType.CHANGE_EVENT
@@ -170,7 +178,7 @@ class EventReceiver:
         """Submit longRunningCommandResult event to callback for processing
         thus making tango bus free for next event handling"""
 
-        self._component_manager.update_event("longRunningCommandResult", event)
+        self._component_manager.update_command_result_event(event)
 
     def handle_admin_mode_event(
         self, event: tango.EventType.CHANGE_EVENT
@@ -178,5 +186,21 @@ class EventReceiver:
         """Submit adminMode event to callback for processing thus making
         tango bus free for next event handling"""
 
-        if self._component_manager.is_admin_mode_enabled:
-            self._component_manager.update_event("adminMode", event)
+        self._component_manager.update_admin_mode_event(event)
+
+    def handle_dishvcc_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit dishVccConfig event to callback for processing thus making
+        tango bus free for next event handling"""
+
+        self._component_manager.update_dishvcc_config_event(event)
+
+    def handle_source_dishvcc_config_event(
+        self, event: tango.EventType.CHANGE_EVENT
+    ) -> None:
+        """Submit sourceDishVccConfig event to callback for
+        processing thus making
+        tango bus free for next event handling"""
+
+        self._component_manager.update_source_dishvcc_config_event(event)

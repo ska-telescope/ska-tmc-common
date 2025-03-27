@@ -1,15 +1,14 @@
 """A module to test the Event Receiver class"""
 
 import time
-from unittest.mock import Mock
+import types
 
 import pytest
 import tango
 from ska_control_model import ObsState
-from tango import EventData
 
 from ska_tmc_common import DevFactory
-from ska_tmc_common.v1.event_receiver import EventReceiver
+from ska_tmc_common.event_receiver import EventReceiver
 from tests.settings import (
     SUBARRAY_DEVICE,
     DummyComponentManager,
@@ -41,11 +40,27 @@ def test_event_receiver():
 
 def test_event_subscription_default(tango_context):
     """Tests the event subscription on a tango device."""
+
+    def update_device_obs_state(
+        self, device_name, obs_state: ObsState
+    ) -> None:
+        """
+
+        :param obs_state: obs state of the device
+        :type obs_state: ObsState
+        """
+        with self.rlock:
+            dev_info = self.get_device()
+            dev_info.obs_state = obs_state
+
     dev_factory = DevFactory()
     subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
 
     cm = DummyComponentManager(logger)
     cm.add_device(SUBARRAY_DEVICE)
+
+    cm.update_device_obs_state = types.MethodType(update_device_obs_state, cm)
+
     event_receiver = EventReceiver(cm, logger)
     event_receiver.start()
 
@@ -97,36 +112,3 @@ def test_event_subscription_additional_attributes(tango_context):
                 + "event to be received."
             )
     event_receiver.stop()
-
-
-@pytest.mark.parametrize(
-    "event_method, event_queue_key",
-    [
-        ("handle_state_event", "state"),
-        ("handle_health_state_event", "healthState"),
-        ("handle_obs_state_event", "obsState"),
-    ],
-)
-def test_event_placed_in_queue(event_method, event_queue_key):
-    # Mock the event queue and component manager
-    mock_event_queue = Mock()
-    component_manager = Mock()
-    component_manager.event_queues = {event_queue_key: mock_event_queue}
-    logger = Mock()
-
-    # Initialize the EventReceiver with mocks
-    event_receiver = EventReceiver(
-        component_manager=component_manager,
-        logger=logger,
-    )
-
-    # Create a mock Tango EventData object
-    mock_event = Mock(spec=EventData)
-
-    # Dynamically call the method under test
-    method_to_call = getattr(event_receiver, event_method)
-    method_to_call(mock_event)
-
-    component_manager.update_event.assert_called_once_with(
-        event_queue_key, mock_event
-    )

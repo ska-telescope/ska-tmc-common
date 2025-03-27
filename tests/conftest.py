@@ -7,10 +7,13 @@ tests.
 
 # pylint: disable=unused-argument
 import logging
+import time
+import types
 from os.path import dirname, join
 
 import pytest
 import tango
+from ska_control_model import ObsState
 from ska_tango_testing.mock import MockCallable
 from ska_tango_testing.mock.tango.event_callback import (
     MockTangoEventCallbackGroup,
@@ -228,6 +231,36 @@ def component_manager(request):
     cm_cls = request.param
     cm = cm_cls(logger)
     cm._device = dummy_device
+
+    def update_device_obs_state(self, obs_state: ObsState) -> None:
+        """
+        Update a monitored device obs state,
+        and call the relative callbacks if available
+        :param obs_state: obs state of the device
+        :type obs_state: ObsState
+        """
+
+        dev_info = self.get_device()
+        dev_info.obs_state = obs_state
+        dev_info.last_event_arrived = time.time()
+
+    cm.update_device_obs_state = types.MethodType(update_device_obs_state, cm)
+    return cm
+
+
+@pytest.fixture(params=[TmcLeafNodeComponentManager])
+def component_manager_old(request):
+    """
+    Create a component manager instance for a dummy device for testing.
+
+    :return: Component manager
+    :rtype: TmcLeafNodeComponentManager
+    """
+    dummy_device = DeviceInfo("dummy/monitored/device")
+    cm_cls = request.param
+    cm = cm_cls(logger)
+    cm._device = dummy_device
+
     return cm
 
 

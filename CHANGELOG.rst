@@ -14,6 +14,11 @@ Added
 --------
 [0.25.1]
 ********
+* Handled signature inconsistencies in event update methods.
+* Event Handler methods updated for queue based processing.
+
+[0.25.1]
+********
 * Added Abort command in MCCS master leaf node adapter
 
 [0.25.0]
