@@ -1,5 +1,5 @@
 """A module implementing a decorator for Error Propagation."""
-
+import json
 from operator import methodcaller
 from threading import Event
 from typing import Callable
@@ -113,6 +113,22 @@ def error_propagation_tracker(
             """Wrapper method"""
             # Extract the class instance from the input arguments
             class_instance = args[0]
+            try:
+                args = (
+                    json.dumps(args, indent=4, sort_keys=True)
+                    if args
+                    else "None"
+                )
+            except (TypeError, ValueError) as e:
+                args = f"Invalid args: {e}"
+            try:
+                kwargs = (
+                    json.dumps(kwargs, indent=4, sort_keys=True)
+                    if kwargs
+                    else "None"
+                )
+            except (TypeError, ValueError) as e:
+                kwargs = f"Invalid kwargs: {e}"
             class_instance.logger.debug(
                 "Executing the error propagation decorator with: %s, %s",
                 args,
