@@ -117,7 +117,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
         self.rlock = threading._RLock()
-        self.event_lock = threading._RLock()
+
         if self.event_receiver:
             evt_sub_check_period = event_subscription_check_period
             self.event_receiver_object = EventReceiver(
@@ -136,15 +136,6 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self._device = None
         self.event_queues = {}
         self._stop_thread: bool = False
-        self.attribute_name_mapping = {
-            "obsstate": "obsState",
-            "adminmode": "adminMode",
-            "longrunningcommandresult": "longRunningCommandResult",
-            "dishvccconfig": "dishVccConfig",
-            "sourcedishvccconfig": "sourceDishVccConfig",
-            "state": "state",
-            "healthstate": "healthState",
-        }
 
     @property
     def command_id(self) -> str:
