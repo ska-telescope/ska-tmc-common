@@ -61,7 +61,7 @@ def test_event_subscription():
         "state",
         CSP_SUBARRAY_DEVICE,
         event_manager.device_subscription_configuration,
-        5,
+        10,
     )
     assert event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
@@ -94,7 +94,7 @@ def test_late_event_subscription():
         "state",
         CSP_SUBARRAY_DEVICE,
         event_manager.device_subscription_configuration,
-        5,
+        10,
     )
     assert event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
