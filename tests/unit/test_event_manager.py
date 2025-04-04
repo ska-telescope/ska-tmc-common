@@ -1,9 +1,12 @@
 from unittest.mock import Mock
 
+import pytest
+
 from ska_tmc_common.v2.event_manager import EventManager
 
 DUMMY_CONFIG = {"device1": ["attribute1"]}
 DUMMY_SUBSCRIPTION_CONFIG = {"device": {"attribute1": {"subscritption_id": 1}}}
+
 
 
 def test_init_event_manager():

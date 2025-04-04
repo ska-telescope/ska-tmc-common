@@ -22,6 +22,13 @@ if TYPE_CHECKING:
     )
 
 LOGGER = logging.getLogger("EventManager")
+COMPLETION_INDICATOR_KEY = "is_subscription_completed"
+SUBSCRITPTION_ID_KEY = "subscription_id"
+EVENT_MANAGER_THREAD_NAME_PREFIX = "event_manager_thread_"
+TIMER_THREAD_NAME_PREFIX = "event_timer_thread_"
+API_EVENT_TIMEOUT = "API_EventTimeout"
+EVENT_ERROR_DESC = "Event channel is not responding anymore"
+
 configure_logging()
 
 
@@ -173,21 +180,26 @@ class EventManager:
             self.__timer_threads.get(name).cancel()
 
     def start_event_subscription(
-        self, subscription_configuration: Optional[dict[str, list]] = None
+        self,
+        subscription_configuration: Optional[dict[str, list]] = None,
+        timeout: int = 1000,
     ) -> None:
         """This method starts a thread to subscribe events.
 
         :param subscription_configuration: This is optional parameter,
             if user wants to start thread with different configuration.
         :type subscription_configuration: dict[str, list], optional
+        :param timeout: The duration till when it will try to subscribe,
+            defaults to 1000 seconds
+        :type timeout: int
         """
         subscription_configuration = (
             subscription_configuration or self.subscription_configruation
         )
         self.__event_thread = threading.Thread(
             target=self.subscribe_events,
-            args=(subscription_configuration),
-            name=f"event_manager_thread_{time.time()}",
+            args=(subscription_configuration, timeout),
+            name=EVENT_MANAGER_THREAD_NAME_PREFIX + str(time.time()),
             daemon=True,
         )
         self.__event_thread.start()
@@ -205,18 +217,19 @@ class EventManager:
             that needs to be unsubscribed.
         :type attribute_names: list, optional
         """
-        attribute_list = (
-            attribute_names
-            or self.device_subscription_configuration.get(device_name)
+        attribute_list = attribute_names or list(
+            self.device_subscription_configuration.get(device_name).keys()
         )
         proxy = self.__device_factory.get_device(device_name)
         for attribute_name in attribute_list:
-            if attribute_name == "is_subscription_completed":
-                continue
-            proxy.unsubscribe_event(
-                self.device_subscription_configuration.get(device_name)
-                .get(attribute_name)
-                .get("subscription_id")
+            if attribute_name != COMPLETION_INDICATOR_KEY:
+                proxy.unsubscribe_event(
+                    self.device_subscription_configuration.get(device_name)
+                    .get(attribute_name)
+                    .get(SUBSCRITPTION_ID_KEY)
+                )
+            self.device_subscription_configuration.get(device_name).pop(
+                attribute_name
             )
 
     def init_device_subscription_configuration(self, device_name: str) -> None:
@@ -250,12 +263,12 @@ class EventManager:
         :type is_subscription_completed: bool, optional
         """
         if attribute_name and subscription_id:
-            self.device_subscription_configuration.get(device_name).get(
-                attribute_name, {attribute_name: {}}
-            ).update({"subscription_id": subscription_id})
+            self.device_subscription_configuration.get(device_name).update(
+                {attribute_name: {SUBSCRITPTION_ID_KEY: subscription_id}}
+            )
         elif device_name and is_subscription_completed:
             self.device_subscription_configuration.get(device_name).update(
-                {"is_subscription_completed": is_subscription_completed}
+                {COMPLETION_INDICATOR_KEY: is_subscription_completed}
             )
 
     def get_device_proxy(self, device_name: str) -> tango.DeviceProxy:
@@ -295,7 +308,7 @@ class EventManager:
             defaults to 1000 seconds
         :type timeout: int
         """
-        timer_thread_name: str = f"timer_thread_{time.time()}"
+        timer_thread_name: str = TIMER_THREAD_NAME_PREFIX + str(time.time())
         self.start_timer(timer_thread_name, timeout)
         check_device_responsiveness = (
             self.__component_manager.check_device_responsiveness
@@ -316,9 +329,10 @@ class EventManager:
                     try:
                         if (
                             attribute_name
-                            in self.device_subscription_configuration.get(
+                            in list(
+                                self.device_subscription_configuration.get(
                                 device_name
-                            )
+                            ).keys())
                         ):
                             continue
                         subscription_id: int = proxy.subscribe_event(
@@ -378,7 +392,7 @@ class EventManager:
             device_name,
             configuration,
         ) in device_subscription_configuration.items():
-            if configuration.get("is_subscription_completed"):
+            if configuration.get(COMPLETION_INDICATOR_KEY):
                 subscription_configuration.pop(device_name, None)
 
     def subscribe_pending_events(self, device_name: str):
@@ -401,3 +415,5 @@ class EventManager:
         :type device_name: str
         """
         self.subscribe_pending_events(device_name)
+             
+
