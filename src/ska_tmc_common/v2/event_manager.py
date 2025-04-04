@@ -43,6 +43,7 @@ class EventManager:
         subscription_configuration: Optional[dict[str, list]] = None,
         logger: logging.Logger = LOGGER,
         stateless: bool = True,
+        event_subscription_check_period: int = 1,
     ) -> None:
         """This method initialises the event manager class instances with
         necessary configurations.
@@ -60,6 +61,9 @@ class EventManager:
         :param stateless: This sets the stateless flag used in subscribe
             events, defaults to True.
         :type stateless: bool
+        :param event_subscription_check_period: This is the interval time
+            between subscription retries, defaults to 1 second.
+        :type event_subscription_check_period: int
         """
         self.__logger: logging.Logger = logger
         self.__device_subscription_configuration: (
@@ -78,6 +82,16 @@ class EventManager:
         self.__timer_threads: dict[str, threading.Timer] | dict = {}
         self.__pending_configuration: dict[str, list] = {}
         self.__event_thread: Optional[threading.Thread] = None
+        self.__event_subscription_check_period = (
+            event_subscription_check_period
+        )
+        self.__pending_configuration_lock: threading.RLock = threading.RLock()
+        self.__device_subscription_configuration_lock: threading.RLock = (
+            threading.RLock()
+        )
+        self.__subscription_configuration_lock: threading.RLock = (
+            threading.RLock()
+        )
 
     @property
     def pending_configuration(self) -> dict[str, list]:
@@ -86,7 +100,8 @@ class EventManager:
         :return: This method returns the pending subscription configurations.
         :rtype: dict[str, list]
         """
-        return self.__pending_configuration
+        with self.__pending_configuration_lock:
+            return self.__pending_configuration
 
     @pending_configuration.setter
     def pending_configuration(self, configuration: dict[str, list]) -> None:
@@ -96,7 +111,8 @@ class EventManager:
             configruation.
         :type configuration: dict[str,list]
         """
-        self.__pending_configuration = configuration
+        with self.__pending_configuration_lock:
+            self.__pending_configuration = configuration
 
     @property
     def stateless_flag(self) -> bool:
@@ -125,7 +141,8 @@ class EventManager:
         :return: This method returns the subscription configuration.
         :rtype: dict[str, list]
         """
-        return self.__subscription_configuration
+        with self.__subscription_configuration_lock:
+            return self.__subscription_configuration
 
     @property
     def device_subscription_configuration(
@@ -138,7 +155,8 @@ class EventManager:
             configuration variable.
         :rtype: dict[str, dict[int, bool]],dict
         """
-        return self.__device_subscription_configuration
+        with self.__device_subscription_configuration_lock:
+            return self.__device_subscription_configuration
 
     @device_subscription_configuration.setter
     def device_subscription_configuration(
@@ -151,7 +169,8 @@ class EventManager:
             updated in variable device subscription configuration.
         :type updated_configuration: dict
         """
-        self.__device_subscription_configuration = updated_configuration
+        with self.__device_subscription_configuration_lock:
+            self.__device_subscription_configuration = updated_configuration
 
     def set_timeout(self) -> None:
         """Sets the timeout flag."""
@@ -313,7 +332,7 @@ class EventManager:
         check_device_responsiveness = (
             self.__component_manager.check_device_responsiveness
         )
-        while subscription_configuration or not self.__timed_out:
+        while subscription_configuration and not self.__timed_out:
             for (
                 device_name,
                 attribute_names,
@@ -363,11 +382,11 @@ class EventManager:
                     device_name,
                     is_subscription_completed=all(subscription_completion),
                 )
-
             self.remove_subscribed_devices(
                 self.device_subscription_configuration,
                 subscription_configuration,
             )
+            time.sleep(self.__event_subscription_check_period)
         self.pending_configuration.update(subscription_configuration)
         self.stop_timer(timer_thread_name)
 
