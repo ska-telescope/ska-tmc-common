@@ -327,12 +327,10 @@ class EventManager:
                     continue
                 for attribute_name in attribute_names:
                     try:
-                        if (
-                            attribute_name
-                            in list(
-                                self.device_subscription_configuration.get(
+                        if attribute_name in list(
+                            self.device_subscription_configuration.get(
                                 device_name
-                            ).keys())
+                            ).keys()
                         ):
                             continue
                         subscription_id: int = proxy.subscribe_event(
@@ -415,5 +413,3 @@ class EventManager:
         :type device_name: str
         """
         self.subscribe_pending_events(device_name)
-             
-

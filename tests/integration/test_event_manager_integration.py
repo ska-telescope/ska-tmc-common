@@ -39,6 +39,7 @@ def test_event_subscription():
         CSP_SUBARRAY_DEVICE
     )
 
+
 @pytest.mark.post_deployment
 def test_late_event_subscription():
     cm = TmcComponentManager(
@@ -68,5 +69,3 @@ def test_late_event_subscription():
     assert not event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
     )
-
-
