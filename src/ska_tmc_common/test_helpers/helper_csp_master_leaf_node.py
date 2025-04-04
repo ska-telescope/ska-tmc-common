@@ -119,7 +119,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         Reads the current admin mode of the CSP controller
         :return: obs state
         """
-        return self._mccs_controller_admin_mode
+        return self._csp_controller_admin_mode
 
     @command(
         dtype_in=int,

@@ -65,5 +65,5 @@ class HelperSDPMasterLeafNode(HelperBaseDevice):
         if self._sdp_controller_admin_mode != value:
             self._sdp_controller_admin_mode = value
             self.push_change_event(
-                "mccsControllerAdminMode", self._sdp_controller_admin_mode
+                "sdpControllerAdminMode", self._sdp_controller_admin_mode
             )
