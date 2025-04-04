@@ -30,6 +30,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._memorized_dish_vcc_map: str = ""
         self._admin_mode: AdminMode = AdminMode.OFFLINE
         self._isAdminModeEnabled: bool = False
+        self._csp_controller_admin_mode: AdminMode = AdminMode.OFFLINE
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ

@@ -21,6 +21,8 @@ class HelperSDPMasterLeafNode(HelperBaseDevice):
 
     def init_device(self) -> None:
         super().init_device()
+        self._isSubsystemAvailable = True
+        self._sdp_controller_admin_mode: AdminMode = AdminMode.OFFLINE
 
     class InitCommand(SKABaseDevice.InitCommand):
         """A class for the HelperMccsStateDevice's init_device() "command"."""
@@ -32,6 +34,7 @@ class HelperSDPMasterLeafNode(HelperBaseDevice):
             :rtype:tuple
             """
             super().do()
+            self._device.set_change_event("isSubsystemAvailable", True, False)
             self._device.set_change_event(
                 "sdpControllerAdminMode", True, False
             )
