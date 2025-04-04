@@ -12,6 +12,31 @@ from tests.test_component import TestTMCComponent
 SUBSCRIPTION_CONFIGURATION = {CSP_SUBARRAY_DEVICE: ["state"]}
 
 
+def is_expected_value_in_device_config_within_timeout(
+    expected_value, device_name, device_config, timeout
+) -> bool:
+    """_summary_
+
+    :param expected_value: _description_
+    :type expected_value: _type_
+    :param device_name: _description_
+    :type device_name: _type_
+    :param device_config: _description_
+    :type device_config: _type_
+    :param timeout: _description_
+    :type timeout: _type_
+    :return: _description_
+    :rtype: bool
+    """
+    start_time = time.time()
+    elapsed_time = 0
+    while expected_value not in device_config.get(device_name):
+        elapsed_time = time.time() - start_time
+        if elapsed_time > timeout:
+            return False
+    return True
+
+
 @pytest.mark.post_deployment
 def test_event_subscription():
     cm = TmcComponentManager(
@@ -26,9 +51,11 @@ def test_event_subscription():
     event_manager = EventManager(cm)
     event_manager.state_event_callback = mock.Mock()
     event_manager.start_event_subscription(SUBSCRIPTION_CONFIGURATION)
-    time.sleep(2)
-    assert "state" in event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
+    assert is_expected_value_in_device_config_within_timeout(
+        "state",
+        CSP_SUBARRAY_DEVICE,
+        event_manager.device_subscription_configuration,
+        5,
     )
     assert event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
@@ -57,9 +84,11 @@ def test_late_event_subscription():
     time.sleep(10)
     lp = cm.liveliness_probe_object
     lp.add_device(CSP_SUBARRAY_DEVICE)
-    time.sleep(2)
-    assert "state" in event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
+    assert is_expected_value_in_device_config_within_timeout(
+        "state",
+        CSP_SUBARRAY_DEVICE,
+        event_manager.device_subscription_configuration,
+        5,
     )
     assert event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
