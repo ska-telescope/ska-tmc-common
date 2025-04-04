@@ -13,28 +13,33 @@ SUBSCRIPTION_CONFIGURATION = {CSP_SUBARRAY_DEVICE: ["state"]}
 
 
 def is_expected_value_in_device_config_within_timeout(
-    expected_value, device_name, device_config, timeout
+    expected_value: str, device_name: str, device_config: dict, timeout: int
 ) -> bool:
-    """_summary_
+    """Waits till the expected value is present in the device
+        configuration.
 
-    :param expected_value: _description_
-    :type expected_value: _type_
-    :param device_name: _description_
-    :type device_name: _type_
-    :param device_config: _description_
-    :type device_config: _type_
-    :param timeout: _description_
-    :type timeout: _type_
+    :param expected_value: expected attribute value
+    :type expected_value: str
+    :param device_name: tango device name
+    :type device_name: str
+    :param device_config: device configuration
+    :type device_config: dict
+    :param timeout: the function waits until this timeout.
+    :type timeout: int
     :return: _description_
     :rtype: bool
     """
     start_time = time.time()
-    elapsed_time = 0
-    while expected_value not in device_config.get(device_name):
+    elapsed_time: int = 0
+    success: bool = False
+    while not success:
+        if device_config.get(device_name):
+            if expected_value in device_config.get(device_name):
+                success = True
         elapsed_time = time.time() - start_time
         if elapsed_time > timeout:
-            return False
-    return True
+            break
+    return success
 
 
 @pytest.mark.post_deployment

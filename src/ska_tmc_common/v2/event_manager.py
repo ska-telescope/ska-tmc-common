@@ -387,7 +387,8 @@ class EventManager:
                 subscription_configuration,
             )
             time.sleep(self.__event_subscription_check_period)
-        self.pending_configuration.update(subscription_configuration)
+        if subscription_completion:
+            self.pending_configuration.update(subscription_configuration)
         self.stop_timer(timer_thread_name)
 
     def remove_subscribed_devices(
