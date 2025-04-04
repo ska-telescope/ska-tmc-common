@@ -26,7 +26,8 @@ def is_expected_value_in_device_config_within_timeout(
     :type device_config: dict
     :param timeout: the function waits until this timeout.
     :type timeout: int
-    :return: _description_
+    :return: returns the success if the value is
+        present in the configuration.
     :rtype: bool
     """
     start_time = time.time()

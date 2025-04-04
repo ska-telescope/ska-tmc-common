@@ -387,7 +387,7 @@ class EventManager:
                 subscription_configuration,
             )
             time.sleep(self.__event_subscription_check_period)
-        if subscription_completion:
+        if subscription_configuration:
             self.pending_configuration.update(subscription_configuration)
         self.stop_timer(timer_thread_name)
 
