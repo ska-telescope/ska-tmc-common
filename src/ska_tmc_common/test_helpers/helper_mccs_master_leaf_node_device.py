@@ -7,9 +7,11 @@ import threading
 import time
 from typing import List, Tuple
 
+from ska_control_model import AdminMode
 from ska_tango_base.base.base_device import SKABaseDevice
 from ska_tango_base.commands import ResultCode
-from tango.server import command
+from tango import AttrWriteType
+from tango.server import attribute, command
 
 from ska_tmc_common import CommandNotAllowed, FaultType
 from ska_tmc_common.admin_mode_decorator import admin_mode_check
@@ -37,8 +39,38 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
             """
             super().do()
             self._device.set_change_event("isSubsystemAvailable", True, False)
+            self._device.set_change_event(
+                "mccsControllerAdminMode", True, False
+            )
             self._device.op_state_model.perform_action("component_on")
             return (ResultCode.OK, "")
+
+    mccsControllerAdminMode = attribute(
+        dtype=AdminMode,
+        access=AttrWriteType.READ,
+    )
+
+    def read_mccsControllerAdminMode(self):
+        """
+        Reads the current admin mode of the mccs controller
+        :return: obs state
+        """
+        return self._mccs_controller_admin_mode
+
+    @command(
+        dtype_in=int,
+        doc_in="Set AdminMode",
+    )
+    def SetMccsControllerAdminMode(self, argin: int) -> None:
+        """
+        Trigger a admin mode change
+        """
+        value = AdminMode(argin)
+        if self._mccs_controller_admin_mode != value:
+            self._mccs_controller_admin_mode = value
+            self.push_change_event(
+                "mccsControllerAdminMode", self._mccs_controller_admin_mode
+            )
 
     @admin_mode_check()
     def is_AssignResources_allowed(self) -> bool:
