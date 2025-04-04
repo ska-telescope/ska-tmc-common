@@ -13,7 +13,10 @@ SUBSCRIPTION_CONFIGURATION = {CSP_SUBARRAY_DEVICE: ["state"]}
 
 
 def is_expected_value_in_device_config_within_timeout(
-    expected_value: str, device_name: str, device_config: dict, timeout: int
+    expected_value: str,
+    device_name: str,
+    event_manager: EventManager,
+    timeout: int,
 ) -> bool:
     """Waits till the expected value is present in the device
         configuration.
@@ -22,10 +25,10 @@ def is_expected_value_in_device_config_within_timeout(
     :type expected_value: str
     :param device_name: tango device name
     :type device_name: str
-    :param device_config: device configuration
-    :type device_config: dict
     :param timeout: the function waits until this timeout.
     :type timeout: int
+    :param event_manager: Event manager instance
+    :type event_manager: EventManager
     :return: returns the success if the value is
         present in the configuration.
     :rtype: bool
@@ -34,8 +37,13 @@ def is_expected_value_in_device_config_within_timeout(
     elapsed_time: int = 0
     success: bool = False
     while not success:
-        if device_config.get(device_name):
-            if expected_value in device_config.get(device_name):
+        if event_manager.device_subscription_configuration.get(device_name):
+            if (
+                expected_value
+                in event_manager.device_subscription_configuration.get(
+                    device_name
+                )
+            ):
                 success = True
         elapsed_time = time.time() - start_time
         if elapsed_time > timeout:
@@ -60,8 +68,8 @@ def test_event_subscription():
     assert is_expected_value_in_device_config_within_timeout(
         "state",
         CSP_SUBARRAY_DEVICE,
-        event_manager.device_subscription_configuration,
-        10,
+        event_manager,
+        5,
     )
     assert event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
@@ -93,8 +101,8 @@ def test_late_event_subscription():
     assert is_expected_value_in_device_config_within_timeout(
         "state",
         CSP_SUBARRAY_DEVICE,
-        event_manager.device_subscription_configuration,
-        10,
+        event_manager,
+        5,
     )
     assert event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
