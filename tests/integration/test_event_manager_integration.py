@@ -91,11 +91,12 @@ def test_late_event_subscription():
     dev_info = DeviceInfo(CSP_SUBARRAY_DEVICE, True)  # exported device
     cm._component.update_device(dev_info)
     event_manager = EventManager(cm)
-    event_manager.start_event_subscription(
-        SUBSCRIPTION_CONFIGURATION, 10
-    )  # device not available
+    cm.event_receiver_object = event_manager
     event_manager.state_event_callback = mock.Mock()
-    time.sleep(10)
+    event_manager.start_event_subscription(
+        SUBSCRIPTION_CONFIGURATION, 5
+    )  # device not available
+    time.sleep(5)
     lp = cm.liveliness_probe_object
     lp.add_device(CSP_SUBARRAY_DEVICE)
     assert is_expected_value_in_device_config_within_timeout(

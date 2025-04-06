@@ -30,11 +30,11 @@ from ska_tmc_common.input import InputParameter
 from ska_tmc_common.observable import Observable
 from ska_tmc_common.op_state_model import TMCOpStateModel
 from ska_tmc_common.timeout_callback import TimeoutCallback
-from ska_tmc_common.v1.liveliness_probe import (
+from ska_tmc_common.v2.event_manager import EventManager
+from ska_tmc_common.v2.liveliness_probe import (
     MultiDeviceLivelinessProbe,
     SingleDeviceLivelinessProbe,
 )
-from ska_tmc_common.v2.event_manager import EventManager
 
 
 class TmcComponent:

@@ -44,6 +44,7 @@ class EventManager:
         logger: logging.Logger = LOGGER,
         stateless: bool = True,
         event_subscription_check_period: int = 1,
+        event_error_max_count: int = 10,
     ) -> None:
         """This method initialises the event manager class instances with
         necessary configurations.
@@ -64,6 +65,9 @@ class EventManager:
         :param event_subscription_check_period: This is the interval time
             between subscription retries, defaults to 1 second.
         :type event_subscription_check_period: int
+        :param event_error_max_count: This is maximum tolerable count for
+            API EventTimeout error.
+        :type event_error_max_count: int
         """
         self.__logger: logging.Logger = logger
         self.__device_subscription_configuration: (
@@ -82,9 +86,12 @@ class EventManager:
         self.__timer_threads: dict[str, threading.Timer] | dict = {}
         self.__pending_configuration: dict[str, list] = {}
         self.__event_thread: Optional[threading.Thread] = None
+        self.__error_handling_thread: Optional[threading.Thread] = None
         self.__event_subscription_check_period = (
             event_subscription_check_period
         )
+        self.__device_error_tracking: dict = {}
+        self.__event_error_max_count: int = event_error_max_count
         self.__pending_configuration_lock: threading.RLock = threading.RLock()
         self.__device_subscription_configuration_lock: threading.RLock = (
             threading.RLock()
@@ -92,6 +99,7 @@ class EventManager:
         self.__subscription_configuration_lock: threading.RLock = (
             threading.RLock()
         )
+        self.__device_error_tracking_lock: threading.RLock = threading.RLock()
 
     @property
     def pending_configuration(self) -> dict[str, list]:
@@ -172,6 +180,12 @@ class EventManager:
         with self.__device_subscription_configuration_lock:
             self.__device_subscription_configuration = updated_configuration
 
+    @property
+    def device_error_tracking(self) -> None:
+        """This method returns dictionary with device errors."""
+        with self.__device_error_tracking_lock:
+            return self.__device_error_tracking
+
     def set_timeout(self) -> None:
         """Sets the timeout flag."""
         self.__timed_out = True
@@ -213,7 +227,8 @@ class EventManager:
         :type timeout: int
         """
         subscription_configuration = (
-            subscription_configuration or self.subscription_configruation
+            subscription_configuration.copy()
+            or self.subscription_configruation
         )
         self.__event_thread = threading.Thread(
             target=self.subscribe_events,
@@ -433,3 +448,75 @@ class EventManager:
         :type device_name: str
         """
         self.subscribe_pending_events(device_name)
+
+    def get_device_and_attribute_name(self, attribute_fqdn: str) -> tuple[str]:
+        """This method provides device and attribute name.
+
+        :param attribute_fqdn: Full attribute FQDN from event data.
+        :type attribute_fqdn: str
+        :return: Returns device name and attribue name
+        :rtype: tuple[str]
+        """
+        attribute_name = attribute_fqdn.split("/")[-1]
+        remove_attribute_name_with_slash = "/" + attribute_name
+        device_name = attribute_fqdn.replace(
+            remove_attribute_name_with_slash, ""
+        )
+        return device_name, attribute_name
+
+    def handle_event_error(self, event: tango.EventData) -> None:
+        """This method handles the event error by tracking
+
+        :param event: change event data with error.
+        :type event: tango.EventData
+        """
+        if (
+            event.errors[0].reason == API_EVENT_TIMEOUT
+            and EVENT_ERROR_DESC in event.errors[0].desc
+        ):
+            device_name, attribute_name = self.get_device_and_attribute_name(
+                event.attr_name
+            )
+            if device_name not in self.device_error_tracking:
+                self.device_error_tracking.update(
+                    {device_name: {attribute_name: 1}}
+                )
+            elif attribute_name not in self.device_error_tracking.get(
+                device_name
+            ):
+                self.device_error_tracking.get(device_name).update(
+                    {attribute_name: 1}
+                )
+            else:
+                error_count: int = self.device_error_tracking.get(
+                    device_name
+                ).get(attribute_name)
+                if error_count >= self.__event_error_max_count:
+                    self.unsubscribe_events(device_name, [attribute_name])
+                    self.subscribe_events({device_name: [attribute_name]})
+                    self.device_error_tracking.get(device_name).pop(
+                        attribute_name
+                    )
+                else:
+                    self.device_error_tracking[device_name][
+                        attribute_name
+                    ] += 1
+
+    def check_and_handle_event_error(self, event: tango.EventData) -> bool:
+        """Checks event error and handles the API timeout error if it
+        persists.
+
+        :param event: Change event data
+        :type event: tango.EventData
+        :return: Returns True if event data has error,
+            else returns False.s
+        :rtype: bool
+        """
+        if not event.err:
+            return False
+        self.__error_handling_thread = threading.Thread(
+            target=self.handle_event_error,
+            args=(event),
+        )
+        self.__error_handling_thread.start()
+        return True

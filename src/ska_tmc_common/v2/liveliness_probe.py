@@ -103,8 +103,10 @@ class BaseLivelinessProbe:
             else:
                 proxy = self._dev_factory.get_device(dev_info.dev_name)
                 proxy.state()
-                component_manager.update_responsiveness_info(dev_info.dev_name)
                 if dev_info.unresponsive:
+                    component_manager.update_responsiveness_info(
+                        dev_info.dev_name
+                    )
                     update_device_availabiity(dev_info.dev_name)
         except tango.CommunicationFailed as exception:
             if self.log_manager.is_logging_allowed("communication_failed"):
