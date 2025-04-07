@@ -2,6 +2,7 @@ import time
 from unittest import mock
 
 import pytest
+import tango
 
 from ska_tmc_common import DeviceInfo, InputParameter
 from ska_tmc_common.v2.event_manager import EventManager
@@ -10,6 +11,11 @@ from tests.settings import CSP_SUBARRAY_DEVICE, logger
 from tests.test_component import TestTMCComponent
 
 SUBSCRIPTION_CONFIGURATION = {CSP_SUBARRAY_DEVICE: ["state"]}
+
+
+class TestEventManager(EventManager):
+    def state_event_callback(self, event):
+        self.check_and_handle_event_error(event)
 
 
 def is_expected_value_in_device_config_within_timeout(
@@ -113,3 +119,43 @@ def test_late_event_subscription():
     assert not event_manager.device_subscription_configuration.get(
         CSP_SUBARRAY_DEVICE
     )
+
+
+@pytest.mark.post_deployment
+def test_event_error_resubscription():
+    cm = TmcComponentManager(
+        _component=TestTMCComponent(logger=logger),
+        _input_parameter=InputParameter(None),
+        logger=logger,
+    )
+    dev_info = DeviceInfo(CSP_SUBARRAY_DEVICE, True)  # exported device
+    cm._component.update_device(dev_info)
+    lp = cm.liveliness_probe_object
+    lp.add_device(CSP_SUBARRAY_DEVICE)
+    event_manager = TestEventManager(cm, event_error_max_count=2)
+    event_manager.start_event_subscription(SUBSCRIPTION_CONFIGURATION)
+    assert is_expected_value_in_device_config_within_timeout(
+        "state",
+        CSP_SUBARRAY_DEVICE,
+        event_manager,
+        5,
+    )
+    assert event_manager.device_subscription_configuration.get(
+        CSP_SUBARRAY_DEVICE
+    ).get("is_subscription_completed")
+    initial_subscription_id = (
+        event_manager.device_subscription_configuration.get(
+            CSP_SUBARRAY_DEVICE
+        ).get("state")
+    )
+    admin_proxy = tango.DeviceProxy("dserver/test_device/01")
+    admin_proxy.RestartServer()
+    time.sleep(20)
+    admin_proxy.RestartServer()
+    time.sleep(20)
+    current_subscription_id = (
+        event_manager.device_subscription_configuration.get(
+            CSP_SUBARRAY_DEVICE
+        ).get("state")
+    )
+    assert initial_subscription_id != current_subscription_id

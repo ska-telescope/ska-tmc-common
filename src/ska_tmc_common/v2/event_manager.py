@@ -254,6 +254,7 @@ class EventManager:
         attribute_list = attribute_names or list(
             self.device_subscription_configuration.get(device_name).keys()
         )
+
         proxy = self.__device_factory.get_device(device_name)
         for attribute_name in attribute_list:
             if attribute_name != COMPLETION_INDICATOR_KEY:
@@ -264,6 +265,21 @@ class EventManager:
                 )
             self.device_subscription_configuration.get(device_name).pop(
                 attribute_name
+            )
+        if (
+            len(
+                list(
+                    self.device_subscription_configuration.get(
+                        device_name
+                    ).keys()
+                )
+            )
+            == 1
+            and COMPLETION_INDICATOR_KEY
+            in self.device_subscription_configuration.get(device_name).keys()
+        ):
+            self.device_subscription_configuration.get(device_name).pop(
+                COMPLETION_INDICATOR_KEY
             )
 
     def init_device_subscription_configuration(self, device_name: str) -> None:
@@ -462,6 +478,8 @@ class EventManager:
         device_name = attribute_fqdn.replace(
             remove_attribute_name_with_slash, ""
         )
+        if not self.device_subscription_configuration.get(device_name):
+            device_name = device_name.split("/", 3)[-1]
         return device_name, attribute_name
 
     def handle_event_error(self, event: tango.EventData) -> None:
@@ -516,7 +534,7 @@ class EventManager:
             return False
         self.__error_handling_thread = threading.Thread(
             target=self.handle_event_error,
-            args=(event),
+            args=(event,),
         )
         self.__error_handling_thread.start()
         return True
