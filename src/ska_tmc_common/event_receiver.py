@@ -119,7 +119,8 @@ class EventReceiver:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
         except Exception as exception:
             self._logger.exception(
-                "Exception occured while getting device proxy for "
+                " Exception occured "
+                + "while getting device proxy for "
                 + "device %s: %s",
                 dev_info,
                 exception,
@@ -128,7 +129,7 @@ class EventReceiver:
             try:
                 for attribute, callable_value in attribute_dictionary.items():
                     self._logger.info(
-                        "Subscribing event for attribute: %s", attribute
+                        "Subscribing event " + "for attribute: %s", attribute
                     )
                     proxy.subscribe_event(
                         attribute,

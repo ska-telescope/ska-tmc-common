@@ -36,7 +36,7 @@ class LRCRCallback:
 
         self.logger.info(
             f"Updating command data with command id {command_id} and result "
-            f"code {result_code} and kwargs {kwargs}"
+            f"code {result_code.name} and kwargs {kwargs}"
         )
         if command_id in self.command_data:
             self.command_data[command_id]["result_code"] = result_code

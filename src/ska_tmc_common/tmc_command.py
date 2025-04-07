@@ -62,7 +62,8 @@ class BaseTMCCommand:
         """
         command_id = f"{time.time()}-{command_name}"
         self.logger.info(
-            "Setting command id as %s for command: %s",
+            "Command Id : %s | Setting command id as %s for command: %s",
+            command_id,
             command_id,
             command_name,
         )
@@ -204,7 +205,9 @@ class BaseTMCCommand:
         if hasattr(self, "component_manager"):
             self.component_manager.tracker_thread = self.tracker_thread
         self.logger.debug(
-            "Started command tracker thread for: %s ", timeout_id
+            "Command Id : %s | Started command tracker" + " thread for: %s ",
+            command_id,
+            timeout_id,
         )
 
     #  pylint: disable=broad-exception-caught
@@ -244,7 +247,11 @@ class BaseTMCCommand:
         """
         with EnsureOmniThread():
             self.index = 0
-            self.logger.info("Timeout id in progress - %s", timeout_id)
+            self.logger.info(
+                "Command Id : %s | " + "Timeout id in progress - %s",
+                command_id,
+                timeout_id,
+            )
             while not self._stop:
                 state_to_achieve = expected_state[self.index]
                 try:
@@ -293,7 +300,9 @@ class BaseTMCCommand:
 
                 except threading.ThreadError as thread_error:
                     self.logger.error(
-                        "Thread error occurred: %s", thread_error
+                        "Command Id : %s | " + "Thread error occurred: %s",
+                        command_id,
+                        thread_error,
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
@@ -306,7 +315,9 @@ class BaseTMCCommand:
 
                 except TimeoutError as timeout_error:
                     self.logger.error(
-                        "Timeout error occurred: %s", timeout_error
+                        "Command Id : %s | Timeout " + "error occurred: %s",
+                        timeout_error,
+                        command_id,
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
@@ -318,7 +329,10 @@ class BaseTMCCommand:
                     )
                 except Exception as exp:
                     self.logger.error(
-                        "Exception occurred in Tracker thread: %s", exp
+                        "Command Id : %s | Exception occurred "
+                        "in Tracker thread: %s",
+                        command_id,
+                        exp,
                     )
                     self.stop_tracker_thread(timeout_id)
                     self.update_task_status(
@@ -351,7 +365,9 @@ class BaseTMCCommand:
         """
         if abort_event.is_set():
             self.logger.error(
-                "Command has been Aborted, " + "Setting TaskStatus to aborted"
+                "Command Id : %s | Command has been Aborted, "
+                + "Setting TaskStatus to aborted",
+                self.component_manager.command_id,
             )
             return True
         return False
@@ -371,13 +387,20 @@ class BaseTMCCommand:
         :return: boolean value if timeout occurred or not
         """
 
-        self.logger.info("Time out check for %s", timeout_id)
+        self.logger.info(
+            "Command Id : %s | Time out check" + " for %s",
+            self.component_manager.command_id,
+            timeout_id,
+        )
         if timeout_id:
             if timeout_callback.assert_against_call(
                 timeout_id, TimeoutState.OCCURED
             ):
                 self.logger.error(
-                    "Timeout has occured for command with id %s", timeout_id
+                    "Command Id : %s | "
+                    "Timeout has occured for command with id %s",
+                    self.component_manager.command_id,
+                    timeout_id,
                 )
                 return True
         return False
@@ -420,8 +443,11 @@ class BaseTMCCommand:
                 state_to_achieve = expected_state[self.index]
             else:
                 self.logger.info(
-                    f"Command with id {command_id} has completed "
-                    + f"successfully with state: {state_to_achieve}"
+                    "Command Id : %s | Command with id %s has completed "
+                    + "successfully with state: %s",
+                    command_id,
+                    command_id,
+                    state_to_achieve,
                 )
                 return True
         return False
@@ -442,7 +468,10 @@ class BaseTMCCommand:
             command_id, ResultCode.FAILED
         ):
             self.logger.error(
-                "Command with command id %s failed with exception.", command_id
+                "Command Id : %s | Command with command id %s "
+                "failed with exception.",
+                command_id,
+                command_id,
             )
             return True
         return False
@@ -576,7 +605,10 @@ class TmcLeafNodeCommand(BaseTMCCommand):
             )
 
         self.logger.info(
-            f"Invoking {command_name} command on: {adapter.dev_name}"
+            "Command Id : %s | Invoking  %s command on device: %s ",
+            self.component_manager.command_id,
+            command_name,
+            adapter.dev_name,
         )
         try:
             if argin is not None:
@@ -588,7 +620,11 @@ class TmcLeafNodeCommand(BaseTMCCommand):
             return result_code, message
         # pylint: disable=broad-exception-caught
         except Exception as exp_msg:
-            self.logger.exception("Command invocation failed: %s", exp_msg)
+            self.logger.exception(
+                "Command Id : %s | Command" + "invocation failed: %s",
+                self.component_manager.command_id,
+                exp_msg,
+            )
             return (
                 [ResultCode.FAILED],
                 [

@@ -34,7 +34,8 @@ class EventCallback:
                 self.event_callback(event_data)
         except Exception as exception:
             LOGGER.exception(
-                "Unexpected exception in calling the callback: %s", exception
+                "Unexpected exception " + "in calling the callback: %s",
+                exception,
             )
 
     def check_event_error(self, event_data: tango.EventData) -> bool:

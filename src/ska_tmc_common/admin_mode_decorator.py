@@ -36,7 +36,11 @@ def check_if_admin_mode_offline(
             f"Please set adminMode Online and try again"
         )
         if hasattr(class_instance, "logger"):
-            class_instance.logger.warning(error_message)
+            class_instance.logger.warning(
+                "Command Id : %s | %s ",
+                class_instance.component_manager.command_id,
+                error_message,
+            )
         return False
 
     return True
