@@ -29,7 +29,7 @@ def test_liveliness_probe():
     cm._component.update_device(dev_info)
     lp = cm.liveliness_probe_object
     lp.add_device(CSP_SUBARRAY_DEVICE)
-    time.sleep(4)
+    time.sleep(2)
     assert not cm._component.get_device(CSP_SUBARRAY_DEVICE).unresponsive
 
     # full_trl

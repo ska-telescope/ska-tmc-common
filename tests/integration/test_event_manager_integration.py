@@ -7,10 +7,12 @@ import tango
 from ska_tmc_common import DeviceInfo, InputParameter
 from ska_tmc_common.v2.event_manager import EventManager
 from ska_tmc_common.v2.tmc_component_manager import TmcComponentManager
-from tests.settings import CSP_SUBARRAY_DEVICE, logger
+from tests.settings import MCCS_SUBARRAY_DEVICE, logger
 from tests.test_component import TestTMCComponent
 
-SUBSCRIPTION_CONFIGURATION = {CSP_SUBARRAY_DEVICE: ["state"]}
+ATTRIBUTE_NAME = "state"
+SUBSCRIPTION_CONFIGURATION = {MCCS_SUBARRAY_DEVICE: [ATTRIBUTE_NAME]}
+COMPLETION_KEY = "is_subscription_completed"
 
 
 class TestEventManager(EventManager):
@@ -64,26 +66,26 @@ def test_event_subscription():
         _input_parameter=InputParameter(None),
         logger=logger,
     )
-    dev_info = DeviceInfo(CSP_SUBARRAY_DEVICE, True)  # exported device
+    dev_info = DeviceInfo(MCCS_SUBARRAY_DEVICE, True)  # exported device
     cm._component.update_device(dev_info)
     lp = cm.liveliness_probe_object
-    lp.add_device(CSP_SUBARRAY_DEVICE)
+    lp.add_device(MCCS_SUBARRAY_DEVICE)
     event_manager = EventManager(cm)
     event_manager.state_event_callback = mock.Mock()
     event_manager.start_event_subscription(SUBSCRIPTION_CONFIGURATION)
     assert is_expected_value_in_device_config_within_timeout(
-        "state",
-        CSP_SUBARRAY_DEVICE,
+        ATTRIBUTE_NAME,
+        MCCS_SUBARRAY_DEVICE,
         event_manager,
         5,
     )
     assert event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
-    ).get("is_subscription_completed")
+        MCCS_SUBARRAY_DEVICE
+    ).get(COMPLETION_KEY)
     event_manager.state_event_callback.assert_called()
-    event_manager.unsubscribe_events(CSP_SUBARRAY_DEVICE)
+    event_manager.unsubscribe_events(MCCS_SUBARRAY_DEVICE)
     assert not event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
+        MCCS_SUBARRAY_DEVICE
     )
 
 
@@ -94,7 +96,7 @@ def test_late_event_subscription():
         _input_parameter=InputParameter(None),
         logger=logger,
     )
-    dev_info = DeviceInfo(CSP_SUBARRAY_DEVICE, True)  # exported device
+    dev_info = DeviceInfo(MCCS_SUBARRAY_DEVICE, True)  # exported device
     cm._component.update_device(dev_info)
     event_manager = EventManager(cm)
     cm.event_receiver_object = event_manager
@@ -104,20 +106,20 @@ def test_late_event_subscription():
     )  # device not available
     time.sleep(5)
     lp = cm.liveliness_probe_object
-    lp.add_device(CSP_SUBARRAY_DEVICE)
+    lp.add_device(MCCS_SUBARRAY_DEVICE)
     assert is_expected_value_in_device_config_within_timeout(
-        "state",
-        CSP_SUBARRAY_DEVICE,
+        ATTRIBUTE_NAME,
+        MCCS_SUBARRAY_DEVICE,
         event_manager,
         5,
     )
     assert event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
-    ).get("is_subscription_completed")
+        MCCS_SUBARRAY_DEVICE
+    ).get(COMPLETION_KEY)
     event_manager.state_event_callback.assert_called()
-    event_manager.unsubscribe_events(CSP_SUBARRAY_DEVICE)
+    event_manager.unsubscribe_events(MCCS_SUBARRAY_DEVICE)
     assert not event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
+        MCCS_SUBARRAY_DEVICE
     )
 
 
@@ -128,25 +130,25 @@ def test_event_error_resubscription():
         _input_parameter=InputParameter(None),
         logger=logger,
     )
-    dev_info = DeviceInfo(CSP_SUBARRAY_DEVICE, True)  # exported device
+    dev_info = DeviceInfo(MCCS_SUBARRAY_DEVICE, True)  # exported device
     cm._component.update_device(dev_info)
     lp = cm.liveliness_probe_object
-    lp.add_device(CSP_SUBARRAY_DEVICE)
+    lp.add_device(MCCS_SUBARRAY_DEVICE)
     event_manager = TestEventManager(cm, event_error_max_count=2)
     event_manager.start_event_subscription(SUBSCRIPTION_CONFIGURATION)
     assert is_expected_value_in_device_config_within_timeout(
-        "state",
-        CSP_SUBARRAY_DEVICE,
+        ATTRIBUTE_NAME,
+        MCCS_SUBARRAY_DEVICE,
         event_manager,
         5,
     )
     assert event_manager.device_subscription_configuration.get(
-        CSP_SUBARRAY_DEVICE
-    ).get("is_subscription_completed")
+        MCCS_SUBARRAY_DEVICE
+    ).get(COMPLETION_KEY)
     initial_subscription_id = (
         event_manager.device_subscription_configuration.get(
-            CSP_SUBARRAY_DEVICE
-        ).get("state")
+            MCCS_SUBARRAY_DEVICE
+        ).get(ATTRIBUTE_NAME)
     )
     admin_proxy = tango.DeviceProxy("dserver/test_device/01")
     admin_proxy.RestartServer()
@@ -155,7 +157,7 @@ def test_event_error_resubscription():
     time.sleep(20)
     current_subscription_id = (
         event_manager.device_subscription_configuration.get(
-            CSP_SUBARRAY_DEVICE
-        ).get("state")
+            MCCS_SUBARRAY_DEVICE
+        ).get(ATTRIBUTE_NAME)
     )
     assert initial_subscription_id != current_subscription_id
