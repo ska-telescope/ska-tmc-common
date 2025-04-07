@@ -59,7 +59,7 @@ class HelperSDPMasterLeafNode(HelperBaseDevice):
     )
     def SetSdpControllerAdminMode(self, argin: int) -> None:
         """
-        Trigger a admin mode change
+        Trigger a admin mode change for sdp controller
         """
         value = AdminMode(argin)
         if self._sdp_controller_admin_mode != value:
