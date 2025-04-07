@@ -1,7 +1,7 @@
 name: "mocks-{{.Release.Name}}"
 function: testing
 domain: test_device
-instances: ["01"]
+instances: ["01","02"]
 
 entrypoints:
   - name: "ska_tmc_common.test_helpers.helper_subarray_device.HelperSubArrayDevice"

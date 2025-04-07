@@ -150,7 +150,7 @@ def test_event_error_resubscription():
             MCCS_SUBARRAY_DEVICE
         ).get(ATTRIBUTE_NAME)
     )
-    admin_proxy = tango.DeviceProxy("dserver/test_device/01")
+    admin_proxy = tango.DeviceProxy("dserver/test_device/02")
     admin_proxy.RestartServer()
     time.sleep(20)
     admin_proxy.RestartServer()
