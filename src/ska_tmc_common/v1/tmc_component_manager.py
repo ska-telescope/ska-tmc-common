@@ -268,16 +268,16 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 function=self.timeout_handler,
                 args=[timeout_id, timeout_callback],
             )
-            self.logger.info(f"Starting timer for id : {timeout_id}")
+            self.logger.debug(f"Starting timer for id : {timeout_id}")
             self.timer_object.start()
         except threading.ThreadError as thread_error:
-            self.logger.info(f"Issue for  id : {timeout_id}")
+            self.logger.debug(f"Issue for  id : {timeout_id}")
             self.logger.exception(
                 "Threading error occurred while starting the thread : %s",
                 thread_error,
             )
         except Exception as exp_msg:
-            self.logger.info(f"Issue for  id : {timeout_id}")
+            self.logger.debug(f"Issue for  id : {timeout_id}")
             self.logger.exception(
                 "Exception occured while starting the timer thread : %s",
                 exp_msg,
@@ -677,7 +677,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def update_state_event(self, event: tango.EventData):
         """Updates state event  in respective queue"""
-        self.logger.info("Updating state queue")
+        self.logger.debug("Updating state queue")
         self.event_queues["state"].put(event)
 
     def update_obs_state_event(self, event: tango.EventData):
@@ -711,7 +711,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
         """
 
-        self.logger.info("Process started for %s", attribute_name)
+        self.logger.debug("Process started for %s", attribute_name)
 
         while not self._stop_thread:
             try:

@@ -36,7 +36,7 @@ class Observable:
             observer (Observer): Observer class instance.
         """
         with self.lock:
-            logger.info("registered : %s ", observer)
+            logger.debug("Registered : %s ", observer)
             self.observers.append(observer)
 
     def deregister_observer(self, observer: Observer) -> None:
@@ -49,7 +49,7 @@ class Observable:
 
             with self.lock:
                 self.observers.remove(observer)
-                logger.debug("deregistered : %s ", observer)
+                logger.debug("Deregistered : %s ", observer)
         except Exception as e:
             logger.error("The exception is: %s", e)
 

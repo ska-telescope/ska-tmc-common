@@ -32,7 +32,7 @@ class BaseLivelinessProbe:
         logger: Logger,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        max_logging_time: int = 5,
+        max_logging_time: int = 10,
     ):
         self._thread = threading.Thread(target=self.run)
         self._stop = False
@@ -173,7 +173,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         max_workers: int = 5,
         proxy_timeout: int = 500,
         sleep_time: int = 1,
-        max_logging_time: int = 5,
+        max_logging_time: int = 10,
     ):
         super().__init__(
             component_manager,

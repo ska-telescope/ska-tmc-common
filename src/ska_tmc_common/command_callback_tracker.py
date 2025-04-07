@@ -71,7 +71,11 @@ class CommandCallbackTracker:
         exception_message = self.lrcr_callback.command_data.get(
             self.command_id, {}
         ).get("exception_message", "")
-        self.logger.debug("Received exception message %s", exception_message)
+        self.logger.debug(
+            "%s | Received exception message %s",
+            self.command_id,
+            exception_message,
+        )
         if exception_message:
             self.update_exception()
 
@@ -100,7 +104,7 @@ class CommandCallbackTracker:
                     self.states_to_track.remove(attribute_value)
                 else:
                     self.logger.debug(
-                        "attribute values waiting for: %s "
+                        "Attribute values waiting for: %s "
                         + "and received: %s",
                         self.states_to_track,
                         attribute_value,
@@ -162,7 +166,7 @@ class CommandCallbackTracker:
             else:
                 self.component_manager.stop_timer()
 
-            self.logger.info("Deregistering observer")
+            self.logger.debug("Deregistering observer")
             self.observable.deregister_observer(self.lrc_exception_observer)
             self.observable.deregister_observer(self.attribute_change_observer)
             if self.component_manager.command_id:

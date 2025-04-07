@@ -1,5 +1,6 @@
 """A module implementing a decorator for Error Propagation."""
 
+import json
 from operator import methodcaller
 from threading import Event
 from typing import Callable
@@ -116,7 +117,7 @@ def error_propagation_decorator(
             class_instance.logger.debug(
                 "Executing the error propagation decorator with: %s, %s",
                 args,
-                kwargs,
+                json.dumps(kwargs, indent=4, default=str),
             )
             # Extract input argin if present
             argin = kwargs.get("argin", None)
