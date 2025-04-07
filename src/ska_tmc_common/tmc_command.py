@@ -620,8 +620,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
         # pylint: disable=broad-exception-caught
         except Exception as exp_msg:
             self.logger.exception(
-                "Command Id : %s | Command" + "invocation failed: %s",
-                self.component_manager.command_id,
+                "Command invocation failed: %s",
                 exp_msg,
             )
             return (
