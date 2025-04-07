@@ -82,7 +82,7 @@ class EventManager:
         ) = component_manager
         self.__stateless_flag: bool = stateless
         self.__log_manager: LogManager = LogManager(10)
-        self.__timed_out: bool = False
+        self.__thread_time_outs: dict[str, bool] | dict = {}
         self.__timer_threads: dict[str, threading.Timer] | dict = {}
         self.__pending_configuration: dict[str, list] = {}
         self.__event_thread: Optional[threading.Thread] = None
@@ -186,11 +186,27 @@ class EventManager:
         with self.__device_error_tracking_lock:
             return self.__device_error_tracking
 
-    def set_timeout(self) -> None:
-        """Sets the timeout flag."""
-        self.__timed_out = True
+    def init_timeout(self, thread_id: int) -> None:
+        """This method sets timeout flag for the current
+        thread.
 
-    def start_timer(self, name: str, timeout: int = 1000) -> None:
+        :param thread_id: thread id
+        :type thread_id: int
+        """
+        self.__thread_time_outs.update({thread_id: False})
+
+    def set_timeout(self, thread_id: int) -> None:
+        """Sets the timeout flag.
+
+        :param thread_id: thread id
+        :type thread_id: int
+        """
+        if self.__thread_time_outs.get(thread_id):
+            self.__thread_time_outs[thread_id] = True
+
+    def start_timer(
+        self, name: str, thread_id: int, timeout: int = 1000
+    ) -> None:
         """This method starts a timer thread which updates timeout flag
             once it is completed.
 
@@ -198,9 +214,11 @@ class EventManager:
         :type name: str
         :param timeout: Timeout till when the subscriptions will be retired.
         :type timeout: int
+        :param thread_id: thread id
+        :type thread_id: int
         """
         self.__timer_threads.update(
-            {name: threading.Timer(timeout, self.set_timeout)}
+            {name: threading.Timer(timeout, self.set_timeout, (thread_id,))}
         )
 
     def stop_timer(self, name: str) -> None:
@@ -362,11 +380,15 @@ class EventManager:
             timer_thread_name: str = TIMER_THREAD_NAME_PREFIX + str(
                 time.time()
             )
-            self.start_timer(timer_thread_name, timeout)
+            current_thread_id: int = threading.get_ident()
+            self.start_timer(timer_thread_name, current_thread_id, timeout)
             check_device_responsiveness = (
                 self.__component_manager.check_device_responsiveness
             )
-            while subscription_configuration and not self.__timed_out:
+            while (
+                subscription_configuration
+                and not self.__thread_time_outs.get(current_thread_id)
+            ):
                 for (
                     device_name,
                     attribute_names,

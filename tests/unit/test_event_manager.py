@@ -21,3 +21,4 @@ def test_init_event_manager():
         event_manager.device_subscription_configuration
         == DUMMY_SUBSCRIPTION_CONFIG
     )
+    assert event_manager.device_error_tracking == {}
