@@ -62,8 +62,7 @@ class BaseTMCCommand:
         """
         command_id = f"{time.time()}-{command_name}"
         self.logger.info(
-            "Command Id : %s | Setting command id as %s for command: %s",
-            command_id,
+            "Setting command id as %s for command: %s",
             command_id,
             command_name,
         )

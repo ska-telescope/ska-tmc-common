@@ -119,7 +119,7 @@ def error_propagation_decorator(
                 " decorator with: %s, %s",
                 class_instance.component_manager.command_id,
                 args,
-                json.dumps(kwargs, indent=4, default=str),
+                json.dumps(kwargs, indent=4, default=str, ensure_ascii=False),
             )
             # Extract input argin if present
             argin = kwargs.get("argin", None)

@@ -115,10 +115,15 @@ def error_propagation_tracker(
             # Extract the class instance from the input arguments
             class_instance = args[0]
             class_instance.logger.debug(
-                "Executing the error propagation decorator with: %s, %s",
+                "Command Id : %s | "
+                + "Executing the error "
+                + "propagation decorator with args: %s"
+                + "\nkwargs: %s",
+                class_instance.component_manager.command_id,
                 args,
                 json.dumps(kwargs, indent=4, default=str),
             )
+
             # Extract input argin if present
             argin = kwargs.get("argin", None)
 

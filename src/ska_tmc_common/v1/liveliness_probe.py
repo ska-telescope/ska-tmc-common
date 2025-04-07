@@ -5,7 +5,7 @@ Inherited from liveliness probe functionality
 
 import threading
 from logging import Logger
-from time import sleep
+from time import sleep, time
 from typing import List
 
 import tango
@@ -173,6 +173,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         liveliness_check_period: int = 1,
         max_logging_time: int = 10,
+        log_interval: float = 60.0,
     ):
         super().__init__(
             component_manager,
@@ -183,6 +184,9 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
+        self._log_interval = log_interval
+        self._last_log_time = time()
+        self._last_logged_list = None
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
@@ -195,11 +199,19 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
             return
         self._monitoring_devices.append(dev_name)
         self._logger.debug(
-            "Added device: %s to the list of monitoring devices. "
-            + "Updated list is: %s",
-            dev_name,
-            self._monitoring_devices,
+            "Added device: %s to the monitoring list.", dev_name
         )
+
+    def log_monitoring_devices(self) -> None:
+        """Log the full list of monitoring devices only if it has changed."""
+        current_list = str(self._monitoring_devices)
+        if current_list != self._last_logged_list:
+            self._logger.debug(
+                "Current monitoring devices: %s",
+                self._monitoring_devices,
+            )
+            self._last_logged_list = current_list
+            self._last_log_time = time()
 
     def remove_devices(self, dev_names: List[str]) -> None:
         """Remove the given devices from the monitoring queue.
@@ -227,6 +239,12 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     for dev_name in self._monitoring_devices:
                         dev_info = self._component_manager.get_device(dev_name)
                         self.device_task(dev_info)
+                    current_time = time()
+                    if (
+                        current_time - self._last_log_time
+                        >= self._log_interval
+                    ):
+                        self.log_monitoring_devices()
                 except (AttributeError, tango.DevFailed) as exception:
                     self._logger.warning("Exception occured: %s", exception)
                 except BaseException as exp_msg:

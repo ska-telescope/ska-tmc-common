@@ -677,7 +677,6 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
 
     def update_state_event(self, event: tango.EventData):
         """Updates state event  in respective queue"""
-        self.logger.debug("Updating state queue")
         self.event_queues["state"].put(event)
 
     def update_obs_state_event(self, event: tango.EventData):
