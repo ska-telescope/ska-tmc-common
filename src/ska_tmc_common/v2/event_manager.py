@@ -358,69 +358,72 @@ class EventManager:
             defaults to 1000 seconds
         :type timeout: int
         """
-        timer_thread_name: str = TIMER_THREAD_NAME_PREFIX + str(time.time())
-        self.start_timer(timer_thread_name, timeout)
-        check_device_responsiveness = (
-            self.__component_manager.check_device_responsiveness
-        )
-        while subscription_configuration and not self.__timed_out:
-            for (
-                device_name,
-                attribute_names,
-            ) in subscription_configuration.items():
-                subscription_completion: list = []
-                self.init_device_subscription_configuration(device_name)
-                if not check_device_responsiveness(device_name):
-                    continue
-                proxy = self.get_device_proxy(device_name)
-                if not proxy:
-                    continue
-                for attribute_name in attribute_names:
-                    try:
-                        if attribute_name in list(
-                            self.device_subscription_configuration.get(
-                                device_name
-                            ).keys()
-                        ):
-                            continue
-                        subscription_id: int = proxy.subscribe_event(
-                            attribute_name,
-                            tango.EventType.CHANGE_EVENT,
-                            getattr(
-                                self,
-                                f"{attribute_name.lower()}_event_callback",
-                            ),
-                            stateless=self.stateless_flag,
-                        )
-                        self.update_device_subscription_configuration(
-                            device_name, attribute_name, subscription_id
-                        )
-                        subscription_completion.append(True)
-                    except Exception as exception:
-                        if self.__log_manager.is_logging_allowed(
-                            f"{attribute_name}_log"
-                        ):
-                            self.__logger.error(
-                                "Following exception occured: %s"
-                                "while subscribing to attribute : %s"
-                                + "of device: %s",
-                                exception,
-                                attribute_name,
-                                device_name,
-                            )
-                        subscription_completion.append(False)
-                self.update_device_subscription_configuration(
-                    device_name,
-                    is_subscription_completed=all(subscription_completion),
-                )
-            self.remove_subscribed_devices(
-                self.device_subscription_configuration,
-                subscription_configuration,
+        with tango.EnsureOmniThread():
+            timer_thread_name: str = TIMER_THREAD_NAME_PREFIX + str(
+                time.time()
             )
-            time.sleep(self.__event_subscription_check_period)
-        if subscription_configuration:
-            self.pending_configuration.update(subscription_configuration)
-        self.stop_timer(timer_thread_name)
+            self.start_timer(timer_thread_name, timeout)
+            check_device_responsiveness = (
+                self.__component_manager.check_device_responsiveness
+            )
+            while subscription_configuration and not self.__timed_out:
+                for (
+                    device_name,
+                    attribute_names,
+                ) in subscription_configuration.items():
+                    subscription_completion: list = []
+                    self.init_device_subscription_configuration(device_name)
+                    if not check_device_responsiveness(device_name):
+                        continue
+                    proxy = self.get_device_proxy(device_name)
+                    if not proxy:
+                        continue
+                    for attribute_name in attribute_names:
+                        try:
+                            if attribute_name in list(
+                                self.device_subscription_configuration.get(
+                                    device_name
+                                ).keys()
+                            ):
+                                continue
+                            subscription_id: int = proxy.subscribe_event(
+                                attribute_name,
+                                tango.EventType.CHANGE_EVENT,
+                                getattr(
+                                    self,
+                                    f"{attribute_name.lower()}_event_callback",
+                                ),
+                                stateless=self.stateless_flag,
+                            )
+                            self.update_device_subscription_configuration(
+                                device_name, attribute_name, subscription_id
+                            )
+                            subscription_completion.append(True)
+                        except Exception as exception:
+                            if self.__log_manager.is_logging_allowed(
+                                f"{attribute_name}_log"
+                            ):
+                                self.__logger.error(
+                                    "Following exception occured: %s"
+                                    "while subscribing to attribute : %s"
+                                    + "of device: %s",
+                                    exception,
+                                    attribute_name,
+                                    device_name,
+                                )
+                            subscription_completion.append(False)
+                    self.update_device_subscription_configuration(
+                        device_name,
+                        is_subscription_completed=all(subscription_completion),
+                    )
+                self.remove_subscribed_devices(
+                    self.device_subscription_configuration,
+                    subscription_configuration,
+                )
+                time.sleep(self.__event_subscription_check_period)
+            if subscription_configuration:
+                self.pending_configuration.update(subscription_configuration)
+            self.stop_timer(timer_thread_name)
 
     def remove_subscribed_devices(
         self,
@@ -488,37 +491,42 @@ class EventManager:
         :param event: change event data with error.
         :type event: tango.EventData
         """
-        if (
-            event.errors[0].reason == API_EVENT_TIMEOUT
-            and EVENT_ERROR_DESC in event.errors[0].desc
-        ):
-            device_name, attribute_name = self.get_device_and_attribute_name(
-                event.attr_name
-            )
-            if device_name not in self.device_error_tracking:
-                self.device_error_tracking.update(
-                    {device_name: {attribute_name: 1}}
-                )
-            elif attribute_name not in self.device_error_tracking.get(
-                device_name
+        with tango.EnsureOmniThread():
+            if self.__log_manager.is_logging_allowed(
+                f"{event.attr_name}_error_log"
             ):
-                self.device_error_tracking.get(device_name).update(
-                    {attribute_name: 1}
+                self.__logger.error("Change event error: %s", event.errors)
+            if (
+                event.errors[0].reason == API_EVENT_TIMEOUT
+                and EVENT_ERROR_DESC in event.errors[0].desc
+            ):
+                device_name, attribute_name = (
+                    self.get_device_and_attribute_name(event.attr_name)
                 )
-            else:
-                error_count: int = self.device_error_tracking.get(
+                if device_name not in self.device_error_tracking:
+                    self.device_error_tracking.update(
+                        {device_name: {attribute_name: 1}}
+                    )
+                elif attribute_name not in self.device_error_tracking.get(
                     device_name
-                ).get(attribute_name)
-                if error_count >= self.__event_error_max_count:
-                    self.unsubscribe_events(device_name, [attribute_name])
-                    self.subscribe_events({device_name: [attribute_name]})
-                    self.device_error_tracking.get(device_name).pop(
-                        attribute_name
+                ):
+                    self.device_error_tracking.get(device_name).update(
+                        {attribute_name: 1}
                     )
                 else:
-                    self.device_error_tracking[device_name][
-                        attribute_name
-                    ] += 1
+                    error_count: int = self.device_error_tracking.get(
+                        device_name
+                    ).get(attribute_name)
+                    if error_count >= self.__event_error_max_count:
+                        self.unsubscribe_events(device_name, [attribute_name])
+                        self.subscribe_events({device_name: [attribute_name]})
+                        self.device_error_tracking.get(device_name).pop(
+                            attribute_name
+                        )
+                    else:
+                        self.device_error_tracking[device_name][
+                            attribute_name
+                        ] += 1
 
     def check_and_handle_event_error(self, event: tango.EventData) -> bool:
         """Checks event error and handles the API timeout error if it
