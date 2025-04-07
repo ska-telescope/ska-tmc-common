@@ -605,8 +605,7 @@ class TmcLeafNodeCommand(BaseTMCCommand):
             )
 
         self.logger.info(
-            "Command Id : %s | Invoking  %s command on device: %s ",
-            self.component_manager.command_id,
+            "Invoking  %s command on device: %s ",
             command_name,
             adapter.dev_name,
         )
