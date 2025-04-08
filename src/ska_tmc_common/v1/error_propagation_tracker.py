@@ -112,7 +112,6 @@ def error_propagation_tracker(
     def error_propagation(function: Callable) -> Callable:
         def wrapper(*args, **kwargs) -> None:
             """Wrapper method"""
-            # Extract the class instance from the input arguments
             class_instance = args[0]
             class_instance.logger.debug(
                 "Command Id: %s | Args: %s | Kwargs:\n%s",
