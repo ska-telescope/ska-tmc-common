@@ -113,19 +113,22 @@ def error_propagation_tracker(
         def wrapper(*args, **kwargs) -> None:
             """Wrapper method"""
             class_instance = args[0]
+            log_kwargs = kwargs.copy()
+            if "argin" in log_kwargs and isinstance(log_kwargs["argin"], str):
+                try:
+                    log_kwargs["argin"] = json.loads(log_kwargs["argin"])
+                except json.JSONDecodeError:
+                    class_instance.logger.warning(
+                        "Failed to parse argin as JSON: %s",
+                        log_kwargs["argin"],
+                    )
+
             class_instance.logger.debug(
                 "Command Id: %s | Args: %s | Kwargs:\n%s",
                 class_instance.component_manager.command_id,
                 args,
                 json.dumps(
-                    kwargs,
-                    indent=4,
-                    default=lambda x: (
-                        json.loads(x)
-                        if isinstance(x, str) and x.startswith("{")
-                        else str(x)
-                    ),
-                    ensure_ascii=False,
+                    log_kwargs, indent=4, ensure_ascii=False, default=str
                 ),
             )
 
