@@ -268,19 +268,23 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
                 function=self.timeout_handler,
                 args=[timeout_id, timeout_callback],
             )
-            self.logger.debug("Starting timer for thread " + 
-                              f"with timeout id : {timeout_id}")
+            self.logger.debug(
+                "Starting timer for thread "
+                + f"with timeout id : {timeout_id}"
+            )
             self.timer_object.start()
         except threading.ThreadError as thread_error:
-            self.logger.debug("Error occured in thread"
-                            + f" with timeout id : {timeout_id}")
+            self.logger.debug(
+                "Error occured in thread" + f" with timeout id : {timeout_id}"
+            )
             self.logger.exception(
                 "Threading error occurred while starting the thread : %s",
                 thread_error,
             )
         except Exception as exp_msg:
-            self.logger.debug("Error occured in thread"
-                            + f" with timeout id : {timeout_id}")
+            self.logger.debug(
+                "Error occured in thread" + f" with timeout id : {timeout_id}"
+            )
             self.logger.exception(
                 "Exception occured while starting the timer thread : %s",
                 exp_msg,
