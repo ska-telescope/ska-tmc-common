@@ -441,7 +441,6 @@ class EventManager:
                         is_subscription_completed=all(subscription_completion),
                     )
                 self.remove_subscribed_devices(
-                    self.device_subscriptions,
                     subscription_configuration,
                 )
                 time.sleep(self.__event_subscription_check_period)
@@ -451,14 +450,10 @@ class EventManager:
 
     def remove_subscribed_devices(
         self,
-        device_subscriptions: dict,
         subscription_configuration: dict,
     ) -> None:
         """This method removes the devices from the configuration data.
 
-        :param device_subscriptions: This parameter contains
-            device subscription configuration.
-        :type device_subscriptions: dict
         :param subscription_configuration: This parameter contains the detail
             of devices and their attributes to be subscribed.
         :type subscription_configuration: dict
@@ -467,7 +462,7 @@ class EventManager:
         for (
             device_name,
             configuration,
-        ) in device_subscriptions.items():
+        ) in self.device_subscriptions.items():
             if configuration.get(COMPLETION_INDICATOR_KEY):
                 subscription_configuration.pop(device_name, None)
 
