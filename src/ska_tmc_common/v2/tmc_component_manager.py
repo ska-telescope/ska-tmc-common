@@ -98,7 +98,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self,
         logger: Logger,
         *args,
-        _event_receiver: bool = False,
+        _event_manager: bool = False,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
@@ -111,7 +111,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
             communication_state_callback,
             component_state_callback,
         )
-        self.event_receiver = _event_receiver
+        self.event_manager = _event_manager
         self._is_admin_mode_enabled: bool = True
         self.proxy_timeout = proxy_timeout
         self.event_subscription_check_period = event_subscription_check_period
@@ -119,7 +119,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self.op_state_model = TMCOpStateModel(logger, callback=None)
         self.lock = threading.Lock()
         self.rlock = threading._RLock()
-        self.event_receiver_object: Optional[EventManager] = None
+        self.event_manager_object: Optional[EventManager] = None
         self.timer_object = None
         self.liveliness_probe_object: (
             Union[SingleDeviceLivelinessProbe, MultiDeviceLivelinessProbe]
@@ -130,6 +130,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         self._device = None
         self.event_queues = {}
         self._stop_thread: bool = False
+        self.event_thread_id: Optional[int] = None
 
     @property
     def command_id(self) -> str:
@@ -231,15 +232,33 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         if self.liveliness_probe_object:
             self.liveliness_probe_object.stop()
 
-    def start_event_receiver(self) -> None:
-        """Starts the Event Receiver for given device"""
-        if self.event_receiver:
-            self.event_receiver_object.start()
+    def start_event_manager(
+        self,
+        subscription_configuration: Optional[dict[str, list]] = None,
+        timeout: int = 1000,
+    ) -> None:
+        """Starts the Event Receiver for given device.
 
-    def stop_event_receiver(self) -> None:
+        :param subscription_configuration: This is optional parameter,
+            if user wants to start thread with different configuration.
+        :type subscription_configuration: dict[str, list], optional
+        :param timeout: The duration till when it will try to subscribe,
+            defaults to 1000 seconds.
+        :type timeout: int
+        """
+        if self.event_manager:
+            self.event_thread_id = (
+                self.event_manager_object.start_event_subscription(
+                    subscription_configuration, timeout
+                )
+            )
+
+    def stop_event_manager(self) -> None:
         """Stops the Event Receiver"""
-        if self.event_receiver:
-            self.event_receiver_object.stop()
+        if self.event_manager:
+            self.event_manager_object.cancel_subscription_thread(
+                self.event_thread_id
+            )
 
     #  pylint: disable=broad-exception-caught
     def start_timer(
@@ -318,8 +337,8 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         This method calls availability callback of event receiver.
         :param device_name: The device name which is available again.
         """
-        if self.event_receiver_object:
-            self.event_receiver_object.device_avaiability_callback(device_name)
+        if self.event_manager_object:
+            self.event_manager_object.device_avaiability_callback(device_name)
 
 
 class TmcComponentManager(BaseTmcComponentManager):
@@ -346,7 +365,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         _liveliness_probe: LivelinessProbeType = (
             LivelinessProbeType.MULTI_DEVICE
         ),
-        _event_receiver: bool = True,
+        _event_manager: bool = True,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
@@ -363,7 +382,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         """
         super().__init__(
             logger,
-            _event_receiver,
+            _event_manager,
             communication_state_callback,
             component_state_callback,
             proxy_timeout,
@@ -376,7 +395,7 @@ class TmcComponentManager(BaseTmcComponentManager):
         self._devices = []
         self._input_parameter = _input_parameter
         self.start_liveliness_probe(_liveliness_probe)
-        self.event_receiver_object = EventManager(self)
+        self.event_manager_object = EventManager(self)
 
     def reset(self) -> None:
         """
@@ -572,7 +591,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         logger: Logger,
         *args,
         _liveliness_probe: LivelinessProbeType = LivelinessProbeType.NONE,
-        _event_receiver: bool = False,
+        _event_manager: bool = False,
         communication_state_callback: Optional[Callable] = None,
         component_state_callback: Optional[Callable] = None,
         proxy_timeout: int = 500,
@@ -587,7 +606,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         """
         super().__init__(
             logger,
-            _event_receiver,
+            _event_manager,
             communication_state_callback,
             component_state_callback,
             proxy_timeout,
@@ -598,7 +617,7 @@ class TmcLeafNodeComponentManager(BaseTmcComponentManager):
         )
         self._device = None
         self.event_processing_methods = {}
-        self.event_receiver_object = EventManager(self)
+        self.event_manager_object = EventManager(self)
 
     def reset(self) -> None:
         """

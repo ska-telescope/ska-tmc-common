@@ -93,10 +93,9 @@ class EventManager:
         self.__stateless_flag: bool = stateless
         self.__log_manager: LogManager = LogManager(10)
         self.__thread_time_outs: dict[str, bool] | dict = {}
+        self.__unsubscription_thread_cancellation: dict[str, bool] | dict = {}
         self.__timer_threads: dict[str, threading.Timer] | dict = {}
         self.__pending_configuration: dict[str, list] = {}
-        self.__event_thread: Optional[threading.Thread] = None
-        self.__error_handling_thread: Optional[threading.Thread] = None
         self.__event_subscription_check_period = (
             event_subscription_check_period
         )
@@ -112,6 +111,11 @@ class EventManager:
             threading.RLock()
         )
         self.__device_errors_tracker_lock: threading.RLock = threading.RLock()
+        self.__unsubscription_thread_cancellation_lock: threading.RLock = (
+            threading.RLock()
+        )
+        self.__timer_threads_lock: threading.RLock = threading.RLock()
+        self.__thread_time_outs_lock: threading.RLock = threading.RLock()
 
     @property
     def pending_configuration(self) -> dict[str, list]:
@@ -203,7 +207,8 @@ class EventManager:
         :param thread_id: thread id
         :type thread_id: int
         """
-        self.__thread_time_outs.update({thread_id: False})
+        with self.__thread_time_outs_lock:
+            self.__thread_time_outs.update({thread_id: False})
 
     def set_timeout(self, thread_id: int) -> None:
         """Sets the timeout flag for provided the thread id.
@@ -211,8 +216,9 @@ class EventManager:
         :param thread_id: thread id
         :type thread_id: int
         """
-        if thread_id in self.__thread_time_outs:
-            self.__thread_time_outs[thread_id] = True
+        with self.__thread_time_outs_lock:
+            if thread_id in self.__thread_time_outs:
+                self.__thread_time_outs[thread_id] = True
 
     def start_timer(
         self, name: str, thread_id: int, timeout: int = 1000
@@ -227,9 +233,14 @@ class EventManager:
         :param thread_id: thread id
         :type thread_id: int
         """
-        self.__timer_threads.update(
-            {name: threading.Timer(timeout, self.set_timeout, (thread_id,))}
-        )
+        with self.__timer_threads_lock:
+            self.__timer_threads.update(
+                {
+                    name: threading.Timer(
+                        timeout, self.set_timeout, (thread_id,)
+                    )
+                }
+            )
 
     def stop_timer(self, name: str) -> None:
         """This method stops the timer thread running.
@@ -237,35 +248,86 @@ class EventManager:
         :param name: The name of the timer thread which needs to be stopped.
         :type name: str
         """
-        if self.__timer_threads.get(name):
-            self.__timer_threads.get(name).cancel()
-            self.__timer_threads.pop(name)
+        with self.__timer_threads_lock:
+            if self.__timer_threads.get(name):
+                self.__timer_threads.get(name).cancel()
+                self.__timer_threads.pop(name)
 
     def start_event_subscription(
         self,
         subscription_configuration: Optional[dict[str, list]] = None,
         timeout: int = 1000,
-    ) -> None:
+    ) -> int:
         """This method starts a thread to subscribe events.
 
         :param subscription_configuration: This is optional parameter,
             if user wants to start thread with different configuration.
         :type subscription_configuration: dict[str, list], optional
         :param timeout: The duration till when it will try to subscribe,
-            defaults to 1000 seconds
+            defaults to 1000 seconds.
         :type timeout: int
+        :return: Returns the thread id
+        :rtype: int
         """
         subscription_configuration = (
             subscription_configuration.copy()
             or self.subscription_configruation
         )
-        self.__event_thread = threading.Thread(
+        __event_thread = threading.Thread(
             target=self.subscribe_events,
             args=(subscription_configuration, timeout),
             name=EVENT_MANAGER_THREAD_NAME_PREFIX + str(time.time()),
             daemon=True,
         )
-        self.__event_thread.start()
+        __event_thread.start()
+        return __event_thread.ident
+
+    def init_unsubscription_cancellation(self, thread_id: int) -> None:
+        """This method initializes the unsubscription cancellation
+        dictionary.
+        :param thread_id: thread id
+        :type thread_id: int
+        """
+
+        with self.__unsubscription_thread_cancellation_lock:
+            self.__unsubscription_thread_cancellation.update(
+                {thread_id: False}
+            )
+
+    def cancel_unsubscription_thread(self, thread_id: int) -> None:
+        """This method canceles the unsubscription thread.
+
+        :param thread_id: thread id
+        :type thread_id: int
+        """
+        with self.__unsubscription_thread_cancellation_lock:
+            if thread_id in self.__unsubscription_thread_cancellation:
+                self.__unsubscription_thread_cancellation[thread_id] = True
+
+    def unsubscribe_event_async(
+        self, device_name: str, attribute_names: Optional[list] = None
+    ) -> int:
+        """This method unsubcribes the events aysnchronous using threads
+        of the specified device name or some attributes under that
+        device name.
+
+        :param device_name: This variable consists of device name whose events
+            needs to be unsubscribed.
+        :type device_name: str
+        :param attribute_names: This list contains names of specific attributes
+            that needs to be unsubscribed.
+        :type attribute_names: list, optional
+        :return: Returns the thread id
+        :rtype: int
+        """
+        __unsubscribe_event_thread = threading.Thread(
+            target=self.unsubscribe_events,
+            args=(device_name, attribute_names),
+            name=EVENT_MANAGER_THREAD_NAME_PREFIX + str(time.time()),
+            daemon=True,
+        )
+        __unsubscribe_event_thread.start()
+        return __unsubscribe_event_thread.ident
 
     def unsubscribe_events(
         self, device_name: str, attribute_names: Optional[list] = None
@@ -280,26 +342,37 @@ class EventManager:
             that needs to be unsubscribed.
         :type attribute_names: list, optional
         """
-        attribute_list = attribute_names or list(
-            self.device_subscriptions.get(device_name).keys()
-        )
-
-        proxy = self.__device_factory.get_device(device_name)
-        for attribute_name in attribute_list:
-            if attribute_name != COMPLETION_INDICATOR_KEY:
-                proxy.unsubscribe_event(
-                    self.device_subscriptions.get(device_name)
-                    .get(attribute_name)
-                    .get(SUBSCRITPTION_ID_KEY)
+        try:
+            attribute_list = attribute_names or list(
+                self.device_subscriptions.get(device_name).keys()
+            )
+            thread_id: int = threading.get_ident()
+            self.init_unsubscription_cancellation(thread_id)
+            proxy = self.__device_factory.get_device(device_name)
+            for attribute_name in attribute_list:
+                if self.__unsubscription_thread_cancellation.get(thread_id):
+                    break
+                if attribute_name != COMPLETION_INDICATOR_KEY:
+                    proxy.unsubscribe_event(
+                        self.device_subscriptions.get(device_name)
+                        .get(attribute_name)
+                        .get(SUBSCRITPTION_ID_KEY)
+                    )
+                self.device_subscriptions.get(device_name).pop(attribute_name)
+            if (
+                len(list(self.device_subscriptions.get(device_name).keys()))
+                == 1
+                and COMPLETION_INDICATOR_KEY
+                in self.device_subscriptions.get(device_name).keys()
+            ):
+                self.device_subscriptions.get(device_name).pop(
+                    COMPLETION_INDICATOR_KEY
                 )
-            self.device_subscriptions.get(device_name).pop(attribute_name)
-        if (
-            len(list(self.device_subscriptions.get(device_name).keys())) == 1
-            and COMPLETION_INDICATOR_KEY
-            in self.device_subscriptions.get(device_name).keys()
-        ):
-            self.device_subscriptions.get(device_name).pop(
-                COMPLETION_INDICATOR_KEY
+            if not self.__unsubscription_thread_cancellation.get(thread_id):
+                self.__unsubscription_thread_cancellation.pop(thread_id)
+        except Exception as exception:
+            self.__logger.error(
+                "Error occurred while unsubscribing: %s", exception
             )
 
     def init_device_subscriptions(self, device_name: str) -> None:
@@ -361,6 +434,15 @@ class EventManager:
                     device_name,
                 )
             return None
+
+    def cancel_subscription_thread(self, thread_id: int):
+        """This method provides a mechanism to cancel the event
+        subscription thread.
+
+        :param thread_id: Thread id to be stopped
+        :type thread_id: int
+        """
+        self.set_timeout(thread_id)
 
     def subscribe_events(
         self, subscription_configuration: dict[str, list], timeout: int = 1000
@@ -566,11 +648,11 @@ class EventManager:
         """
         if not event.err:
             return False
-        self.__error_handling_thread = threading.Thread(
+        __error_handling_thread = threading.Thread(
             target=self.handle_event_error,
             args=(event,),
         )
-        self.__error_handling_thread.start()
+        __error_handling_thread.start()
         return True
 
     def update_status_queue(self, status: str) -> None:
