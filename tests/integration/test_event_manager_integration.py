@@ -45,12 +45,9 @@ def is_expected_value_in_device_config_within_timeout(
     elapsed_time: int = 0
     success: bool = False
     while not success:
-        if event_manager.device_subscription_configuration.get(device_name):
-            if (
-                expected_value
-                in event_manager.device_subscription_configuration.get(
-                    device_name
-                )
+        if event_manager.device_subscriptions.get(device_name):
+            if expected_value in event_manager.device_subscriptions.get(
+                device_name
             ):
                 success = True
         elapsed_time = time.time() - start_time
@@ -79,14 +76,12 @@ def test_event_subscription():
         event_manager,
         5,
     )
-    assert event_manager.device_subscription_configuration.get(
-        MCCS_SUBARRAY_DEVICE
-    ).get(COMPLETION_KEY)
+    assert event_manager.device_subscriptions.get(MCCS_SUBARRAY_DEVICE).get(
+        COMPLETION_KEY
+    )
     event_manager.state_event_callback.assert_called()
     event_manager.unsubscribe_events(MCCS_SUBARRAY_DEVICE)
-    assert not event_manager.device_subscription_configuration.get(
-        MCCS_SUBARRAY_DEVICE
-    )
+    assert not event_manager.device_subscriptions.get(MCCS_SUBARRAY_DEVICE)
 
 
 @pytest.mark.post_deployment
@@ -113,14 +108,12 @@ def test_late_event_subscription():
         event_manager,
         5,
     )
-    assert event_manager.device_subscription_configuration.get(
-        MCCS_SUBARRAY_DEVICE
-    ).get(COMPLETION_KEY)
+    assert event_manager.device_subscriptions.get(MCCS_SUBARRAY_DEVICE).get(
+        COMPLETION_KEY
+    )
     event_manager.state_event_callback.assert_called()
     event_manager.unsubscribe_events(MCCS_SUBARRAY_DEVICE)
-    assert not event_manager.device_subscription_configuration.get(
-        MCCS_SUBARRAY_DEVICE
-    )
+    assert not event_manager.device_subscriptions.get(MCCS_SUBARRAY_DEVICE)
 
 
 @pytest.mark.post_deployment
@@ -142,22 +135,18 @@ def test_event_error_resubscription():
         event_manager,
         5,
     )
-    assert event_manager.device_subscription_configuration.get(
-        MCCS_SUBARRAY_DEVICE
-    ).get(COMPLETION_KEY)
-    initial_subscription_id = (
-        event_manager.device_subscription_configuration.get(
-            MCCS_SUBARRAY_DEVICE
-        ).get(ATTRIBUTE_NAME)
+    assert event_manager.device_subscriptions.get(MCCS_SUBARRAY_DEVICE).get(
+        COMPLETION_KEY
     )
+    initial_subscription_id = event_manager.device_subscriptions.get(
+        MCCS_SUBARRAY_DEVICE
+    ).get(ATTRIBUTE_NAME)
     admin_proxy = tango.DeviceProxy("dserver/test_device/02")
     admin_proxy.RestartServer()
     time.sleep(20)
     admin_proxy.RestartServer()
     time.sleep(20)
-    current_subscription_id = (
-        event_manager.device_subscription_configuration.get(
-            MCCS_SUBARRAY_DEVICE
-        ).get(ATTRIBUTE_NAME)
-    )
+    current_subscription_id = event_manager.device_subscriptions.get(
+        MCCS_SUBARRAY_DEVICE
+    ).get(ATTRIBUTE_NAME)
     assert initial_subscription_id != current_subscription_id

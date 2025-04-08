@@ -23,12 +23,9 @@ def test_event_manager():
     assert event_manager.stateless_flag
     event_manager.stateless_flag = False
     assert not event_manager.stateless_flag
-    assert event_manager.device_subscription_configuration == {}
-    event_manager.device_subscription_configuration = DUMMY_SUBSCRIPTION_CONFIG
-    assert (
-        event_manager.device_subscription_configuration
-        == DUMMY_SUBSCRIPTION_CONFIG
-    )
+    assert event_manager.device_subscriptions == {}
+    event_manager.device_subscriptions = DUMMY_SUBSCRIPTION_CONFIG
+    assert event_manager.device_subscriptions == DUMMY_SUBSCRIPTION_CONFIG
     assert event_manager.device_errors_tracker == {}
     event_manager.init_timeout(12)
     assert not event_manager._EventManager__thread_time_outs.get(12)
@@ -40,19 +37,17 @@ def test_event_manager():
     assert not event_manager._EventManager__timer_threads.get(
         TIMER_THREAD_NAME
     )
-    event_manager.device_subscription_configuration = {}
-    event_manager.init_device_subscription_configuration("device")
-    assert event_manager.device_subscription_configuration.get("device") == {}
-    event_manager.update_device_subscription_configuration(
-        "device", "attribute1", 1
-    )
-    assert event_manager.device_subscription_configuration.get("device") == {
+    event_manager.device_subscriptions = {}
+    event_manager.init_device_subscriptions("device")
+    assert event_manager.device_subscriptions.get("device") == {}
+    event_manager.update_device_subscriptions("device", "attribute1", 1)
+    assert event_manager.device_subscriptions.get("device") == {
         "attribute1": {"subscription_id": 1}
     }
-    event_manager.update_device_subscription_configuration(
+    event_manager.update_device_subscriptions(
         "device", is_subscription_completed=True
     )
-    assert event_manager.device_subscription_configuration.get("device").get(
+    assert event_manager.device_subscriptions.get("device").get(
         "is_subscription_completed"
     )
 
@@ -63,7 +58,7 @@ def test_event_manager():
         assert proxy.ping() > -1
     DUMMY_SUBSCRIPTION_CONFIG_COPY = DUMMY_SUBSCRIPTION_CONFIG.copy()
     event_manager.remove_subscribed_devices(
-        event_manager.device_subscription_configuration,
+        event_manager.device_subscriptions,
         DUMMY_SUBSCRIPTION_CONFIG_COPY,
     )
     assert not DUMMY_SUBSCRIPTION_CONFIG_COPY.get("device")

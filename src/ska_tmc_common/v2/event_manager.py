@@ -82,9 +82,7 @@ class EventManager:
         :type maximum_status_queue_size: int
         """
         self.__logger: logging.Logger = logger
-        self.__device_subscription_configuration: (
-            dict[str, dict[int, bool]] | dict
-        ) = {}
+        self.__device_subscriptions: dict[str, dict[int, bool]] | dict = {}
         self.__subscription_configuration: dict[str, list] = (
             subscription_configuration
         )
@@ -109,9 +107,7 @@ class EventManager:
         )
         self.__status_queue: Queue[str] = Queue(maximum_status_queue_size)
         self.__pending_configuration_lock: threading.RLock = threading.RLock()
-        self.__device_subscription_configuration_lock: threading.RLock = (
-            threading.RLock()
-        )
+        self.__device_subscriptions_lock: threading.RLock = threading.RLock()
         self.__subscription_configuration_lock: threading.RLock = (
             threading.RLock()
         )
@@ -169,32 +165,30 @@ class EventManager:
             return self.__subscription_configuration
 
     @property
-    def device_subscription_configuration(
+    def device_subscriptions(
         self,
     ) -> dict[str, dict[int, bool]] | dict:
-        """This method provides the instanc of device subscription
-        configuration dictionary.
+        """This method provides the instanc of device subscriptions
+            dictionary.
 
-        :return: This method returns the value of device subscription
-            configuration variable.
+        :return: This method returns the value of device subscriptions
+            variable.
         :rtype: dict[str, dict[int, bool]],dict
         """
-        with self.__device_subscription_configuration_lock:
-            return self.__device_subscription_configuration
+        with self.__device_subscriptions_lock:
+            return self.__device_subscriptions
 
-    @device_subscription_configuration.setter
-    def device_subscription_configuration(
-        self, updated_configuration: dict
-    ) -> None:
-        """This method is used to set the device subscription configuration
+    @device_subscriptions.setter
+    def device_subscriptions(self, updated_configuration: dict) -> None:
+        """This method is used to set the device subscriptions
         dictionary.
 
         :param updated_configuration: This contains the configuration to be
-            updated in variable device subscription configuration.
+            updated in variable device subscriptions.
         :type updated_configuration: dict
         """
-        with self.__device_subscription_configuration_lock:
-            self.__device_subscription_configuration = updated_configuration
+        with self.__device_subscriptions_lock:
+            self.__device_subscriptions = updated_configuration
 
     @property
     def device_errors_tracker(self) -> None:
@@ -287,53 +281,44 @@ class EventManager:
         :type attribute_names: list, optional
         """
         attribute_list = attribute_names or list(
-            self.device_subscription_configuration.get(device_name).keys()
+            self.device_subscriptions.get(device_name).keys()
         )
 
         proxy = self.__device_factory.get_device(device_name)
         for attribute_name in attribute_list:
             if attribute_name != COMPLETION_INDICATOR_KEY:
                 proxy.unsubscribe_event(
-                    self.device_subscription_configuration.get(device_name)
+                    self.device_subscriptions.get(device_name)
                     .get(attribute_name)
                     .get(SUBSCRITPTION_ID_KEY)
                 )
-            self.device_subscription_configuration.get(device_name).pop(
-                attribute_name
-            )
+            self.device_subscriptions.get(device_name).pop(attribute_name)
         if (
-            len(
-                list(
-                    self.device_subscription_configuration.get(
-                        device_name
-                    ).keys()
-                )
-            )
-            == 1
+            len(list(self.device_subscriptions.get(device_name).keys())) == 1
             and COMPLETION_INDICATOR_KEY
-            in self.device_subscription_configuration.get(device_name).keys()
+            in self.device_subscriptions.get(device_name).keys()
         ):
-            self.device_subscription_configuration.get(device_name).pop(
+            self.device_subscriptions.get(device_name).pop(
                 COMPLETION_INDICATOR_KEY
             )
 
-    def init_device_subscription_configuration(self, device_name: str) -> None:
+    def init_device_subscriptions(self, device_name: str) -> None:
         """Initialisation of device configuration dictionary.
 
         :param device_name: device name.
         :type device_name: str
         """
-        if not self.device_subscription_configuration.get(device_name):
-            self.device_subscription_configuration.update({device_name: {}})
+        if not self.device_subscriptions.get(device_name):
+            self.device_subscriptions.update({device_name: {}})
 
-    def update_device_subscription_configuration(
+    def update_device_subscriptions(
         self,
         device_name: str,
         attribute_name: Optional[str] = None,
         subscription_id: Optional[int] = None,
         is_subscription_completed: Optional[bool] = None,
     ) -> None:
-        """This method updates device_subscription_configuration dictionary
+        """This method updates device_subscriptions dictionary
         with the provided values.
 
         :param device_name: tango device FQDN.
@@ -348,11 +333,11 @@ class EventManager:
         :type is_subscription_completed: bool, optional
         """
         if attribute_name and subscription_id:
-            self.device_subscription_configuration.get(device_name).update(
+            self.device_subscriptions.get(device_name).update(
                 {attribute_name: {SUBSCRITPTION_ID_KEY: subscription_id}}
             )
         elif device_name and is_subscription_completed:
-            self.device_subscription_configuration.get(device_name).update(
+            self.device_subscriptions.get(device_name).update(
                 {COMPLETION_INDICATOR_KEY: is_subscription_completed}
             )
 
@@ -382,7 +367,7 @@ class EventManager:
     ) -> None:
         """This functions utilises the subscription configuration provided
         and subscribes to the attributes present in them.
-        The function updates device_subscription_configuration dictionary
+        The function updates device_subscriptions dictionary
         with the details of sucess and failure.
 
         :param subscription_configuration: The variable contains the detail
@@ -411,7 +396,7 @@ class EventManager:
                     attribute_names,
                 ) in subscription_configuration.items():
                     subscription_completion: list = []
-                    self.init_device_subscription_configuration(device_name)
+                    self.init_device_subscriptions(device_name)
                     if not check_device_responsiveness(device_name):
                         continue
                     proxy = self.get_device_proxy(device_name)
@@ -420,7 +405,7 @@ class EventManager:
                     for attribute_name in attribute_names:
                         try:
                             if attribute_name in list(
-                                self.device_subscription_configuration.get(
+                                self.device_subscriptions.get(
                                     device_name
                                 ).keys()
                             ):
@@ -434,7 +419,7 @@ class EventManager:
                                 ),
                                 stateless=self.stateless_flag,
                             )
-                            self.update_device_subscription_configuration(
+                            self.update_device_subscriptions(
                                 device_name, attribute_name, subscription_id
                             )
                             subscription_completion.append(True)
@@ -451,12 +436,12 @@ class EventManager:
                                     device_name,
                                 )
                             subscription_completion.append(False)
-                    self.update_device_subscription_configuration(
+                    self.update_device_subscriptions(
                         device_name,
                         is_subscription_completed=all(subscription_completion),
                     )
                 self.remove_subscribed_devices(
-                    self.device_subscription_configuration,
+                    self.device_subscriptions,
                     subscription_configuration,
                 )
                 time.sleep(self.__event_subscription_check_period)
@@ -466,14 +451,14 @@ class EventManager:
 
     def remove_subscribed_devices(
         self,
-        device_subscription_configuration: dict,
+        device_subscriptions: dict,
         subscription_configuration: dict,
     ) -> None:
         """This method removes the devices from the configuration data.
 
-        :param device_subscription_configuration: This parameter contains
+        :param device_subscriptions: This parameter contains
             device subscription configuration.
-        :type device_subscription_configuration: dict
+        :type device_subscriptions: dict
         :param subscription_configuration: This parameter contains the detail
             of devices and their attributes to be subscribed.
         :type subscription_configuration: dict
@@ -482,7 +467,7 @@ class EventManager:
         for (
             device_name,
             configuration,
-        ) in device_subscription_configuration.items():
+        ) in device_subscriptions.items():
             if configuration.get(COMPLETION_INDICATOR_KEY):
                 subscription_configuration.pop(device_name, None)
 
@@ -520,7 +505,7 @@ class EventManager:
         device_name = attribute_fqdn.replace(
             remove_attribute_name_with_slash, ""
         )
-        if not self.device_subscription_configuration.get(device_name):
+        if not self.device_subscriptions.get(device_name):
             device_name = device_name.split("/", 3)[-1]
         return device_name, attribute_name
 
