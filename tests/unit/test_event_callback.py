@@ -9,7 +9,7 @@ def callback(event_data: EventData):
     """Simple callback"""
 
 
-def faulty_callback():
+def faulty_callback(*args, **kwargs):
     """A callback without input"""
 
 
