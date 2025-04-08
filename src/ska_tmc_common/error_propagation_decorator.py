@@ -115,7 +115,7 @@ def error_propagation_decorator(
             # Extract the class instance from the input arguments
             class_instance = args[0]
             class_instance.logger.debug(
-                "Command id : %s | Executing the error propagation"
+                "Command ID : %s | Executing the error propagation"
                 " decorator with: %s, %s",
                 class_instance.component_manager.command_id,
                 args,
@@ -170,6 +170,6 @@ def setup_data(class_instance, task_abort_event) -> None:
     if hasattr(class_instance.component_manager, "abort_event"):
         class_instance.component_manager.abort_event = task_abort_event
         class_instance.logger.info(
-            "Command Id : %s | " + "Abort Event set",
+            "Command ID : %s | " + "Abort Event set",
             class_instance.component_manager.command_id,
         )

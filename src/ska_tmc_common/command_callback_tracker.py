@@ -72,7 +72,7 @@ class CommandCallbackTracker:
             self.command_id, {}
         ).get("exception_message", "")
         self.logger.debug(
-            "Command id : %s | Received exception message %s",
+            "Command ID : %s | Received exception message %s",
             self.command_id,
             exception_message,
         )
@@ -97,7 +97,7 @@ class CommandCallbackTracker:
 
         try:
             self.logger.debug(
-                "Command id : %s | Abort event is %s",
+                "Command ID : %s | Abort event is %s",
                 self.command_id,
                 self.abort_event.is_set(),
             )
@@ -108,7 +108,7 @@ class CommandCallbackTracker:
                     self.states_to_track.remove(attribute_value)
                 else:
                     self.logger.debug(
-                        "Command id : %s | Attribute values waiting for: %s "
+                        "Command ID : %s | Attribute values waiting for: %s "
                         + "and received: %s",
                         self.command_id,
                         self.states_to_track,
@@ -132,7 +132,7 @@ class CommandCallbackTracker:
             IndexError,
         ) as exception:
             self.logger.error(
-                "Command Id : %s | Error occurred while attribute"
+                "Command ID : %s | Error occurred while attribute"
                 + "update %s",
                 self.command_id,
                 exception,
@@ -143,7 +143,7 @@ class CommandCallbackTracker:
 
         try:
             self.logger.debug(
-                "Command id : %s | Abort event is %s",
+                "Command ID : %s | Abort event is %s",
                 self.command_id,
                 self.abort_event.is_set(),
             )
@@ -162,7 +162,7 @@ class CommandCallbackTracker:
                     )
         except (AttributeError, ValueError, TypeError) as exception:
             self.logger.error(
-                "Command id : %s | Error occurred while updating exception %s",
+                "Command ID : %s | Error occurred while updating exception %s",
                 self.command_id,
                 exception,
             )
@@ -181,7 +181,7 @@ class CommandCallbackTracker:
                 self.component_manager.stop_timer()
 
             self.logger.debug(
-                "Command Id : %s | Deregistering observer", self.command_id
+                "Command ID : %s | Deregistering observer", self.command_id
             )
             self.observable.deregister_observer(self.lrc_exception_observer)
             self.observable.deregister_observer(self.attribute_change_observer)
@@ -189,7 +189,7 @@ class CommandCallbackTracker:
                 self.lrcr_callback.remove_data(self.command_id)
         except (AttributeError, ValueError, TypeError) as exception:
             self.logger.error(
-                "Command Id : %s | Error occurred " + "while clean up %s",
+                "Command ID : %s | Error occurred " + "while clean up %s",
                 self.command_id,
                 exception,
             )
