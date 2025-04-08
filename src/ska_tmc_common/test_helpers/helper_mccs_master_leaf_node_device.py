@@ -48,10 +48,11 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
 
     mccsControllerAdminMode = attribute(
         dtype=AdminMode,
+        doc="Read the MCCS controller AdminMode",
         access=AttrWriteType.READ,
     )
 
-    def read_mccsControllerAdminMode(self):
+    def read_mccsControllerAdminMode(self) -> int:
         """
         Reads the current admin mode of the mccs controller
         :return: obs state
@@ -65,6 +66,8 @@ class HelperMCCSMasterLeafNode(HelperBaseDevice):
     def SetMccsControllerAdminMode(self, argin: int) -> None:
         """
         Trigger a admin mode change
+        :param argin: adminMode enum to set the admin mode.
+        :dtype: int
         """
         value = AdminMode(argin)
         if self._mccs_controller_admin_mode != value:

@@ -43,10 +43,11 @@ class HelperSDPMasterLeafNode(HelperBaseDevice):
 
     sdpControllerAdminMode = attribute(
         dtype=AdminMode,
+        doc="Read the SDP controller AdminMode",
         access=AttrWriteType.READ,
     )
 
-    def read_sdpControllerAdminMode(self):
+    def read_sdpControllerAdminMode(self) -> int:
         """
         Reads the current admin mode of the sdp controller
         :return: admin mode
@@ -60,6 +61,8 @@ class HelperSDPMasterLeafNode(HelperBaseDevice):
     def SetSdpControllerAdminMode(self, argin: int) -> None:
         """
         Trigger a admin mode change for sdp controller
+        :param argin: adminMode enum to set the admin mode.
+        :dtype: int
         """
         value = AdminMode(argin)
         if self._sdp_controller_admin_mode != value:

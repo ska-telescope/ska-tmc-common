@@ -111,10 +111,11 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
 
     cspControllerAdminMode = attribute(
         dtype=AdminMode,
+        doc="Read the CSP controller AdminMode",
         access=AttrWriteType.READ,
     )
 
-    def read_cspControllerAdminMode(self):
+    def read_cspControllerAdminMode(self) -> int:
         """
         Reads the current admin mode of the CSP controller
         :return: obs state
@@ -128,6 +129,8 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
     def SetCspControllerAdminMode(self, argin: int) -> None:
         """
         Trigger a admin mode change
+        :param argin: adminMode enum to set the admin mode.
+        :dtype: int
         """
         value = AdminMode(argin)
         if self._csp_controller_admin_mode != value:
