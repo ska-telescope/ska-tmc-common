@@ -112,11 +112,7 @@ class CommandCallbackTracker:
                         + "and received: %s",
                         self.command_id,
                         self.states_to_track,
-                        (
-                            attribute_value.name
-                            if hasattr(attribute_value, "name")
-                            else attribute_value
-                        ),
+                        (attribute_value),
                     )
                 if not self.states_to_track:  # the list is empty
                     self.clean_up()

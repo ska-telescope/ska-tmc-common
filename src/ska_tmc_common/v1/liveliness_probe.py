@@ -246,9 +246,9 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                     ):
                         self.log_monitoring_devices()
                 except (AttributeError, tango.DevFailed) as exception:
-                    self._logger.warning("Exception occured: %s", exception)
+                    self._logger.exception("Exception occured: %s", exception)
                 except BaseException as exp_msg:
-                    self._logger.warning("Exception occured: %s", exp_msg)
+                    self._logger.exception("Exception occured: %s", exp_msg)
                 sleep(self._liveliness_check_period)
 
 
