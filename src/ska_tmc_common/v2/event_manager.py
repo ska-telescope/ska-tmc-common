@@ -4,10 +4,12 @@ This module contains event management functionality.
 
 from __future__ import annotations
 
+import datetime
 import logging
 import threading
 import time
-from typing import TYPE_CHECKING, Optional
+from queue import Queue
+from typing import TYPE_CHECKING, Callable, Optional
 
 import tango
 from ska_ser_logging import configure_logging
@@ -21,17 +23,18 @@ if TYPE_CHECKING:
         TmcLeafNodeComponentManager,
     )
 
-LOGGER = logging.getLogger("EventManager")
-COMPLETION_INDICATOR_KEY = "is_subscription_completed"
-SUBSCRITPTION_ID_KEY = "subscription_id"
-EVENT_MANAGER_THREAD_NAME_PREFIX = "event_manager_thread_"
-TIMER_THREAD_NAME_PREFIX = "event_timer_thread_"
-API_EVENT_TIMEOUT = "API_EventTimeout"
-EVENT_ERROR_DESC = "Event channel is not responding anymore"
+LOGGER: logging.Logger = logging.getLogger("EventManager")
+COMPLETION_INDICATOR_KEY: str = "is_subscription_completed"
+SUBSCRITPTION_ID_KEY: str = "subscription_id"
+EVENT_MANAGER_THREAD_NAME_PREFIX: str = "event_manager_thread_"
+TIMER_THREAD_NAME_PREFIX: str = "event_timer_thread_"
+API_EVENT_TIMEOUT: str = "API_EventTimeout"
+EVENT_ERROR_DESC: str = "Event channel is not responding anymore"
 
 configure_logging()
 
 
+# pylint: disable=too-many-instance-attributes
 class EventManager:
     """
     This class provides necessary functions to manage event subscriptions.
@@ -45,6 +48,8 @@ class EventManager:
         stateless: bool = True,
         event_subscription_check_period: int = 1,
         event_error_max_count: int = 10,
+        status_update_callback: Optional[Callable] = None,
+        maximum_status_queue_size: int = 50,
     ) -> None:
         """This method initialises the event manager class instances with
         necessary configurations.
@@ -92,6 +97,10 @@ class EventManager:
         )
         self.__device_error_tracking: dict = {}
         self.__event_error_max_count: int = event_error_max_count
+        self.__status_update_callback: Optional[Callable] = (
+            status_update_callback
+        )
+        self.__status_queue: Queue[str] = Queue(maximum_status_queue_size)
         self.__pending_configuration_lock: threading.RLock = threading.RLock()
         self.__device_subscription_configuration_lock: threading.RLock = (
             threading.RLock()
@@ -518,7 +527,9 @@ class EventManager:
             if self.__log_manager.is_logging_allowed(
                 f"{event.attr_name}_error_log"
             ):
-                self.__logger.error("Change event error: %s", event.errors)
+                error_message: str = f"Change event error: {event.errors}"
+                self.__logger.error(error_message)
+                self.update_status_queue(error_message)
             if (
                 event.errors[0].reason == API_EVENT_TIMEOUT
                 and EVENT_ERROR_DESC in event.errors[0].desc
@@ -541,6 +552,11 @@ class EventManager:
                         device_name
                     ).get(attribute_name)
                     if error_count >= self.__event_error_max_count:
+                        update_msg: str = (
+                            f"Resubscribing attribute: {attribute_name}"
+                            f" of device: {device_name}"
+                        )
+                        self.update_status_queue(update_msg)
                         self.unsubscribe_events(device_name, [attribute_name])
                         self.subscribe_events({device_name: [attribute_name]})
                         self.device_error_tracking.get(device_name).pop(
@@ -569,3 +585,18 @@ class EventManager:
         )
         self.__error_handling_thread.start()
         return True
+
+    def update_status_queue(self, status: str) -> None:
+        """This method updates status queue.
+
+        :param status: The status message to update.
+        :type status: str
+        """
+        date_time: str = datetime.datetime.now().ctime()
+        if not self.__status_queue.full():
+            self.__status_queue.put(date_time + "::" + status)
+        else:
+            self.__status_queue.get()
+            self.__status_queue.put(date_time + "::" + status)
+        if self.__status_update_callback:
+            self.__status_update_callback(list(self.__status_queue.queue))
