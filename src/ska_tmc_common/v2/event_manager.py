@@ -73,11 +73,12 @@ class EventManager:
         :param event_error_max_count: This is maximum tolerable count for
             API EventTimeout error.
         :type event_error_max_count: int
-        :param status_update_callback: This callback can be used to update tango
-            attribute. The callback will be provided with the statuses list, which
-            can be populated in the attribute.
+        :param status_update_callback: This callback can be used to update
+            tango attribute. The callback will be provided with the statuses
+            list, which can be populated in the attribute.
         :type status_update_callback: Callable
-        :param maximum_status_queue_size: Maximum status queue size, defaults to 50.
+        :param maximum_status_queue_size: Maximum status queue size, defaults
+            to 50.
         :type maximum_status_queue_size: int
         """
         self.__logger: logging.Logger = logger
