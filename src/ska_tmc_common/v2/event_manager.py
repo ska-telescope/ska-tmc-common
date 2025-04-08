@@ -201,7 +201,7 @@ class EventManager:
         :param thread_id: thread id
         :type thread_id: int
         """
-        if self.__thread_time_outs.get(thread_id):
+        if thread_id in self.__thread_time_outs:
             self.__thread_time_outs[thread_id] = True
 
     def start_timer(
@@ -229,6 +229,7 @@ class EventManager:
         """
         if self.__timer_threads.get(name):
             self.__timer_threads.get(name).cancel()
+            self.__timer_threads.pop(name)
 
     def start_event_subscription(
         self,
