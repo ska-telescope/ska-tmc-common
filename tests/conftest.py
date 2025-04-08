@@ -33,6 +33,7 @@ from ska_tmc_common import (
     HelperMCCSController,
     HelperMCCSMasterLeafNode,
     HelperMccsSubarrayDevice,
+    HelperSDPMasterLeafNode,
     HelperSdpQueueConnector,
     HelperSdpSubarray,
     HelperSdpSubarrayLeafDevice,
@@ -52,6 +53,7 @@ from tests.settings import (
     HELPER_CSP_MASTER_LEAF_DEVICE,
     HELPER_MCCS_CONTROLLER,
     HELPER_MCCS_MASTER_LEAF_NODE_DEVICE,
+    HELPER_SDP_MASTER_LEAF_DEVICE,
     HELPER_SDP_QUEUE_CONNECTOR_DEVICE,
     MCCS_SUBARRAY_DEVICE,
     SDP_LEAF_NODE_DEVICE,
@@ -164,6 +166,12 @@ def devices_to_load():
             "class": HelperSdpSubarrayLeafDevice,
             "devices": [
                 {"name": SDP_LEAF_NODE_DEVICE},
+            ],
+        },
+        {
+            "class": HelperSDPMasterLeafNode,
+            "devices": [
+                {"name": HELPER_SDP_MASTER_LEAF_DEVICE},
             ],
         },
         {

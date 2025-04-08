@@ -1491,6 +1491,8 @@ class HelperSubArrayDevice(SKASubarray):
         command_id = f"{time.time()}_Abort"
         self.logger.info("Instructed simulator to invoke Abort command")
         self.update_command_info(ABORT, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Abort", command_id)
 
         if self._obs_state != ObsState.ABORTED:
             self._obs_state = ObsState.ABORTING
@@ -1590,6 +1592,8 @@ class HelperSubArrayDevice(SKASubarray):
 
         self.logger.info("Instructed simulator to invoke Restart command")
         self.update_command_info(RESTART, "")
+        if self.defective_params["enabled"]:
+            return self.induce_fault("Restart", command_id)
 
         if self._obs_state != ObsState.EMPTY:
             self._obs_state = ObsState.RESTARTING
