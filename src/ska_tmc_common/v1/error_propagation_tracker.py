@@ -124,7 +124,7 @@ def error_propagation_tracker(
                     )
 
             class_instance.logger.debug(
-                "Command Id: %s | Args: %s | Kwargs:\n%s",
+                "Command Id: %s | Args: %s \n%s",
                 class_instance.component_manager.command_id,
                 args,
                 json.dumps(

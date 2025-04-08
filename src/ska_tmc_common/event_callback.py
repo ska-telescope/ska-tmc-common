@@ -34,7 +34,8 @@ class EventCallback:
                 self.event_callback(event_data)
         except Exception as exception:
             LOGGER.exception(
-                "Unexpected exception " + "in calling the callback: %s",
+                "Unexpected exception " + "in pushing the event %s : %s",
+                event_data.attr_value.name,
                 exception,
             )
 

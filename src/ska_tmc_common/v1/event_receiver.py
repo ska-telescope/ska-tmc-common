@@ -161,7 +161,7 @@ class EventReceiver:
     def handle_state_event(self, event: tango.EventData) -> None:
         """Submit state event to callback for processing thus making
         tango bus free for next event handling"""
-        self._logger.debug("Updating state queue")
+        self._logger.debug("Updating state in queue")
         self._component_manager.update_state_event(event)
 
     def handle_obs_state_event(
