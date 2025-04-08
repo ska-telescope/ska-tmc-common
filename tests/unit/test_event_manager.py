@@ -56,8 +56,10 @@ def test_event_manager():
         "is_subscription_completed"
     )
 
-    with DeviceTestContext(HelperBaseDevice, device_name="a/a/1", timeout=50):
-        proxy = event_manager.get_device_proxy("a/a/1")
+    with DeviceTestContext(
+        HelperBaseDevice, device_name=DEVICE_NAME, timeout=50
+    ):
+        proxy = event_manager.get_device_proxy(DEVICE_NAME)
         assert proxy.ping() > -1
     DUMMY_SUBSCRIPTION_CONFIG_COPY = DUMMY_SUBSCRIPTION_CONFIG.copy()
     event_manager.remove_subscribed_devices(
