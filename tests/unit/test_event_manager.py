@@ -58,7 +58,6 @@ def test_event_manager():
         assert proxy.ping() > -1
     DUMMY_SUBSCRIPTION_CONFIG_COPY = DUMMY_SUBSCRIPTION_CONFIG.copy()
     event_manager.remove_subscribed_devices(
-        event_manager.device_subscriptions,
         DUMMY_SUBSCRIPTION_CONFIG_COPY,
     )
     assert not DUMMY_SUBSCRIPTION_CONFIG_COPY.get("device")
