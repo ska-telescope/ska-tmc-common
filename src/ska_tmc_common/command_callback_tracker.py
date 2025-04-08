@@ -9,6 +9,7 @@ from operator import methodcaller
 from typing import TYPE_CHECKING
 
 from ska_tango_base.commands import ResultCode
+from ska_tango_base.control_model import ObsState
 from ska_tango_base.executor import TaskStatus
 
 from ska_tmc_common.observer import (
@@ -112,7 +113,7 @@ class CommandCallbackTracker:
                         + "and received: %s",
                         self.command_id,
                         self.states_to_track,
-                        attribute_value.name,
+                        ObsState(attribute_value).name,
                     )
                 if not self.states_to_track:  # the list is empty
                     self.clean_up()
@@ -132,7 +133,7 @@ class CommandCallbackTracker:
             IndexError,
         ) as exception:
             self.logger.error(
-                "Command ID : %s | Error occurred while attribute"
+                "Command ID : %s | Error occurred while attribute "
                 + "update %s",
                 self.command_id,
                 exception,
