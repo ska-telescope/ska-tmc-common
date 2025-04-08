@@ -368,8 +368,7 @@ class EventManager:
                 self.device_subscriptions.get(device_name).pop(
                     COMPLETION_INDICATOR_KEY
                 )
-            if not self.__unsubscription_thread_cancellation.get(thread_id):
-                self.__unsubscription_thread_cancellation.pop(thread_id)
+            self.__unsubscription_thread_cancellation.pop(thread_id)
         except Exception as exception:
             self.__logger.error(
                 "Error occurred while unsubscribing: %s", exception
