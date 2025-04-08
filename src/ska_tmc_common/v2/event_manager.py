@@ -102,7 +102,7 @@ class EventManager:
         self.__event_subscription_check_period = (
             event_subscription_check_period
         )
-        self.__device_error_tracking: dict = {}
+        self.__device_errors_tracker: dict = {}
         self.__event_error_max_count: int = event_error_max_count
         self.__status_update_callback: Optional[Callable] = (
             status_update_callback
@@ -115,7 +115,7 @@ class EventManager:
         self.__subscription_configuration_lock: threading.RLock = (
             threading.RLock()
         )
-        self.__device_error_tracking_lock: threading.RLock = threading.RLock()
+        self.__device_errors_tracker_lock: threading.RLock = threading.RLock()
 
     @property
     def pending_configuration(self) -> dict[str, list]:
@@ -140,7 +140,7 @@ class EventManager:
 
     @property
     def stateless_flag(self) -> bool:
-        """This method provides the stateless flaf for event subscription.
+        """This method provides the stateless flag for event subscription.
 
         :return: This returns the value of stateless flag.
         :rtype: bool
@@ -197,14 +197,14 @@ class EventManager:
             self.__device_subscription_configuration = updated_configuration
 
     @property
-    def device_error_tracking(self) -> None:
+    def device_errors_tracker(self) -> None:
         """This method returns dictionary with device errors."""
-        with self.__device_error_tracking_lock:
-            return self.__device_error_tracking
+        with self.__device_errors_tracker_lock:
+            return self.__device_errors_tracker
 
     def init_timeout(self, thread_id: int) -> None:
-        """This method sets timeout flag for the current
-        thread.
+        """This method initializes timeout flag for the provided
+        thread id.
 
         :param thread_id: thread id
         :type thread_id: int
@@ -212,7 +212,7 @@ class EventManager:
         self.__thread_time_outs.update({thread_id: False})
 
     def set_timeout(self, thread_id: int) -> None:
-        """Sets the timeout flag.
+        """Sets the timeout flag for provided the thread id.
 
         :param thread_id: thread id
         :type thread_id: int
@@ -544,18 +544,18 @@ class EventManager:
                 device_name, attribute_name = (
                     self.get_device_and_attribute_name(event.attr_name)
                 )
-                if device_name not in self.device_error_tracking:
-                    self.device_error_tracking.update(
+                if device_name not in self.device_errors_tracker:
+                    self.device_errors_tracker.update(
                         {device_name: {attribute_name: 1}}
                     )
-                elif attribute_name not in self.device_error_tracking.get(
+                elif attribute_name not in self.device_errors_tracker.get(
                     device_name
                 ):
-                    self.device_error_tracking.get(device_name).update(
+                    self.device_errors_tracker.get(device_name).update(
                         {attribute_name: 1}
                     )
                 else:
-                    error_count: int = self.device_error_tracking.get(
+                    error_count: int = self.device_errors_tracker.get(
                         device_name
                     ).get(attribute_name)
                     if error_count >= self.__event_error_max_count:
@@ -566,11 +566,11 @@ class EventManager:
                         self.update_status_queue(update_msg)
                         self.unsubscribe_events(device_name, [attribute_name])
                         self.subscribe_events({device_name: [attribute_name]})
-                        self.device_error_tracking.get(device_name).pop(
+                        self.device_errors_tracker.get(device_name).pop(
                             attribute_name
                         )
                     else:
-                        self.device_error_tracking[device_name][
+                        self.device_errors_tracker[device_name][
                             attribute_name
                         ] += 1
 

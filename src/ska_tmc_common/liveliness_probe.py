@@ -67,13 +67,8 @@ class BaseLivelinessProbe:
 
     # pylint: disable=too-many-branches
     def device_task(self, dev_info: DeviceInfo) -> None:
-        """This method checks device state and sets device to responsive
-        if the device is reachable and able to respond to the state command.
-        If the device is not defined in database/unreachable or unable to
-        respond to state command, it sets device as unresponsive.
-
-        :param dev_info: DeviceInfo instance
-        :type dev_info: DeviceInfo
+        """
+        Checks device status and logs error messages on state change
         """
         try:
             exception_message: str = ""
@@ -91,7 +86,7 @@ class BaseLivelinessProbe:
             if not db.get_device_info(device_name).exported:
                 if self.log_manager.is_logging_allowed("device_unexported"):
                     self._logger.debug(
-                        "Device is not yet exported into the tango database, "
+                        "Device is not yet exported, "
                         + "liveliness probe will retry "
                         + "to connect with device: %s",
                         dev_info.dev_name,
@@ -99,8 +94,7 @@ class BaseLivelinessProbe:
                 if not dev_info.unresponsive:
                     update_failure(
                         dev_info,
-                        "Device is not yet exported into the tango database:"
-                        f" {dev_info.dev_name}",
+                        f"Device is not yet exported: {dev_info.dev_name}",
                     )
             else:
                 proxy = self._dev_factory.get_device(dev_info.dev_name)
@@ -111,7 +105,7 @@ class BaseLivelinessProbe:
         except tango.CommunicationFailed as exception:
             if self.log_manager.is_logging_allowed("communication_failed"):
                 self._logger.exception(
-                    "Communication Failed on %s: Reason: %s",
+                    "Communication Failed on %s: %s",
                     dev_info.dev_name,
                     str(exception),
                 )
@@ -192,11 +186,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         self._monitoring_devices: List[str] = []
 
     def add_device(self, dev_name: str) -> None:
-        """This method is used to add device in the Queue for monitoring
-
-        :param dev_name: Tango device FQDN.
-        :type dev_name: str
-        """
+        """A method to add device in the Queue for monitoring"""
         if dev_name in self._monitoring_devices:
             self._logger.debug(
                 "The device: %s is already present in the monitoring devices "

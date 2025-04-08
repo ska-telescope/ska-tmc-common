@@ -65,10 +65,34 @@ class BaseLivelinessProbe:
         """
         raise NotImplementedError("This method must be inherited")
 
+    def get_device_and_database(
+        self, device_name: str
+    ) -> tuple[str, tango.Database]:
+        """This method provides device name and database details.
+
+        :param device_name: device_name
+        :type device_name: str
+        :return: device name and database details
+        :rtype: tuple[str,tango.Database]
+        """
+        if "tango://" in device_name:  # check full trl
+            db_name, port = device_name.split("/")[2].split(":")
+            db = tango.Database(db_name, port)
+            splitted_data = device_name.split("/")
+            device_name = "/".join(splitted_data[-3:])
+        else:
+            db = tango.Database()
+        return device_name, db
+
     # pylint: disable=too-many-branches
     def device_task(self, dev_info: DeviceInfo) -> None:
-        """
-        Checks device status and logs error messages on state change
+        """This method checks device state and sets device to responsive
+        if the device is reachable and able to respond to the state command.
+        If the device is not defined in database/unreachable or unable to
+        respond to state command, it sets device as unresponsive.
+
+        :param dev_info: DeviceInfo instance
+        :type dev_info: DeviceInfo
         """
         try:
             component_manager = self._component_manager
@@ -79,18 +103,11 @@ class BaseLivelinessProbe:
             update_failure = (
                 component_manager.update_exception_for_unresponsiveness
             )
-            if "tango://" in dev_info.dev_name:  # check full trl
-                db_name, port = dev_info.dev_name.split("/")[2].split(":")
-                db = tango.Database(db_name, port)
-                splitted_data = dev_info.dev_name.split("/")
-                device_name = "/".join(splitted_data[-3:])
-            else:
-                db = tango.Database()
-                device_name = dev_info.dev_name
+            device_name, db = self.get_device_and_database(dev_info.dev_name)
             if not db.get_device_info(device_name).exported:
                 if self.log_manager.is_logging_allowed("device_unexported"):
                     self._logger.debug(
-                        "Device is not yet exported, "
+                        "Device is not yet exported into the tango database, "
                         + "liveliness probe will retry "
                         + "to connect with device: %s",
                         dev_info.dev_name,
@@ -98,7 +115,8 @@ class BaseLivelinessProbe:
                 if not dev_info.unresponsive:
                     update_failure(
                         dev_info,
-                        f"Device is not yet exported: {dev_info.dev_name}",
+                        "Device is not yet exported into the tango database:"
+                        f" {dev_info.dev_name}",
                     )
             else:
                 proxy = self._dev_factory.get_device(dev_info.dev_name)
@@ -111,7 +129,7 @@ class BaseLivelinessProbe:
         except tango.CommunicationFailed as exception:
             if self.log_manager.is_logging_allowed("communication_failed"):
                 self._logger.exception(
-                    "Communication Failed on %s: %s",
+                    "Communication Failed on %s: Reason: %s",
                     dev_info.dev_name,
                     str(exception),
                 )
@@ -192,7 +210,11 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         self._monitoring_devices: List[str] = []
 
     def add_device(self, dev_name: str) -> None:
-        """A method to add device in the Queue for monitoring"""
+        """This method is used to add device in the Queue for monitoring
+
+        :param dev_name: Tango device FQDN.
+        :type dev_name: str
+        """
         if dev_name in self._monitoring_devices:
             self._logger.debug(
                 "The device: %s is already present in the monitoring devices "

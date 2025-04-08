@@ -29,7 +29,7 @@ def test_event_manager():
         event_manager.device_subscription_configuration
         == DUMMY_SUBSCRIPTION_CONFIG
     )
-    assert event_manager.device_error_tracking == {}
+    assert event_manager.device_errors_tracker == {}
     event_manager.init_timeout(12)
     assert not event_manager._EventManager__thread_time_outs.get(12)
     event_manager.set_timeout(12)
