@@ -128,7 +128,7 @@ def error_propagation_tracker(
                 class_instance.component_manager.command_id,
                 args,
                 json.dumps(
-                    log_kwargs, indent=4, ensure_ascii=False, default=str
+                    log_kwargs, indent=2, ensure_ascii=False, default=str
                 ),
             )
 

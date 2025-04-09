@@ -185,6 +185,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         self._monitoring_devices: List[str] = []
         self._last_log_time = time()
         self._last_logged_list = None
+        self._list_logged = False
+        self._last_add_time = time()
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
@@ -193,8 +195,24 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                 "Device already in monitoring list: %s", dev_name
             )
             return
+        current_time = time()
+        time_since_last = (
+            current_time - self._last_add_time
+            if self._monitoring_devices
+            else 0
+        )
+
         self._monitoring_devices.append(dev_name)
         self._logger.debug("Added device: %s", dev_name)
+
+        if not self._list_logged and len(self._monitoring_devices) > 1:
+            if time_since_last > 0.005:  # Small threshold for gap detection
+                self._logger.debug(
+                    "List of monitored devices: %s", self._monitoring_devices
+                )
+                self._list_logged = True
+
+        self._last_add_time = current_time
 
     def remove_devices(self, dev_names: List[str]) -> None:
         """Remove the given devices from the monitoring queue.
@@ -227,9 +245,6 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                 except BaseException as exp_msg:
                     self._logger.exception("Exception occured: %s", exp_msg)
                 sleep(self._liveliness_check_period)
-            self._logger.debug(
-                "List of monitored devices: %s", self._monitoring_devices
-            )
 
 
 class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
