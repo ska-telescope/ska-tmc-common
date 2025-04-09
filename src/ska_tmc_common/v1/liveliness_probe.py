@@ -183,18 +183,27 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
-        self._list_logged = False
-        self._awaiting_device_list_log = True
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
         if dev_name in self._monitoring_devices:
             self._logger.debug(
-                "Device already in monitoring list: %s", dev_name
+                "The device: %s is already present in the monitoring devices "
+                + "list.",
+                dev_name,
             )
             return
         self._monitoring_devices.append(dev_name)
-        self._logger.debug("Added device: %s", dev_name)
+        self._logger.debug(
+            "Added device: %s to the list of monitoring devices.",
+            dev_name,
+        )
+
+        # to be changed
+        if len(self._monitoring_devices) > 8:
+            self._logger.debug(
+                "List of monitored devices: %s", self._monitoring_devices
+            )
 
     def remove_devices(self, dev_names: List[str]) -> None:
         """Remove the given devices from the monitoring queue.
@@ -217,17 +226,6 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
     def run(self) -> None:
         """A method to run device in the queue for monitoring"""
         with tango.EnsureOmniThread():
-            if (
-                self._awaiting_device_list_log
-                and not self._list_logged
-                and self._monitoring_devices
-            ):
-                self._logger.debug(
-                    "List of monitored devices: %s", self._monitoring_devices
-                )
-                self._list_logged = True
-                self._awaiting_device_list_log = False
-
             while not self._stop:
                 try:
                     for dev_name in self._monitoring_devices:
