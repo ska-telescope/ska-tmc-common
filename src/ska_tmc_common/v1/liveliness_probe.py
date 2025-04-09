@@ -5,7 +5,7 @@ Inherited from liveliness probe functionality
 
 import threading
 from logging import Logger
-from time import sleep, time
+from time import sleep
 from typing import List
 
 import tango
@@ -183,10 +183,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
-        self._last_log_time = time()
-        self._last_logged_list = None
         self._list_logged = False
-        self._last_add_time = time()
+        self._awaiting_device_list_log = True
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
@@ -195,24 +193,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                 "Device already in monitoring list: %s", dev_name
             )
             return
-        current_time = time()
-        time_since_last = (
-            current_time - self._last_add_time
-            if self._monitoring_devices
-            else 0
-        )
-
         self._monitoring_devices.append(dev_name)
         self._logger.debug("Added device: %s", dev_name)
-
-        if not self._list_logged and len(self._monitoring_devices) > 1:
-            if time_since_last > 0.005:  # Small threshold for gap detection
-                self._logger.debug(
-                    "List of monitored devices: %s", self._monitoring_devices
-                )
-                self._list_logged = True
-
-        self._last_add_time = current_time
 
     def remove_devices(self, dev_names: List[str]) -> None:
         """Remove the given devices from the monitoring queue.
@@ -235,6 +217,17 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
     def run(self) -> None:
         """A method to run device in the queue for monitoring"""
         with tango.EnsureOmniThread():
+            if (
+                self._awaiting_device_list_log
+                and not self._list_logged
+                and self._monitoring_devices
+            ):
+                self._logger.debug(
+                    "List of monitored devices: %s", self._monitoring_devices
+                )
+                self._list_logged = True
+                self._awaiting_device_list_log = False
+
             while not self._stop:
                 try:
                     for dev_name in self._monitoring_devices:
