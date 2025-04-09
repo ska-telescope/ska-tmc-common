@@ -61,3 +61,7 @@ class InvalidReceptorIdError(ValueError):
 
 class CoefficientError(ValueError):
     """Raised when a requested resource id is invalid."""
+
+
+class DeviceNameIncorrect(Exception):
+    """Raised when a device name is incorrect."""

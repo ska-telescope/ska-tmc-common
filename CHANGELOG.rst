@@ -12,6 +12,11 @@ Main
 
 Added
 --------
+[0.26.0]
+********
+* Added new class EventManager to manage event subscriptions/umsubscriptions and event errors.
+* Updated component manager and liveiness probe classes to co-ordinate with new event manager functionality.
+
 [0.25.1]
 ********
 * Handled signature inconsistencies in event update methods.
