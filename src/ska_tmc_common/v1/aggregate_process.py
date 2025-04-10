@@ -76,11 +76,11 @@ class AggregationProcess:
             except queue.Empty:
                 continue
 
-    def start(self):
+    def start_aggregation_process(self):
         """Start the aggregation process"""
         self.aggregation_process.start()
 
-    def stop(self):
+    def stop_aggregation_process(self):
         """Stop the aggregation process"""
         LOGGER.debug("Stopping aggregation process")
         if self.aggregation_process.is_alive():
