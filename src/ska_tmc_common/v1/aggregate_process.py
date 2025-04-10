@@ -1,3 +1,7 @@
+"""
+This module contain process for aggregation
+"""
+
 import logging
 import queue
 from dataclasses import asdict
