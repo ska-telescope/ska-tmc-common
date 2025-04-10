@@ -87,3 +87,13 @@ class AggregationProcess:
             self.alive_event.set()
             self.aggregation_process.join()
         LOGGER.debug("Aggregation process stopped")
+
+    def _convert_event_data_to_dict_for_rule_engine(self, event_data):
+        """Override this method in child classes
+        :param event_data: Event data object contain data required for
+        aggregation
+        :type event_data: EventDataStorage
+        :return: event data dict with all unique values required for obsState
+         aggregation
+        """
+        raise NotImplementedError
