@@ -62,7 +62,7 @@ class TimeKeeper:
 
         :rtype: None
         """
-        self.logger.info(f"Timeout occured for id : {timeout_id}")
+        self.logger.info(f"Timeout occurred for id : {timeout_id}")
         timeout_callback(
             timeout_id=timeout_id, timeout_state=TimeoutState.OCCURED
         )

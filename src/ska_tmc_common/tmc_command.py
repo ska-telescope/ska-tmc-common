@@ -397,7 +397,7 @@ class BaseTMCCommand:
             ):
                 self.logger.error(
                     "Command ID : %s | "
-                    "Timeout has occured for command with id %s",
+                    "Timeout has occurred for command with id %s",
                     self.component_manager.command_id,
                     timeout_id,
                 )

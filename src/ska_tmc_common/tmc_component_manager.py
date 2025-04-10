@@ -239,7 +239,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         except Exception as exp_msg:
             self.logger.info(f"Issue for  id : {timeout_id}")
             self.logger.exception(
-                "Exception occured while starting the timer thread : %s",
+                "Exception occurred while starting the timer thread : %s",
                 exp_msg,
             )
 
@@ -254,7 +254,7 @@ class BaseTmcComponentManager(TaskExecutorComponentManager):
         :param timeout_callback: An instance of TimeoutCallback class that acts
                     as a callable functions to call in the event of timeout.
         """
-        self.logger.info(f"Timeout occured for id : {timeout_id}")
+        self.logger.info(f"Timeout occurred for id : {timeout_id}")
         timeout_callback(
             timeout_id=timeout_id, timeout_state=TimeoutState.OCCURED
         )

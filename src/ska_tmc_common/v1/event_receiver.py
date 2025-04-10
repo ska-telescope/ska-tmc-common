@@ -125,7 +125,7 @@ class EventReceiver:
             proxy = self._dev_factory.get_device(dev_info.dev_name)
         except Exception as exception:
             self._logger.exception(
-                "Exception occured while getting device proxy for "
+                "Exception occurred while getting device proxy for "
                 + "device %s: %s",
                 dev_info,
                 exception,
@@ -146,7 +146,7 @@ class EventReceiver:
                     self.stop()
             except Exception as exception:
                 self._logger.exception(
-                    "Exception occured while subscribing to events "
+                    "Exception occurred while subscribing to events "
                     + "for device %s: %s",
                     dev_info.dev_name,
                     exception,
@@ -161,7 +161,6 @@ class EventReceiver:
     def handle_state_event(self, event: tango.EventData) -> None:
         """Submit state event to callback for processing thus making
         tango bus free for next event handling"""
-        self._logger.debug("Updating state in queue")
         self._component_manager.update_state_event(event)
 
     def handle_obs_state_event(

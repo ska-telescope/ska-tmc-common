@@ -72,12 +72,12 @@ class CommandCallbackTracker:
         exception_message = self.lrcr_callback.command_data.get(
             self.command_id, {}
         ).get("exception_message", "")
-        self.logger.debug(
-            "Command ID : %s | Received exception message %s",
-            self.command_id,
-            exception_message,
-        )
         if exception_message:
+            self.logger.debug(
+                "Command ID : %s | Received exception message %s",
+                self.command_id,
+                exception_message,
+            )
             self.update_exception()
 
     def update_timeout_occurred(self):

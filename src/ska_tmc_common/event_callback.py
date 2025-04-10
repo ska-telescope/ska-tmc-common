@@ -44,7 +44,7 @@ class EventCallback:
         if event_data.err:
             error = event_data.errors[0]
             LOGGER.error(
-                "Error occured in an event: %s, %s", error.reason, error.desc
+                "Error occurred in an event: %s, %s", error.reason, error.desc
             )
             return True
         return False

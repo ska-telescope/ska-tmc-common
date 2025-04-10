@@ -229,9 +229,9 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
                         dev_info = self._component_manager.get_device(dev_name)
                         self.device_task(dev_info)
                 except (AttributeError, tango.DevFailed) as exception:
-                    self._logger.warning("Exception occured: %s", exception)
+                    self._logger.warning("Exception occurred: %s", exception)
                 except BaseException as exp_msg:
-                    self._logger.warning("Exception occured: %s", exp_msg)
+                    self._logger.warning("Exception occurred: %s", exp_msg)
                 sleep(self._sleep_time)
 
 
@@ -246,12 +246,12 @@ class SingleDeviceLivelinessProbe(BaseLivelinessProbe):
                     dev_info = self._component_manager.get_device()
                 except (AttributeError, ValueError) as exception:
                     self._logger.error(
-                        "Exception occured while getting device info: %s",
+                        "Exception occurred while getting device info: %s",
                         exception,
                     )
                 except BaseException as exp_msg:
                     self._logger.error(
-                        "Exception occured while getting device info: %s",
+                        "Exception occurred while getting device info: %s",
                         exp_msg,
                     )
                 else:

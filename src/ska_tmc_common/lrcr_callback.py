@@ -54,7 +54,7 @@ class LRCRCallback:
     ) -> bool:
         """
         Assertion method to check if the desired result code change has
-        occured.
+        occurred.
         :return: boolean value if result code change occurred
         """
         if command_id not in self.command_data:

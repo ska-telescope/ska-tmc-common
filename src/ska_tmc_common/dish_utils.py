@@ -133,7 +133,7 @@ class DishHelper:
                 )
         except Exception as error:
             logger.error(
-                "Error occured while converting %s to Degree decimals : %s",
+                "Error occurred while converting %s to Degree decimals : %s",
                 argin,
                 error,
             )
