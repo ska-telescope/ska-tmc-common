@@ -89,10 +89,17 @@ class AggregationProcess:
         LOGGER.debug("Aggregation process stopped")
 
     def _convert_event_data_to_dict_for_rule_engine(self, event_data):
-        """Override this method in child classes
-        :param event_data: Event data object contain data required for
-            aggregation
+        """
+        Convert event data into a dictionary format suitable
+        for the rule engine.
+
+        This method should be overridden in child classes to provide
+        implementation-specific logic.
+
+        :param event_data: Event data object containing data required
+            for aggregation.
         :type event_data: EventDataStorage
-        :raises NotImplementedError: Imeplementation not present
+        :raises NotImplementedError: If the method is not overridden
+            in a subclass.
         """
         raise NotImplementedError
