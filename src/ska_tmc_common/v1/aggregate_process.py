@@ -6,7 +6,7 @@ import logging
 import queue
 from dataclasses import asdict
 from multiprocessing import Event, Process, Queue
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,6 @@ class AggregationProcess:
         aggregated_state: list,
         update_event: Event,
         state_aggregator: Any,
-        event_data_converter: Callable[[Any], Dict],
         callback: Optional[Callable[[Any], None]] = None,
     ):
         """
@@ -41,7 +40,6 @@ class AggregationProcess:
         self.aggregated_state = aggregated_state
         self.aggregate_update_event = update_event
         self.state_aggregator = state_aggregator
-        self.event_data_converter = event_data_converter
         self.callback = callback
 
         self.aggregation_process = Process(
@@ -61,7 +59,9 @@ class AggregationProcess:
         while not self.alive_event.is_set():
             try:
                 event_data = self.event_data_queue.get(timeout=0.1)
-                event_dict = self.event_data_converter(event_data)
+                event_dict = self._convert_event_data_to_dict_for_rule_engine(
+                    event_data
+                )
                 event_dict["event_data"] = asdict(event_data)
 
                 self.aggregated_state[0] = self.state_aggregator.aggregate(
