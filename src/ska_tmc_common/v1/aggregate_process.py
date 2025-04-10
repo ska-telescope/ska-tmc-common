@@ -91,9 +91,8 @@ class AggregationProcess:
     def _convert_event_data_to_dict_for_rule_engine(self, event_data):
         """Override this method in child classes
         :param event_data: Event data object contain data required for
-        aggregation
+            aggregation
         :type event_data: EventDataStorage
-        :return: event data dict with all unique values required for obsState
-         aggregation
+        :raises NotImplementedError: Imeplementation not present
         """
         raise NotImplementedError
