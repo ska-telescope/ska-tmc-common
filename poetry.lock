@@ -628,12 +628,12 @@ reference = "PyPI-public"
 
 [[package]]
 name = "fire"
-version = "0.6.0"
+version = "0.5.0"
 description = "A library for automatically generating command line interfaces."
 optional = false
 python-versions = "*"
 files = [
-    {file = "fire-0.6.0.tar.gz", hash = "sha256:54ec5b996ecdd3c0309c800324a0703d6da512241bc73b553db959d98de0aa66"},
+    {file = "fire-0.5.0.tar.gz", hash = "sha256:a6b0d49e98c8963910021f92bba66f65ab440da2982b78eb1bbf95a0a34aacc6"},
 ]
 
 [package.dependencies]
@@ -2655,4 +2655,4 @@ reference = "PyPI-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "67c204c4c1b6dba7f7ce5b4f07cb3a0d85d464930d2f1469d30ee0e55f477540"
+content-hash = "90c5190d4028111dc4aaba44ab84868e0ec68e1702d1b0369e597a6d5a98d434"
