@@ -36,8 +36,9 @@ class Observable:
             observer (Observer): Observer class instance.
         """
         with self.lock:
-            logger.info("registered : %s ", observer)
+            logger.info("registering : %s ", observer)
             self.observers.append(observer)
+            logger.info("registered : %s ", observer)
 
     def deregister_observer(self, observer: Observer) -> None:
         """This method deregister observers
@@ -48,6 +49,7 @@ class Observable:
         try:
 
             with self.lock:
+                logger.debug("deregistering : %s ", observer)
                 self.observers.remove(observer)
                 logger.debug("deregistered : %s ", observer)
         except Exception as e:
@@ -67,10 +69,13 @@ class Observable:
             Denotes whether attribute change event. Defaults to False.
         """
         with self.lock:
+            logger.info("notifying observers: %s", threading.get_ident())
             current_observers = copy(self.observers)
+            logger.info("current observers: %s", current_observers)
             for observer in current_observers:
                 logger.debug(
                     "Calling observer %s",
                     observer.command_callback_tracker.command_id,
                 )
                 observer.notify(*args, **kwargs)
+            logger.info("completed %s", threading.get_ident())
