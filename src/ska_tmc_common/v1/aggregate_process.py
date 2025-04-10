@@ -31,7 +31,7 @@ class AggregationProcess:
             aggregation this is shared variable between process
         :type aggregated_state: list
         :param callback: Callback method reference used when aggregated
-        state is updated
+            state is updated
         """
         self.event_data_queue = event_data_queue
         self.aggregated_state = aggregated_state
