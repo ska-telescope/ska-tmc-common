@@ -173,7 +173,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         liveliness_check_period: int = 1,
         max_logging_time: int = 10,
-        device_list_log_time: float = 0.1,
+        monitored_list_log_time: float = 0.1,
     ):
         super().__init__(
             component_manager,
@@ -184,7 +184,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
-        self._device_list_log_manager = LogManager(device_list_log_time)
+        self._device_list_log_manager = LogManager(monitored_list_log_time)
         self._devices_changed = False
 
     def add_device(self, dev_name: str) -> None:
