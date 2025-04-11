@@ -173,7 +173,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         liveliness_check_period: int = 1,
         max_logging_time: int = 10,
-        device_list_log_time: int = 0.1,
+        device_list_log_time: float = 0.1,
     ):
         super().__init__(
             component_manager,
