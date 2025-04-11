@@ -226,3 +226,23 @@ def test_set_direct_health_state(tango_context):
     assert subarray_device.healthState == HealthState.OK
     subarray_device.SetDirectHealthState(HealthState.DEGRADED)
     assert subarray_device.healthState == HealthState.DEGRADED
+
+
+def test_abort_defective(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
+    subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
+    result, command_id = subarray_device.Abort()
+    assert result[0] == ResultCode.FAILED
+    assert "Abort" in command_id[0]
+
+
+def test_restart_defective(tango_context):
+    dev_factory = DevFactory()
+    subarray_device = dev_factory.get_device(SUBARRAY_DEVICE)
+    subarray_device.adminMode = AdminMode.ONLINE
+    subarray_device.SetDefective(json.dumps(DEFAULT_DEFECT_SETTINGS))
+    result, command_id = subarray_device.Restart()
+    assert result[0] == ResultCode.FAILED
+    assert "Restart" in command_id[0]

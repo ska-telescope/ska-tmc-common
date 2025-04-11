@@ -1,11 +1,11 @@
 name: "mocks-{{.Release.Name}}"
 function: testing
 domain: test_device
-instances: ["01"]
+instances: ["01","02"]
 
 entrypoints:
   - name: "ska_tmc_common.test_helpers.helper_subarray_device.HelperSubArrayDevice"
-
+  - name: "ska_tmc_common.test_helpers.helper_mccs_subarray_device.HelperMccsSubarrayDevice"
 server:
   name: "test_device"
   instances:
@@ -15,6 +15,11 @@ server:
         devices:
         - name: "helper/cspsubarray/device"
         - name: "helper/subarrayleaf/device"
+    - name: "02"
+      classes:
+      - name: "HelperMccsSubarrayDevice"
+        devices:
+        - name: "low-mccs/subarray/01"
 
 depends_on:
   - device: sys/database/2

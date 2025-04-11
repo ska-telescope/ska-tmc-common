@@ -30,6 +30,7 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         self._memorized_dish_vcc_map: str = ""
         self._admin_mode: AdminMode = AdminMode.OFFLINE
         self._isAdminModeEnabled: bool = False
+        self._csp_controller_admin_mode: AdminMode = AdminMode.OFFLINE
 
     sourceDishVccConfig = attribute(
         dtype="DevString", access=AttrWriteType.READ
@@ -78,6 +79,9 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
             self._device.set_change_event(
                 "DishVccMapValidationResult", True, False
             )
+            self._device.set_change_event(
+                "cspControllerAdminMode", True, False
+            )
             self._device.op_state_model.perform_action("component_on")
             self._device.start_dish_vcc_validation()
             return (ResultCode.OK, "")
@@ -104,6 +108,36 @@ class HelperCspMasterLeafDevice(HelperBaseDevice):
         :rtype: str
         """
         return str(int(self._dish_vcc_map_validation_result))
+
+    cspControllerAdminMode = attribute(
+        dtype=AdminMode,
+        doc="Read the CSP controller AdminMode",
+        access=AttrWriteType.READ,
+    )
+
+    def read_cspControllerAdminMode(self) -> int:
+        """
+        Reads the current admin mode of the CSP controller
+        :return: obs state
+        """
+        return self._csp_controller_admin_mode
+
+    @command(
+        dtype_in=int,
+        doc_in="Set AdminMode",
+    )
+    def SetCspControllerAdminMode(self, argin: int) -> None:
+        """
+        Trigger a admin mode change
+        :param argin: adminMode enum to set the admin mode.
+        :dtype: int
+        """
+        value = AdminMode(argin)
+        if self._csp_controller_admin_mode != value:
+            self._csp_controller_admin_mode = value
+            self.push_change_event(
+                "cspControllerAdminMode", self._csp_controller_admin_mode
+            )
 
     @command(
         dtype_out="DevVarLongStringArray",

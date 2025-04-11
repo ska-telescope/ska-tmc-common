@@ -66,3 +66,8 @@ Welcome to ska-tmc-common documentation!
 
    timekeeper
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Event Manager
+
+   event_manager
