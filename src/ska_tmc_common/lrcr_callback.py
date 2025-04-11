@@ -36,25 +36,23 @@ class LRCRCallback:
         :param exception_msg: String of execption message. (Optional)
         """
         self.logger.info("updating")
-        with self.lock:
-            self.logger.info(
-                f"Updating command data with command id {command_id} "
-                "and result"
-                f"code {result_code} and kwargs {kwargs}"
-            )
 
-            if command_id in self.command_data:
-                self.command_data[command_id]["result_code"] = result_code
-                self.command_data[command_id][
-                    "exception_message"
-                ] = exception_msg
-            else:
-                self.command_data[command_id] = {
-                    "result_code": result_code,
-                    "exception_message": exception_msg,
-                }
-            for key, value in kwargs.items():
-                self.command_data[command_id][key] = value
+        self.logger.info(
+            f"Updating command data with command id {command_id} "
+            "and result"
+            f"code {result_code} and kwargs {kwargs}"
+        )
+
+        if command_id in self.command_data:
+            self.command_data[command_id]["result_code"] = result_code
+            self.command_data[command_id]["exception_message"] = exception_msg
+        else:
+            self.command_data[command_id] = {
+                "result_code": result_code,
+                "exception_message": exception_msg,
+            }
+        for key, value in kwargs.items():
+            self.command_data[command_id][key] = value
         self.logger.info("updated")
 
     def assert_against_call(
@@ -98,9 +96,8 @@ class LRCRCallback:
     def remove_data(self, command_id: str) -> None:
         """Remove command id from command data"""
         try:
-            with self.lock:
-                self.logger.info("Removing command data ")
-                removed_data = self.command_data.pop(command_id, None)
+            self.logger.info("Removing command data ")
+            removed_data = self.command_data.pop(command_id, None)
             self.logger.info(f"Removed command data {removed_data}")
         except Exception as e:
             self.logger.info("error %s", e)

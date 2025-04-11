@@ -27,7 +27,13 @@ class Observable:
     def __init__(self):
         """Initialization"""
         self.lock = threading.RLock()
-        self.observers: list = []
+        self.__observers: list = []
+
+    @property
+    def observers(self) -> list:
+        """observers"""
+        with self.lock:
+            return self.__observers
 
     def register_observer(self, observer: Observer) -> None:
         """This method registers the observers.
@@ -36,10 +42,9 @@ class Observable:
             observer (Observer): Observer class instance.
         """
         try:
-            with self.lock:
-                logger.info("registering : %s ", observer)
-                self.observers.append(observer)
-                logger.info("registered : %s ", observer)
+            logger.info("registering : %s ", observer)
+            self.observers.append(observer)
+            logger.info("registered : %s ", observer)
         except Exception as e:
             logger.error("The exception is: %s", e)
 
@@ -50,11 +55,9 @@ class Observable:
             observer (Observer): observer class instance.
         """
         try:
-
-            with self.lock:
-                logger.info("deregistering : %s ", observer)
-                self.observers.remove(observer)
-                logger.info("deregistered : %s ", observer)
+            logger.info("deregistering : %s ", observer)
+            self.observers.remove(observer)
+            logger.info("deregistered : %s ", observer)
         except Exception as e:
             logger.error("The exception is: %s", e)
 
@@ -73,17 +76,16 @@ class Observable:
         """
         try:
             logger.info("will notify observers: %s", threading.get_ident())
-            with self.lock:
-                logger.info("notifying observers: %s", threading.get_ident())
-                current_observers = copy(self.observers)
-                logger.info("current observers: %s", current_observers)
-                for observer in current_observers:
-                    logger.info(
-                        "Calling observer %s",
-                        observer.command_callback_tracker.command_id,
-                    )
-                    observer.notify(*args, **kwargs)
-                logger.info("completed %s", threading.get_ident())
+            logger.info("notifying observers: %s", threading.get_ident())
+            current_observers = copy(self.observers)
+            logger.info("current observers: %s", current_observers)
+            for observer in current_observers:
+                logger.info(
+                    "Calling observer %s",
+                    observer.command_callback_tracker.command_id,
+                )
+                observer.notify(*args, **kwargs)
+            logger.info("completed %s", threading.get_ident())
             logger.info("completed %s", threading.get_ident())
         except Exception as e:
             logger.error("Error %s", e)
