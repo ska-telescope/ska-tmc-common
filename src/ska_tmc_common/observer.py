@@ -57,10 +57,13 @@ class LongRunningCommandExceptionObserver(Observer):
 
     def notify(self, *args, **kwargs):
         """Notifies about the update of command exception"""
-        if "command_exception" in args or kwargs.get("command_exception"):
-            self.logger.info("updating the exception")
-            self.command_callback_tracker.update_exception()
-            self.logger.info("exception task completed")
+        try:
+            if "command_exception" in args or kwargs.get("command_exception"):
+                self.logger.info("updating the exception")
+                self.command_callback_tracker.update_exception()
+                self.logger.info("exception task completed")
+        except Exception as e:
+            self.logger.error("error %s", e)
 
 
 class AttributeValueObserver(Observer):
@@ -75,6 +78,9 @@ class AttributeValueObserver(Observer):
         if "attribute_value_change" in args or kwargs.get(
             "attribute_value_change"
         ):
-            self.logger.info("updating the value change")
-            self.command_callback_tracker.update_attr_value_change()
-            self.logger.info("task completed")
+            try:
+                self.logger.info("updating the value change")
+                self.command_callback_tracker.update_attr_value_change()
+                self.logger.info("task completed")
+            except Exception as e:
+                self.logger.info("error %s", e)

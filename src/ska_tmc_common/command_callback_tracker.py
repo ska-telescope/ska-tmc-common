@@ -116,12 +116,7 @@ class CommandCallbackTracker:
                     status=TaskStatus.ABORTED
                 )
             self.logger.debug("Update value completed")
-        except (
-            AttributeError,
-            ValueError,
-            TypeError,
-            IndexError,
-        ) as exception:
+        except Exception as exception:
             self.logger.error(
                 "Error occurred while attribute" + "update %s", exception
             )
@@ -145,7 +140,7 @@ class CommandCallbackTracker:
                         exception=exception_message,
                     )
             self.logger.debug("Update exception completed")
-        except (AttributeError, ValueError, TypeError) as exception:
+        except Exception as exception:
             self.logger.error(
                 "Error occurred while updating exception %s", exception
             )
@@ -170,5 +165,5 @@ class CommandCallbackTracker:
             if self.component_manager.command_id:
                 self.lrcr_callback.remove_data(self.command_id)
             self.logger.info("clean up completed")
-        except (AttributeError, ValueError, TypeError) as exception:
+        except Exception as exception:
             self.logger.error("Error occurred while clean up %s", exception)
