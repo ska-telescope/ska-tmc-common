@@ -84,5 +84,6 @@ class Observable:
                     )
                     observer.notify(*args, **kwargs)
                 logger.info("completed %s", threading.get_ident())
+            logger.info("completed %s", threading.get_ident())
         except Exception as e:
             logger.error("Error %s", e)

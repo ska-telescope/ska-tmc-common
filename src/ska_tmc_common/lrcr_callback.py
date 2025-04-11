@@ -1,6 +1,7 @@
 """This module provides a callback to keep track of the
 longRunningCommandResult events."""
 
+import threading
 from logging import Logger
 from typing import Any, Optional
 
@@ -16,6 +17,7 @@ class LRCRCallback:
         self.command_data = {}
         self.logger = logger
         self._kwargs = {}
+        self.lock = threading.RLock()
 
     def __call__(
         self,
@@ -33,21 +35,27 @@ class LRCRCallback:
 
         :param exception_msg: String of execption message. (Optional)
         """
+        self.logger.info("updating")
+        with self.lock:
+            self.logger.info(
+                f"Updating command data with command id {command_id} "
+                "and result"
+                f"code {result_code} and kwargs {kwargs}"
+            )
 
-        self.logger.info(
-            f"Updating command data with command id {command_id} and result "
-            f"code {result_code} and kwargs {kwargs}"
-        )
-        if command_id in self.command_data:
-            self.command_data[command_id]["result_code"] = result_code
-            self.command_data[command_id]["exception_message"] = exception_msg
-        else:
-            self.command_data[command_id] = {
-                "result_code": result_code,
-                "exception_message": exception_msg,
-            }
-        for key, value in kwargs.items():
-            self.command_data[command_id][key] = value
+            if command_id in self.command_data:
+                self.command_data[command_id]["result_code"] = result_code
+                self.command_data[command_id][
+                    "exception_message"
+                ] = exception_msg
+            else:
+                self.command_data[command_id] = {
+                    "result_code": result_code,
+                    "exception_message": exception_msg,
+                }
+            for key, value in kwargs.items():
+                self.command_data[command_id][key] = value
+        self.logger.info("updated")
 
     def assert_against_call(
         self, command_id: str, result_code: ResultCode, **kwargs: Any
@@ -89,5 +97,10 @@ class LRCRCallback:
 
     def remove_data(self, command_id: str) -> None:
         """Remove command id from command data"""
-        removed_data = self.command_data.pop(command_id, None)
-        self.logger.debug(f"Removed command data {removed_data}")
+        try:
+            with self.lock:
+                self.logger.info("Removing command data ")
+                removed_data = self.command_data.pop(command_id, None)
+            self.logger.info(f"Removed command data {removed_data}")
+        except Exception as e:
+            self.logger.info("error %s", e)
