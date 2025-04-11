@@ -173,6 +173,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         liveliness_check_period: int = 1,
         max_logging_time: int = 10,
+        device_list_log_time: int = 0.1,
     ):
         super().__init__(
             component_manager,
@@ -183,6 +184,8 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         )
         self._max_workers = max_workers
         self._monitoring_devices: List[str] = []
+        self._device_list_log_manager = LogManager(device_list_log_time)
+        self._devices_changed = False
 
     def add_device(self, dev_name: str) -> None:
         """A method to add device in the Queue for monitoring"""
@@ -198,12 +201,15 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
             "Added device: %s to the list of monitoring devices.",
             dev_name,
         )
-
-        # to be changed
-        if len(self._monitoring_devices) > 8:
+        self._devices_changed = False
+        if (
+            self._devices_changed
+            and self._device_list_log_manager.is_logging_allowed("device_list")
+        ):
             self._logger.debug(
                 "List of monitored devices: %s", self._monitoring_devices
             )
+            self._devices_changed = False
 
     def remove_devices(self, dev_names: List[str]) -> None:
         """Remove the given devices from the monitoring queue.

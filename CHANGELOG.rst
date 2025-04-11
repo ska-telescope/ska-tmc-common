@@ -12,7 +12,7 @@ Main
 
 Added
 --------
-[0.26.1]
+[0.26.0]
 ********
 * Added changes in the logs as per Logging Guidelines.
 * Update livelinessprobe to remove redundant logging and implememted prettty printing for logs containing json data.
