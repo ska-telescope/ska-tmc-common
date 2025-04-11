@@ -24,7 +24,6 @@ class AggregationProcess:
         event_data_queue: Queue,
         aggregated_state: list,
         update_event: Event,
-        state_aggregator: Any,
         callback: Optional[Callable[[Any], None]] = None,
     ):
         """
@@ -39,7 +38,7 @@ class AggregationProcess:
         self.event_data_queue = event_data_queue
         self.aggregated_state = aggregated_state
         self.aggregate_update_event = update_event
-        self.state_aggregator = state_aggregator
+        self.state_aggregator = self.set_state_aggregator()
         self.callback = callback
 
         self.aggregation_process = Process(
@@ -99,6 +98,15 @@ class AggregationProcess:
         :param event_data: Event data object containing data required
             for aggregation.
         :type event_data: EventDataStorage
+        :raises NotImplementedError: If the method is not overridden
+            in a subclass.
+        """
+        raise NotImplementedError
+
+    def set_state_aggregator(self):
+        """
+        Set the aggregator
+
         :raises NotImplementedError: If the method is not overridden
             in a subclass.
         """
