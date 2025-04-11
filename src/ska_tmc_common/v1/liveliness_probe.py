@@ -173,7 +173,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
         proxy_timeout: int = 500,
         liveliness_check_period: int = 1,
         max_logging_time: int = 10,
-        monitored_list_log_time: float = 0.1,
+        monitored_list_log_time: int = 1,
     ):
         super().__init__(
             component_manager,
@@ -201,7 +201,7 @@ class MultiDeviceLivelinessProbe(BaseLivelinessProbe):
             "Added device: %s to the list of monitoring devices.",
             dev_name,
         )
-        self._devices_changed = False
+        self._devices_changed = True
         if (
             self._devices_changed
             and self._device_list_log_manager.is_logging_allowed("device_list")
